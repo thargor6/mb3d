@@ -1,0 +1,10 @@
+V1.90 ALPHA 1 
+- Number-Fields in the Formula-Window have now buttons to decrease/increase the value. The Increment can be specified at the bottom of the window
+- Option to perform automatic refresh of the Navigator-window when changing formulas-parameters in the Formula-window
+- The Formula-Window is resizable now
+- Exchanging of formulas in the Formula-window now works in two directions
+- Started to increase the number of formulas from 6 to 8. Many changes are already done, but not all. Unfortunately most required changes are only detected by crashing the program.
+It was necessary to create new revisions for all file-formats involved, currently only saving in the *m3p-format is supported.
+
+Please note that this is work in progress and an ALPHA version. And PLEASE BEWARE: Do not create serious artwork with this version, 
+it can not be garuanteed that you can save and load the params in all cases yet. But when you succeed in loading/saving a certain set of params it will probably work the next time, too. 

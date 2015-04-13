@@ -48,7 +48,7 @@ type
     ListBoxEx6: TListBoxEx;
     SpeedButton3: TSpeedButton;
     CheckBox2: TCheckBox;
-    ExchangeFormulaBtn: TSpeedButton;
+    ExchangeFormulaRightBtn: TSpeedButton;
     ListBoxEx7: TListBoxEx;
     ListBoxEx8: TListBoxEx;
     ListBoxEx9: TListBoxEx;
@@ -137,13 +137,18 @@ type
     Label9: TLabel;
     Edit17: TJvSpinEdit;
     Label17: TLabel;
+    ExchangeFormulaLeftBtn: TSpeedButton;
+    AutoRefreshCheckbox: TCheckBox;
+    Bevel3: TBevel;
+    EditStepField: TEdit;
+    Label19: TLabel;
     procedure TabControl1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SpeedButton11Click(Sender: TObject);
     procedure EditItCountChange(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
-    procedure ExchangeFormulaBtnClick(Sender: TObject);
+    procedure ExchangeFormulaRightBtnClick(Sender: TObject);
     procedure TabControl2Change(Sender: TObject);
     procedure TabControl2Changing(Sender: TObject;
       var AllowChange: Boolean);
@@ -189,6 +194,8 @@ type
     procedure Copythevaluesto1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure HybridStartBtnClick(Sender: TObject; Button: TUDBtnType);
+    procedure ExchangeFormulaLeftBtnClick(Sender: TObject);
+    procedure EditStepFieldExit(Sender: TObject);
   private
     { Private-Deklarationen }
     OldTab2index: Integer;
@@ -506,11 +513,15 @@ var i, t: Integer;
     E: TJvSpinEdit;
     L: TLabel;
     bAltHybrid: LongBool;
+    Increment: Double;
 begin
+   if not TryStrToFloat(Trim(EditStepField.Text), Increment) then
+     Increment := 0.1;
     SetTabNames;
     bAltHybrid := LabelItCount.Caption = 'Iterationcount:';
     t := TabControl1.TabIndex;
-    ExchangeFormulaBtn.Enabled := (t = 0) or (bAltHybrid and (t < MAX_FORMULA_COUNT - 1));
+    ExchangeFormulaRightBtn.Enabled := (t = 0) or (bAltHybrid and (t < MAX_FORMULA_COUNT - 1));
+    ExchangeFormulaLeftBtn.Enabled := (t > 0);
     with Mand3DForm.HAddon.Formulas[t] do
     begin
       bUserChange := False;
@@ -521,16 +532,26 @@ begin
       end
       else EditItCount.Text := FloatToStrSingle(PSingle(@iItCount)^);
       SetFormulaCBs(Trim(CustomFtoStr(CustomFname)));
-      for i := 0 to 15 do
-      begin
+      for i := 0 to 15 do begin
         E := (FindComponent('Edit' + IntToStr(i + 1)) as TJvSpinEdit);
         E.Visible := iOptionCount > i;
         L := (FindComponent('Label' + IntToStr(i + 1)) as TLabel);
         L.Visible := iOptionCount > i;
-        if iOptionCount > i then
-        begin
+        if iOptionCount > i then begin
           E.Text := FloatToStr(dOptionValue[i]);
           L.Caption := PTCustomFormula(Mand3DForm.MHeader.PHCustomF[t]).sOptionStrings[i];
+        end;
+        if E.Visible then begin
+          if CustomFormulas.isIntType(PTCustomFormula(Mand3DForm.MHeader.PHCustomF[t]).byOptionTypes[i]) then begin
+            E.ValueType := vtInteger;
+            E.Increment := 1.0;
+          end
+          else begin
+            E.ValueType := vtFloat;
+            E.Decimal := 16;
+            E.Increment := Increment;
+            E.DisplayFormat := '0.################';
+          end;
         end;
       end;
       Panel3.Visible := TabControl2.TabIndex = 2;
@@ -609,6 +630,11 @@ begin
     end; 
 end;
 
+procedure TFormulaGUIForm.EditStepFieldExit(Sender: TObject);
+begin
+  TabControl1Change(nil);
+end;
+
 procedure TFormulaGUIForm.Edit1Change(Sender: TObject);
 begin
     if bUserChange then
@@ -639,27 +665,48 @@ begin
     end;
 end;
 
-procedure TFormulaGUIForm.ExchangeFormulaBtnClick(Sender: TObject);   //exchange with next F
+procedure TFormulaGUIForm.ExchangeFormulaLeftBtnClick(Sender: TObject); //exchange with prev F
 var t, i: Integer;
     HAF: THAformula;
     dOptionValues: array[0..15] of Double;
 begin
-    t := TabControl1.TabIndex;
-    if t < MAX_FORMULA_COUNT -1  then
-    begin
-      HAF := Mand3DForm.HAddon.Formulas[t];
-      Mand3DForm.HAddon.Formulas[t] := Mand3DForm.HAddon.Formulas[t + 1];
-      Mand3DForm.HAddon.Formulas[t + 1] := HAF;
-      for i := t to t + 1 do
-      begin
-        if Mand3DForm.HAddon.Formulas[i].iFnr < 20 then
-          ParseCFfromOld(Mand3DForm.HAddon.Formulas[i].iFnr, Mand3DForm.MHeader.PHCustomF[i], dOptionValues)
-        else
-          LoadCustomFormulaFromHeader(Mand3DForm.HAddon.Formulas[i].CustomFname,
-              PTCustomFormula(Mand3DForm.MHeader.PHCustomF[i])^, dOptionValues);
-      end;
-      TabControl1Change(Sender);
-    end;
+  t := TabControl1.TabIndex;
+  if t > 0  then begin
+    HAF := Mand3DForm.HAddon.Formulas[t];
+    Mand3DForm.HAddon.Formulas[t] := Mand3DForm.HAddon.Formulas[t - 1];
+    Mand3DForm.HAddon.Formulas[t - 1] := HAF;
+    for i := t downto t - 1 do begin
+      if Mand3DForm.HAddon.Formulas[i].iFnr < 20 then
+        ParseCFfromOld(Mand3DForm.HAddon.Formulas[i].iFnr, Mand3DForm.MHeader.PHCustomF[i], dOptionValues)
+      else
+        LoadCustomFormulaFromHeader(Mand3DForm.HAddon.Formulas[i].CustomFname,
+           PTCustomFormula(Mand3DForm.MHeader.PHCustomF[i])^, dOptionValues);
+     end;
+     TabControl1.TabIndex := TabControl1.TabIndex - 1;
+     TabControl1Change(Sender);
+  end;
+end;
+
+procedure TFormulaGUIForm.ExchangeFormulaRightBtnClick(Sender: TObject);   //exchange with next F
+var t, i: Integer;
+    HAF: THAformula;
+    dOptionValues: array[0..15] of Double;
+begin
+  t := TabControl1.TabIndex;
+  if t < MAX_FORMULA_COUNT -1  then begin
+    HAF := Mand3DForm.HAddon.Formulas[t];
+    Mand3DForm.HAddon.Formulas[t] := Mand3DForm.HAddon.Formulas[t + 1];
+    Mand3DForm.HAddon.Formulas[t + 1] := HAF;
+    for i := t to t + 1 do begin
+      if Mand3DForm.HAddon.Formulas[i].iFnr < 20 then
+        ParseCFfromOld(Mand3DForm.HAddon.Formulas[i].iFnr, Mand3DForm.MHeader.PHCustomF[i], dOptionValues)
+      else
+        LoadCustomFormulaFromHeader(Mand3DForm.HAddon.Formulas[i].CustomFname,
+           PTCustomFormula(Mand3DForm.MHeader.PHCustomF[i])^, dOptionValues);
+     end;
+     TabControl1.TabIndex := TabControl1.TabIndex + 1;
+     TabControl1Change(Sender);
+  end;
 end;
 
 procedure TFormulaGUIForm.TabControl2Change(Sender: TObject);
@@ -1162,6 +1209,7 @@ begin
                      '2:  Color of second formula.';
       Edit23.Text := IntToStr(Mand3DForm.MHeader.DEmixColorOption); //0..2
     end;
+    RefreshPreview;
 end;
 
 procedure TFormulaGUIForm.Hidethisformula1Click(Sender: TObject);
@@ -1443,7 +1491,7 @@ end;
 
 procedure TFormulaGUIForm.RefreshPreview;
 begin
-  Mand3DForm.RefreshPreview;
+  Mand3DForm.RefreshNavigator(AutoRefreshCheckbox.Checked);
 end;
 
 end.

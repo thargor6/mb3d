@@ -62,7 +62,7 @@ object Mand3DForm: TMand3DForm
       Top = 147
       Width = 151
       Height = 264
-      ActivePage = TabSheet2
+      ActivePage = TabSheet5
       Align = alTop
       BiDiMode = bdLeftToRight
       DoubleBuffered = False
@@ -2461,19 +2461,6 @@ object Mand3DForm: TMand3DForm
         TabOrder = 1
         Text = '5'
       end
-      object AutoRefreshCheckbox: TCheckBox
-        Left = 559
-        Top = 14
-        Width = 53
-        Height = 15
-        Hint = 
-          'Keep the aspect ratio when manually changing the width or height' +
-          '.'#13#10'No need to uncheck if pressing an aspect button.'
-        Caption = 'Refresh'
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 2
-      end
     end
     object ScrollBox1: TScrollBox
       Left = 0
@@ -2975,7 +2962,7 @@ object Mand3DForm: TMand3DForm
         Top = 4
         Width = 248
         Height = 64
-        ActivePage = TabSheet10
+        ActivePage = TabSheet12
         TabOrder = 1
         object TabSheet7: TTabSheet
           Caption = 'Open'
@@ -3037,6 +3024,7 @@ object Mand3DForm: TMand3DForm
               4343434300004343434343434343434343434343434343430000}
             ParentShowHint = False
             ShowHint = True
+            Visible = False
             OnClick = Button9Click
           end
           object Button5: TSpeedButton
@@ -3157,6 +3145,7 @@ object Mand3DForm: TMand3DForm
               4343434300004343434343434343434343434343434343430000}
             ParentShowHint = False
             ShowHint = True
+            Visible = False
             OnClick = SpeedButton8Click
           end
         end
@@ -3221,6 +3210,7 @@ object Mand3DForm: TMand3DForm
               0043444400004444444444444444444444444444444444440000}
             ParentShowHint = False
             ShowHint = True
+            Visible = False
             OnClick = Button8Click
           end
           object Button4: TSpeedButton
@@ -3268,6 +3258,7 @@ object Mand3DForm: TMand3DForm
               0000443000000000000344000000444444444444444444000000}
             ParentShowHint = False
             ShowHint = True
+            Visible = False
             OnClick = SpeedButton7Click
           end
           object SpeedButton29: TSpeedButton
@@ -3298,6 +3289,7 @@ object Mand3DForm: TMand3DForm
               4444444400004444444444444444444444444444444444440000}
             ParentShowHint = False
             ShowHint = True
+            Visible = False
             OnClick = SpeedButton29Click
           end
           object CheckBox16: TCheckBox

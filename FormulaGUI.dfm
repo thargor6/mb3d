@@ -1,10 +1,10 @@
 object FormulaGUIForm: TFormulaGUIForm
   Left = 844
   Top = 100
-  BorderStyle = bsDialog
+  BorderStyle = bsSizeToolWin
   Caption = 'Formulas'
-  ClientHeight = 632
-  ClientWidth = 335
+  ClientHeight = 639
+  ClientWidth = 541
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,12 +23,13 @@ object FormulaGUIForm: TFormulaGUIForm
   TextHeight = 13
   object Panel2: TPanel
     Left = 0
-    Top = 522
-    Width = 335
+    Top = 499
+    Width = 541
     Height = 40
     Align = alBottom
     BevelOuter = bvLowered
     TabOrder = 3
+    ExplicitWidth = 348
     object Label22: TLabel
       Left = 8
       Top = 1
@@ -100,9 +101,9 @@ object FormulaGUIForm: TFormulaGUIForm
   object TabControl1: TTabControl
     Left = 0
     Top = 19
-    Width = 335
-    Height = 477
-    Align = alTop
+    Width = 541
+    Height = 452
+    Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -11
@@ -146,6 +147,10 @@ object FormulaGUIForm: TFormulaGUIForm
     TabIndex = 0
     OnChange = TabControl1Change
     OnMouseDown = TabControl1MouseDown
+    ExplicitWidth = 348
+    DesignSize = (
+      541
+      452)
     object Bevel1: TBevel
       Left = 2
       Top = 21
@@ -155,11 +160,13 @@ object FormulaGUIForm: TFormulaGUIForm
     end
     object LabelItCount: TLabel
       Left = 7
-      Top = 451
+      Top = 435
       Width = 68
       Height = 13
       Alignment = taRightJustify
+      Anchors = [akLeft, akBottom]
       Caption = 'Iterationcount:'
+      ExplicitTop = 451
     end
     object SpeedButton11: TSpeedButton
       Left = 266
@@ -205,26 +212,44 @@ object FormulaGUIForm: TFormulaGUIForm
       Width = 290
       Height = 369
     end
-    object ExchangeFormulaBtn: TSpeedButton
-      Left = 261
-      Top = 443
+    object ExchangeFormulaRightBtn: TSpeedButton
+      Left = 298
+      Top = 432
       Width = 37
       Height = 22
       Hint = 'Exchange this formula with the next one'
+      Anchors = [akLeft, akBottom]
       Glyph.Data = {
-        36010000424D3601000000000000760000002800000012000000100000000100
-        040000000000C0000000C30E0000C30E0000100000001000000000000000C6C6
-        C600FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFF
-        FF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00FFFFFF00111111111111
-        1111110000001111111111111111110000001111111111111111110000001111
-        1100000011111100000011111011111101111100000011010111111110101100
-        0000110001111111100011000000110000111111000011000000110001111111
-        1000110000001100111111111100110000001101111111111110110000001111
-        1111111111111100000000000111111110000000000002220111111110222000
-        0000022201111111102220000000000001111111100000000000}
+        36030000424D3603000000000000360000002800000010000000100000000100
+        1800000000000003000000000000000000000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF2163241D5E
+        20FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFF2A702F256929216324FFFFFFFFFFFFFFFFFFFFFFFF61BE6D
+        5DB86858B16253A95C4DA15647994F4191493B884235803B3F884559A15E448B
+        49216324FFFFFFFFFFFFFFFFFF65C371A0D7A99CD5A598D3A194D09D90CE988B
+        CB9387C98E82C6897EC3847AC18076BE7C458C4A216324FFFFFFFFFFFF68C774
+        A5DAAEA2D8AB9ED6A79AD4A396D29F93CF9A8ECC9589CA9085C78B81C5877DC2
+        824A9150256929FFFFFFFFFFFF68C77468C77465C37161BE6D5DB86858B16253
+        A95C4DA15647994F4191495AA362559D5C2F7835FFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF4191493B88
+        42FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFF47994F419149FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
       ParentShowHint = False
       ShowHint = True
-      OnClick = ExchangeFormulaBtnClick
+      OnClick = ExchangeFormulaRightBtnClick
+      ExplicitTop = 446
     end
     object SpeedButton4: TSpeedButton
       Left = 218
@@ -431,6 +456,45 @@ object FormulaGUIForm: TFormulaGUIForm
       OnMouseEnter = SpeedButtonEx1MouseEnter
       OnMouseLeave = SpeedButtonEx1MouseLeave
     end
+    object ExchangeFormulaLeftBtn: TSpeedButton
+      Left = 261
+      Top = 432
+      Width = 37
+      Height = 22
+      Hint = 'Exchange this formula with the previous one'
+      Anchors = [akLeft, akBottom]
+      Glyph.Data = {
+        36030000424D3603000000000000360000002800000010000000100000000100
+        1800000000000003000000000000000000000000000000000000FFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFF4DA15647994FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF53A95C4DA15647994FFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        5DB86871BE7B7AC1835BAA6447994F4191493B884235803B2F78352A702F2569
+        292163241D5E20FFFFFFFFFFFF65C3717BC8869CD5A598D3A194D09D90CE988B
+        CB9387C98E82C6897EC3847AC18076BE7C72BD78216324FFFFFFFFFFFF68C774
+        7FCC8AA2D8AB9ED6A79AD4A396D29F93CF9A8ECC9589CA9085C78B81C5877DC2
+        8278C07E256929FFFFFFFFFFFFFFFFFF68C77480CD8B7CC9875DB86858B16253
+        A95C4DA15647994F4191493B884235803B2F78352A702FFFFFFFFFFFFFFFFFFF
+        FFFFFF68C77465C371FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF68C77468C774FFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = ExchangeFormulaLeftBtnClick
+      ExplicitTop = 446
+    end
     object ComboEdit1: TEdit
       Left = 7
       Top = 51
@@ -467,9 +531,10 @@ object FormulaGUIForm: TFormulaGUIForm
     end
     object EditItCount: TEdit
       Left = 83
-      Top = 448
+      Top = 432
       Width = 49
       Height = 21
+      Anchors = [akLeft, akBottom]
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -482,13 +547,14 @@ object FormulaGUIForm: TFormulaGUIForm
     end
     object CheckBox1: TCheckBox
       Left = 144
-      Top = 450
+      Top = 434
       Width = 103
       Height = 17
       Hint = 
         'Defines where the iteration starts again,'#13#10'when the last formula' +
         ' was done and no'#13#10'stop condition occured by then.'
       Alignment = taLeftJustify
+      Anchors = [akLeft, akBottom]
       Caption = 'Repeat from here'
       ParentShowHint = False
       ShowHint = True
@@ -496,8 +562,8 @@ object FormulaGUIForm: TFormulaGUIForm
       OnClick = CheckBox1Click
     end
     object Button3: TButton
-      Left = 241
-      Top = 420
+      Left = 245
+      Top = 369
       Width = 57
       Height = 20
       Caption = 'Close'
@@ -509,7 +575,8 @@ object FormulaGUIForm: TFormulaGUIForm
       Left = 7
       Top = 73
       Width = 319
-      Height = 368
+      Height = 256
+      VertScrollBar.Visible = False
       BevelInner = bvNone
       BevelOuter = bvNone
       BorderStyle = bsNone
@@ -517,13 +584,15 @@ object FormulaGUIForm: TFormulaGUIForm
       object Panel4: TPanel
         Left = 0
         Top = 0
-        Width = 302
+        Width = 319
         Height = 800
         Align = alTop
         BevelOuter = bvNone
         Color = clWindow
         ParentBackground = False
         TabOrder = 0
+        ExplicitLeft = 34
+        ExplicitTop = 3
         object Label1: TLabel
           Left = 131
           Top = 8
@@ -712,6 +781,7 @@ object FormulaGUIForm: TFormulaGUIForm
           TabOrder = 2
           Visible = False
           OnChange = Edit1Change
+          HideSelection = False
         end
         object Edit12: TJvSpinEdit
           Tag = 11
@@ -950,7 +1020,7 @@ object FormulaGUIForm: TFormulaGUIForm
         object Edit17: TJvSpinEdit
           Tag = 16
           Left = 148
-          Top = 357
+          Top = 362
           Width = 137
           Height = 21
           Increment = 0.100000000000000000
@@ -1083,10 +1153,10 @@ object FormulaGUIForm: TFormulaGUIForm
     end
     object ListBoxEx15: TListBoxEx
       Tag = 9
-      Left = 207
-      Top = 73
-      Width = 293
-      Height = 369
+      Left = 10
+      Top = 78
+      Width = 338
+      Height = 195
       BevelInner = bvSpace
       BevelKind = bkFlat
       BevelOuter = bvRaised
@@ -1319,10 +1389,10 @@ object FormulaGUIForm: TFormulaGUIForm
       OnMouseMove = ListBoxEx1MouseMove
     end
     object RichEdit1: TRichEdit
-      Left = 207
-      Top = 73
-      Width = 293
-      Height = 369
+      Left = 3
+      Top = 74
+      Width = 289
+      Height = 174
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -11
@@ -1338,12 +1408,13 @@ object FormulaGUIForm: TFormulaGUIForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 562
-    Width = 335
-    Height = 70
+    Top = 539
+    Width = 541
+    Height = 100
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitWidth = 348
     object RBailoutLabel: TLabel
       Left = 197
       Top = 4
@@ -1376,6 +1447,22 @@ object FormulaGUIForm: TFormulaGUIForm
       Alignment = taRightJustify
       Caption = 'Maxits hybrid part2:'
       Visible = False
+    end
+    object Bevel3: TBevel
+      Left = 0
+      Top = 72
+      Width = 541
+      Height = 28
+      Align = alBottom
+      ExplicitTop = 76
+      ExplicitWidth = 348
+    end
+    object Label19: TLabel
+      Left = 159
+      Top = 78
+      Width = 71
+      Height = 13
+      Caption = 'Edit Increment:'
     end
     object RBailoutEdit: TEdit
       Left = 250
@@ -1464,11 +1551,38 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '60'
       Visible = False
     end
+    object AutoRefreshCheckbox: TCheckBox
+      Left = 7
+      Top = 80
+      Width = 146
+      Height = 15
+      Hint = 
+        'Keep the aspect ratio when manually changing the width or height' +
+        '.'#13#10'No need to uncheck if pressing an aspect button.'
+      Caption = 'Auto-Refresh Navigator'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 6
+    end
+    object EditStepField: TEdit
+      Left = 236
+      Top = 76
+      Width = 109
+      Height = 21
+      Hint = 
+        'The rotations are performed in a row, first the XW, last the ZW-' +
+        'plane.'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 7
+      Text = '0.1'
+      OnExit = EditStepFieldExit
+    end
   end
   object TabControl2: TTabControl
     Left = 0
     Top = 0
-    Width = 335
+    Width = 541
     Height = 19
     Hint = 
       ' Type of hybrid:'#13#10'Alternate:  formulas 1 to 6 alternated.'#13#10'Inter' +
@@ -1493,6 +1607,7 @@ object FormulaGUIForm: TFormulaGUIForm
     TabIndex = 0
     OnChange = TabControl2Change
     OnChanging = TabControl2Changing
+    ExplicitWidth = 348
     object SpeedButton3: TSpeedButton
       Left = 276
       Top = 0
@@ -1515,7 +1630,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Visible = False
     end
     object RandomButton: TButton
-      Left = 258
+      Left = 257
       Top = 0
       Width = 18
       Height = 18
@@ -1523,6 +1638,7 @@ object FormulaGUIForm: TFormulaGUIForm
       ParentShowHint = False
       ShowHint = False
       TabOrder = 0
+      Visible = False
       OnClick = RandomButtonClick
     end
     object HybridStartBtn: TUpDown
@@ -1541,13 +1657,14 @@ object FormulaGUIForm: TFormulaGUIForm
   end
   object Panel3: TPanel
     Left = 0
-    Top = 494
-    Width = 335
+    Top = 471
+    Width = 541
     Height = 28
     Align = alBottom
     BevelOuter = bvLowered
     TabOrder = 4
     Visible = False
+    ExplicitWidth = 348
     object Label18: TLabel
       Left = 154
       Top = 7

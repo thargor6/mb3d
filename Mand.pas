@@ -265,7 +265,6 @@ type
     ButtonVolLight: TButton;
     UpDown5: TUpDown;
     Label61: TLabel;
-    AutoRefreshCheckbox: TCheckBox;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -487,7 +486,7 @@ type
     function GetCalcRect: TRect;
     procedure TextParsLoadSuccess;
     procedure UpdateAndScaleImageFull(NewScale: Integer);
-    procedure RefreshPreview;
+    procedure RefreshNavigator(const Enabled: Boolean);
   end;
 procedure TriggerRepaint;
 function AniFileAlreadyExists(var s: String): LongBool;
@@ -3971,9 +3970,9 @@ begin
     PopupMenu1.Popup(CP.X, CP.Y);
 end;
 
-procedure TMand3DForm.RefreshPreview;
+procedure TMand3DForm.RefreshNavigator(const Enabled: Boolean);
 begin
-  if AutoRefreshCheckbox.Checked and FNavigator.Visible then begin
+  if Enabled and FNavigator.Visible then begin
     FNavigator.SpeedButton11Click(nil);
   end;
 end;
