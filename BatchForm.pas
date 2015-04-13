@@ -56,15 +56,15 @@ uses Mand, TypeDefinitions, FileHandling, CustomFormulas;
 
 function TBatchForm1.CanLoadParas(M3Pfile: String): Boolean;
 var x: Integer;
-    HybridCustoms: array[0..5] of TCustomFormula;
-    Header: TMandHeader10;
+    HybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
+    Header: TMandHeader11;
     HAddOn: THeaderCustomAddon;
 begin
     if UpperCase(ExtractFileExt(M3Pfile)) <> '.M3P' then Result := False else
     begin
       Header.PCFAddon := @HAddOn;
-      for x := 0 to 5 do Header.PHCustomF[x] := @HybridCustoms[x];
-      for x := 0 to 5 do IniCustomF(@HybridCustoms[x]);
+      for x := 0 to MAX_FORMULA_COUNT - 1 do Header.PHCustomF[x] := @HybridCustoms[x];
+      for x := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@HybridCustoms[x]);
       Result := LoadParameter(Header, M3Pfile, False);
     end;
 end;

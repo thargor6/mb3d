@@ -13,34 +13,34 @@ THybridPars = record
   start2, end2, repeat2: Integer;
 end;
 
-procedure MakeLightValsFromHeaderLight(Header: TPMandHeader10; Lvals: TPLightVals; ImScale: Double; StereoMode: Integer);
-procedure MakeLightValsFromHeaderLightNavi(Header: TPMandHeader10; Lvals: TPLightValsNavi; ImScale: Double);
-function GetMCTparasFromHeader(var Header: TMandHeader10; bIniCalcMaps: LongBool): TMCTparameter;
+procedure MakeLightValsFromHeaderLight(Header: TPMandHeader11; Lvals: TPLightVals; ImScale: Double; StereoMode: Integer);
+procedure MakeLightValsFromHeaderLightNavi(Header: TPMandHeader11; Lvals: TPLightValsNavi; ImScale: Double);
+function GetMCTparasFromHeader(var Header: TMandHeader11; bIniCalcMaps: LongBool): TMCTparameter;
 //procedure MakeLightVals(H1, H2: TMandHeader10; var L1, L2: TLightVals);
 procedure AssignLightVal(Ldest, Lsource: TPLightVals);
-procedure AssignHeader(H1, H2: TPMandHeader10);
+procedure AssignHeader(H1, H2: TPMandHeader11);
 function isSingleF(HA: PTHeaderCustomAddon; var FirstIndex: Integer): LongBool;
 procedure IniCFsFromHAddon(PHaddon: PTHeaderCustomAddon; PHCustomF: array of Pointer);
 procedure Ini1CFfromHAddon(PHaddon: PTHeaderCustomAddon; PHCustomF: PTCustomFormula; i: Integer);
-procedure CalcVGradsFromHeader8rots(Header: TPMandHeader10);
-procedure GetHAddOnFromInternFormula(PMHeader: TPMandHeader10; f, t: Integer);
-procedure NormVGrads(Header: TPMandHeader10);
-function LengthOfSize(Header: TPMandHeader10): Double;
+procedure CalcVGradsFromHeader8rots(Header: TPMandHeader11);
+procedure GetHAddOnFromInternFormula(PMHeader: TPMandHeader11; f, t: Integer);
+procedure NormVGrads(Header: TPMandHeader11);
+function LengthOfSize(Header: TPMandHeader11): Double;
 procedure CalcHSVecsFromLights(Lvals: TPLightVals; MCTpars: PMCTparameter);
-function GetDEstopFactor(Header: TPMandHeader10): Double;
-function CalcCamPos(Header: TPMandHeader10): TVec3D;
-procedure StereoChange(Header: TPMandHeader10; Mode: Integer; var midPos: TVec3D; pMatrix: TPMatrix3);
-function CalcXoff(Header: TPMandHeader10): Single;
-procedure CalcPosLightsRelPos(Header: TPMandHeader10; Lvals: TPLightVals);
-procedure CalcSCstartAndSCmul(Header: TPMandHeader10; var sCStart, sCmul: Single; bIsInside: LongBool);
-function GetRealMidPos(Header: TPMandHeader10): TVec3D;
-function CalcViewVecH(x, y: Single; header: TPMandHeader10): TVec3D;
+function GetDEstopFactor(Header: TPMandHeader11): Double;
+function CalcCamPos(Header: TPMandHeader11): TVec3D;
+procedure StereoChange(Header: TPMandHeader11; Mode: Integer; var midPos: TVec3D; pMatrix: TPMatrix3);
+function CalcXoff(Header: TPMandHeader11): Single;
+procedure CalcPosLightsRelPos(Header: TPMandHeader11; Lvals: TPLightVals);
+procedure CalcSCstartAndSCmul(Header: TPMandHeader11; var sCStart, sCmul: Single; bIsInside: LongBool);
+function GetRealMidPos(Header: TPMandHeader11): TVec3D;
+function CalcViewVecH(x, y: Single; header: TPMandHeader11): TVec3D;
 procedure CheckDEoption(const startNr, endNr: Integer; pHCA: PTHeaderCustomAddon;
                         const PHCustomF: array of Pointer; var DEoption: Integer);
 //procedure GetHybridPars(var HybridPars: THybridPars; pHCA: PTHeaderCustomAddon);
 //procedure CalcPosLightsRelPosAni(Header: TPMandHeader10; Lvals: TPLightVals);
 
-var calcHybridCustoms: array[0..5] of TCustomFormula;
+var calcHybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
     bGetMCTPverbose: LongBool = True;
 
 const
@@ -55,7 +55,7 @@ uses Math, DivUtils, formulas, CustomFormulas, Mand, SysUtils, LightAdjust,
      Navigator, Animation, Interpolation, PaintThread, Types, DOF, Tiling,
      FileHandling, Calc, Maps{, OTrapDEcalc};
 
-function GetDEstopFactor(Header: TPMandHeader10): Double;
+function GetDEstopFactor(Header: TPMandHeader11): Double;
 var x1, x2, ze: Double;
 begin
     with Header^ do
@@ -71,7 +71,7 @@ begin
     end;
 end;
                     //0..1
-function CalcViewVecH(x, y: Single; header: TPMandHeader10): TVec3D;
+function CalcViewVecH(x, y: Single; header: TPMandHeader11): TVec3D;
 var CAFX, CAFY, FOVXmul, FOVy, d: Double;
     VGrads: TMatrix3;
 begin
@@ -106,7 +106,7 @@ begin
     end;
 end;
 
-function CalcCamPos(Header: TPMandHeader10): TVec3D;
+function CalcCamPos(Header: TPMandHeader11): TVec3D;
 var VPoff, startoff, s, c: Double;
     v: TVec3D;
 begin
@@ -125,7 +125,7 @@ begin
     end;
 end;
 
-function CalcXoff(Header: TPMandHeader10): Single;
+function CalcXoff(Header: TPMandHeader11): Single;
 var Xoff: Double;
 begin
     with Header^ do
@@ -140,7 +140,7 @@ begin
     end;
 end;
 
-function GetRealMidPos(Header: TPMandHeader10): TVec3D;
+function GetRealMidPos(Header: TPMandHeader11): TVec3D;
 var eyedist, Xadd: Double;
     v: TVec3D;
 begin
@@ -159,7 +159,7 @@ begin
     end;
 end;
 
-procedure StereoChange(Header: TPMandHeader10; Mode: Integer; var midPos: TVec3D; pMatrix: TPMatrix3);
+procedure StereoChange(Header: TPMandHeader11; Mode: Integer; var midPos: TVec3D; pMatrix: TPMatrix3);
 var eyedist, Xadd: Double;
     v: TVec3D;
 begin
@@ -232,7 +232,7 @@ begin
     end;
 end;
 
-procedure GetHAddOnFromInternFormula(PMHeader: TPMandHeader10; f, t: Integer);
+procedure GetHAddOnFromInternFormula(PMHeader: TPMandHeader11; f, t: Integer);
 var i: Integer;
     pCF: PTCustomFormula;
 const
@@ -284,7 +284,7 @@ begin
     for i := 0 to i2 do Ini1CFfromHAddon(PHaddon, PHCustomF[i], i);
 end;
 
-procedure AssignHeader(H1, H2: TPMandHeader10);
+procedure AssignHeader(H1, H2: TPMandHeader11);
 var p6: TP6;
 begin
     SaveHeaderPointers(H1, p6);
@@ -293,13 +293,13 @@ begin
     PTHeaderCustomAddon(H1.PCFAddon)^ := PTHeaderCustomAddon(H2.PCFAddon)^;
 end;
 
-procedure NormVGrads(Header: TPMandHeader10);
+procedure NormVGrads(Header: TPMandHeader11);
 begin
     CalcStepWidth(Header);
     with Header^ do hVGrads := NormaliseMatrixTo(dStepWidth, @hVGrads);
 end;
 
-function LengthOfSize(Header: TPMandHeader10): Double;
+function LengthOfSize(Header: TPMandHeader11): Double;
 begin
     with Header^ do Result := Sqrt(Sqr(Width) + Sqr(Height));
 end;
@@ -311,7 +311,7 @@ begin
     Ldest.PLValigned^ := Lsource.PLValigned^;
 end;
 
-procedure CalcVGradsFromHeader8rots(Header: TPMandHeader10);
+procedure CalcVGradsFromHeader8rots(Header: TPMandHeader11);
 var Esin1, Esin2, Esin3, Ecos1, Ecos2, Ecos3: Double;
     step, x1, x2, y1, y2, z1, z2: Double;
     i: Integer;
@@ -352,7 +352,7 @@ var i, j: Integer;
 begin
     i := 0;
     FirstIndex := -1;
-    for j := 0 to 5 do if HA.Formulas[j].iItCount > 0 then
+    for j := 0 to MAX_FORMULA_COUNT - 1 do if HA.Formulas[j].iItCount > 0 then
     begin
       Inc(i);
       if FirstIndex = -1 then FirstIndex := j;
@@ -510,7 +510,7 @@ end;
                  [5,6]:   4D ADE  [6] ABox
                  [20..22]: dIFS   [20] dIFS shapes}
 
-function GetMCTparasFromHeader(var Header: TMandHeader10; bIniCalcMaps: LongBool): TMCTparameter;
+function GetMCTparasFromHeader(var Header: TMandHeader11; bIniCalcMaps: LongBool): TMCTparameter;
 var x1, x2, y1, z1, z2: Double;
     n, x, i, j, ia, i52, itmp: Integer;
     bIsInterpolHybrid, bDisableADE, bIsDEcomb, bTmp, bSecondPart: LongBool;
@@ -590,7 +590,7 @@ begin                                //calcHybridFormulas -> usage of own calcfo
       MakeCustomFsFromHeader(Header);
 
       bIsInterpolHybrid := (PCFA.bOptions1 and 3) = 1;
-      if bIsInterpolHybrid then i52 := 1 else i52 := 5;
+      if bIsInterpolHybrid then i52 := 1 else i52 := MAX_FORMULA_COUNT - 1;
       bIsDEcomb := (PCFA.bOptions1 and 3) = 2;
       if bIsDEcomb then Result.FormulaType := Min(6 , Max(1, PCFA.bOptions3 + 1))
                    else Result.FormulaType := 0;
@@ -639,7 +639,7 @@ begin                                //calcHybridFormulas -> usage of own calcfo
       else
       begin
         isSingleF(PCFA, n);
-        for x := 0 to 5 do Result.nHybrid[x] := PCFA.Formulas[x].iItCount;
+        for x := 0 to MAX_FORMULA_COUNT - 1 do Result.nHybrid[x] := PCFA.Formulas[x].iItCount;
 
         CheckFormulaOptions(0, Result.wEndTo, PCFA, PHCustomF, Result.DEoption,
           Result.mMandFunctionDE, Result.mMandFunction, Result.nHybrid, bDisableADE);
@@ -650,7 +650,7 @@ begin                                //calcHybridFormulas -> usage of own calcfo
 
         if not bIsDEcomb then Result.DEoption2 := 0 else
         begin
-          CheckFormulaOptions(Result.StartFrom2, 5{Result.iEnd2}, PCFA,
+          CheckFormulaOptions(Result.StartFrom2, MAX_FORMULA_COUNT - 1{Result.iEnd2}, PCFA,
                               PHCustomF, Result.DEoption2, Result.mMandFunctionDE2,
                               Result.mMandFunction2, Result.nHybrid, bDisableADE);
           Result.IsCustomDE2 := Result.DEoption2 in [2,5,6,11,20];
@@ -739,7 +739,7 @@ begin                                //calcHybridFormulas -> usage of own calcfo
                 if bIsInterpolHybrid then Inc(n) else n := n + Abs(nHybrid[x]);
                 if bTmp then x1 := x1 + PTCustomFormula(PHCustomF[x]).dADEscale * z1
                         else x1 := x1 + PTCustomFormula(PHCustomF[x]).dDEscale * z1;
-                if (PCFA.Formulas[x].iFnr = 4) and not bTmp then
+                if (PCFA.Formulas[x].iFnr = MAX_FORMULA_COUNT - 2) and not bTmp then
                 begin
                   ThybridIteration(calcHybridCustoms[x].pCodePointer) := fHybridCube;
                   fHybrid[x] := ThybridIteration2(calcHybridCustoms[x].pCodePointer);
@@ -756,7 +756,7 @@ begin                                //calcHybridFormulas -> usage of own calcfo
               calcHybridCustoms[x].bCPmemReserved := False;
             end;
           end;
-          for x := i52 + 1 to 5 do
+          for x := i52 + 1 to MAX_FORMULA_COUNT - 1 do
           begin
             if calcHybridCustoms[x].bCPmemReserved then
               VirtualFree(calcHybridCustoms[x].pCodePointer, 4096, MEM_DECOMMIT);
@@ -889,7 +889,7 @@ begin                                //calcHybridFormulas -> usage of own calcfo
           Ystart[2] := Zmit + z1 * Vgrads[2, 2] - y1 * Vgrads[1, 2] - x1 * Vgrads[0, 2];
           mctDEoffset := Min(msDEstop * 0.1, 0.004); //for 4point DE calculation
 
-          for x := 0 to 5 do pInitialization[x] := nil;
+          for x := 0 to MAX_FORMULA_COUNT - 1 do pInitialization[x] := nil;
 
           if DEoption = 20 then dDEscale := 1;
           if DEoption2 = 20 then dDEscale2 := 1;
@@ -1007,7 +1007,7 @@ begin
     Result := Sqrt(V2[0] * V2[0] + V2[1] * V2[1] + V2[2] * V2[2]);
 end;
 
-procedure CalcXYZposForLight(Header: TPMandHeader10; Lpos: TSVec; var x, y, z: Single; bPos: LongBool);
+procedure CalcXYZposForLight(Header: TPMandHeader11; Lpos: TSVec; var x, y, z: Single; bPos: LongBool);
 var i: Integer;
     aspect: Single;
     d, dx, dy, dmul, dd: Double;
@@ -1139,7 +1139,7 @@ begin
     end;
 end;
 
-procedure CalcPosLightsRelPos(Header: TPMandHeader10; Lvals: TPLightVals);
+procedure CalcPosLightsRelPos(Header: TPMandHeader11; Lvals: TPLightVals);
 var i: Integer;
 begin
     with Lvals^ do
@@ -1168,7 +1168,7 @@ begin
     Result := Sqr(Integer(b)) * s1d255;
 end;
 
-procedure CalcSCstartAndSCmul(Header: TPMandHeader10; var sCStart, sCmul: Single; bIsInside: LongBool);
+procedure CalcSCstartAndSCmul(Header: TPMandHeader11; var sCStart, sCmul: Single; bIsInside: LongBool);
 var dTmp: Double;
 begin
     with Header.Light do
@@ -1210,7 +1210,7 @@ begin
     end;
 end; }
 
-procedure MakeLightValsFromHeaderLight(Header: TPMandHeader10; Lvals: TPLightVals; ImScale: Double; StereoMode: Integer);
+procedure MakeLightValsFromHeaderLight(Header: TPMandHeader11; Lvals: TPLightVals; ImScale: Double; StereoMode: Integer);
 var sTmp, sLightScale: Single;
     dTmp, dTmp2: Double;
     i, j: Integer;
@@ -1544,7 +1544,7 @@ begin
     end;
 end;
 
-procedure MakeLightValsFromHeaderLightNavi(Header: TPMandHeader10; Lvals: TPLightValsNavi; ImScale: Double);
+procedure MakeLightValsFromHeaderLightNavi(Header: TPMandHeader11; Lvals: TPLightValsNavi; ImScale: Double);
 var dTmp: Double;
     sTmp, sTmp2: Single;
     i, i2: Integer;

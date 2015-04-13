@@ -21,7 +21,6 @@ type
     { Public-Deklarationen }
     MCTparas: TMCTparameter;
     NaviLightVals: TLightValsNavi;
- //   Formulas: array[0..5] of TFormulaClass;
   protected
     procedure Execute; override;
   end;

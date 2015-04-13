@@ -16,14 +16,14 @@ type
   protected
     procedure Execute; override;
   end;
-function CalcVoxelSlice(Header: TPMandHeader10; PCTS: TPCalcThreadStats;
+function CalcVoxelSlice(Header: TPMandHeader11; PCTS: TPCalcThreadStats;
                         FSIstart, FSIoffset: Integer): Boolean;
 
 implementation
 
 uses Mand, Math, DivUtils, formulas, LightAdjust, Math3D, HeaderTrafos, Calc;
 
-function CalcVoxelSlice(Header: TPMandHeader10; PCTS: TPCalcThreadStats;
+function CalcVoxelSlice(Header: TPMandHeader11; PCTS: TPCalcThreadStats;
                         FSIstart, FSIoffset: Integer): Boolean;
 var x, ThreadCount: Integer;
     MCTparas: TMCTparameter;

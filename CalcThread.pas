@@ -18,7 +18,6 @@ type
   public
     { Public-Deklarationen }
     MCTparas: TMCTparameter;
- //   Formulas: array[0..5] of TFormulaClass;
   protected
     procedure Execute; override;
   end;
@@ -962,7 +961,6 @@ label1:     dTmp := CalcDE(@Iteration3Dext, @MCTparas);
       pCTR.isActive := 0;
       if not PCalcThreadStats.pLBcalcStop^ then pCTR.iActualYpos := CalcRect.Bottom;
       PostMessage(PCalcThreadStats.pMessageHwnd, WM_ThreadReady, 0, 0);
-   //   for y := 0 to 5 do Formulas[y].Destroy;
     end;
 end;
 

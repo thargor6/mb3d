@@ -12,14 +12,14 @@ type
    end;
    TPIPOLRotMatrices = ^TIPOLRotMatrices;
 
-function HeaderIdentic(H1, H2: TMandHeader10): Boolean;
+function HeaderIdentic(H1, H2: TMandHeader11): Boolean;
 procedure IniInterpolHeader;
 function InterpolateColorB(C1, C2, C3: Cardinal; W1, W2, W3: Double): Cardinal;
 function InterpolateColor(C1, C2: Cardinal; W1, W2: Double): Cardinal;
 function InterpolateColorToSVec(C1, C2: Cardinal; w: Single): TSVec;
 function InterpolateRGBColor(rgb1, rgb2: TRGB; W1, W2: Double): Cardinal;
-procedure Interpolate2frames(H1, H2: TPMandHeader10; L1, L2: TPLightVals; t: Double);
-procedure Interpolate3framesBezier(Hi1, Hi2, Hi3, Hi4: TPMandHeader10; Li1, Li2, Li3, Li4: TPLightVals; t: Double);
+procedure Interpolate2frames(H1, H2: TPMandHeader11; L1, L2: TPLightVals; t: Double);
+procedure Interpolate3framesBezier(Hi1, Hi2, Hi3, Hi4: TPMandHeader11; Li1, Li2, Li3, Li4: TPLightVals; t: Double);
 function Interpolate2Scols(sv1, sv2: TPSVec; W1, W2: Double): TSVec;
 //procedure Interpolate4framesCubic(H1, H2, H3, H4: TPMandHeader10; L1, L2, L3, L4: TPLightVals; t: Double);
 procedure CopyRotMatices(Rsource, Rdest: TPIPOLRotMatrices);
@@ -27,10 +27,10 @@ procedure CopyRotMfromLightVals(Rsource: TPLightVals; Rdest: TPIPOLRotMatrices);
 function bInterpolateFormula(PA1, PA2: PTHeaderCustomAddon; AltNr: Integer): Boolean;
 
 var
-  InterpolHeader: TMandHeader10;
+  InterpolHeader: TMandHeader11;
   InterpolHAddon: THeaderCustomAddon;
   InterpolLightVals: TLightVals;
-  IPOLHybridCustoms: array[0..5] of TCustomFormula;
+  IPOLHybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
   IPOLM0: TIPOLRotMatrices;
   IPOLM1: TIPOLRotMatrices;
   IPOLM2: TIPOLRotMatrices;
@@ -82,7 +82,7 @@ procedure IniInterpolHeader;
 var i: Integer;
 begin
     InterpolHeader.PCFAddon := @InterpolHAddon;
-    for i := 0 to 5 do InterpolHeader.PHCustomF[i] := @IPOLHybridCustoms[i];
+    for i := 0 to MAX_FORMULA_COUNT - 1 do InterpolHeader.PHCustomF[i] := @IPOLHybridCustoms[i];
 
 end;
 
@@ -97,7 +97,7 @@ begin
     end;
 end;
 
-function HeaderIdentic(H1, H2: TMandHeader10): Boolean;   // todo: Integer with status: 0: ident, 1: update Light 2: calc HS + light
+function HeaderIdentic(H1, H2: TMandHeader11): Boolean;   // todo: Integer with status: 0: ident, 1: update Light 2: calc HS + light
 var i, j, k: Integer;                                                                // 2: calc complete (if DoF then calc it also)
     PF1, PF2: PTHAformula;
 begin
@@ -578,9 +578,9 @@ begin
     end;
 end;
 
-procedure Interpolate3framesBezier(Hi1, Hi2, Hi3, Hi4: TPMandHeader10; Li1, Li2, Li3, Li4: TPLightVals; t: Double);
+procedure Interpolate3framesBezier(Hi1, Hi2, Hi3, Hi4: TPMandHeader11; Li1, Li2, Li3, Li4: TPLightVals; t: Double);
 var i, j, IHS, HS1, HS2, HS3, ii, i1, i2, i3: Integer;
-    H1, H2, H3, MH: TPMandHeader10;
+    H1, H2, H3, MH: TPMandHeader11;
     L1, L2, L3: TPLightVals;
     ps0, ps1, ps2, ps3: TPSingleArray;
     D1, D2, D3, Z1, Z2, Z3, w1, w2, w3, tslerp, vpoff: Double;
@@ -931,7 +931,7 @@ begin
 
     //HAddon
 
-    if (InterpolHAddon.bOptions1 and 3) = 1 then j := 1 else j := 5;
+    if (InterpolHAddon.bOptions1 and 3) = 1 then j := 1 else j := MAX_FORMULA_COUNT - 1;
     for i := 0 to j do if bInterpolateFormula(PTHeaderCustomAddon(H1.PCFAddon),
                             PTHeaderCustomAddon(H2.PCFAddon), i) and
                           bInterpolateFormula(PTHeaderCustomAddon(H1.PCFAddon),
@@ -986,7 +986,7 @@ begin
     CreateSMatrixFromQuat(FinSM^, Q1);
 end;
 
-procedure Interpolate2frames(H1, H2: TPMandHeader10; L1, L2: TPLightVals; t: Double);
+procedure Interpolate2frames(H1, H2: TPMandHeader11; L1, L2: TPLightVals; t: Double);
 var i, j, IHS, HS1, HS2, i1, i2, ii: Integer;
     ps0, ps1, ps2: TPSingleArray;
     D1, D2, w1, w2, A, Amin, tm: Double;
@@ -1204,7 +1204,7 @@ begin
     sObjLightDecreaser: Single;  //for SR calc, only decrease Object light, no fogs  }
 
     //HAddon
-    if (InterpolHAddon.bOptions1 and 3) = 1 then j := 1 else j := 5;
+    if (InterpolHAddon.bOptions1 and 3) = 1 then j := 1 else j := MAX_FORMULA_COUNT - 1;
     for i := 0 to j do if bInterpolateFormula(PTHeaderCustomAddon(H1.PCFAddon),
                             PTHeaderCustomAddon(H2.PCFAddon), i) then
     begin

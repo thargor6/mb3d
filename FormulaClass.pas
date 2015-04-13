@@ -139,13 +139,6 @@ begin
     pConstPointer16 := PAligned16;
 end;
 
-destructor TFormulaClass.Destroy;
-//var i: Integer;
-begin
-    Cleanup;
-    inherited Destroy;
-end;
-
 procedure TFormulaClass.Cleanup;
 begin
     if bCPmemReserved and (pCodePointer <> @EmptyFormula) then
@@ -161,6 +154,12 @@ begin
     SetLength(dOptionVals, 0);
     SetLength(sOptionStrings, 0);
     Description := '';
+end;
+
+destructor TFormulaClass.Destroy;
+begin
+  Cleanup;
+  inherited Destroy;
 end;
 
 end.

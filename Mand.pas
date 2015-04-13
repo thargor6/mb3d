@@ -265,6 +265,7 @@ type
     ButtonVolLight: TButton;
     UpDown5: TUpDown;
     Label61: TLabel;
+    AutoRefreshCheckbox: TCheckBox;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -428,7 +429,7 @@ type
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
   public
     { Public-Deklarationen }
-    MHeader: TMandHeader10;
+    MHeader: TMandHeader11;
     MCalcThreadStats: TCalcThreadStats;
     siLight5: array of TsiLight5;
     mSLoffset: Integer;
@@ -442,7 +443,7 @@ type
  //   bAllowUpDownChange: LongBool;
  //   CalcStereoImage: LongBool;
     HeaderLightVals: TLightVals;
-    HybridCustoms: array[0..5] of TCustomFormula;
+    HybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
     HAddOn: THeaderCustomAddon;
     iActiveThreads: Integer;  //for triggering the timer
     iActivePaintThreads: Integer;
@@ -486,6 +487,7 @@ type
     function GetCalcRect: TRect;
     procedure TextParsLoadSuccess;
     procedure UpdateAndScaleImageFull(NewScale: Integer);
+    procedure RefreshPreview;
   end;
 procedure TriggerRepaint;
 function AniFileAlreadyExists(var s: String): LongBool;
@@ -493,7 +495,7 @@ procedure SaveFormulaBytes;
 
 var
   Mand3DForm: TMand3DForm;
-  M3dVersion: Single = 1.89;
+  M3dVersion: Single = 1.90;
   Testing: LongBool = False;
   TBoostChanged: LongBool = False;
   MCalcStop: LongBool = False;
@@ -756,6 +758,7 @@ var size, i: Integer;
 begin
     inherited;
     try
+      Dateiname := '';
       DragQueryFile(Msg.WParam, $FFFFFFFF, Dateiname, 255);
       size      := DragQueryFile(Msg.WParam, 0, nil, 0) + 1;
       Dateiname := StrAlloc(size);
@@ -1331,9 +1334,9 @@ begin
         Width  := StrToIntTrim(Edit11.Text);
         Height := StrToIntTrim(Edit12.Text);
       end;
-      Iterations        := StrToIntTrim(FormulaGUIForm.Edit18.Text);
-      MinimumIterations := StrToIntTrim(FormulaGUIForm.Edit19.Text);
-      iMaxItsF2         := StrToIntTrim(FormulaGUIForm.Edit24.Text);
+      Iterations        := StrToIntTrim(FormulaGUIForm.MaxIterEdit.Text);
+      MinimumIterations := StrToIntTrim(FormulaGUIForm.MinIterEdit.Text);
+      iMaxItsF2         := StrToIntTrim(FormulaGUIForm.MaxIterHybridPart2Edit.Text);
       bNormalsOnDE      := Byte(CheckBox1.Checked);
       bPlanarOptic      := RadioGroup2.ItemIndex;
       bStepsafterDEStop := SpinEdit5.Position;
@@ -1370,10 +1373,10 @@ begin
       dYmid     := StrToFloatK(Edit10.Text);
       dZmid     := StrToFloatK(Edit17.Text);
       dZoom     := StrToFloatK(Edit5.Text);
-      RStop     := StrToFloatK(FormulaGUIForm.Edit17.Text);
-      dXWrot    := StrToFloatK(FormulaGUIForm.Edit20.Text) * Pid180;
-      dYWrot    := StrToFloatK(FormulaGUIForm.Edit21.Text) * Pid180;
-      dZWrot    := StrToFloatK(FormulaGUIForm.Edit22.Text) * Pid180;
+      RStop     := StrToFloatK(FormulaGUIForm.RBailoutEdit.Text);
+      dXWrot    := StrToFloatK(FormulaGUIForm.XWEdit.Text) * Pid180;
+      dYWrot    := StrToFloatK(FormulaGUIForm.YWEdit.Text) * Pid180;
+      dZWrot    := StrToFloatK(FormulaGUIForm.ZWEdit.Text) * Pid180;
       dFOVy     := StrToFloatK(Edit14.Text);
       dCutZ     := StrToFloatK(Edit22.Text);
       dCutX     := StrToFloatK(Edit23.Text);
@@ -1407,7 +1410,7 @@ begin
       HAddon.bOptions1 := (HAddon.bOptions1 and $FC) or FormulaGUIForm.TabControl2.TabIndex;
       HAddon.bOptions2 := (Ord(FormulaGUIForm.CheckBox2.Checked) and 1) or
                           (FormulaGUIForm.ComboBox1.ItemIndex shl 1);
-      HAddOn.bOptions3 := FormulaGUIForm.ComboBox2.ItemIndex;
+      HAddOn.bOptions3 := FormulaGUIForm.DECombineCmb.ItemIndex;
       if HAddOn.bOptions3 < 5 then
         sDEcombS := Min0MaxCS(StrToFloatK(FormulaGUIForm.Edit23.Text), 100)
       else
@@ -1574,7 +1577,7 @@ begin
       iFCount := 0;
       bHybOpt1 := 0;
       bHybOpt2 := $151;
-      for i := 0 to 5 do
+      for i := 0 to MAX_FORMULA_COUNT - 1 do
       with Formulas[i] do
       begin
         iItCount := 0;
@@ -1591,7 +1594,7 @@ procedure TMand3DForm.IniMHeader;
 var i: Integer;
 begin
     MHeader.PCFAddon := @HAddOn;
-    for i := 0 to 5 do MHeader.PHCustomF[i] := @HybridCustoms[i];
+    for i := 0 to MAX_FORMULA_COUNT - 1 do MHeader.PHCustomF[i] := @HybridCustoms[i];
 end;
 
 procedure TMand3DForm.FormCreate(Sender: TObject);
@@ -1629,8 +1632,8 @@ begin
     iActivePaintThreads := 0;
     UserAspect := Point(0, 0);
     IniMHeader;
-    for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
-    for i := 0 to 5 do IniCustomF(@calcHybridCustoms[i]);
+    for i := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@HybridCustoms[i]);
+    for i := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@calcHybridCustoms[i]);
     IniHAddon(@HAddOn);
     GetHAddOnFromInternFormula(@MHeader, 0, 0);
     UpDown3.Position := Min(64, Max(1, NumberOfCPUs));
@@ -2931,6 +2934,9 @@ begin
       CheckBox12.Checked := False;
       UpDown3.Position := Min(64, Max(1, StrToIntTry(IniVal[21], UpDown3.Position)));
     end;
+    {$ifdef ONLY_ONE_THREAD}
+    UpDown3.Position := 1;
+    {$endif}
     OPD.InitialDir := IniDirs[0];
     SaveDialog3.InitialDir := IniDirs[0];
     OpenDialog1.InitialDir := IniDirs[1];
@@ -3236,9 +3242,9 @@ var x, y, z: Double;
 begin
     if FormulaGUIForm.Panel2.Enabled then
     begin
-      x := StrToFloatK(FormulaGUIForm.Edit20.Text) * Pid180;
-      y := StrToFloatK(FormulaGUIForm.Edit21.Text) * Pid180;
-      z := StrToFloatK(FormulaGUIForm.Edit22.Text) * Pid180;
+      x := StrToFloatK(FormulaGUIForm.XWEdit.Text) * Pid180;
+      y := StrToFloatK(FormulaGUIForm.YWEdit.Text) * Pid180;
+      z := StrToFloatK(FormulaGUIForm.ZWEdit.Text) * Pid180;
       v3b := TPVec3D(@vec)^;
       BuildSMatrix4(x, y, z, Smatrix4);
       Rotate4Dex(@v3b, @vec, @Smatrix4);
@@ -3297,8 +3303,8 @@ procedure TMand3DForm.FormDestroy(Sender: TObject);
 var i: Integer;
 begin
     SaveIni(False); //only if filedatetime = lastIniFileDatetime
-    for i := 0 to 5 do FreeCF(@HybridCustoms[i]);
-    for i := 0 to 5 do FreeCF(@calcHybridCustoms[i]);
+    for i := 0 to MAX_FORMULA_COUNT - 1 do FreeCF(@HybridCustoms[i]);
+    for i := 0 to MAX_FORMULA_COUNT - 1 do FreeCF(@calcHybridCustoms[i]);
     OPD.Free;
 end;
 
@@ -3345,7 +3351,7 @@ begin
     Edit5.Text := '0.8';
     Edit14.Text := '30';
     BuildRotMatrix(0.0001, -0.0001, 0, @MHeader.hVgrads);
-    if TryStrToFloat(FormulaGUIForm.Edit17.Text, d) and (d > 500) then
+    if TryStrToFloat(FormulaGUIForm.RBailoutEdit.Text, d) and (d > 500) then
     begin
       Edit1.Text := '-8.0';
       Edit17.Text := '0.0';
@@ -3963,6 +3969,13 @@ var CP: TPoint;
 begin
     CP := SpeedButton35.ClientToScreen(Point(0, SpeedButton35.Height));
     PopupMenu1.Popup(CP.X, CP.Y);
+end;
+
+procedure TMand3DForm.RefreshPreview;
+begin
+  if AutoRefreshCheckbox.Checked and FNavigator.Visible then begin
+    FNavigator.SpeedButton11Click(nil);
+  end;
 end;
 
 Initialization

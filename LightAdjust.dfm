@@ -649,6 +649,10 @@ object LightAdjustForm: TLightAdjustForm
       OnChanging = PageControl1Changing
       object TabSheet1: TTabSheet
         Caption = 'Global light'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label2: TLabel
           Left = 5
           Top = 30
@@ -743,6 +747,10 @@ object LightAdjustForm: TLightAdjustForm
       object TabSheet2: TTabSheet
         Caption = 'Positional light'
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label13: TLabel
           Left = 47
           Top = 5
@@ -927,6 +935,10 @@ object LightAdjustForm: TLightAdjustForm
       object TabSheet6: TTabSheet
         Caption = 'Lightmap'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label39: TLabel
           Left = 158
           Top = 31
@@ -1174,6 +1186,10 @@ object LightAdjustForm: TLightAdjustForm
     TabOrder = 3
     object TabSheet3: TTabSheet
       Caption = 'Object'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label37: TLabel
         Left = 31
         Top = 38
@@ -1819,6 +1835,10 @@ object LightAdjustForm: TLightAdjustForm
     object TabSheet4: TTabSheet
       Caption = 'Ambient'
       ImageIndex = 1
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label4: TLabel
         Left = 2
         Top = 169
@@ -2360,6 +2380,10 @@ object LightAdjustForm: TLightAdjustForm
     object Fog: TTabSheet
       Caption = 'd.Fog'
       ImageIndex = 3
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label1: TLabel
         Left = 33
         Top = 79
@@ -2512,8 +2536,8 @@ object LightAdjustForm: TLightAdjustForm
       object Label44: TLabel
         Left = 13
         Top = 5
-        Width = 186
-        Height = 31
+        Width = 184
+        Height = 26
         Alignment = taCenter
         Caption = 
           'Dynamic fog or volumetric light params. See '#39'Coloring'#39' tab for o' +
@@ -2523,8 +2547,8 @@ object LightAdjustForm: TLightAdjustForm
       object Label47: TLabel
         Left = 7
         Top = 225
-        Width = 203
-        Height = 45
+        Width = 197
+        Height = 39
         Alignment = taCenter
         Caption = 
           'If volumetric light choosen:  Rightclick on '#39'Dyn.fog'#39' button to ' +
@@ -2614,6 +2638,10 @@ object LightAdjustForm: TLightAdjustForm
     object TabSheet5: TTabSheet
       Caption = 'Back pic'
       ImageIndex = 2
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Label6: TLabel
         Left = 49
         Top = 177

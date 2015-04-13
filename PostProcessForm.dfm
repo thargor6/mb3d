@@ -255,6 +255,7 @@ object PostProForm: TPostProForm
       TabOrder = 0
       OnCollapse = CategoryPanel1Expand
       OnExpand = CategoryPanel4Expand
+      ExplicitWidth = 185
       ExpandedHeight = 222
       object Label24: TLabel
         Left = 215
@@ -1479,8 +1480,8 @@ object PostProForm: TPostProForm
       AlignWithMargins = True
       Left = 2
       Top = 1
-      Width = 252
-      Height = 44
+      Width = 246
+      Height = 39
       Margins.Left = 2
       Margins.Top = 1
       Margins.Right = 0
@@ -1490,8 +1491,6 @@ object PostProForm: TPostProForm
         'Caution:  The processings below must be calculated'#13#10'from top to ' +
         'bottom and light changes will reset'#13#10'these calculations!'
       WordWrap = True
-      ExplicitWidth = 246
-      ExplicitHeight = 39
     end
     object Button16: TButton
       Left = 179
@@ -1512,7 +1511,7 @@ object PostProForm: TPostProForm
     Left = 208
     Top = 128
     Bitmap = {
-      494C010108000E00040020001000FFFFFFFFFF00FFFFFFFFFFFFFFFF424D3600
+      494C010108000E00080020001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000003000000001002000000000000060
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -2308,6 +2307,7 @@ object PostProForm: TPostProForm
       F99FFFFFFC9FFFFFF99FF003FC9FF003F33FFFFFF9CFFFFFF33FF003F9CFF003
       FFFFFFFFFBEFFFFFFFFFF807FBEFF807FFFFFFFFFFFFFFFFFFFFFE1FFFFFFE1F
       FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
-      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF}
+      FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00000000000000000000000000000000
+      000000000000}
   end
 end

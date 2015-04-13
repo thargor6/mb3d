@@ -13,7 +13,7 @@ type
      TDoFrec = record
        SL: TPSiLight5;
        colSL: PCardinal;
-       MHeader: TPMandHeader10;
+       MHeader: TPMandHeader11;
        pass, SLoffset: Integer;
        Verbose: LongBool;
      end;

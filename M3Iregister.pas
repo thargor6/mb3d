@@ -320,7 +320,7 @@ begin
       dx := (Wid - 1) / (Width - 1);
       dy := (Hei - 1) / (Height - 1);
 
-      iAdr := SizeOf(TMandHeader10) + Wid * Hei * SizeOf(TsiLight5) + SizeOf(THeaderCustomAddon);
+      iAdr := SizeOf(TMandHeader11) + Wid * Hei * SizeOf(TsiLight5) + SizeOf(THeaderCustomAddon);
       if Stream.Size < iAdr + LineSize * Hei then goto lab1;
 
       Stream.Seek(iAdr, soBeginning);
@@ -541,7 +541,7 @@ begin
     //  SetLength(buf, Wid);
       dx := (Wid - 1) / (Width - 1);
       dy := (Hei - 1) / (Height - 1);
-      iAdr := SizeOf(TMandHeader10) + SizeOf(THeaderCustomAddon);
+      iAdr := SizeOf(TMandHeader11) + SizeOf(THeaderCustomAddon);
       if Stream.Size < iAdr + LineSize * Hei then goto lab1;
 //BlockWrite(f, siLightMC[0], SizeOf(TMCrecord) * Length(siLightMC));
  //     Stream.Seek(iAdr, soBeginning);

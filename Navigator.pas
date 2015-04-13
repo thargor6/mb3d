@@ -294,7 +294,7 @@ type
     procedure WmThreadStat(var Msg: TMessage); message WM_ThreadStat;
   public
     { Public-Deklarationen }
-    HybridCustoms: array[0..5] of TCustomFormula;
+    HybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
     bUserChange: LongBool;
     bDoubleClick: LongBool;
     NaviLightness: Single;
@@ -302,7 +302,7 @@ type
     NLPavailable: array[0..2] of LongBool;
     NMouseStartPos: TPoint;
     NaviLightPresets: array[0..2] of TLightingParas9;
-    NaviHeader: TMandHeader10;
+    NaviHeader: TMandHeader11;
     NaviHAddon: THeaderCustomAddon;
     NaviLightVals: TLightValsNavi;
     Authors: AuthorStrings;
@@ -339,7 +339,7 @@ begin
     Label31.Visible := not Label18.Visible;
 end;
 
-procedure ModRotPoint(var Header: TMandHeader10);
+procedure ModRotPoint(var Header: TMandHeader11);
 var l, ds, de: Double;
 begin
     with Header do
@@ -714,7 +714,7 @@ end;
 
 procedure TFNavigator.Calc(Nstep: Integer);
 var x, nThreadCount: Integer;
-    bAllOK, bNewLight: LongBool;
+    bAllOK: LongBool;
     CalcThread: array of TNaviCalcThread;
 begin
   bAllOK := False;
@@ -726,7 +726,6 @@ begin
       if NaviHeader.dZoom > 1e13 then Label24.Font.Color := clRed
                                  else Label24.Font.Color := clWindowText;
       SetWindowSize(Panel2.Visible);
-      bNewLight := CheckBox6.Checked;
       if Moving then   //if objectparts are nearer than DE..
         NDEmultiplier := NDEmultiplier * MinMaxCD(0.5, NminDEcorrection *
       (NaviHeader.dZoom * NaviHeader.Width) / (LengthOfSize(@NaviHeader) * 2), 1); //  LengthOfSize(@NaviHeader) * 2 / (dZoom * Width) :=  AbsDE;
@@ -753,7 +752,7 @@ begin
     MCTparas.NaviStep      := Nstep;
     MCTparas.SLwidMNpix    := MCTparas.FSIoffset div 4 - Nstep;
     SetLength(CalcThread, nThreadCount);
-    for x := 0 to 5 do if MCTparas.nHybrid[x] > 0 then bAllOK := True;
+    for x := 0 to MAX_FORMULA_COUNT - 1 do if MCTparas.nHybrid[x] > 0 then bAllOK := True;
   finally
   end;
   if bAllOK then
@@ -1178,8 +1177,8 @@ begin
     NaviLightness := 1;
     DoubleBuffered := True;
     NaviHeader.PCFAddon := @NaviHAddon;
-    for i := 0 to 5 do NaviHeader.PHCustomF[i] := @HybridCustoms[i];
-    for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
+    for i := 0 to MAX_FORMULA_COUNT - 1 do NaviHeader.PHCustomF[i] := @HybridCustoms[i];
+    for i := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@HybridCustoms[i]);
     for i := 0 to 2 do NLPavailable[i] := False;
     tmpBMP := TBitmap.Create;
     tmpBMP.PixelFormat := pf32Bit;
@@ -1381,7 +1380,7 @@ begin    //expand/shrink panel2
 end;
 
 procedure TFNavigator.SpeedButton18Click(Sender: TObject);   // "f" insert paras to animation keyframe
-var tmpHeader: TMandHeader10;
+var tmpHeader: TMandHeader11;
     i: Integer;
 begin
     if AnimationForm.SpeedButton1.Enabled then
@@ -1401,7 +1400,7 @@ begin
       if DEstopChanged then tmpHeader.sDEstop := NaviHeader.sDEstop;
       ModRotPoint(tmpHeader);
       tmpHeader.Light.TBpos[6] := UpDown1.Position;
-      for i := 0 to 5 do tmpHeader.PHCustomF[i] := @HybridCustoms[i];
+      for i := 0 to MAX_FORMULA_COUNT - 1 do tmpHeader.PHCustomF[i] := @HybridCustoms[i];
       AnimationForm.Visible := True;
       AnimationForm.InsertFromHeader(@tmpHeader);  //Assigned, HAddon pointer must be set
 
@@ -2200,9 +2199,9 @@ end;
 
 procedure TFNavigator.SpeedButton30Click(Sender: TObject);
 begin
-    FormulaGUIForm.Edit20.Text := FloatToStr(NaviHeader.dXWrot / Pid180);
-    FormulaGUIForm.Edit21.Text := FloatToStr(NaviHeader.dYWrot / Pid180);
-    FormulaGUIForm.Edit22.Text := FloatToStr(NaviHeader.dZWrot / Pid180);
+    FormulaGUIForm.XWEdit.Text := FloatToStr(NaviHeader.dXWrot / Pid180);
+    FormulaGUIForm.YWEdit.Text := FloatToStr(NaviHeader.dYWrot / Pid180);
+    FormulaGUIForm.ZWEdit.Text := FloatToStr(NaviHeader.dZWrot / Pid180);
 end;
 
 procedure TFNavigator.Button5Click(Sender: TObject);
@@ -2270,10 +2269,10 @@ begin   //send a divers value
     3:  if SpeedButton33.Caption = 'Dyn Fog on its:' then
           Mand3DForm.Edit16.Text := IntToStr(Naviheader.bDFogIt)
         else Mand3DForm.Edit35.Text := IntToStr(Naviheader.bColorOnIt - 1);
-    4:  FormulaGUIForm.Edit17.Text := FloatToStrSingle(Naviheader.RStop);
+    4:  FormulaGUIForm.RBailoutEdit.Text := FloatToStrSingle(Naviheader.RStop);
     5:  FormulaGUIForm.Edit23.Text := FloatToStrSingle(Naviheader.sDEcombS);
     6:  Mand3DForm.Edit25.Text := FloatToStrSingle(Naviheader.sDEstop);
-    7:  FormulaGUIForm.Edit18.Text := IntToStr(Naviheader.Iterations);
+    7:  FormulaGUIForm.MaxIterEdit.Text := IntToStr(Naviheader.Iterations);
     end;
 end;
 

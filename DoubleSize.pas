@@ -112,7 +112,7 @@ begin
   end;
 end;
 
-procedure InterpolateMidPoints(Header: TPMandHeader10; var siLight5: array of TSiLight5; Ystart, Yend, Ystep: Integer);
+procedure InterpolateMidPoints(Header: TPMandHeader11; var siLight5: array of TSiLight5; Ystart, Yend, Ystep: Integer);
 var w, h, x, y, i: Integer;
     siLight5tmp: array of TsiLight5;
     PL1, PL2, PL3, PL4, PL5: TPsiLight5;

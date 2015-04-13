@@ -60,7 +60,7 @@ procedure CalcPixelColor2(SL: PCardinal; PsiLight: TPsiLight5; PLVals: Pointer; 
 procedure CalcPixelColorSqr(SL: PCardinal; PsiLight: TPsiLight5; PLVals: Pointer; PLV: TPPaintLightVals);
 function CalcPixelColorSvec(SVcol: TPSVec; var InSD: TLightSD; PsiLight: TPsiLight5; PLVals: Pointer; PLV: TPPaintLightVals): TSVec;
 function CalcPixelColorSvecTrans(SVcol: TPSVec; var InSD: TLightSD; PsiLight: TPsiLight5; PLVals: Pointer; PLV: TPPaintLightVals): TSVec;  //get back the diffuse color
-procedure PaintMC(MCparas: TPMandHeader10);
+procedure PaintMC(MCparas: TPMandHeader11);
 procedure CalcPosLightShape(var flux, transp: Single; LightNr: Integer; PLVals: TPLightVals);
 procedure CalcColors(iDif, iSpe: TPSVec; PsiLight: TPsiLight5; PLVals: TPLightVals);
 procedure CalcColorsInside(iDif, iSpe: TPSVec; PsiLight: TPsiLight5; PLVals: TPLightVals);
@@ -1838,7 +1838,7 @@ begin
   end;
 end;
 
-procedure PaintMC(MCparas: TPMandHeader10);
+procedure PaintMC(MCparas: TPMandHeader11);
 var MCPaintThread: TPaintThreadMC;
 begin
   //  MCForm.Label14.Caption := IntToStr(Round(MCPTtime));  //test

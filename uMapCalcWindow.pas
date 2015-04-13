@@ -24,7 +24,7 @@ type
     LastUpdate, GTC: Cardinal;
   public
     { Public declarations }
-    pHeader: TPMandHeader10;
+    pHeader: TPMandHeader11;
     PLightVals: TPLightVals;
     pMap: TPLightMap;
   end;

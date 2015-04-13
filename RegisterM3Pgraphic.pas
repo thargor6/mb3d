@@ -8,7 +8,7 @@ type
   TM3Pgraphic = Class(TGraphic)
   private
     CalcThreadStats: TCalcThreadStats;
-    HybridCustoms: array[0..5] of TCustomFormula;
+    HybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
     iActiveThreads: Integer;
     siLight5: array of TsiLight5;
     HeaderLightVals: TLightVals;
@@ -20,7 +20,7 @@ type
   protected
   public
     { Public-Deklarationen }
-    Header: TMandHeader10;
+    Header: TMandHeader11;
     HAddOn: THeaderCustomAddon;
     constructor Create; override;
     destructor Destroy; override;
@@ -37,15 +37,15 @@ var i: Integer;
 begin
     inherited Create;
     Header.PCFAddon := @HAddOn;
-    for i := 0 to 5 do Header.PHCustomF[i] := @HybridCustoms[i];
-    for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
+    for i := 0 to MAX_FORMULA_COUNT - 1 do Header.PHCustomF[i] := @HybridCustoms[i];
+    for i := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@HybridCustoms[i]);
 end;
 
 destructor TM3Pgraphic.Destroy;
 var i: Integer;
 begin
     SetLength(siLight5, 0);
-    for i := 0 to 5 do FreeCF(@HybridCustoms[i]);
+    for i := 0 to MAX_FORMULA_COUNT - 1 do FreeCF(@HybridCustoms[i]);
     inherited Destroy;
 end;
 

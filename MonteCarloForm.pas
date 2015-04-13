@@ -146,11 +146,11 @@ type
     { Public-Deklarationen }
     siLightMC: array of TMCrecord;
     bUserChange: LongBool;
-    MCparas: TMandHeader10;
+    MCparas: TMandHeader11;
     MCCalcStop: LongBool;
     MCHeaderLightVals: TLightVals;
     MCctstats: TCalcThreadStats;
-    MCHybridCustoms: array[0..5] of TCustomFormula;
+    MCHybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
     MCHAddOn: THeaderCustomAddon;
     OPDmc: TOpenPictureDialogM3D;
     Authors: AuthorStrings;
@@ -369,7 +369,7 @@ procedure TMCForm.IniHeaderPointers;
 var i: Integer;
 begin
     MCparas.PCFAddon := @MCHAddOn;
-    for i := 0 to 5 do MCparas.PHCustomF[i] := @MCHybridCustoms[i];
+    for i := 0 to MAX_FORMULA_COUNT - 1 do MCparas.PHCustomF[i] := @MCHybridCustoms[i];
 end;
 
 procedure TMCForm.FormCreate(Sender: TObject);
@@ -387,7 +387,7 @@ begin
     Image1.Picture.Bitmap.SetSize(250, 30);
     IniHeaderPointers;
     MCVMapcalculated := False;
-    for i := 0 to 5 do IniCustomF(@MCHybridCustoms[i]);
+    for i := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@MCHybridCustoms[i]);
     for i := 0 to 5 do
     begin
       BokehBMP[i] := TBitmap.Create;
@@ -573,7 +573,7 @@ begin
     Image2.Picture.Bitmap.Assign(BokehBMP[i]);
 end;
 
-procedure ModLight(Light: TPLightingParas9; Paras: TPMandHeader10; iOption: Integer);
+procedure ModLight(Light: TPLightingParas9; Paras: TPMandHeader11; iOption: Integer);
 var i, i2, ii: Integer;
     c: Cardinal;
     bIsSqr, bCalcT: LongBool;

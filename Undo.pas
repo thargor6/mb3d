@@ -12,7 +12,7 @@ procedure StoreUndoLight;
 procedure RestoreUndoLight;
 
 var
-  UndoHeader: array[0..31] of TMandHeader10;
+  UndoHeader: array[0..31] of TMandHeader11;
   UndoAuthors: array[0..31] of AuthorStrings;
   UndoTitels: array[0..31] of String;
   UndoHAddon: array[0..31] of THeaderCustomAddon;

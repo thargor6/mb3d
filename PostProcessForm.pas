@@ -159,9 +159,9 @@ type
     { Public-Deklarationen }
     iRect: TRect;
     function HSoptions: Integer;
-    procedure PutAmbientParsToHeader(Header: TPMandHeader10);
-    procedure PutDOFparsToHeader(Header: TPMandHeader10);
-    procedure PutReflectionParsToHeader(Header: TPMandHeader10);
+    procedure PutAmbientParsToHeader(Header: TPMandHeader11);
+    procedure PutDOFparsToHeader(Header: TPMandHeader11);
+    procedure PutReflectionParsToHeader(Header: TPMandHeader11);
   end;
 
 var
@@ -230,7 +230,7 @@ begin
     Mand3DForm.SetImageCursor;
 end;
 
-procedure TPostProForm.PutDOFparsToHeader(Header: TPMandHeader10);
+procedure TPostProForm.PutDOFparsToHeader(Header: TPMandHeader11);
 begin
     with Header^ do
     begin
@@ -395,7 +395,7 @@ begin
                   else C.Caption := Trim(C.Caption);
 end;
 
-procedure TPostProForm.PutAmbientParsToHeader(Header: TPMandHeader10);
+procedure TPostProForm.PutAmbientParsToHeader(Header: TPMandHeader11);
 begin
     with Header^ do
     begin
@@ -429,7 +429,7 @@ begin
     CalcLightStrokes(StrToIntTrim(Edit4.Text));
 end;
 
-procedure TPostProForm.PutReflectionParsToHeader(Header: TPMandHeader10);
+procedure TPostProForm.PutReflectionParsToHeader(Header: TPMandHeader11);
 begin
     with Header^ do
     begin
@@ -656,7 +656,7 @@ end;
     OTrap:      Word;     // coloring on OrbitTrap
   end; }
 
-procedure calcCorrMul(Header: TPMandHeader10; PLight: TPsiLight5; var CorrMul: Single; var Zsub: Integer);
+procedure calcCorrMul(Header: TPMandHeader11; PLight: TPsiLight5; var CorrMul: Single; var Zsub: Integer);
 var x, w, h, zp, za: Integer;
     PATL: PWord;
 begin

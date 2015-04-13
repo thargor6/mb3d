@@ -45,7 +45,7 @@ type
   protected
     procedure Execute; override;
   end;
-function CalcSRT(Header: TPMandHeader10; PLightVals: TPLightVals; PCTS: TPCalcThreadStats;
+function CalcSRT(Header: TPMandHeader11; PLightVals: TPLightVals; PCTS: TPCalcThreadStats;
                  PsiLight5: TPsiLight5; FSIstart, FSIoffset: Integer; CalcR: TRect): Boolean;
 
 implementation
@@ -53,7 +53,7 @@ implementation
 uses Mand, Math, DivUtils, formulas, Forms, ImageProcess, CustomFormulas,
      HeaderTrafos, LightAdjust, PaintThread, Calc, CalcAmbShadowDE, Maps;
 
-function CalcSRT(Header: TPMandHeader10; PLightVals: TPLightVals; PCTS: TPCalcThreadStats;
+function CalcSRT(Header: TPMandHeader11; PLightVals: TPLightVals; PCTS: TPCalcThreadStats;
                  PsiLight5: TPsiLight5; FSIstart, FSIoffset: Integer; CalcR: TRect): Boolean;
 var x, ThreadCount: Integer;
     MCTparas: TMCTparameter;

@@ -18,7 +18,7 @@ type
   protected
     procedure Execute; override;
   end;
-function CalcHardShadowT(Header: TPMandHeader10; PCTS: TPCalcThreadStats; PsiLight5: TPsiLight5;
+function CalcHardShadowT(Header: TPMandHeader11; PCTS: TPCalcThreadStats; PsiLight5: TPsiLight5;
                          hSLoffset: Integer; HeaderLightVals: TPLightVals; bMain: LongBool; hRect: TRect): Boolean;
 var
   HScalcHeaderLightVals: TLightVals;
@@ -28,7 +28,7 @@ implementation
 uses Mand, Math, DivUtils, formulas, Forms, ImageProcess, CustomFormulas,
      HeaderTrafos, LightAdjust, Calc;
 
-function CalcHardShadowT(Header: TPMandHeader10; PCTS: TPCalcThreadStats; PsiLight5: TPsiLight5;
+function CalcHardShadowT(Header: TPMandHeader11; PCTS: TPCalcThreadStats; PsiLight5: TPsiLight5;
                          hSLoffset: Integer; HeaderLightVals: TPLightVals; bMain: LongBool; hRect: TRect): Boolean;
 var x, y, ThreadCount, bhs: Integer;
     MCTparas: TMCTparameter;

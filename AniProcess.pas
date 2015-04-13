@@ -94,7 +94,7 @@ end;
 procedure TAniProcessForm.Button2Click(Sender: TObject);
 var t, i, kf, j, start, stop, bch: Integer;
     d: Double;
-    PH: TPMandHeader10;
+    PH: TPMandHeader11;
 begin
     t := (Sender as TButton).Tag;
     if t in [1..4] then

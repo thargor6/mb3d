@@ -75,7 +75,7 @@ type
 
 procedure FirstATlevelHiQ(PIA: TPCardinalArray; PsiLight: TPsiLight5; Leng: Integer);
 procedure NextATlevelHiQ(PIA: TPCardinalArray; Wid, Hei, Step: Integer);
-function CalcAmbShadowTHiQ(Header: TPMandHeader10; PsiLight: TPsiLight5;
+function CalcAmbShadowTHiQ(Header: TPMandHeader11; PsiLight: TPsiLight5;
         PCTS: TPCalcThreadStats; PATlevel: TPATlevel): Boolean;
 
 var ATlevelHiQ: array of Cardinal;
@@ -126,7 +126,7 @@ begin
 end;
 }
 
-function CalcAmbShadowTHiQ(Header: TPMandHeader10; PsiLight: TPsiLight5;
+function CalcAmbShadowTHiQ(Header: TPMandHeader11; PsiLight: TPsiLight5;
         PCTS: TPCalcThreadStats; PATlevel: TPATlevel): Boolean;
 var x, y, MWidth, MHeight, ThreadCount, ymin, RowCount, ATi: Integer;
     IsPano: LongBool;

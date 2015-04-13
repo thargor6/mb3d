@@ -44,12 +44,12 @@ procedure FreeLightMap(LM: TPLightMap);
 procedure FreeLightMapsInLValsWithRestriction(LVal, LValRestricted: TPLightVals);
 procedure FreeLightMapsInLVals(LVal: TPLightVals);
 procedure MakeSmallLMimage(smallLM, bigLM: TPLightMap);
-function MakeVolumicLightMapThreads(Header: TPMandHeader10; LVals: TPLightVals; PCTS: TPCalcThreadStats): LongBool;
+function MakeVolumicLightMapThreads(Header: TPMandHeader11; LVals: TPLightVals; PCTS: TPCalcThreadStats): LongBool;
 function VolLightMapPosPas(vd: TPVec3D): LongBool;
 function VolLightMapPosSSE(vd: TPVec3D): LongBool;
 function GetVolLightMapVecPas(vd: TPSVec): Single;
 function GetVolLightMapVecSSE(vd: TPSVec): Single;
-procedure CalcVolLightMap(Header: TPMandHeader10; LVals: TPLightVals);
+procedure CalcVolLightMap(Header: TPMandHeader11; LVals: TPLightVals);
 
 var
     MapCriticalSection: TCriticalSection;
@@ -231,7 +231,7 @@ l1:       if vd[2] > 0 then cs := 4 else cs := 5;
     end;
 end;
 
-procedure CalcVolLightMap(Header: TPMandHeader10; LVals: TPLightVals);
+procedure CalcVolLightMap(Header: TPMandHeader11; LVals: TPLightVals);
 var i, ia: Integer;
 begin
     i := Header.bVolLightNr and 7;
@@ -250,7 +250,7 @@ begin
     end;
 end;
 
-function MakeVolumicLightMapThreads(Header: TPMandHeader10; LVals: TPLightVals; PCTS: TPCalcThreadStats): LongBool;
+function MakeVolumicLightMapThreads(Header: TPMandHeader11; LVals: TPLightVals; PCTS: TPCalcThreadStats): LongBool;
 var MCTparas: TMCTparameter;
     x, ThreadCount, VLnr, VLnrLV: Integer;
     dTmp, dTmp2: Double;
