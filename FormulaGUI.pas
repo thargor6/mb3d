@@ -5,63 +5,33 @@ interface
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ComCtrls, ExtCtrls, Buttons, TypeDefinitions,
-  ListBoxEx, Menus, SpeedButtonEx;
+  ListBoxEx, Menus, SpeedButtonEx, Vcl.Samples.Spin, Vcl.Mask, JvExMask, JvSpin;
 
 type
   TFormulaGUIForm = class(TForm)
     TabControl1: TTabControl;
-    Edit1: TEdit;
-    Label1: TLabel;
-    Edit2: TEdit;
-    Label2: TLabel;
-    Edit3: TEdit;
-    Label3: TLabel;
-    Edit4: TEdit;
-    Label4: TLabel;
-    Edit5: TEdit;
-    Label5: TLabel;
-    Edit6: TEdit;
-    Label6: TLabel;
-    Edit7: TEdit;
-    Label7: TLabel;
-    Edit8: TEdit;
-    Label8: TLabel;
     Panel1: TPanel;
-    Edit9: TEdit;
-    Label9: TLabel;
-    Edit10: TEdit;
-    Label10: TLabel;
-    Edit11: TEdit;
-    Label11: TLabel;
-    Edit12: TEdit;
-    Label12: TLabel;
-    Edit13: TEdit;
-    Label13: TLabel;
-    Edit14: TEdit;
-    Label14: TLabel;
-    Edit15: TEdit;
-    Label15: TLabel;
     EditItCount: TEdit;
     LabelItCount: TLabel;
-    Label17: TLabel;
-    Edit17: TEdit;
+    RBailoutLabel: TLabel;
+    RBailoutEdit: TEdit;
     SpeedButton11: TSpeedButton;
     OpenDialog3: TOpenDialog;
     CheckBox1: TCheckBox;
     TabControl2: TTabControl;
-    Button2: TButton;
-    Edit18: TEdit;
-    Edit19: TEdit;
-    Label20: TLabel;
-    Label21: TLabel;
+    RandomButton: TButton;
+    MaxIterEdit: TEdit;
+    MinIterEdit: TEdit;
+    MaxIterLabel: TLabel;
+    MinIterLabel: TLabel;
     Panel2: TPanel;
     Label22: TLabel;
-    Edit20: TEdit;
-    Label23: TLabel;
-    Edit21: TEdit;
-    Label24: TLabel;
-    Edit22: TEdit;
-    Label26: TLabel;
+    XWEdit: TEdit;
+    XWLabel: TLabel;
+    YWEdit: TEdit;
+    YWLabel: TLabel;
+    ZWEdit: TEdit;
+    ZWLabel: TLabel;
     SpeedButton2: TSpeedButton;
     RichEdit1: TRichEdit;
     Button3: TButton;
@@ -78,7 +48,7 @@ type
     ListBoxEx6: TListBoxEx;
     SpeedButton3: TSpeedButton;
     CheckBox2: TCheckBox;
-    SpeedButton1: TSpeedButton;
+    ExchangeFormulaBtn: TSpeedButton;
     ListBoxEx7: TListBoxEx;
     ListBoxEx8: TListBoxEx;
     ListBoxEx9: TListBoxEx;
@@ -93,8 +63,8 @@ type
     N1: TMenuItem;
     Deletethisformulapermanently1: TMenuItem;
     ComboBox1: TComboBox;
-    Label19: TLabel;
-    Edit24: TEdit;
+    MaxIterHybridsPartLabel: TLabel;
+    MaxIterHybridPart2Edit: TEdit;
     PopupMenu2: TPopupMenu;
     Copythisformulatoformulanr11: TMenuItem;
     Copythisformulatoformula21: TMenuItem;
@@ -117,33 +87,67 @@ type
     SpeedButtonEx9: TSpeedButtonEx;
     SpeedButtonEx10: TSpeedButtonEx;
     ComboEdit1: TEdit;
-    Label16: TLabel;
-    Edit16: TEdit;
     Timer1: TTimer;
     Copythevaluesto1: TMenuItem;
     N3: TMenuItem;
     ListBoxEx12: TListBoxEx;
     SpeedButtonEx11: TSpeedButtonEx;
-    UpDown1: TUpDown;
+    HybridStartBtn: TUpDown;
     Label28: TLabel;
     Panel3: TPanel;
     Label18: TLabel;
     Label25: TLabel;
     Label27: TLabel;
     Edit23: TEdit;
-    ComboBox2: TComboBox;
+    DECombineCmb: TComboBox;
     Edit25: TEdit;
+    ScrollBox1: TScrollBox;
+    Panel4: TPanel;
+    Edit1: TJvSpinEdit;
+    Edit10: TJvSpinEdit;
+    Edit11: TJvSpinEdit;
+    Edit12: TJvSpinEdit;
+    Edit13: TJvSpinEdit;
+    Edit14: TJvSpinEdit;
+    Edit15: TJvSpinEdit;
+    Edit16: TJvSpinEdit;
+    Edit2: TJvSpinEdit;
+    Edit3: TJvSpinEdit;
+    Edit4: TJvSpinEdit;
+    Edit5: TJvSpinEdit;
+    Edit6: TJvSpinEdit;
+    Edit7: TJvSpinEdit;
+    Edit8: TJvSpinEdit;
+    Edit9: TJvSpinEdit;
+    Label1: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label14: TLabel;
+    Label15: TLabel;
+    Label16: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    Edit17: TJvSpinEdit;
+    Label17: TLabel;
     procedure TabControl1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SpeedButton11Click(Sender: TObject);
     procedure EditItCountChange(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure CheckBox1Click(Sender: TObject);
-    procedure SpeedButton1Click(Sender: TObject);
+    procedure ExchangeFormulaBtnClick(Sender: TObject);
     procedure TabControl2Change(Sender: TObject);
     procedure TabControl2Changing(Sender: TObject;
       var AllowChange: Boolean);
-    procedure Button2Click(Sender: TObject);
+    procedure RandomButtonClick(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
     procedure Button4Click(Sender: TObject);
@@ -184,7 +188,7 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure Copythevaluesto1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
+    procedure HybridStartBtnClick(Sender: TObject; Button: TUDBtnType);
   private
     { Private-Deklarationen }
     OldTab2index: Integer;
@@ -203,12 +207,13 @@ type
     procedure ListboxPopup(var LB: TListBoxEx; const pos: TPoint);
     procedure MakeLB11list(text: String);
     function ListBoxIsFull(LB: TListBoxEx): LongBool;
+    procedure RefreshPreview;
   public
     { Public-Deklarationen }
     bUserChange: LongBool;
     procedure SetFormulaCBs(s: String);
     procedure LoadFormulaNames;
-    procedure UpdateFromHeader(Header: TPMandHeader10);
+    procedure UpdateFromHeader(Header: TPMandHeader11);
   end;
 
 var
@@ -227,23 +232,23 @@ uses Mand, CustomFormulas, DivUtils, Math, HeaderTrafos, FileHandling, formulas,
 
 {$R *.dfm}
 
-procedure TFormulaGUIForm.UpdateFromHeader(Header: TPMandHeader10);
+procedure TFormulaGUIForm.UpdateFromHeader(Header: TPMandHeader11);
 begin
     with Header^ do
     begin
       bUserChange := False;
-      Edit17.Text := FloatToStr(RStop);
+      RBailoutEdit.Text := FloatToStr(RStop);
       TabControl2Change(Self);
-      Edit18.Text := IntToStr(Iterations);
-      Edit24.Text := IntToStr(iMaxItsF2);
-      Edit19.Text := IntToStr(MinimumIterations);
-      Edit20.Text := FloatToStr(dXWrot / Pid180);
-      Edit21.Text := FloatToStr(dYWrot / Pid180);
-      Edit22.Text := FloatToStr(dZWrot / Pid180);
+      MaxIterEdit.Text := IntToStr(Iterations);
+      MaxIterHybridPart2Edit.Text := IntToStr(iMaxItsF2);
+      MinIterEdit.Text := IntToStr(MinimumIterations);
+      XWEdit.Text := FloatToStr(dXWrot / Pid180);
+      YWEdit.Text := FloatToStr(dYWrot / Pid180);
+      ZWEdit.Text := FloatToStr(dZWrot / Pid180);
       CheckBox2.Checked := (PTHeaderCustomAddon(PCFAddon).bOptions2 and 1) > 0;
       ComboBox1.ItemIndex := (PTHeaderCustomAddon(PCFAddon).bOptions2 and 6) shr 1;
-      ComboBox2.ItemIndex := PTHeaderCustomAddon(PCFAddon).bOptions3 and 7;
-      if ComboBox2.ItemIndex < 5 then
+      DECombineCmb.ItemIndex := PTHeaderCustomAddon(PCFAddon).bOptions3 and 7;
+      if DECombineCmb.ItemIndex < 5 then
         Edit23.Text := FloatToStrSingle(Min0MaxCS(sDEcombS, 100))
       else
       begin
@@ -254,12 +259,12 @@ begin
     end;
 end;
 
-procedure TFormulaGUIForm.UpDown1Click(Sender: TObject; Button: TUDBtnType);
+procedure TFormulaGUIForm.HybridStartBtnClick(Sender: TObject; Button: TUDBtnType);
 var i: Integer;
 begin
     if bUserChange then
     begin
-      i := Max(2, Min(6, UpDown1.Position));
+      i := Max(2, Min(6, HybridStartBtn.Position));
       if (Button = btNext) and (i < 6) then Inc(i) else
       if (Button = btPrev) and (i > 2) then Dec(i);
       Label28.Caption := IntToStr(i);
@@ -418,10 +423,10 @@ var i, j, n: Integer;
     d: Double;
 begin
     d := 2;
-    if TabControl2.TabIndex <> 1 then n := 5 else n := 1;
+    if TabControl2.TabIndex <> 1 then n := MAX_FORMULA_COUNT -1  else n := 1;
     for i := 0 to n do with Mand3DForm.HAddon.Formulas[i] do
     begin
-      if n = 5 then j := Mand3DForm.HAddon.Formulas[i].iItCount
+      if n = MAX_FORMULA_COUNT -1 then j := Mand3DForm.HAddon.Formulas[i].iItCount
                else j := Ord(Mand3DForm.HAddon.Formulas[i].iFnr > -1);
       if j > 0 then
       begin
@@ -437,7 +442,7 @@ begin
       else if i = 0 then TabControl1.Tabs[0] := 'Formula1'
                     else TabControl1.Tabs[i] := 'Fo.' + IntToStr(i + 1);
     end;
-    Edit17.Text := FloatToStr(d);
+    RBailoutEdit.Text := FloatToStr(d);
 end;
 
 procedure TFormulaGUIForm.SetFormulaCBs(s: String);
@@ -447,6 +452,7 @@ begin
     bUserChange := False;
     ComboEdit1.Text := Trim(s);
     bUserChange := b;
+    RefreshPreview;
 end;
 
 procedure TFormulaGUIForm.SetTabNames;
@@ -456,14 +462,14 @@ begin
     ne := TabControl1.OnChange;
     try
     TabControl1.OnChange := nil;
-    if (Mand3DForm.HAddon.bOptions1 and 3) = 1 then n := 1 else n := 5;
+    if (Mand3DForm.HAddon.bOptions1 and 3) = 1 then n := 1 else n := MAX_FORMULA_COUNT - 1 ;
     if TabControl1.Tabs.Count <> n + 1 then
     begin
       ti := TabControl1.TabIndex;
       TabControl1.Tabs.Clear;
       for t := 0 to n do
       begin
-        if n = 5 then i := Mand3DForm.HAddon.Formulas[t].iItCount
+        if n = MAX_FORMULA_COUNT - 1 then i := Mand3DForm.HAddon.Formulas[t].iItCount
                  else i := Ord(Mand3DForm.HAddon.Formulas[t].CustomFName[0] > 0);
         if t = 0 then
         begin
@@ -477,7 +483,7 @@ begin
     end else begin
       for t := 0 to n do
       begin
-        if n = 5 then i := Mand3DForm.HAddon.Formulas[t].iItCount
+        if n = MAX_FORMULA_COUNT -1 then i := Mand3DForm.HAddon.Formulas[t].iItCount
                  else i := Ord(Mand3DForm.HAddon.Formulas[t].CustomFName[0] > 0);
         if t = 0 then
         begin
@@ -488,8 +494,8 @@ begin
                       else TabControl1.Tabs[t] := 'Fo.' + IntToStr(t + 1) + ' •';
       end;
     end;
-    if n = 5 then LabelItCount.Caption := 'Iterationcount:' else LabelItCount.Caption := 'Weight:';
-    CheckBox1.Visible := n = 5;
+    if n = MAX_FORMULA_COUNT -1 then LabelItCount.Caption := 'Iterationcount:' else LabelItCount.Caption := 'Weight:';
+    CheckBox1.Visible := n = MAX_FORMULA_COUNT - 1;
     finally
       TabControl1.OnChange := ne;
     end;
@@ -497,14 +503,14 @@ end;
 
 procedure TFormulaGUIForm.TabControl1Change(Sender: TObject);
 var i, t: Integer;
-    E: TEdit;
+    E: TJvSpinEdit;
     L: TLabel;
     bAltHybrid: LongBool;
 begin
     SetTabNames;
     bAltHybrid := LabelItCount.Caption = 'Iterationcount:';
     t := TabControl1.TabIndex;
-    SpeedButton1.Enabled := (t = 0) or (bAltHybrid and (t < 5));
+    ExchangeFormulaBtn.Enabled := (t = 0) or (bAltHybrid and (t < MAX_FORMULA_COUNT - 1));
     with Mand3DForm.HAddon.Formulas[t] do
     begin
       bUserChange := False;
@@ -517,7 +523,7 @@ begin
       SetFormulaCBs(Trim(CustomFtoStr(CustomFname)));
       for i := 0 to 15 do
       begin
-        E := (FindComponent('Edit' + IntToStr(i + 1)) as TEdit);
+        E := (FindComponent('Edit' + IntToStr(i + 1)) as TJvSpinEdit);
         E.Visible := iOptionCount > i;
         L := (FindComponent('Label' + IntToStr(i + 1)) as TLabel);
         L.Visible := iOptionCount > i;
@@ -607,13 +613,15 @@ procedure TFormulaGUIForm.Edit1Change(Sender: TObject);
 begin
     if bUserChange then
     begin
-      if not StrToFloatKtry((Sender as TEdit).Text,
-        Mand3DForm.HAddon.Formulas[TabControl1.TabIndex].dOptionValue[(Sender as TEdit).Tag]) then
-        (Sender as TEdit).Font.Color := clMaroon
-      else
-        (Sender as TEdit).Font.Color := clWindowText;
+      if not StrToFloatKtry((Sender as TJvSpinEdit).Text,
+        Mand3DForm.HAddon.Formulas[TabControl1.TabIndex].dOptionValue[(Sender as TJvSpinEdit).Tag]) then
+        (Sender as TJvSpinEdit).Font.Color := clMaroon
+      else begin
+        (Sender as TJvSpinEdit).Font.Color := clWindowText;
+        RefreshPreview;
+      end;
     end
-    else (Sender as TEdit).Font.Color := clWindowText;
+    else (Sender as TJvSpinEdit).Font.Color := clWindowText;
 end;
 
 procedure TFormulaGUIForm.CheckBox1Click(Sender: TObject);
@@ -622,22 +630,22 @@ begin
     if bUserChange then
     begin
       if CheckBox1.Checked then i := TabControl1.TabIndex else i := 0;
-      if (TabControl2.TabIndex = 2) and (TabControl1.TabIndex + 1 >= UpDown1.Position) then
+      if (TabControl2.TabIndex = 2) and (TabControl1.TabIndex + 1 >= HybridStartBtn.Position) then
       begin
-        if i = 0 then i := UpDown1.Position - 1;
+        if i = 0 then i := HybridStartBtn.Position - 1;
         Mand3DForm.HAddon.bHybOpt2 := (Mand3DForm.HAddon.bHybOpt2 and $77) or (i shl 8);
       end
       else Mand3DForm.HAddon.bHybOpt1 := (Mand3DForm.HAddon.bHybOpt1 and $7) or (i shl 4);  //end1, repeat1            2x 4bit
     end;
 end;
 
-procedure TFormulaGUIForm.SpeedButton1Click(Sender: TObject);   //exchange with next F
+procedure TFormulaGUIForm.ExchangeFormulaBtnClick(Sender: TObject);   //exchange with next F
 var t, i: Integer;
     HAF: THAformula;
     dOptionValues: array[0..15] of Double;
 begin
     t := TabControl1.TabIndex;
-    if t < 5 then
+    if t < MAX_FORMULA_COUNT -1  then
     begin
       HAF := Mand3DForm.HAddon.Formulas[t];
       Mand3DForm.HAddon.Formulas[t] := Mand3DForm.HAddon.Formulas[t + 1];
@@ -654,21 +662,6 @@ begin
     end;
 end;
 
-{procedure TFormulaGUIForm.CheckHybridOptions(Haddon: PTHeaderCustomAddon);
-var is2, ir: Integer;
-    b: LongBool;
-begin
-    is2 := Max(1, Min(5, StrToInt(Label28.Caption) - 1));  //startHybrid2
-    ir := Min(is2 - 1, HAddon.bHybOpt1 shr 4);         //bHybOpt1:  Byte;  end1, repeat1   2x 4bit
-    HAddon.bHybOpt1 := (is2 - 1) or (ir shl 4);
-    ir := Max(is2, Min(5, HAddon.bHybOpt2 shr 8));     //Repeat2   bHybOpt2 := $151;  start2, end2, repeat2    3x 4bit
-    HAddon.bHybOpt2 := is2 or $50 or (ir shl 8);
-    b := bUserChange;
-    bUserChange := False;
-    CheckBox1.Checked := TabControl1.TabIndex in [HAddon.bHybOpt1 shr 4, HAddon.bHybOpt2 shr 8];
-    bUserChange := b;
-end; }
-
 procedure TFormulaGUIForm.TabControl2Change(Sender: TObject);
 var i: Integer;
 begin
@@ -681,13 +674,13 @@ begin
   //    if TabControl2.TabIndex = 2 then
     //    Mand3DForm.HAddon.bHybOpt2 := (Mand3DForm.HAddon.bHybOpt2 and $707) or $50;//bHybOpt2: start2, end2, repeat2    3x 4bit
     end;
-    if TabControl2.TabIndex = 2 then Label20.Caption := 'Maxits hybrid part1:'
-                                else Label20.Caption := 'Max. iterations:';
+    if TabControl2.TabIndex = 2 then MaxIterLabel.Caption := 'Maxits hybrid part1:'
+                                else MaxIterLabel.Caption := 'Max. iterations:';
 
     Label28.Visible := TabControl2.TabIndex = 2;    //show/hide start of 2nd hybrid
-    UpDown1.Visible := Label28.Visible;
-    UpDown1.Position := Max(1, Mand3DForm.HAddon.bHybOpt2 and 7) + 1;
-    Label28.Caption := IntToStr(UpDown1.Position);
+    HybridStartBtn.Visible := Label28.Visible;
+    HybridStartBtn.Position := Max(1, Mand3DForm.HAddon.bHybOpt2 and 7) + 1;
+    Label28.Caption := IntToStr(HybridStartBtn.Position);
  //   if UpDown1.Visible then CheckHybridOptions(@Mand3DForm.Haddon);
 
     if TabControl2.TabIndex <> 1 then  //Alt hybrid, DEcomb
@@ -700,7 +693,7 @@ begin
           Mand3DForm.HAddon.Formulas[i].iItCount := Round(MinMaxCS(0, PSingle(@Mand3DForm.HAddon.Formulas[i].iItCount)^, 100));
         end;
       end
-      else ComboBox2.ItemIndex := Mand3DForm.HAddon.bOptions3 and 7;
+      else DECombineCmb.ItemIndex := Mand3DForm.HAddon.bOptions3 and 7;
     end
     else  // Interpol hybrid
     begin                    
@@ -711,8 +704,8 @@ begin
     OldTab2index := TabControl2.TabIndex;
     SetTabNames;
     TabControl1Change(Sender);
-    Label19.Visible := TabControl2.TabIndex = 2;
-    Edit24.Visible := Label19.Visible;
+    MaxIterHybridsPartLabel.Visible := TabControl2.TabIndex = 2;
+    MaxIterHybridPart2Edit.Visible := MaxIterHybridsPartLabel.Visible;
     AdjustTC1height;
 end;
 
@@ -722,7 +715,7 @@ begin
     OldTab2index := TabControl2.TabIndex;
 end;
 
-procedure TFormulaGUIForm.Button2Click(Sender: TObject);
+procedure TFormulaGUIForm.RandomButtonClick(Sender: TObject);
 var i, j, t: Integer;
     LB: TListBoxEx;
     ca: array[1..9] of Integer;
@@ -734,7 +727,7 @@ begin
       TabControl2.TabIndex := 0;
       bOptions1 := 0;
       iFCount := Random(5) + 1;
-      for i := 0 to 5 do
+      for i := 0 to MAX_FORMULA_COUNT - 1 do
       begin
         TabControl1.TabIndex := i;
         if i >= iFCount then Formulas[i].iItCount := 0 else
@@ -1121,7 +1114,7 @@ begin
     if (Key = 't') and ListBoxEx1.Visible then
     begin
       ListBoxEx1.Items.Add('test');
-      Button2.Visible := True;
+      RandomButton.Visible := True;
       SetListBoxWidth(ListBoxEx1);
       SpeedButtonEx9.Visible := True;
       AddFormulaName('testIFS', testIFSDEoption);
@@ -1149,10 +1142,10 @@ end;
 
 procedure TFormulaGUIForm.RadioGroup1Click(Sender: TObject);
 begin
-    if bUserChange then Mand3DForm.HAddon.bOptions3 := ComboBox2.ItemIndex;
-    Label18.Visible := ComboBox2.ItemIndex > 2;
+    if bUserChange then Mand3DForm.HAddon.bOptions3 := DECombineCmb.ItemIndex;
+    Label18.Visible := DECombineCmb.ItemIndex > 2;
     Edit23.Visible := Label18.Visible;
-    Edit25.Visible := ComboBox2.ItemIndex > 4;
+    Edit25.Visible := DECombineCmb.ItemIndex > 4;
     Label27.Visible := Edit25.Visible;
     if Edit23.Visible then if not Edit25.Visible then
     begin
@@ -1334,7 +1327,7 @@ end;
 procedure TFormulaGUIForm.FormCreate(Sender: TObject);
 begin
     FGUIFormCreated := True;
-    ComboBox2.Hint :=  'Combination Methods:' + #13#10 +
+    DECombineCmb.Hint :=  'Combination Methods:' + #13#10 +
   'Min: Both fractals are visible, minimum combine the DE''s' + #13#10 +
   'Max: Only overlapping parts, maximum combine the DE''s' + #13#10 +
   'Inv max: Invert DE of second Hybrid and combine ''Max''' + #13#10 +
@@ -1384,7 +1377,7 @@ procedure TFormulaGUIForm.Copythisformulatoformulanr11Click( Sender: TObject);
 var SourceNr, DestNr, i, j: Integer;
     dOptionValues: array[0..15] of Double;
 begin  //copy formula to...
-    DestNr := Min(5, Max(0, (Sender as TMenuItem).Tag));
+    DestNr := Min(MAX_FORMULA_COUNT - 1, Max(0, (Sender as TMenuItem).Tag));
     SourceNr := TabControl1.TabIndex;
     if DestNr <> SourceNr then
     begin
@@ -1407,7 +1400,7 @@ var StartNr, i: Integer;
     dOptionValues: array[0..15] of Double;
 begin    // shitf all f's from tabnr one to right
     StartNr := TabControl1.TabIndex;
-    for i := 5 downto StartNr + 1 do
+    for i := MAX_FORMULA_COUNT - 1 downto StartNr + 1 do
     begin
       Mand3DForm.HAddon.Formulas[i] := Mand3DForm.HAddon.Formulas[i - 1];
       if Mand3DForm.HAddon.Formulas[i].iFnr < 20 then
@@ -1439,13 +1432,18 @@ begin    // shitf all f's from tabnr one to left
         LoadCustomFormulaFromHeader(Mand3DForm.HAddon.Formulas[i].CustomFname,
             PTCustomFormula(Mand3DForm.MHeader.PHCustomF[i])^, dOptionValues);
     end;
-    ClearFormula(5);
+    ClearFormula(MAX_FORMULA_COUNT - 1);
     i := Mand3DForm.HAddon.bHybOpt1 shr 4;
     if i >= Max(1, StartNr) then Mand3DForm.HAddon.bHybOpt1 := (Mand3DForm.HAddon.bHybOpt1 and 7) or ((i - 1) shl 4);  //end1, repeat1
     i := Mand3DForm.HAddon.bHybOpt2 shr 8;
     if i >= Max(1, StartNr) then Mand3DForm.HAddon.bHybOpt2 := (Mand3DForm.HAddon.bHybOpt2 and $77) or ((i - 1) shl 8);  //start2, end2, repeat2
     CheckHybridOptions(@Mand3DForm.HAddon);
     TabControl1Change(Sender);
+end;
+
+procedure TFormulaGUIForm.RefreshPreview;
+begin
+  Mand3DForm.RefreshPreview;
 end;
 
 end.

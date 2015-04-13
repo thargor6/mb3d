@@ -3,8 +3,8 @@ object FormulaGUIForm: TFormulaGUIForm
   Top = 100
   BorderStyle = bsDialog
   Caption = 'Formulas'
-  ClientHeight = 564
-  ClientWidth = 315
+  ClientHeight = 632
+  ClientWidth = 335
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,8 +23,8 @@ object FormulaGUIForm: TFormulaGUIForm
   TextHeight = 13
   object Panel2: TPanel
     Left = 0
-    Top = 454
-    Width = 315
+    Top = 522
+    Width = 335
     Height = 40
     Align = alBottom
     BevelOuter = bvLowered
@@ -36,28 +36,28 @@ object FormulaGUIForm: TFormulaGUIForm
       Height = 13
       Caption = '4D rotation of the whole bulb:'
     end
-    object Label23: TLabel
+    object XWLabel: TLabel
       Left = 8
       Top = 19
       Width = 21
       Height = 13
       Caption = 'XW:'
     end
-    object Label24: TLabel
+    object YWLabel: TLabel
       Left = 104
       Top = 19
       Width = 21
       Height = 13
       Caption = 'YW:'
     end
-    object Label26: TLabel
+    object ZWLabel: TLabel
       Left = 200
       Top = 19
       Width = 21
       Height = 13
       Caption = 'ZW:'
     end
-    object Edit20: TEdit
+    object XWEdit: TEdit
       Left = 40
       Top = 16
       Width = 49
@@ -70,7 +70,7 @@ object FormulaGUIForm: TFormulaGUIForm
       TabOrder = 0
       Text = '0.0'
     end
-    object Edit21: TEdit
+    object YWEdit: TEdit
       Left = 136
       Top = 16
       Width = 49
@@ -83,7 +83,7 @@ object FormulaGUIForm: TFormulaGUIForm
       TabOrder = 1
       Text = '0.0'
     end
-    object Edit22: TEdit
+    object ZWEdit: TEdit
       Left = 232
       Top = 16
       Width = 49
@@ -100,7 +100,7 @@ object FormulaGUIForm: TFormulaGUIForm
   object TabControl1: TTabControl
     Left = 0
     Top = 19
-    Width = 315
+    Width = 335
     Height = 477
     Align = alTop
     Font.Charset = DEFAULT_CHARSET
@@ -111,149 +111,47 @@ object FormulaGUIForm: TFormulaGUIForm
     ParentFont = False
     TabOrder = 0
     Tabs.Strings = (
-      'Formula1 '#8226
-      'F2 '#8226
-      'F3'
-      'F4'
-      'F5'
-      'F6')
+      'F01 '#8226
+      'F02 '#8226
+      'F03'
+      'F04'
+      'F05'
+      'F06'
+      'F07'
+      'F08'
+      'F09'
+      'F10'
+      'F11'
+      'F12'
+      'F13'
+      'F14'
+      'F15'
+      'F16'
+      'F17'
+      'F18'
+      'F19'
+      'F20'
+      'F21'
+      'F22'
+      'F23'
+      'F24'
+      'F25'
+      'F26'
+      'F27'
+      'F28'
+      'F29'
+      'F30'
+      'F31'
+      'F32')
     TabIndex = 0
     OnChange = TabControl1Change
     OnMouseDown = TabControl1MouseDown
-    object Label16: TLabel
-      Left = 134
-      Top = 411
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
     object Bevel1: TBevel
       Left = 2
       Top = 21
       Width = 226
       Height = 23
       Style = bsRaised
-    end
-    object Label1: TLabel
-      Left = 131
-      Top = 81
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label2: TLabel
-      Left = 131
-      Top = 103
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label3: TLabel
-      Left = 131
-      Top = 125
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label4: TLabel
-      Left = 131
-      Top = 147
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label5: TLabel
-      Left = 131
-      Top = 169
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label6: TLabel
-      Left = 131
-      Top = 191
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label7: TLabel
-      Left = 131
-      Top = 213
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label8: TLabel
-      Left = 131
-      Top = 235
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label9: TLabel
-      Left = 131
-      Top = 257
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label10: TLabel
-      Left = 131
-      Top = 279
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label11: TLabel
-      Left = 131
-      Top = 301
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label12: TLabel
-      Left = 131
-      Top = 323
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label13: TLabel
-      Left = 131
-      Top = 345
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label14: TLabel
-      Left = 131
-      Top = 367
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
-    end
-    object Label15: TLabel
-      Left = 134
-      Top = 389
-      Width = 3
-      Height = 13
-      Alignment = taRightJustify
-      Visible = False
     end
     object LabelItCount: TLabel
       Left = 7
@@ -307,7 +205,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Width = 290
       Height = 369
     end
-    object SpeedButton1: TSpeedButton
+    object ExchangeFormulaBtn: TSpeedButton
       Left = 261
       Top = 443
       Width = 37
@@ -326,7 +224,7 @@ object FormulaGUIForm: TFormulaGUIForm
         0000022201111111102220000000000001111111100000000000}
       ParentShowHint = False
       ShowHint = True
-      OnClick = SpeedButton1Click
+      OnClick = ExchangeFormulaBtnClick
     end
     object SpeedButton4: TSpeedButton
       Left = 218
@@ -533,23 +431,6 @@ object FormulaGUIForm: TFormulaGUIForm
       OnMouseEnter = SpeedButtonEx1MouseEnter
       OnMouseLeave = SpeedButtonEx1MouseLeave
     end
-    object Edit16: TEdit
-      Tag = 14
-      Left = 151
-      Top = 408
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 15
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
     object ComboEdit1: TEdit
       Left = 7
       Top = 51
@@ -566,7 +447,7 @@ object FormulaGUIForm: TFormulaGUIForm
       ParentFont = False
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 33
+      TabOrder = 17
       OnChange = ComboEdit1Change
       OnExit = ComboEdit1Exit
       OnKeyDown = ComboEdit1KeyDown
@@ -580,302 +461,9 @@ object FormulaGUIForm: TFormulaGUIForm
       Caption = 'N'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 20
+      TabOrder = 4
       Visible = False
       OnClick = Button4Click
-    end
-    object Edit15: TEdit
-      Tag = 14
-      Left = 151
-      Top = 386
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 14
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit14: TEdit
-      Tag = 13
-      Left = 148
-      Top = 364
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 13
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit13: TEdit
-      Tag = 12
-      Left = 148
-      Top = 342
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 12
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit12: TEdit
-      Tag = 11
-      Left = 148
-      Top = 320
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 11
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit11: TEdit
-      Tag = 10
-      Left = 148
-      Top = 298
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 10
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit10: TEdit
-      Tag = 9
-      Left = 148
-      Top = 276
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 9
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit9: TEdit
-      Tag = 8
-      Left = 148
-      Top = 254
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 8
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit8: TEdit
-      Tag = 7
-      Left = 148
-      Top = 232
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 7
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit7: TEdit
-      Tag = 6
-      Left = 148
-      Top = 210
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 6
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit6: TEdit
-      Tag = 5
-      Left = 148
-      Top = 188
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 5
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit5: TEdit
-      Tag = 4
-      Left = 148
-      Top = 166
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 4
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit4: TEdit
-      Tag = 3
-      Left = 148
-      Top = 144
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 3
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit3: TEdit
-      Tag = 2
-      Left = 148
-      Top = 122
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 2
-      Text = '1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit2: TEdit
-      Tag = 1
-      Left = 148
-      Top = 100
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 1
-      Text = '-1'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object Edit1: TEdit
-      Left = 148
-      Top = 78
-      Width = 137
-      Height = 21
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'MS Sans Serif'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 0
-      Text = '8'
-      Visible = False
-      OnChange = Edit1Change
-    end
-    object RichEdit1: TRichEdit
-      Left = 7
-      Top = 73
-      Width = 293
-      Height = 369
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Courier New'
-      Font.Style = []
-      ParentFont = False
-      ReadOnly = True
-      ScrollBars = ssVertical
-      TabOrder = 18
-      Visible = False
-    end
-    object ListBoxEx15: TListBoxEx
-      Tag = 9
-      Left = 7
-      Top = 73
-      Width = 293
-      Height = 369
-      BevelInner = bvSpace
-      BevelKind = bkFlat
-      BevelOuter = bvRaised
-      BorderStyle = bsNone
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Microsoft Sans Serif'
-      Font.Style = []
-      ItemHeight = 12
-      ParentFont = False
-      Sorted = True
-      TabOrder = 30
-      Visible = False
-      OnMouseDown = ListBoxEx15MouseDown
-      OnMouseMove = ListBoxEx1MouseMove
     end
     object EditItCount: TEdit
       Left = 83
@@ -888,7 +476,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Font.Name = 'MS Sans Serif'
       Font.Style = []
       ParentFont = False
-      TabOrder = 16
+      TabOrder = 0
       Text = '1'
       OnChange = EditItCountChange
     end
@@ -904,7 +492,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Caption = 'Repeat from here'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 17
+      TabOrder = 1
       OnClick = CheckBox1Click
     end
     object Button3: TButton
@@ -913,250 +501,471 @@ object FormulaGUIForm: TFormulaGUIForm
       Width = 57
       Height = 20
       Caption = 'Close'
-      TabOrder = 19
+      TabOrder = 3
       Visible = False
       OnClick = Button3Click
     end
-    object ListBoxEx11: TListBoxEx
-      Tag = 11
-      Left = 8
-      Top = 75
-      Width = 185
-      Height = 25
-      Style = lbOwnerDrawFixed
-      AutoComplete = False
-      BevelInner = bvSpace
-      BevelKind = bkFlat
-      BevelOuter = bvRaised
+    object ScrollBox1: TScrollBox
+      Left = 7
+      Top = 73
+      Width = 319
+      Height = 368
+      BevelInner = bvNone
+      BevelOuter = bvNone
       BorderStyle = bsNone
-      Enabled = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Microsoft Sans Serif'
-      Font.Style = []
-      ItemHeight = 12
-      ParentFont = False
-      Sorted = True
-      TabOrder = 31
-      Visible = False
-      OnDrawItem = ListBoxEx9DrawItem
-      OnMouseDown = ListBoxEx11MouseDown
-      OnMouseMove = ListBoxEx1MouseMove
-    end
-    object ListBoxEx2: TListBoxEx
-      Tag = 2
-      Left = 24
-      Top = 91
-      Width = 121
-      Height = 97
-      Style = lbOwnerDrawFixed
-      AutoComplete = False
-      BevelInner = bvSpace
-      BevelKind = bkFlat
-      BevelOuter = bvRaised
-      BorderStyle = bsNone
-      Enabled = False
-      ItemHeight = 13
-      Sorted = True
-      TabOrder = 22
-      Visible = False
-      OnDrawItem = ListBoxEx9DrawItem
-      OnMouseDown = ListBoxEx1MouseDown
-      OnMouseEnter = ListBoxEx1MouseEnter
-      OnMouseLeave = ListBoxEx1MouseLeave
-      OnMouseMove = ListBoxEx1MouseMove
-    end
-    object ListBoxEx3: TListBoxEx
-      Tag = 3
-      Left = 32
-      Top = 99
-      Width = 121
-      Height = 97
-      Style = lbOwnerDrawFixed
-      AutoComplete = False
-      BevelInner = bvSpace
-      BevelKind = bkFlat
-      BevelOuter = bvRaised
-      BorderStyle = bsNone
-      Enabled = False
-      ItemHeight = 13
-      Sorted = True
-      TabOrder = 23
-      Visible = False
-      OnDrawItem = ListBoxEx9DrawItem
-      OnMouseDown = ListBoxEx1MouseDown
-      OnMouseEnter = ListBoxEx1MouseEnter
-      OnMouseLeave = ListBoxEx1MouseLeave
-      OnMouseMove = ListBoxEx1MouseMove
-    end
-    object ListBoxEx4: TListBoxEx
-      Tag = 4
-      Left = 40
-      Top = 107
-      Width = 121
-      Height = 97
-      Style = lbOwnerDrawFixed
-      AutoComplete = False
-      BevelInner = bvSpace
-      BevelKind = bkFlat
-      BevelOuter = bvRaised
-      BorderStyle = bsNone
-      Enabled = False
-      ItemHeight = 13
-      Sorted = True
-      TabOrder = 24
-      Visible = False
-      OnDrawItem = ListBoxEx9DrawItem
-      OnMouseDown = ListBoxEx1MouseDown
-      OnMouseEnter = ListBoxEx1MouseEnter
-      OnMouseLeave = ListBoxEx1MouseLeave
-      OnMouseMove = ListBoxEx1MouseMove
-    end
-    object ListBoxEx5: TListBoxEx
-      Tag = 5
-      Left = 48
-      Top = 115
-      Width = 121
-      Height = 97
-      Style = lbOwnerDrawFixed
-      AutoComplete = False
-      BevelInner = bvSpace
-      BevelKind = bkFlat
-      BevelOuter = bvRaised
-      BorderStyle = bsNone
-      Enabled = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Microsoft Sans Serif'
-      Font.Style = []
-      ItemHeight = 12
-      ParentFont = False
-      Sorted = True
-      TabOrder = 25
-      Visible = False
-      OnDrawItem = ListBoxEx9DrawItem
-      OnMouseDown = ListBoxEx1MouseDown
-      OnMouseEnter = ListBoxEx1MouseEnter
-      OnMouseLeave = ListBoxEx1MouseLeave
-      OnMouseMove = ListBoxEx1MouseMove
-    end
-    object ListBoxEx6: TListBoxEx
-      Tag = 6
-      Left = 56
-      Top = 123
-      Width = 121
-      Height = 97
-      Style = lbOwnerDrawFixed
-      AutoComplete = False
-      BevelInner = bvSpace
-      BevelKind = bkFlat
-      BevelOuter = bvRaised
-      BorderStyle = bsNone
-      Enabled = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Microsoft Sans Serif'
-      Font.Style = []
-      ItemHeight = 12
-      ParentFont = False
-      Sorted = True
-      TabOrder = 26
-      Visible = False
-      OnDrawItem = ListBoxEx9DrawItem
-      OnMouseDown = ListBoxEx1MouseDown
-      OnMouseEnter = ListBoxEx1MouseEnter
-      OnMouseLeave = ListBoxEx1MouseLeave
-      OnMouseMove = ListBoxEx1MouseMove
-    end
-    object ListBoxEx7: TListBoxEx
-      Tag = 7
-      Left = 64
-      Top = 131
-      Width = 121
-      Height = 97
-      Style = lbOwnerDrawFixed
-      AutoComplete = False
-      BevelInner = bvSpace
-      BevelKind = bkFlat
-      BevelOuter = bvRaised
-      BorderStyle = bsNone
-      Enabled = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Microsoft Sans Serif'
-      Font.Style = []
-      ItemHeight = 12
-      ParentFont = False
-      Sorted = True
-      TabOrder = 27
-      Visible = False
-      OnDrawItem = ListBoxEx9DrawItem
-      OnMouseDown = ListBoxEx1MouseDown
-      OnMouseEnter = ListBoxEx1MouseEnter
-      OnMouseLeave = ListBoxEx1MouseLeave
-      OnMouseMove = ListBoxEx1MouseMove
-    end
-    object ListBoxEx8: TListBoxEx
-      Tag = 8
-      Left = 72
-      Top = 139
-      Width = 121
-      Height = 97
-      Style = lbOwnerDrawFixed
-      AutoComplete = False
-      BevelInner = bvSpace
-      BevelKind = bkFlat
-      BevelOuter = bvRaised
-      BorderStyle = bsNone
-      Enabled = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Microsoft Sans Serif'
-      Font.Style = []
-      ItemHeight = 12
-      ParentFont = False
-      Sorted = True
-      TabOrder = 28
-      Visible = False
-      OnDrawItem = ListBoxEx9DrawItem
-      OnMouseDown = ListBoxEx1MouseDown
-      OnMouseEnter = ListBoxEx1MouseEnter
-      OnMouseLeave = ListBoxEx1MouseLeave
-      OnMouseMove = ListBoxEx1MouseMove
-    end
-    object ListBoxEx9: TListBoxEx
-      Tag = 9
-      Left = 80
-      Top = 149
-      Width = 121
-      Height = 97
-      Style = lbOwnerDrawFixed
-      AutoComplete = False
-      BevelInner = bvSpace
-      BevelKind = bkFlat
-      BevelOuter = bvRaised
-      BorderStyle = bsNone
-      Enabled = False
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -9
-      Font.Name = 'Microsoft Sans Serif'
-      Font.Style = []
-      ItemHeight = 12
-      ParentFont = False
-      Sorted = True
-      TabOrder = 29
-      Visible = False
-      OnDrawItem = ListBoxEx9DrawItem
-      OnMouseDown = ListBoxEx1MouseDown
-      OnMouseEnter = ListBoxEx1MouseEnter
-      OnMouseLeave = ListBoxEx1MouseLeave
-      OnMouseMove = ListBoxEx1MouseMove
+      TabOrder = 19
+      object Panel4: TPanel
+        Left = 0
+        Top = 0
+        Width = 302
+        Height = 800
+        Align = alTop
+        BevelOuter = bvNone
+        Color = clWindow
+        ParentBackground = False
+        TabOrder = 0
+        object Label1: TLabel
+          Left = 131
+          Top = 8
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label10: TLabel
+          Left = 131
+          Top = 206
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label11: TLabel
+          Left = 131
+          Top = 228
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label12: TLabel
+          Left = 131
+          Top = 250
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label13: TLabel
+          Left = 131
+          Top = 272
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label14: TLabel
+          Left = 131
+          Top = 294
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label15: TLabel
+          Left = 134
+          Top = 316
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label16: TLabel
+          Left = 134
+          Top = 338
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label2: TLabel
+          Left = 131
+          Top = 30
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label3: TLabel
+          Left = 131
+          Top = 52
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label4: TLabel
+          Left = 131
+          Top = 74
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label5: TLabel
+          Left = 131
+          Top = 96
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label6: TLabel
+          Left = 131
+          Top = 118
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label7: TLabel
+          Left = 131
+          Top = 140
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label8: TLabel
+          Left = 131
+          Top = 162
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label9: TLabel
+          Left = 131
+          Top = 184
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Label17: TLabel
+          Left = 134
+          Top = 360
+          Width = 3
+          Height = 13
+          Alignment = taRightJustify
+          Visible = False
+        end
+        object Edit1: TJvSpinEdit
+          Left = 148
+          Top = 5
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 0
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit10: TJvSpinEdit
+          Tag = 9
+          Left = 148
+          Top = 203
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 1
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit11: TJvSpinEdit
+          Tag = 10
+          Left = 148
+          Top = 225
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 2
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit12: TJvSpinEdit
+          Tag = 11
+          Left = 148
+          Top = 247
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 3
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit13: TJvSpinEdit
+          Tag = 12
+          Left = 148
+          Top = 269
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 4
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit14: TJvSpinEdit
+          Tag = 13
+          Left = 148
+          Top = 291
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 5
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit15: TJvSpinEdit
+          Tag = 14
+          Left = 148
+          Top = 313
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 6
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit16: TJvSpinEdit
+          Tag = 15
+          Left = 148
+          Top = 335
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 7
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit2: TJvSpinEdit
+          Tag = 1
+          Left = 148
+          Top = 27
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 8
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit3: TJvSpinEdit
+          Tag = 2
+          Left = 148
+          Top = 49
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 9
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit4: TJvSpinEdit
+          Tag = 3
+          Left = 148
+          Top = 71
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 10
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit5: TJvSpinEdit
+          Tag = 4
+          Left = 148
+          Top = 93
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 11
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit6: TJvSpinEdit
+          Tag = 5
+          Left = 148
+          Top = 115
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 12
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit7: TJvSpinEdit
+          Tag = 6
+          Left = 148
+          Top = 137
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 13
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit8: TJvSpinEdit
+          Tag = 7
+          Left = 148
+          Top = 159
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 14
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit9: TJvSpinEdit
+          Tag = 8
+          Left = 148
+          Top = 181
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 15
+          Visible = False
+          OnChange = Edit1Change
+        end
+        object Edit17: TJvSpinEdit
+          Tag = 16
+          Left = 148
+          Top = 357
+          Width = 137
+          Height = 21
+          Increment = 0.100000000000000000
+          ValueType = vtFloat
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          TabOrder = 16
+          Visible = False
+          OnChange = Edit1Change
+        end
+      end
     end
     object ListBoxEx10: TListBoxEx
       Tag = 10
@@ -1179,7 +988,7 @@ object FormulaGUIForm: TFormulaGUIForm
       ItemHeight = 12
       ParentFont = False
       Sorted = True
-      TabOrder = 32
+      TabOrder = 16
       Visible = False
       OnDrawItem = ListBoxEx9DrawItem
       OnMouseDown = ListBoxEx1MouseDown
@@ -1208,12 +1017,39 @@ object FormulaGUIForm: TFormulaGUIForm
       ItemHeight = 12
       ParentFont = False
       Sorted = True
-      TabOrder = 21
+      TabOrder = 5
       Visible = False
       OnDrawItem = ListBoxEx9DrawItem
       OnMouseDown = ListBoxEx1MouseDown
       OnMouseEnter = ListBoxEx1MouseEnter
       OnMouseLeave = ListBoxEx1MouseLeave
+      OnMouseMove = ListBoxEx1MouseMove
+    end
+    object ListBoxEx11: TListBoxEx
+      Tag = 11
+      Left = 8
+      Top = 75
+      Width = 185
+      Height = 25
+      Style = lbOwnerDrawFixed
+      AutoComplete = False
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvRaised
+      BorderStyle = bsNone
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Microsoft Sans Serif'
+      Font.Style = []
+      ItemHeight = 12
+      ParentFont = False
+      Sorted = True
+      TabOrder = 15
+      Visible = False
+      OnDrawItem = ListBoxEx9DrawItem
+      OnMouseDown = ListBoxEx11MouseDown
       OnMouseMove = ListBoxEx1MouseMove
     end
     object ListBoxEx12: TListBoxEx
@@ -1237,7 +1073,7 @@ object FormulaGUIForm: TFormulaGUIForm
       ItemHeight = 12
       ParentFont = False
       Sorted = True
-      TabOrder = 34
+      TabOrder = 18
       Visible = False
       OnDrawItem = ListBoxEx9DrawItem
       OnMouseDown = ListBoxEx1MouseDown
@@ -1245,16 +1081,270 @@ object FormulaGUIForm: TFormulaGUIForm
       OnMouseLeave = ListBoxEx1MouseLeave
       OnMouseMove = ListBoxEx1MouseMove
     end
+    object ListBoxEx15: TListBoxEx
+      Tag = 9
+      Left = 207
+      Top = 73
+      Width = 293
+      Height = 369
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvRaised
+      BorderStyle = bsNone
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Microsoft Sans Serif'
+      Font.Style = []
+      ItemHeight = 12
+      ParentFont = False
+      Sorted = True
+      TabOrder = 14
+      Visible = False
+      OnMouseDown = ListBoxEx15MouseDown
+      OnMouseMove = ListBoxEx1MouseMove
+    end
+    object ListBoxEx2: TListBoxEx
+      Tag = 2
+      Left = 24
+      Top = 91
+      Width = 121
+      Height = 97
+      Style = lbOwnerDrawFixed
+      AutoComplete = False
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvRaised
+      BorderStyle = bsNone
+      Enabled = False
+      ItemHeight = 13
+      Sorted = True
+      TabOrder = 6
+      Visible = False
+      OnDrawItem = ListBoxEx9DrawItem
+      OnMouseDown = ListBoxEx1MouseDown
+      OnMouseEnter = ListBoxEx1MouseEnter
+      OnMouseLeave = ListBoxEx1MouseLeave
+      OnMouseMove = ListBoxEx1MouseMove
+    end
+    object ListBoxEx3: TListBoxEx
+      Tag = 3
+      Left = 32
+      Top = 99
+      Width = 121
+      Height = 97
+      Style = lbOwnerDrawFixed
+      AutoComplete = False
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvRaised
+      BorderStyle = bsNone
+      Enabled = False
+      ItemHeight = 13
+      Sorted = True
+      TabOrder = 7
+      Visible = False
+      OnDrawItem = ListBoxEx9DrawItem
+      OnMouseDown = ListBoxEx1MouseDown
+      OnMouseEnter = ListBoxEx1MouseEnter
+      OnMouseLeave = ListBoxEx1MouseLeave
+      OnMouseMove = ListBoxEx1MouseMove
+    end
+    object ListBoxEx4: TListBoxEx
+      Tag = 4
+      Left = 40
+      Top = 107
+      Width = 121
+      Height = 97
+      Style = lbOwnerDrawFixed
+      AutoComplete = False
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvRaised
+      BorderStyle = bsNone
+      Enabled = False
+      ItemHeight = 13
+      Sorted = True
+      TabOrder = 8
+      Visible = False
+      OnDrawItem = ListBoxEx9DrawItem
+      OnMouseDown = ListBoxEx1MouseDown
+      OnMouseEnter = ListBoxEx1MouseEnter
+      OnMouseLeave = ListBoxEx1MouseLeave
+      OnMouseMove = ListBoxEx1MouseMove
+    end
+    object ListBoxEx5: TListBoxEx
+      Tag = 5
+      Left = 48
+      Top = 115
+      Width = 121
+      Height = 97
+      Style = lbOwnerDrawFixed
+      AutoComplete = False
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvRaised
+      BorderStyle = bsNone
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Microsoft Sans Serif'
+      Font.Style = []
+      ItemHeight = 12
+      ParentFont = False
+      Sorted = True
+      TabOrder = 9
+      Visible = False
+      OnDrawItem = ListBoxEx9DrawItem
+      OnMouseDown = ListBoxEx1MouseDown
+      OnMouseEnter = ListBoxEx1MouseEnter
+      OnMouseLeave = ListBoxEx1MouseLeave
+      OnMouseMove = ListBoxEx1MouseMove
+    end
+    object ListBoxEx6: TListBoxEx
+      Tag = 6
+      Left = 56
+      Top = 123
+      Width = 121
+      Height = 97
+      Style = lbOwnerDrawFixed
+      AutoComplete = False
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvRaised
+      BorderStyle = bsNone
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Microsoft Sans Serif'
+      Font.Style = []
+      ItemHeight = 12
+      ParentFont = False
+      Sorted = True
+      TabOrder = 10
+      Visible = False
+      OnDrawItem = ListBoxEx9DrawItem
+      OnMouseDown = ListBoxEx1MouseDown
+      OnMouseEnter = ListBoxEx1MouseEnter
+      OnMouseLeave = ListBoxEx1MouseLeave
+      OnMouseMove = ListBoxEx1MouseMove
+    end
+    object ListBoxEx7: TListBoxEx
+      Tag = 7
+      Left = 64
+      Top = 131
+      Width = 121
+      Height = 97
+      Style = lbOwnerDrawFixed
+      AutoComplete = False
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvRaised
+      BorderStyle = bsNone
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Microsoft Sans Serif'
+      Font.Style = []
+      ItemHeight = 12
+      ParentFont = False
+      Sorted = True
+      TabOrder = 11
+      Visible = False
+      OnDrawItem = ListBoxEx9DrawItem
+      OnMouseDown = ListBoxEx1MouseDown
+      OnMouseEnter = ListBoxEx1MouseEnter
+      OnMouseLeave = ListBoxEx1MouseLeave
+      OnMouseMove = ListBoxEx1MouseMove
+    end
+    object ListBoxEx8: TListBoxEx
+      Tag = 8
+      Left = 72
+      Top = 139
+      Width = 121
+      Height = 97
+      Style = lbOwnerDrawFixed
+      AutoComplete = False
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvRaised
+      BorderStyle = bsNone
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Microsoft Sans Serif'
+      Font.Style = []
+      ItemHeight = 12
+      ParentFont = False
+      Sorted = True
+      TabOrder = 12
+      Visible = False
+      OnDrawItem = ListBoxEx9DrawItem
+      OnMouseDown = ListBoxEx1MouseDown
+      OnMouseEnter = ListBoxEx1MouseEnter
+      OnMouseLeave = ListBoxEx1MouseLeave
+      OnMouseMove = ListBoxEx1MouseMove
+    end
+    object ListBoxEx9: TListBoxEx
+      Tag = 9
+      Left = 80
+      Top = 149
+      Width = 121
+      Height = 97
+      Style = lbOwnerDrawFixed
+      AutoComplete = False
+      BevelInner = bvSpace
+      BevelKind = bkFlat
+      BevelOuter = bvRaised
+      BorderStyle = bsNone
+      Enabled = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -9
+      Font.Name = 'Microsoft Sans Serif'
+      Font.Style = []
+      ItemHeight = 12
+      ParentFont = False
+      Sorted = True
+      TabOrder = 13
+      Visible = False
+      OnDrawItem = ListBoxEx9DrawItem
+      OnMouseDown = ListBoxEx1MouseDown
+      OnMouseEnter = ListBoxEx1MouseEnter
+      OnMouseLeave = ListBoxEx1MouseLeave
+      OnMouseMove = ListBoxEx1MouseMove
+    end
+    object RichEdit1: TRichEdit
+      Left = 207
+      Top = 73
+      Width = 293
+      Height = 369
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -11
+      Font.Name = 'Courier New'
+      Font.Style = []
+      ParentFont = False
+      ReadOnly = True
+      ScrollBars = ssVertical
+      TabOrder = 2
+      Visible = False
+      Zoom = 100
+    end
   end
   object Panel1: TPanel
     Left = 0
-    Top = 494
-    Width = 315
+    Top = 562
+    Width = 335
     Height = 70
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    object Label17: TLabel
+    object RBailoutLabel: TLabel
       Left = 197
       Top = 4
       Width = 45
@@ -1262,7 +1352,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Alignment = taRightJustify
       Caption = 'R bailout:'
     end
-    object Label20: TLabel
+    object MaxIterLabel: TLabel
       Left = 26
       Top = 27
       Width = 71
@@ -1270,7 +1360,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Alignment = taRightJustify
       Caption = 'Max. iterations:'
     end
-    object Label21: TLabel
+    object MinIterLabel: TLabel
       Left = 29
       Top = 4
       Width = 68
@@ -1278,7 +1368,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Alignment = taRightJustify
       Caption = 'Min. iterations:'
     end
-    object Label19: TLabel
+    object MaxIterHybridsPartLabel: TLabel
       Left = 6
       Top = 50
       Width = 91
@@ -1287,7 +1377,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Caption = 'Maxits hybrid part2:'
       Visible = False
     end
-    object Edit17: TEdit
+    object RBailoutEdit: TEdit
       Left = 250
       Top = 1
       Width = 49
@@ -1307,7 +1397,7 @@ object FormulaGUIForm: TFormulaGUIForm
       TabOrder = 0
       Text = '16'
     end
-    object Edit18: TEdit
+    object MaxIterEdit: TEdit
       Left = 105
       Top = 24
       Width = 49
@@ -1315,7 +1405,7 @@ object FormulaGUIForm: TFormulaGUIForm
       TabOrder = 1
       Text = '60'
     end
-    object Edit19: TEdit
+    object MinIterEdit: TEdit
       Left = 105
       Top = 1
       Width = 49
@@ -1360,7 +1450,7 @@ object FormulaGUIForm: TFormulaGUIForm
         'Inside render'
         'In and outside')
     end
-    object Edit24: TEdit
+    object MaxIterHybridPart2Edit: TEdit
       Left = 105
       Top = 47
       Width = 49
@@ -1378,7 +1468,7 @@ object FormulaGUIForm: TFormulaGUIForm
   object TabControl2: TTabControl
     Left = 0
     Top = 0
-    Width = 315
+    Width = 335
     Height = 19
     Hint = 
       ' Type of hybrid:'#13#10'Alternate:  formulas 1 to 6 alternated.'#13#10'Inter' +
@@ -1424,7 +1514,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Caption = '1'
       Visible = False
     end
-    object Button2: TButton
+    object RandomButton: TButton
       Left = 258
       Top = 0
       Width = 18
@@ -1433,10 +1523,9 @@ object FormulaGUIForm: TFormulaGUIForm
       ParentShowHint = False
       ShowHint = False
       TabOrder = 0
-      Visible = False
-      OnClick = Button2Click
+      OnClick = RandomButtonClick
     end
-    object UpDown1: TUpDown
+    object HybridStartBtn: TUpDown
       Left = 232
       Top = 1
       Width = 23
@@ -1447,13 +1536,13 @@ object FormulaGUIForm: TFormulaGUIForm
       Position = 2
       TabOrder = 1
       Visible = False
-      OnClick = UpDown1Click
+      OnClick = HybridStartBtnClick
     end
   end
   object Panel3: TPanel
     Left = 0
-    Top = 426
-    Width = 315
+    Top = 494
+    Width = 335
     Height = 28
     Align = alBottom
     BevelOuter = bvLowered
@@ -1500,7 +1589,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Text = '0.5'
       Visible = False
     end
-    object ComboBox2: TComboBox
+    object DECombineCmb: TComboBox
       Left = 64
       Top = 4
       Width = 66
