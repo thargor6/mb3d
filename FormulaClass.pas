@@ -17,6 +17,8 @@ type
     iConstCount:     Integer;
     bCPmemReserved:  LongBool;
     VarBuffer:       array of Byte;
+    procedure        Init;
+    procedure        Cleanup;
   public
     pConstPointer16: Pointer;
     pCodePointer:    TPhybridIteration;         //points to formula one iteration or to other functions
@@ -72,8 +74,8 @@ end;
 procedure TFormulaClass.AssignOld(OldFormula: PTCustomFormula);
 var i: Integer;
 begin
-    Destroy;
-    Create;
+    Cleanup;
+    Init;
     SIMDlevel := OldFormula.SIMDlevel;
     dDEscale := OldFormula.dDEscale;
     dADEscale := OldFormula.dADEscale;
@@ -120,6 +122,11 @@ end;
 constructor TFormulaClass.Create;
 begin
     inherited Create;
+    Init;
+end;
+
+procedure TFormulaClass.Init;
+begin
     pCodePointer := @EmptyFormula;
     pConstPointer16 := PAligned16;
     pIniPointer := nil;
@@ -135,6 +142,12 @@ end;
 destructor TFormulaClass.Destroy;
 //var i: Integer;
 begin
+    Cleanup;
+    inherited Destroy;
+end;
+
+procedure TFormulaClass.Cleanup;
+begin
     if bCPmemReserved and (pCodePointer <> @EmptyFormula) then
       VirtualFree(pCodePointer, {0}4096, {MEM_RELEASE} MEM_DECOMMIT);
     if pIniPointer <> nil then
@@ -148,7 +161,6 @@ begin
     SetLength(dOptionVals, 0);
     SetLength(sOptionStrings, 0);
     Description := '';
-    inherited Destroy;
 end;
 
 end.

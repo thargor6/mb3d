@@ -353,7 +353,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure N11Click(Sender: TObject);
     procedure SpinEdit2ChangingEx(Sender: TObject; var AllowChange: Boolean;
-      NewValue: SmallInt; Direction: TUpDownDirection);
+      NewValue: Integer; Direction: TUpDownDirection);
     procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
     procedure SpinButton2DownClick(Sender: TObject);
     procedure SpinButton2UpClick(Sender: TObject);
@@ -3288,7 +3288,7 @@ begin
 end;
 
 procedure TMand3DForm.SpinEdit2ChangingEx(Sender: TObject;
-  var AllowChange: Boolean; NewValue: SmallInt; Direction: TUpDownDirection);
+  var AllowChange: Boolean; NewValue: Integer; Direction: TUpDownDirection);
 begin
     AllPresetsUp;
 end;
