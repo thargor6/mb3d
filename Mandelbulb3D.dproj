@@ -1,0 +1,268 @@
+﻿	<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+		<PropertyGroup>
+			<ProjectGuid>{39ABE787-3E7A-447F-991E-C089C9C6F128}</ProjectGuid>
+			<MainSource>Mandelbulb3D.dpr</MainSource>
+			<Base>True</Base>
+			<Config Condition="'$(Config)'==''">Release</Config>
+			<TargetedPlatforms>1</TargetedPlatforms>
+			<AppType>Application</AppType>
+			<FrameworkType>VCL</FrameworkType>
+			<ProjectVersion>13.4</ProjectVersion>
+			<Platform Condition="'$(Platform)'==''">Win32</Platform>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Base' or '$(Base)'!=''">
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Base)'=='true') or '$(Base_Win32)'!=''">
+			<Base_Win32>true</Base_Win32>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Release' or '$(Cfg_1)'!=''">
+			<Cfg_1>true</Cfg_1>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_1)'=='true') or '$(Cfg_1_Win32)'!=''">
+			<Cfg_1_Win32>true</Cfg_1_Win32>
+			<CfgParent>Cfg_1</CfgParent>
+			<Cfg_1>true</Cfg_1>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Config)'=='Debug' or '$(Cfg_2)'!=''">
+			<Cfg_2>true</Cfg_2>
+			<CfgParent>Base</CfgParent>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
+			<Cfg_2_Win32>true</Cfg_2_Win32>
+			<CfgParent>Cfg_2</CfgParent>
+			<Cfg_2>true</Cfg_2>
+			<Base>true</Base>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base)'!=''">
+			<Manifest_File>$(BDS)\bin\default_app.manifest</Manifest_File>
+			<Icon_MainIcon>Mandelbulb3D_Icon4.ico</Icon_MainIcon>
+			<DCC_IOChecking>false</DCC_IOChecking>
+			<DCC_ImageBase>00400000</DCC_ImageBase>
+			<VerInfo_Keys>CompanyName=;FileDescription=3D fractal rendering;FileVersion=1.7.9.5;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=Mandelbulb3D;ProductName=;ProductVersion=;Comments=Freeware</VerInfo_Keys>
+			<DCC_UsePackage>vcl;rtl;$(DCC_UsePackage)</DCC_UsePackage>
+			<DCC_Namespace>Vcl;Vcl.Imaging;Vcl.Shell;System;Data;Winapi;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_Build>5</VerInfo_Build>
+			<DCC_MaxStackSize>16777216</DCC_MaxStackSize>
+			<DCC_N>true</DCC_N>
+			<DCC_K>false</DCC_K>
+			<DCC_S>false</DCC_S>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
+			<DCC_F>false</DCC_F>
+			<DCC_E>false</DCC_E>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Base_Win32)'!=''">
+			<DCC_IOChecking>false</DCC_IOChecking>
+			<Icon_MainIcon>Mandelbulb3D_Icon3.ico</Icon_MainIcon>
+			<DCC_ImageBase>00400000</DCC_ImageBase>
+			<DCC_Namespace>System.Win;$(DCC_Namespace)</DCC_Namespace>
+			<VerInfo_Locale>1033</VerInfo_Locale>
+			<DCC_UsePackage>vclx;VclSmp;vclshlctrls;$(DCC_UsePackage)</DCC_UsePackage>
+			<VerInfo_Keys>CompanyName=;FileDescription=;FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<DCC_MaxStackSize>16777216</DCC_MaxStackSize>
+			<DCC_SymbolReferenceInfo>1</DCC_SymbolReferenceInfo>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1)'!=''">
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<VerInfo_MinorVer>7</VerInfo_MinorVer>
+			<VerInfo_Release>9</VerInfo_Release>
+			<Icon_MainIcon>m3d64.ico</Icon_MainIcon>
+			<DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
+			<DCC_ImportedDataReferences>false</DCC_ImportedDataReferences>
+			<DCC_LocalDebugSymbols>false</DCC_LocalDebugSymbols>
+			<DCC_DebugInformation>false</DCC_DebugInformation>
+			<DCC_SymbolReferenceInfo>0</DCC_SymbolReferenceInfo>
+			<DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
+			<VerInfo_MinorVer>8</VerInfo_MinorVer>
+			<DCC_Inlining>off</DCC_Inlining>
+			<DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
+			<DCC_DebugInformation>true</DCC_DebugInformation>
+			<DCC_MinStackSize>1048576</DCC_MinStackSize>
+			<BRCC_OutputDir>F:\Dokumente und Einstellungen\Jens\Eigene Dateien\Delphi6progs\Mandel3D\</BRCC_OutputDir>
+			<VerInfo_Build>0</VerInfo_Build>
+			<VerInfo_Keys>CompanyName=;FileDescription=3d fractal rendering;FileVersion=1.8.9.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.8.9;Comments=</VerInfo_Keys>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2)'!=''">
+			<DCC_RunTimeTypeInfo>true</DCC_RunTimeTypeInfo>
+			<DCC_SymbolReferenceInfo>2</DCC_SymbolReferenceInfo>
+			<DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
+			<DCC_Optimize>false</DCC_Optimize>
+		</PropertyGroup>
+		<PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+			<DCC_IOChecking>true</DCC_IOChecking>
+			<DCC_IntegerOverflowCheck>true</DCC_IntegerOverflowCheck>
+			<DCC_RangeChecking>true</DCC_RangeChecking>
+			<DCC_GenerateStackFrames>false</DCC_GenerateStackFrames>
+			<DCC_DebugDCUs>true</DCC_DebugDCUs>
+			<VerInfo_Build>3</VerInfo_Build>
+			<VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
+			<VerInfo_MinorVer>7</VerInfo_MinorVer>
+			<VerInfo_Release>9</VerInfo_Release>
+			<Icon_MainIcon>m3d64.ico</Icon_MainIcon>
+			<VerInfo_Keys>CompanyName=;FileDescription=3d fractal rendering;FileVersion=1.7.9.5;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.0.0.0;Comments=</VerInfo_Keys>
+			<DCC_Optimize>true</DCC_Optimize>
+		</PropertyGroup>
+		<Import Condition="'$(Base)'!='' And Exists('release.optset')" Project="release.optset"/>
+		<ItemGroup>
+			<DelphiCompile Include="$(MainSource)">
+				<MainSource>MainSource</MainSource>
+			</DelphiCompile>
+			<DCCReference Include="Mand.pas">
+				<Form>Mand3DForm</Form>
+			</DCCReference>
+			<DCCReference Include="LightAdjust.pas">
+				<Form>LightAdjustForm</Form>
+			</DCCReference>
+			<DCCReference Include="CalcThread.pas"/>
+			<DCCReference Include="AmbShadowCalcThreadN.pas"/>
+			<DCCReference Include="DivUtils.pas"/>
+			<DCCReference Include="formulas.pas"/>
+			<DCCReference Include="PaintThread.pas"/>
+			<DCCReference Include="FileHandling.pas"/>
+			<DCCReference Include="ImageProcess.pas"/>
+			<DCCReference Include="Navigator.pas">
+				<Form>FNavigator</Form>
+			</DCCReference>
+			<DCCReference Include="NaviCalcThread.pas"/>
+			<DCCReference Include="Math3D.pas"/>
+			<DCCReference Include="CalcThread2D.pas"/>
+			<DCCReference Include="CustomFormulas.pas"/>
+			<DCCReference Include="Animation.pas">
+				<Form>AnimationForm</Form>
+			</DCCReference>
+			<DCCReference Include="Calc.pas"/>
+			<DCCReference Include="AniPreviewWindow.pas">
+				<Form>AniPreviewForm</Form>
+			</DCCReference>
+			<DCCReference Include="HeaderTrafos.pas"/>
+			<DCCReference Include="TypeDefinitions.pas"/>
+			<DCCReference Include="AniProcess.pas">
+				<Form>AniProcessForm</Form>
+			</DCCReference>
+			<DCCReference Include="IniDirsForm.pas">
+				<Form>IniDirForm</Form>
+			</DCCReference>
+			<DCCReference Include="FormulaGUI.pas">
+				<Form>FormulaGUIForm</Form>
+			</DCCReference>
+			<DCCReference Include="DOF.pas"/>
+			<DCCReference Include="ColorPick.pas">
+				<Form>ColorForm</Form>
+			</DCCReference>
+			<DCCReference Include="Paint.pas"/>
+			<DCCReference Include="CalcAmbShadowDE.pas"/>
+			<DCCReference Include="Interpolation.pas"/>
+			<DCCReference Include="CalcHardShadow.pas"/>
+			<DCCReference Include="AmbHiQ.pas"/>
+			<DCCReference Include="BatchForm.pas">
+				<Form>BatchForm1</Form>
+			</DCCReference>
+			<DCCReference Include="Undo.pas"/>
+			<DCCReference Include="CalcSR.pas"/>
+			<DCCReference Include="CalcPart.pas"/>
+			<DCCReference Include="VoxelExport.pas">
+				<Form>FVoxelExport</Form>
+			</DCCReference>
+			<DCCReference Include="CalcVoxelSliceThread.pas"/>
+			<DCCReference Include="calcBlocky.pas"/>
+			<DCCReference Include="FormulaParser.pas">
+				<Form>FormulaEditor</Form>
+			</DCCReference>
+			<DCCReference Include="CalcMonteCarlo.pas"/>
+			<DCCReference Include="Tiling.pas">
+				<Form>TilingForm</Form>
+			</DCCReference>
+			<DCCReference Include="MonteCarloForm.pas">
+				<Form>MCForm</Form>
+			</DCCReference>
+			<DCCReference Include="TextBox.pas">
+				<Form>FTextBox</Form>
+			</DCCReference>
+			<DCCReference Include="BRInfoWindow.pas">
+				<Form>BRInfoForm</Form>
+			</DCCReference>
+			<DCCReference Include="FFT.pas"/>
+			<DCCReference Include="RegisterM3Pgraphic.pas"/>
+			<DCCReference Include="ColorSSAO.pas"/>
+			<DCCReference Include="ThreadUtils.pas"/>
+			<DCCReference Include="Maps.pas"/>
+			<DCCReference Include="PostProcessForm.pas">
+				<Form>PostProForm</Form>
+			</DCCReference>
+			<DCCReference Include="ColorOptionForm.pas">
+				<Form>FColorOptions</Form>
+				<FormType>dfm</FormType>
+			</DCCReference>
+			<DCCReference Include="uMapCalcWindow.pas">
+				<Form>MapCalcWindow</Form>
+			</DCCReference>
+			<BuildConfiguration Include="Debug">
+				<Key>Cfg_2</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Base">
+				<Key>Base</Key>
+			</BuildConfiguration>
+			<BuildConfiguration Include="Release">
+				<Key>Cfg_1</Key>
+				<CfgParent>Base</CfgParent>
+			</BuildConfiguration>
+		</ItemGroup>
+		<ProjectExtensions>
+			<Borland.Personality>Delphi.Personality.12</Borland.Personality>
+			<Borland.ProjectType/>
+			<BorlandProject>
+				<Delphi.Personality>
+					<Source>
+						<Source Name="MainSource">Mandelbulb3D.dpr</Source>
+					</Source>
+					<VersionInfo>
+						<VersionInfo Name="IncludeVerInfo">True</VersionInfo>
+						<VersionInfo Name="AutoIncBuild">False</VersionInfo>
+						<VersionInfo Name="MajorVer">1</VersionInfo>
+						<VersionInfo Name="MinorVer">7</VersionInfo>
+						<VersionInfo Name="Release">9</VersionInfo>
+						<VersionInfo Name="Build">5</VersionInfo>
+						<VersionInfo Name="Debug">False</VersionInfo>
+						<VersionInfo Name="PreRelease">False</VersionInfo>
+						<VersionInfo Name="Special">False</VersionInfo>
+						<VersionInfo Name="Private">False</VersionInfo>
+						<VersionInfo Name="DLL">False</VersionInfo>
+						<VersionInfo Name="Locale">1031</VersionInfo>
+						<VersionInfo Name="CodePage">1252</VersionInfo>
+					</VersionInfo>
+					<VersionInfoKeys>
+						<VersionInfoKeys Name="CompanyName"/>
+						<VersionInfoKeys Name="FileDescription">3D fractal rendering</VersionInfoKeys>
+						<VersionInfoKeys Name="FileVersion">1.7.9.5</VersionInfoKeys>
+						<VersionInfoKeys Name="InternalName"/>
+						<VersionInfoKeys Name="LegalCopyright"/>
+						<VersionInfoKeys Name="LegalTrademarks"/>
+						<VersionInfoKeys Name="OriginalFilename">Mandelbulb3D</VersionInfoKeys>
+						<VersionInfoKeys Name="ProductName"/>
+						<VersionInfoKeys Name="ProductVersion">1.0.0.0</VersionInfoKeys>
+						<VersionInfoKeys Name="Comments">Freeware</VersionInfoKeys>
+					</VersionInfoKeys>
+					<Excluded_Packages>
+						<Excluded_Packages Name="$(BDSBIN)\dcl31w160.bpl">Delphi 1.0 Compatibility Components</Excluded_Packages>
+						<Excluded_Packages Name="F:\Dokumente und Einstellungen\All Users\Dokumente\RAD Studio\9.0\Bpl\PicOpen.bpl">OPD mod</Excluded_Packages>
+					</Excluded_Packages>
+				</Delphi.Personality>
+				<Platforms>
+					<Platform value="Win32">True</Platform>
+				</Platforms>
+			</BorlandProject>
+			<ProjectFileVersion>12</ProjectFileVersion>
+		</ProjectExtensions>
+		<Import Condition="Exists('$(BDS)\Bin\CodeGear.Delphi.Targets')" Project="$(BDS)\Bin\CodeGear.Delphi.Targets"/>
+		<Import Condition="Exists('$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj')" Project="$(APPDATA)\Embarcadero\$(BDSAPPDATABASEDIR)\$(PRODUCTVERSION)\UserTools.proj"/>
+	</Project>

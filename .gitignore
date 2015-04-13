@@ -1,0 +1,10 @@
+*.dcu
+History/*
+__history/*
+*.exe
+*.zip
+Mandelbulb3D.ini
+*.dsk
+*.~dsk
+*.local
+*.identcache
