@@ -81,7 +81,11 @@ const
     AccPresetItemNames: array[0..7] of String = ('SmoothNormals', 'DEstop',
       'DEaccuracy', 'BinSearch', 'ImageWidth', 'ImageScale', 'RayStepFactor', 'RayLimiter');
 
+  {$ifdef ENABLE_EXTENSIONS}
   actMandId: Integer = 45;
+  {$else}
+  actMandId: Integer = 44;
+  {$endif}
   actLightId: Integer = 7;    //0..7 only!
   actLightIdEx: Integer = 8;  //Byte 0..255 new Lightversion
   actPresetVersion: Integer = 5;
@@ -2183,10 +2187,12 @@ begin
         BlockRead(f, Para9, SizeOf(TMandHeader9) - 124)
       else if MId < 20 then
         BlockRead(f, Para9, SizeOf(TMandHeader9))
+      {$ifdef ENABLE_EXTENSIONS}
       else if MId < 45 then begin
         BlockRead(f, Para10, SizeOf(TMandHeader10));
         FillV11HeaderFromV10(Para10, Para11);
       end
+      {$endif}
       else
         BlockRead(f, Para11, SizeOf(TMandHeader11));
       if (MId < 5) and (MandHeader4.dZstart > MandHeader4.dZend) then
@@ -2251,6 +2257,7 @@ begin
           if FileSize(f) >= FilePos(f) + i + SizeOf(THeaderCustomAddonOld) then
             Seek(f, FilePos(f) + i);
 
+          {$ifdef ENABLE_EXTENSIONS}
           if MId<45 then begin
             GetMem(Para10.PCFAddon, SizeOf(THeaderCustomAddon10));
             LoadHAddon10(f, PTHeaderCustomAddon10(Para10.PCFAddon));
@@ -2259,6 +2266,9 @@ begin
           else begin
             LoadHAddon(f, PTHeaderCustomAddon(Para11.PCFAddon));
           end;
+          {$else}
+          LoadHAddon(f, PTHeaderCustomAddon(Para11.PCFAddon));
+          {$endif}
 
         end;
         if MId < 20 then UpdateFormulaOptionTo20(PTHeaderCustomAddon(Para11.PCFAddon));

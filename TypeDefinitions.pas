@@ -11,6 +11,7 @@ const
   OFF_fHPVar_V18 = OFF_nHybrid_V18 + V18_FORMULA_COUNT * 4; //+100
   OFF_fHybrid_V18 = OFF_fHPVar_V18 + V18_FORMULA_COUNT * 4; //+124
   OFF_CalcSIT = OFF_fHybrid_V18 + V18_FORMULA_COUNT * 4; //+148
+  OFF_fHln_V18 = OFF_CalcSIT + V18_FORMULA_COUNT * 4; //+148
 
   {$ifdef ENABLE_EXTENSIONS}
   MAX_FORMULA_COUNT = 8;
@@ -18,14 +19,12 @@ const
   OFF_fHPVar = OFF_nHybrid + MAX_FORMULA_COUNT * 4;
   OFF_fHybrid = OFF_fHPVar + MAX_FORMULA_COUNT * 4;
   OFF_fHln = OFF_fHybrid + MAX_FORMULA_COUNT * 4;
-  OFF_pInitialization = OFF_fHln + MAX_FORMULA_COUNT * 4;
   {$else}
   MAX_FORMULA_COUNT = V18_FORMULA_COUNT;
   OFF_nHybrid = OFF_nHybrid_V18;
   OFF_fHPVar = OFF_fHPVar_V18;
   OFF_fHybrid = OFF_fHybrid_V18;
   OFF_fHln = OFF_fHln_V18;
-  OFF_pInitialization = OFF_pInitialization_old;
   {$endif}
 
 type
@@ -129,9 +128,9 @@ type
     unused_fHPVar:     array[0..V18_FORMULA_COUNT - 1] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
     unused_fHybrid:    array[0..V18_FORMULA_COUNT - 1] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
     {$else}
-    nHybrid:    array[0..OLD_FORMULA_COUNT - 1] of Integer;  //+76 Hybrid counts / weight in interpolhybrid
-    fHPVar:     array[0..OLD_FORMULA_COUNT - 1] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
-    fHybrid:    array[0..OLD_FORMULA_COUNT - 1] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
+    nHybrid:    array[0..V18_FORMULA_COUNT - 1] of Integer;  //+76 Hybrid counts / weight in interpolhybrid
+    fHPVar:     array[0..V18_FORMULA_COUNT - 1] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
+    fHybrid:    array[0..V18_FORMULA_COUNT - 1] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
     {$endif}
     CalcSIT:    ByteBool;   //+148   Bool + more options
     bFree:      Byte;       //+149
@@ -142,7 +141,7 @@ type
     {$ifdef ENABLE_EXTENSIONS}
     unused_fHln:       array[0..V18_FORMULA_COUNT - 1] of Single;  //+164  for SmoothIts
     {$else}
-    fHln:       array[0..OLD_FORMULA_COUNT - 1] of Single;  //+164  for SmoothIts
+    fHln:       array[0..V18_FORMULA_COUNT - 1] of Single;  //+164  for SmoothIts
     {$endif}
     iRepeatFrom: Word;      //+188
     iStartFrom: Word;       //+190
@@ -162,7 +161,7 @@ type
     {$ifdef ENABLE_EXTENSIONS}
     unused_pInitialization: array[0..V18_FORMULA_COUNT - 1] of TFormulaInitialization; //+360  pointer to initialization function
     {$else}
-    pInitialization: array[0..OLD_FORMULA_COUNT - 1] of TFormulaInitialization; //+360  pointer to initialization function
+    pInitialization: array[0..V18_FORMULA_COUNT - 1] of TFormulaInitialization; //+360  pointer to initialization function
     {$endif}
     bIsInsideRender: LongBool; //+384 for dIFS to calc always all iters when inside
     OTrapMode:  Integer; //+388
@@ -194,9 +193,9 @@ type
     unused_fHPVar:     array[0..V18_FORMULA_COUNT - 1] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
     unused_fHybrid:    array[0..V18_FORMULA_COUNT - 1] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
     {$else}
-    nHybrid:    array[0..OLD_FORMULA_COUNT - 1] of Integer;  //+76 Hybrid counts / weight in interpolhybrid
-    fHPVar:     array[0..OLD_FORMULA_COUNT - 1] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
-    fHybrid:    array[0..OLD_FORMULA_COUNT - 1] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
+    nHybrid:    array[0..V18_FORMULA_COUNT - 1] of Integer;  //+76 Hybrid counts / weight in interpolhybrid
+    fHPVar:     array[0..V18_FORMULA_COUNT - 1] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
+    fHybrid:    array[0..V18_FORMULA_COUNT - 1] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
     {$endif}
     CalcSIT:    LongBool;   //+148
     DoJulia:    LongBool;   //+152
@@ -205,7 +204,7 @@ type
     {$ifdef ENABLE_EXTENSIONS}
     unused_fHln:       array[0..V18_FORMULA_COUNT - 1] of Single;  //+164  for SmoothIts
     {$else}
-    fHln:       array[0..OLD_FORMULA_COUNT - 1] of Single;  //+164  for SmoothIts
+    fHln:       array[0..V18_FORMULA_COUNT - 1] of Single;  //+164  for SmoothIts
     {$endif}
     iRepeatFrom: Integer;   //+188
     OTrap:      Double;     //+192
