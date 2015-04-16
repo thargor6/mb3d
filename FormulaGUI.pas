@@ -11,13 +11,10 @@ type
   TFormulaGUIForm = class(TForm)
     TabControl1: TTabControl;
     Panel1: TPanel;
-    EditItCount: TEdit;
-    LabelItCount: TLabel;
     RBailoutLabel: TLabel;
     RBailoutEdit: TEdit;
     SpeedButton11: TSpeedButton;
     OpenDialog3: TOpenDialog;
-    CheckBox1: TCheckBox;
     TabControl2: TTabControl;
     RandomButton: TButton;
     MaxIterEdit: TEdit;
@@ -34,7 +31,6 @@ type
     ZWLabel: TLabel;
     SpeedButton2: TSpeedButton;
     RichEdit1: TRichEdit;
-    Button3: TButton;
     Button4: TButton;
     Timer4: TTimer;
     Timer5: TTimer;
@@ -44,11 +40,9 @@ type
     ListBoxEx4: TListBoxEx;
     ListBoxEx5: TListBoxEx;
     Bevel1: TBevel;
-    Bevel2: TBevel;
     ListBoxEx6: TListBoxEx;
     SpeedButton3: TSpeedButton;
     CheckBox2: TCheckBox;
-    ExchangeFormulaRightBtn: TSpeedButton;
     ListBoxEx7: TListBoxEx;
     ListBoxEx8: TListBoxEx;
     ListBoxEx9: TListBoxEx;
@@ -137,11 +131,17 @@ type
     Label9: TLabel;
     Edit17: TJvSpinEdit;
     Label17: TLabel;
-    ExchangeFormulaLeftBtn: TSpeedButton;
     AutoRefreshCheckbox: TCheckBox;
     Bevel3: TBevel;
     EditStepField: TEdit;
     Label19: TLabel;
+    Panel5: TPanel;
+    EditItCount: TEdit;
+    LabelItCount: TLabel;
+    CheckBox1: TCheckBox;
+    ExchangeFormulaLeftBtn: TSpeedButton;
+    ExchangeFormulaRightBtn: TSpeedButton;
+    Button3: TButton;
     procedure TabControl1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SpeedButton11Click(Sender: TObject);
