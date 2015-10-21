@@ -395,6 +395,7 @@ begin
     begin
       LBE := (FindComponent('ListBoxEx' + IntToStr(i)) as TListBoxEx);
       LBE.Clear;
+      LBE.Constraints.MaxHeight := MaxLBheight;
       if i = 4 then LBE.Items.Add(' ');
     end;
     for i := 0 to 6 do AddFormulaName(InternFormulaNames[i], InternFormulasDEfunc[i]);
@@ -588,7 +589,7 @@ begin
         SpeedButtonEx11.Visible := True;
       //  FGUIFormDropDownButtonCount := 10;
       end;
-      MaxLBheight := TabControl1.Height - SpeedButtonEx1.Top - SpeedButtonEx1.Height - 4;
+      MaxLBheight := TabControl1.Height - RichEdit1.Top - Panel5.Height;
       LoadFormulaNames;
     end;
     if Testing then Showmessage('M3D formulaform show done');

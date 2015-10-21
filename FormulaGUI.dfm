@@ -3,8 +3,8 @@ object FormulaGUIForm: TFormulaGUIForm
   Top = 100
   BorderStyle = bsSizeToolWin
   Caption = 'Formulas'
-  ClientHeight = 639
-  ClientWidth = 541
+  ClientHeight = 677
+  ClientWidth = 369
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -23,12 +23,14 @@ object FormulaGUIForm: TFormulaGUIForm
   TextHeight = 13
   object Panel2: TPanel
     Left = 0
-    Top = 499
-    Width = 541
+    Top = 537
+    Width = 369
     Height = 40
     Align = alBottom
     BevelOuter = bvLowered
     TabOrder = 3
+    ExplicitTop = 499
+    ExplicitWidth = 541
     object Label22: TLabel
       Left = 8
       Top = 1
@@ -100,8 +102,8 @@ object FormulaGUIForm: TFormulaGUIForm
   object TabControl1: TTabControl
     Left = 0
     Top = 19
-    Width = 541
-    Height = 452
+    Width = 369
+    Height = 490
     Align = alClient
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -146,9 +148,11 @@ object FormulaGUIForm: TFormulaGUIForm
     TabIndex = 0
     OnChange = TabControl1Change
     OnMouseDown = TabControl1MouseDown
+    ExplicitWidth = 541
+    ExplicitHeight = 452
     DesignSize = (
-      541
-      452)
+      369
+      490)
     object Bevel1: TBevel
       Left = 2
       Top = 21
@@ -437,13 +441,14 @@ object FormulaGUIForm: TFormulaGUIForm
       Left = 7
       Top = 73
       Width = 319
-      Height = 328
+      Height = 370
       VertScrollBar.Visible = False
       Anchors = [akLeft, akTop, akBottom]
       BevelInner = bvNone
       BevelOuter = bvNone
       BorderStyle = bsNone
       TabOrder = 16
+      ExplicitHeight = 332
       object Panel4: TPanel
         Left = 0
         Top = 0
@@ -1017,7 +1022,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Left = 3
       Top = 77
       Width = 338
-      Height = 328
+      Height = 366
       Anchors = [akLeft, akTop, akBottom]
       BevelInner = bvSpace
       BevelKind = bkFlat
@@ -1035,6 +1040,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Visible = False
       OnMouseDown = ListBoxEx15MouseDown
       OnMouseMove = ListBoxEx1MouseMove
+      ExplicitHeight = 328
     end
     object ListBoxEx2: TListBoxEx
       Tag = 2
@@ -1254,7 +1260,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Left = 4
       Top = 78
       Width = 335
-      Height = 327
+      Height = 365
       Anchors = [akLeft, akTop, akBottom]
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
@@ -1267,16 +1273,18 @@ object FormulaGUIForm: TFormulaGUIForm
       TabOrder = 0
       Visible = False
       Zoom = 100
+      ExplicitHeight = 327
     end
     object Panel5: TPanel
       Left = 4
-      Top = 420
-      Width = 533
+      Top = 458
+      Width = 361
       Height = 28
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 17
-      ExplicitTop = 368
+      ExplicitTop = 420
+      ExplicitWidth = 533
       object LabelItCount: TLabel
         Left = 7
         Top = 8
@@ -1391,8 +1399,8 @@ object FormulaGUIForm: TFormulaGUIForm
       end
     end
     object Button3: TButton
-      Left = 345
-      Top = 78
+      Left = 276
+      Top = 380
       Width = 57
       Height = 22
       Caption = 'Close'
@@ -1403,12 +1411,14 @@ object FormulaGUIForm: TFormulaGUIForm
   end
   object Panel1: TPanel
     Left = 0
-    Top = 539
-    Width = 541
+    Top = 577
+    Width = 369
     Height = 100
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
+    ExplicitTop = 539
+    ExplicitWidth = 541
     object RBailoutLabel: TLabel
       Left = 197
       Top = 4
@@ -1445,7 +1455,7 @@ object FormulaGUIForm: TFormulaGUIForm
     object Bevel3: TBevel
       Left = 0
       Top = 72
-      Width = 541
+      Width = 369
       Height = 28
       Align = alBottom
       ExplicitTop = 76
@@ -1576,7 +1586,7 @@ object FormulaGUIForm: TFormulaGUIForm
   object TabControl2: TTabControl
     Left = 0
     Top = 0
-    Width = 541
+    Width = 369
     Height = 19
     Hint = 
       ' Type of hybrid:'#13#10'Alternate:  formulas 1 to 6 alternated.'#13#10'Inter' +
@@ -1601,6 +1611,7 @@ object FormulaGUIForm: TFormulaGUIForm
     TabIndex = 0
     OnChange = TabControl2Change
     OnChanging = TabControl2Changing
+    ExplicitWidth = 541
     object SpeedButton3: TSpeedButton
       Left = 276
       Top = 0
@@ -1650,13 +1661,15 @@ object FormulaGUIForm: TFormulaGUIForm
   end
   object Panel3: TPanel
     Left = 0
-    Top = 471
-    Width = 541
+    Top = 509
+    Width = 369
     Height = 28
     Align = alBottom
     BevelOuter = bvLowered
     TabOrder = 4
     Visible = False
+    ExplicitTop = 471
+    ExplicitWidth = 541
     object Label18: TLabel
       Left = 154
       Top = 7
