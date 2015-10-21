@@ -84,7 +84,7 @@ const
 
 implementation
 
-uses Mand, Math, Dialogs, Windows, Math3D, formulas, FormulaGUI, HeaderTrafos;
+uses Mand, Math, Dialogs, Windows, Math3D, formulas, FormulaGUI, HeaderTrafos, FormulaCompiler, Classes;
 
 procedure CheckHybridOptions(pHCA: PTHeaderCustomAddon);
 var x, end1, repeat1, start2, end2, repeat2: Integer;
@@ -683,7 +683,7 @@ begin
     Result := CanLoadCustomFormula(IncludeTrailingPathDelimiter(IniDirs[3]) + FormulaName + '.m3f', df);
 end;
 
-function LoadCustomFormula(FileName: String; var lCustomFormula: TCustomFormula; 
+function LoadCustomFormula(FileName: String; var lCustomFormula: TCustomFormula;
                            var CustomFname: array of Byte; var dOptionValues: array of Double;
                            bVerbose: LongBool; MinModTime: TDatetime): Boolean;
 var n, i, j: Integer;
@@ -691,19 +691,25 @@ var n, i, j: Integer;
     s, s2, s3: String;
     pb: PByte;
     d: Double;
+    EndOfSection: Boolean;
+    Code: TStringList;
+    CompiledFormula: TCompiledFormula;
+
 const                                                    //DEoption > 0 if analytic on X4
     cOptions: String = '.SSE2.DESC.SIPO.RSTO.SSE3.SSSE.SSE4.VERS.DEOP.DIFS.ADES.';
     cOptions2: String = '.DOUBLE.SINGLE.INTEGER.DOUBLEANGLE.SINGLEANGLE.3DOUBLEANGLES.3SINGLEANGLES.BOXSCALE.FOLDING.DSQUARE.'+
                         'NOVARIABLE.FOLDING16.6SINGLEANGLES.DRECIPRO.2DOUBLES..DSQRRECI..2SINGLES..4SINGLES..3SCALESANGLES.SCALESROT.2INTEGER..SRECI2....DRECI2.';
     cVars: String = 'DOUBLINTINT64SINGLE';
     sra: array[0..5] of String = (' YZ',' XZ',' XY',' XW',' YW',' ZW');
-procedure LoadNextStr;
-begin
+
+  procedure LoadNextStr;
+  begin
     repeat
       Readln(f, s);
       s := Trim(s);
     until EOF(f) or (s > '');
-end;
+  end;
+
 begin
     Result := False;
     AssignFile(f, FileName);
@@ -850,6 +856,32 @@ begin
           Inc(iConstCount);
         until (Length(s) > 0) and (s[1] = '[');
       end;
+
+      if s = '[SOURCE]' then begin
+        Code := TStringList.Create;
+        try
+          repeat
+            Readln(f, s);
+            s2 := Trim(s);
+            EndOfSection := (Length(s2) > 0) and (s2[1] = '[') and (s2[Length(s2)]=']');
+            if not EndOfSection then
+              Code.Add(s);
+          until EOF(f) or EndOfSection;
+          if Code.Count > 0 then begin
+            CompiledFormula := TFormulaCompilerRegistry.GetCompilerInstance(langDELPHI).CompileFormula(Code);
+            if CompiledFormula.IsValid then begin
+              pCodePointer := TPhybridIteration(CompiledFormula.CodePointer);
+              bCPmemReserved := False;
+              Result := True;
+            end
+            else
+              raise Exception.Create(Code.Text+#13#10+ CompiledFormula.ErrorMessage.Text);
+          end;
+        finally
+          Code.Free;
+        end;
+      end;
+
       if s = '[CODE]' then
       begin
         if (not bCPmemReserved) or (pCodePointer = nil) then
@@ -871,32 +903,34 @@ begin
           end;
         until EOF(f) or (s = '[END]');
         Result := (n > 10);
-        if Result then
-        begin
-          CFdescription := '';
-          n := 0;     //load formula description
-          repeat
-            Readln(f, s);
-            s := Trim(s);
-          until (Length(s) > 0) or EOF(f);
-          if Length(s) > 0 then
-          repeat
-            CFdescription := CFdescription + s + #13 + #10;
-            if EOF(f) then n := 100 else Readln(f, s);
-            Inc(n);
-          until n > 100;
-          LastModTime := GetFileModDate(FileName);
-          s3 := ExtractFileName(FileName);
-          n := 1;
-          while (n < 32) and (s3[n] <> '.') do
-          begin
-            CustomFname[n - 1] := Ord(s3[n]);
-            CustomFname[n] := 0;
-            Inc(n);
-          end;
-          InsertDescription(CustomFtoStr(CustomFname), CFdescription, LastModTime);
-        end;
       end;
+
+      if Result and (s='[END]') then
+      begin
+        CFdescription := '';
+        n := 0;     //load formula description
+        repeat
+          Readln(f, s);
+          s := Trim(s);
+        until (Length(s) > 0) or EOF(f);
+        if Length(s) > 0 then
+        repeat
+          CFdescription := CFdescription + s + #13 + #10;
+          if EOF(f) then n := 100 else Readln(f, s);
+          Inc(n);
+        until n > 100;
+        LastModTime := GetFileModDate(FileName);
+        s3 := ExtractFileName(FileName);
+        n := 1;
+        while (n < 32) and (s3[n] <> '.') do
+        begin
+          CustomFname[n - 1] := Ord(s3[n]);
+          CustomFname[n] := 0;
+          Inc(n);
+        end;
+        InsertDescription(CustomFtoStr(CustomFname), CFdescription, LastModTime);
+      end;
+
     except
       Result := False;
     end;
