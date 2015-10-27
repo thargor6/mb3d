@@ -1610,8 +1610,8 @@ Initialization
 
   CPU_Supported;
 
- // SupportSSE := False; //for testing
-  //SupportSSE2 := False; //for testing
+  // SupportSSE := False; //for testing
+  // SupportSSE2 := False; //for testing
 
   PAligned16 := Pointer((Cardinal(@SIMDbuf[0]) + 127) and $FFFFFFF0);
   PDouble(Cardinal(PAligned16) - 8)^    := 0.5;          //general SmoothIt calculation
@@ -1646,7 +1646,6 @@ Initialization
   {$IFNDEF DEBUG}
     set8087cw($133F);  // mask floating point errors
   {$ENDIF}
-
   if SupportSSE2 then
   begin
     fIsMemberAlternating := doHybridSSE2;
@@ -1660,7 +1659,6 @@ Initialization
     fHybridItIntPow2 := HybridItIntPow2SSE2;
     fHIntFunctions[2] := HybridItIntPow2SSE2;
   end;
-
   QueryPerformanceFrequency(Fi64);
   if Fi64 = 0 then HiQCounterMul := 1e-3 else
   HiQCounterMul := 1000 / Fi64;

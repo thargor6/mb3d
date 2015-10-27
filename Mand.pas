@@ -521,7 +521,7 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      HeaderTrafos, Calc, IniDirsForm, FormulaGUI, Navigator, PostProcessForm,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
-     uMapCalcWindow;
+     uMapCalcWindow, FormulaCompiler;
 
 {$R *.dfm}
 
@@ -2933,9 +2933,7 @@ begin
       CheckBox12.Checked := False;
       UpDown3.Position := Min(64, Max(1, StrToIntTry(IniVal[21], UpDown3.Position)));
     end;
-    {$ifdef ONLY_ONE_THREAD}
     UpDown3.Position := 1;
-    {$endif}
     OPD.InitialDir := IniDirs[0];
     SaveDialog3.InitialDir := IniDirs[0];
     OpenDialog1.InitialDir := IniDirs[1];

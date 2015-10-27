@@ -225,7 +225,7 @@ begin
     if FPaxCompiler.Compile(TPaxCompiledFormula(Result).FPaxProgram) then begin
       H_ProcName := FPaxCompiler.GetHandle(0, ProcName, true);
       Result.FCodePointer := TPaxCompiledFormula(Result).FPaxProgram.GetAddress(H_ProcName);
-      Result.FCodeSize := TPaxCompiledFormula(Result).FPaxProgram.CodeSize;
+      Result.FCodeSize := TPaxCompiledFormula(Result).FPaxProgram.ProgramSize;
     end
     else begin
       for I:=0 to FPaxCompiler.ErrorCount do

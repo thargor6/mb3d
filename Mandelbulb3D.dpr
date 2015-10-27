@@ -54,8 +54,8 @@ uses
   Maps in 'Maps.pas',
   PostProcessForm in 'PostProcessForm.pas' {PostProForm},
   ColorOptionForm in 'ColorOptionForm.pas' {FColorOptions},
-//  OTrapDEcalc in 'OTrapDEcalc.pas',
-  uMapCalcWindow in 'uMapCalcWindow.pas' {MapCalcWindow};
+  uMapCalcWindow in 'uMapCalcWindow.pas' {MapCalcWindow},
+  FormulaCompiler in 'FormulaCompiler.pas';
 
 {$R *.res}
 

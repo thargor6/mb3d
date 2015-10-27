@@ -695,6 +695,9 @@ var n, i, j: Integer;
     Code: TStringList;
     CompiledFormula: TCompiledFormula;
 
+    p: Pointer;
+
+
 const                                                    //DEoption > 0 if analytic on X4
     cOptions: String = '.SSE2.DESC.SIPO.RSTO.SSE3.SSSE.SSE4.VERS.DEOP.DIFS.ADES.';
     cOptions2: String = '.DOUBLE.SINGLE.INTEGER.DOUBLEANGLE.SINGLEANGLE.3DOUBLEANGLES.3SINGLEANGLES.BOXSCALE.FOLDING.DSQUARE.'+
@@ -870,8 +873,10 @@ begin
           if Code.Count > 0 then begin
             CompiledFormula := TFormulaCompilerRegistry.GetCompilerInstance(langDELPHI).CompileFormula(Code);
             if CompiledFormula.IsValid then begin
-              pCodePointer := TPhybridIteration(CompiledFormula.CodePointer);
+
+              ThybridIteration(pCodePointer) := CompiledFormula.CodePointer;
               bCPmemReserved := False;
+
               Result := True;
             end
             else
