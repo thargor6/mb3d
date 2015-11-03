@@ -265,6 +265,8 @@ type
     ButtonVolLight: TButton;
     UpDown5: TUpDown;
     Label61: TLabel;
+    ScriptEditorBtn: TSpeedButton;
+    MutaGenBtn: TSpeedButton;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -379,6 +381,7 @@ type
     procedure Timer6Timer(Sender: TObject);
     procedure ButtonVolLightClick(Sender: TObject);
     procedure UpDown5Click(Sender: TObject; Button: TUDBtnType);
+    procedure MutaGenBtnClick(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
   //    const Rect: TRect; Active: Boolean);
@@ -521,7 +524,7 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      HeaderTrafos, Calc, IniDirsForm, FormulaGUI, Navigator, PostProcessForm,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
-     uMapCalcWindow, FormulaCompiler;
+     uMapCalcWindow, FormulaCompiler, MutaGenUI;
 
 {$R *.dfm}
 
@@ -2552,6 +2555,12 @@ begin
       end;
     end;
     TriggerRepaintDraw(Rect(X - ir, Y - ir, X + ir, Y + ir));
+end;
+
+procedure TMand3DForm.MutaGenBtnClick(Sender: TObject);
+begin
+  MutaGenFrm.Visible := True;
+  BringToFront2(MutaGenFrm.Handle);
 end;
 
 procedure TMand3DForm.Image1MouseMove(Sender: TObject; Shift: TShiftState; X,

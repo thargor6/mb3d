@@ -1,6 +1,9 @@
 *.dcu
 History/*
 __history/*
+mutagen/__history/*
+render/__history/*
+facade/__history/*
 *.exe
 *.zip
 Mandelbulb3D.ini

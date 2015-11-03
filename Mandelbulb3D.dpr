@@ -55,7 +55,11 @@ uses
   PostProcessForm in 'PostProcessForm.pas' {PostProForm},
   ColorOptionForm in 'ColorOptionForm.pas' {FColorOptions},
   uMapCalcWindow in 'uMapCalcWindow.pas' {MapCalcWindow},
-  FormulaCompiler in 'FormulaCompiler.pas';
+  FormulaCompiler in 'FormulaCompiler.pas',
+  PreviewRenderer in 'render\PreviewRenderer.pas',
+  MB3DFacade in 'facade\MB3DFacade.pas',
+  MutaGenUI in 'mutagen\MutaGenUI.pas' {MutaGenFrm},
+  MutaGen in 'mutagen\MutaGen.pas';
 
 {$R *.res}
 
@@ -84,6 +88,7 @@ begin
   Application.CreateForm(TPostProForm, PostProForm);
   Application.CreateForm(TFColorOptions, FColorOptions);
   Application.CreateForm(TMapCalcWindow, MapCalcWindow);
+  Application.CreateForm(TMutaGenFrm, MutaGenFrm);
   //SuppressMessageBoxes := True;
   Application.Run;
 end.

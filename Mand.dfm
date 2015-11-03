@@ -2518,9 +2518,9 @@ object Mand3DForm: TMand3DForm
       Align = alTop
       TabOrder = 2
       object SpeedButton12: TSpeedButton
-        Left = 6
+        Left = 2
         Top = 5
-        Width = 54
+        Width = 52
         Height = 30
         Hint = 'Open the animation maker'
         Glyph.Data = {
@@ -2642,9 +2642,9 @@ object Mand3DForm: TMand3DForm
         OnClick = SpeedButton12Click
       end
       object SpeedButton15: TSpeedButton
-        Left = 6
+        Left = 2
         Top = 38
-        Width = 54
+        Width = 52
         Height = 31
         Hint = 'Open the Navigator'
         Glyph.Data = {
@@ -2802,8 +2802,30 @@ object Mand3DForm: TMand3DForm
         Spacing = 0
         OnClick = SpeedButton15Click
       end
+      object ScriptEditorBtn: TSpeedButton
+        Left = 55
+        Top = 5
+        Width = 52
+        Height = 30
+        Hint = 'Open the animation maker'
+        ParentShowHint = False
+        ShowHint = True
+        Visible = False
+      end
+      object MutaGenBtn: TSpeedButton
+        Left = 55
+        Top = 38
+        Width = 52
+        Height = 31
+        Hint = 'Open the MutaGen'
+        Caption = 'MutaGen'
+        ParentShowHint = False
+        ShowHint = True
+        Spacing = 0
+        OnClick = MutaGenBtnClick
+      end
       object GroupBox1: TGroupBox
-        Left = 373
+        Left = 411
         Top = 1
         Width = 209
         Height = 69
@@ -2958,11 +2980,11 @@ object Mand3DForm: TMand3DForm
         end
       end
       object PageControl2: TPageControl
-        Left = 65
+        Left = 109
         Top = 4
         Width = 248
         Height = 64
-        ActivePage = TabSheet12
+        ActivePage = TabSheet13
         TabOrder = 1
         object TabSheet7: TTabSheet
           Caption = 'Open'
@@ -3577,7 +3599,7 @@ object Mand3DForm: TMand3DForm
         end
       end
       object GroupBox2: TGroupBox
-        Left = 315
+        Left = 357
         Top = 1
         Width = 53
         Height = 69

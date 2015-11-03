@@ -210,6 +210,13 @@
             <Form>MapCalcWindow</Form>
         </DCCReference>
         <DCCReference Include="FormulaCompiler.pas"/>
+        <DCCReference Include="render\PreviewRenderer.pas"/>
+        <DCCReference Include="facade\MB3DFacade.pas"/>
+        <DCCReference Include="mutagen\MutaGenUI.pas">
+            <Form>MutaGenFrm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="mutagen\MutaGen.pas"/>
         <BuildConfiguration Include="Debug">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
