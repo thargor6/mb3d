@@ -7,22 +7,41 @@ uses
 
 type
   TMB3DParamsFacade = class;
+  TMB3DFormulaFacade = class;
+
+  TMB3DParamType = (ptFloat, ptInteger);
+
+  TMB3DParamFacade = class
+  private
+    FOwner: TMB3DFormulaFacade;
+    FParamIndex: Integer;
+    function GetName: String;
+    function GetDatatype: TMB3DParamType;
+    function GetValue: Double;
+    procedure SetValue(const Value: Double);
+    constructor Create(const ParamIndex: Integer;const Owner: TMB3DFormulaFacade);
+  public
+    property Name: String read GetName;
+    property Datatype: TMB3DParamType read GetDatatype;
+    property Value: Double read GetValue write SetValue;
+  end;
 
   TMB3DFormulaFacade = class
   private
     FOwner: TMB3DParamsFacade;
     FFormulaIndex: Integer;
+    FParams: TList;
     function GetFormulaName: String;
+    function GetParam(Index: Integer): TMB3DParamFacade;
     function GetParamCount: Integer;
-    function GetParamValue(Index: Integer): Double;
-    procedure SetParamValue(Index: Integer;const Value: Double);
-    function GetParamName(Index: Integer): String;
     constructor Create(const FormulaIndex: Integer;const Owner: TMB3DParamsFacade);
+    destructor Destroy;override;
   public
+    procedure Clear;
+    function IsEmpty: Boolean;
     property FormulaName: String read GetFormulaName;
     property ParamCount: Integer read GetParamCount;
-    property ParamNames[Index: Integer]: String read GetParamName;
-    property ParamValues[Index: Integer]: Double read GetParamValue write SetParamValue;
+    property Params[Index: Integer]: TMB3DParamFacade read GetParam;
   end;
 
   TMB3DCoreFacade = class
@@ -43,11 +62,14 @@ type
     FCore: TMB3DCoreFacade;
     FFormulas: TList;
     function GetFormula(Index: Integer): TMB3DFormulaFacade;
+    function GetFormulaCount: Integer;
   public
     constructor Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
     destructor Destroy;override;
+    function Clone: TMB3DParamsFacade;
     property Core: TMB3DCoreFacade read FCore;
     property Formulas[Index: Integer]: TMB3DFormulaFacade read GetFormula;
+    property FormulaCount: Integer read GetFormulaCount;
   end;
 
 implementation
@@ -55,12 +77,59 @@ implementation
 uses
   DivUtils, CustomFormulas, HeaderTrafos, Contnrs, SysUtils;
 
+{ ---------------------------- TMB3DParamFacade ------------------------------ }
+constructor TMB3DParamFacade.Create(const ParamIndex: Integer;const Owner: TMB3DFormulaFacade);
+begin
+  inherited Create;
+  FParamIndex := ParamIndex;
+  FOwner := Owner;
+end;
+
+function TMB3DParamFacade.GetName: String;
+begin
+  Result := PTCustomFormula(FOwner.FOwner.Core.Header.PHCustomF[FOwner.FFormulaIndex]).sOptionStrings[FParamIndex];
+end;
+
+function TMB3DParamFacade.GetDatatype: TMB3DParamType;
+begin
+  if CustomFormulas.isIntType(PTCustomFormula(FOwner.FOwner.Core.Header.PHCustomF[FOwner.FFormulaIndex]).byOptionTypes[FParamIndex]) then
+    Result := ptInteger
+  else
+    Result := ptFloat;
+end;
+
+function TMB3DParamFacade.GetValue: Double;
+begin
+  Result := FOwner.FOwner.Core.HAddon.Formulas[FOwner.FFormulaIndex].dOptionValue[FParamIndex];
+end;
+
+procedure TMB3DParamFacade.SetValue(const Value: Double);
+var
+  f: PTHAformula;
+begin
+  f := @FOwner.FOwner.Core.HAddon.Formulas[FParamIndex];
+  if Datatype = ptInteger then
+    f^.dOptionValue[FParamIndex] := Round(Value)
+  else
+    f^.dOptionValue[FParamIndex] := Value;
+end;
 { --------------------------- TMB3DFormulaFacade ----------------------------- }
 constructor TMB3DFormulaFacade.Create(const FormulaIndex: Integer;const Owner: TMB3DParamsFacade);
+var
+  I: Integer;
 begin
   inherited Create;
   FFormulaIndex := FormulaIndex;
   FOwner := Owner;
+  FParams:=TObjectList.Create;
+  for I := 0 to V18_FORMULA_PARAM_COUNT -1  do
+    FParams.Add(TMB3DParamFacade.Create(I, Self));
+end;
+
+destructor TMB3DFormulaFacade.Destroy;
+begin
+  FParams.Free;
+  inherited Destroy;
 end;
 
 function TMB3DFormulaFacade.GetFormulaName: String;
@@ -73,31 +142,26 @@ begin
   Result := FOwner.Core.HAddon.Formulas[FFormulaIndex].iOptionCount;
 end;
 
-function TMB3DFormulaFacade.GetParamValue(Index: Integer): Double;
+procedure TMB3DFormulaFacade.Clear;
 begin
-  if (Index < 0) or (Index >= GetParamCount) then
-    raise Exception.Create('GetParamValue: Invalid param index <'+IntToStr(Index)+'>');
-  Result := FOwner.Core.HAddon.Formulas[FFormulaIndex].dOptionValue[Index]
+  with FOwner.Core.FHAddOn.Formulas[FFormulaIndex] do begin
+    iItCount := 0;
+    iFnr := -1;
+    iOptionCount := 0;
+    CustomFname[0] := 0;
+  end;
 end;
 
-procedure TMB3DFormulaFacade.SetParamValue(Index: Integer;const Value: Double);
-var
-  f: PTHAformula;
+function TMB3DFormulaFacade.IsEmpty: Boolean;
 begin
-  if (Index < 0) or (Index >= GetParamCount) then
-    raise Exception.Create('SetParamValue: Invalid param index <'+IntToStr(Index)+'>');
-  f := @FOwner.Core.HAddon.Formulas[Index];
-  if CustomFormulas.isIntType(PTCustomFormula(FOwner.Core.Header.PHCustomF[FFormulaIndex]).byOptionTypes[Index]) then
-    f^.dOptionValue[Index] := Round(Value)
-  else
-    f^.dOptionValue[Index] := Value;
+  Result := FOwner.Core.FHAddOn.Formulas[FFormulaIndex].iItCount = 0;
 end;
 
-function TMB3DFormulaFacade.GetParamName(Index: Integer): String;
+function TMB3DFormulaFacade.GetParam(Index: Integer): TMB3DParamFacade;
 begin
-  if (Index < 0) or (Index >= GetParamCount) then
-    raise Exception.Create('GetParamName: Invalid param index <'+IntToStr(Index)+'>');
-  Result := PTCustomFormula(FOwner.Core.Header.PHCustomF[FFormulaIndex]).sOptionStrings[Index]
+  if (Index < 0) or (Index >= FParams.Count) then
+    raise Exception.Create('TMB3DFormulaFacade.GetParam: Invalid param index <'+IntToStr(Index)+'>');
+  Result := TMB3DParamFacade(FParams[Index]);
 end;
 { ----------------------------- TMB3DCoreFacade ------------------------------ }
 constructor TMB3DCoreFacade.Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
@@ -111,15 +175,6 @@ begin
 
   AssignHeader(@FHeader, @Header);
   IniCFsFromHAddon(FHeader.PCFAddon, FHeader.PHCustomF);
-(*
-
-  FastMove(Header, FHeader, SizeOf(TMandHeader11));
-  FastMove(HAddOn, FHAddOn, SizeOf(THeaderCustomAddon));
-  FHeader.PCFAddon := @FHAddOn;
-  for i := 0 to MAX_FORMULA_COUNT - 1 do
-    FHeader.PHCustomF[i] := @FHybridCustoms[i];
-  for i := 0 to MAX_FORMULA_COUNT - 1 do
-    IniCustomF(@FHybridCustoms[i]);*)
 end;
 
 destructor TMB3DCoreFacade.Destroy;
@@ -130,7 +185,7 @@ begin
     FreeCF(@FHybridCustoms[i]);
   inherited Destroy;
 end;
-{ ---------------------------- TMB3DParamsFacade ------------------------------ }
+{ ---------------------------- TMB3DParamsFacade ----------------------------- }
 constructor TMB3DParamsFacade.Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
 var
   I: Integer;
@@ -138,7 +193,7 @@ begin
   inherited Create;
   FCore := TMB3DCoreFacade.Create(Header, HAddOn);
   FFormulas:=TObjectList.Create;
-  for I := 0 to MAX_FORMULA_COUNT do
+  for I := 0 to MAX_FORMULA_COUNT-1 do
     FFormulas.Add(TMB3DFormulaFacade.Create(I, Self));
 end;
 
@@ -152,8 +207,18 @@ end;
 function TMB3DParamsFacade.GetFormula(Index: Integer): TMB3DFormulaFacade;
 begin
   if (Index < 0) or (Index >= FFormulas.Count) then
-    raise Exception.Create('GetFormula: Invalid formula index <'+IntToStr(Index)+'>');
+    raise Exception.Create('TMB3DParamsFacade.GetFormula: Invalid formula index <'+IntToStr(Index)+'>');
   Result := TMB3DFormulaFacade(FFormulas[Index]);
+end;
+
+function TMB3DParamsFacade.Clone: TMB3DParamsFacade;
+begin
+  Result := TMB3DParamsFacade.Create( Core.Header, Core.HAddOn );
+end;
+
+function TMB3DParamsFacade.GetFormulaCount: Integer;
+begin
+  Result := FFormulas.Count;
 end;
 
 

@@ -6,6 +6,7 @@ uses Windows, Classes, Math3D, Messages;
 
 const
   V18_FORMULA_COUNT = 6;
+  V18_FORMULA_PARAM_COUNT = 16;
 
   OFF_nHybrid_V18 = 76; //+76
   OFF_fHPVar_V18 = OFF_nHybrid_V18 + V18_FORMULA_COUNT * 4; //+100
