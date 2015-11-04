@@ -5,12 +5,10 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, JvExForms,
-  JvCustomItemViewer, JvImagesViewer, JvComponentBase, JvFormAnimatedIcon;
+  JvCustomItemViewer, JvImagesViewer, JvComponentBase, JvFormAnimatedIcon, MutaGen;
 
 type
   TMutaGenFrm = class(TForm)
-    Image1: TImage;
-    RenderBtn: TButton;
     GridPanel1: TGridPanel;
     Panel01: TPanel;
     Image01: TImage;
@@ -62,9 +60,15 @@ type
     Image43: TImage;
     Panel44: TPanel;
     Image44: TImage;
+    Panel1: TPanel;
+    Image1: TImage;
+    RenderBtn: TButton;
     procedure RenderBtnClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
+    FPanelList: TMutaGenPanelList;
   public
     { Public declarations }
   end;
@@ -76,35 +80,110 @@ implementation
 
 {$R *.dfm}
 uses
-  Mand, MB3DFacade, PreviewRenderer, TypeDefinitions, CustomFormulas;
+  Mand, MB3DFacade, PreviewRenderer, TypeDefinitions, CustomFormulas, Contnrs;
 
+const
+  MUTAGEN_SIZE = 5;
+
+procedure TMutaGenFrm.FormCreate(Sender: TObject);
+begin
+  FPanelList := TMutaGenPanelList.Create;
+  FPanelList.AddPanel(TMutaGenPanel.Create(0, 0, Panel00, Image00));
+  FPanelList.AddPanel(TMutaGenPanel.Create(0, 1, Panel01, Image01));
+  FPanelList.AddPanel(TMutaGenPanel.Create(0, 2, Panel02, Image02));
+  FPanelList.AddPanel(TMutaGenPanel.Create(0, 3, Panel03, Image03));
+  FPanelList.AddPanel(TMutaGenPanel.Create(0, 4, Panel04, Image04));
+  FPanelList.AddPanel(TMutaGenPanel.Create(1, 0, Panel10, Image10));
+  FPanelList.AddPanel(TMutaGenPanel.Create(1, 1, Panel11, Image11));
+  FPanelList.AddPanel(TMutaGenPanel.Create(1, 2, Panel12, Image12));
+  FPanelList.AddPanel(TMutaGenPanel.Create(1, 3, Panel13, Image13));
+  FPanelList.AddPanel(TMutaGenPanel.Create(1, 4, Panel14, Image14));
+  FPanelList.AddPanel(TMutaGenPanel.Create(2, 0, Panel20, Image20));
+  FPanelList.AddPanel(TMutaGenPanel.Create(2, 1, Panel21, Image21));
+  FPanelList.AddPanel(TMutaGenPanel.Create(2, 2, Panel22, Image22));
+  FPanelList.AddPanel(TMutaGenPanel.Create(2, 3, Panel23, Image23));
+  FPanelList.AddPanel(TMutaGenPanel.Create(2, 4, Panel24, Image24));
+  FPanelList.AddPanel(TMutaGenPanel.Create(3, 0, Panel30, Image30));
+  FPanelList.AddPanel(TMutaGenPanel.Create(3, 1, Panel31, Image31));
+  FPanelList.AddPanel(TMutaGenPanel.Create(3, 2, Panel32, Image32));
+  FPanelList.AddPanel(TMutaGenPanel.Create(3, 3, Panel33, Image33));
+  FPanelList.AddPanel(TMutaGenPanel.Create(3, 4, Panel34, Image34));
+  FPanelList.AddPanel(TMutaGenPanel.Create(4, 0, Panel40, Image40));
+  FPanelList.AddPanel(TMutaGenPanel.Create(4, 1, Panel41, Image41));
+  FPanelList.AddPanel(TMutaGenPanel.Create(4, 2, Panel42, Image42));
+  FPanelList.AddPanel(TMutaGenPanel.Create(4, 3, Panel43, Image43));
+  FPanelList.AddPanel(TMutaGenPanel.Create(4, 4, Panel44, Image44));
+end;
+
+procedure TMutaGenFrm.FormDestroy(Sender: TObject);
+begin
+  FPanelList.Free;
+end;
 
 procedure TMutaGenFrm.RenderBtnClick(Sender: TObject);
 var
-  MB3DParamsFacade: TMB3DParamsFacade;
+  BaseParams: TMB3DParamsFacade;
   MB3DPreviewRenderer: TPreviewRenderer;
-  bmp, oldBitmap: TBitmap;
-begin
-  MB3DParamsFacade := TMB3DParamsFacade.Create(Mand3DForm.MHeader, Mand3DForm.HAddOn);
-  try
-    MB3DPreviewRenderer := TPreviewRenderer.Create( MB3DParamsFacade );
+  bmp: TBitmap;
+  Panel:TMutaGenPanel;
+  Mutation: TMutation;
+  I: Integer;
+
+  function GetMutations: TList;
+  var
+    Mutation: TMutation;
+  begin
+    Result := TObjectList.Create;
+
+    Mutation := TModifySingleParamMutation.Create;
+    Mutation.LocalStrength := 1.0;
+    Result.Add(Mutation);
+
+    Mutation := TModifySingleParamMutation.Create;
+    Mutation.LocalStrength := 2.0;
+    Result.Add(Mutation);
+  end;
+
+  function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;
+  var
+    I: Integer;
+    Mutations: TList;
+  begin
+    Mutations := GetMutations;
     try
-      MB3DParamsFacade.Formulas[0].ParamValues[0]:=3;
-      bmp := TBitmap.Create;
-      MB3DPreviewRenderer.RenderPreview(bmp, Image00.Width, Image00.Height);
-//      oldBitmap := Image3.Picture.Bitmap;
- Image00.Picture.Bitmap := nil;
-      Image00.Picture.Bitmap := bmp;
-      // TODO free shit
-//      if Assigned(oldBitmap) then
-//        FreeAndNil(oldBitmap);
+      Result := Params;
+      for I := 0 to Mutations.Count-1 do begin
+        Result := TMutation(Mutations[I]).CreateMutation(Result, GlobalStrength);
+      end;
     finally
-      MB3DPreviewRenderer.Free;
+      Mutations.Free;
     end;
+  end;
+
+begin
+  BaseParams := TMB3DParamsFacade.Create(Mand3DForm.MHeader, Mand3DForm.HAddOn);
+
+
+  try
+
+      for I := 0 to 24 do begin
+        BaseParams := CreateMutation(BaseParams, 1.0);
+        MB3DPreviewRenderer := TPreviewRenderer.Create(BaseParams);
+        try
+          bmp := TBitmap.Create;
+          Panel := FPanelList.GetPanel(I);
+          MB3DPreviewRenderer.RenderPreview(bmp, Panel.ImageWidth, Panel.ImageHeight);
+          Panel.Image := bmp;
+        finally
+          MB3DPreviewRenderer.Free;
+        end;
+      end;
+
+
 
 
   finally
-    MB3DParamsFacade.Free;
+    BaseParams.Free;
   end;
 
 
