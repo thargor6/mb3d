@@ -169,12 +169,15 @@ var
   i: Integer;
 begin
   inherited Create;
-  for i := 0 to MAX_FORMULA_COUNT - 1 do
-    FHeader.PHCustomF[i] := @FHybridCustoms[i];
-  FHeader.PCFAddon := @FHAddOn;
+//  AssignHeader(@FHeader, @Header);
+    FastMove(Header, FHeader, SizeOf(TMandHeader11));
+    FHeader.PCFAddon := @FHAddOn;
+    FastMove(HAddOn, FHeader.PCFAddon^, SizeOf(THeaderCustomAddon));
 
-  AssignHeader(@FHeader, @Header);
-  IniCFsFromHAddon(FHeader.PCFAddon, FHeader.PHCustomF);
+
+//  for i := 0 to MAX_FORMULA_COUNT - 1 do
+//    FHeader.PHCustomF[i] := @FHybridCustoms[i];
+//  IniCFsFromHAddon(FHeader.PCFAddon, Header.PHCustomF);
 end;
 
 destructor TMB3DCoreFacade.Destroy;

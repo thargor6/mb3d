@@ -13,820 +13,572 @@ object MutaGenFrm: TMutaGenFrm
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnPaint = FormPaint
   PixelsPerInch = 96
   TextHeight = 13
-  object GridPanel1: TGridPanel
-    Left = 0
-    Top = 0
-    Width = 968
-    Height = 663
-    Align = alClient
-    BevelOuter = bvNone
-    ColumnCollection = <
-      item
-        Value = 20.000000000000000000
-      end
-      item
-        Value = 20.000000000000000000
-      end
-      item
-        Value = 20.000000000000000000
-      end
-      item
-        Value = 20.000000000000000000
-      end
-      item
-        Value = 20.000000000000000000
-      end>
-    ControlCollection = <
-      item
-        Column = 1
-        Control = Panel01
-        Row = 0
-      end
-      item
-        Column = 0
-        Control = Panel00
-        Row = 0
-      end
-      item
-        Column = 2
-        Control = Panel02
-        Row = 0
-      end
-      item
-        Column = 3
-        Control = Panel03
-        Row = 0
-      end
-      item
-        Column = 4
-        Control = Panel04
-        Row = 0
-      end
-      item
-        Column = 0
-        Control = Panel10
-        Row = 1
-      end
-      item
-        Column = 1
-        Control = Panel11
-        Row = 1
-      end
-      item
-        Column = 2
-        Control = Panel12
-        Row = 1
-      end
-      item
-        Column = 3
-        Control = Panel13
-        Row = 1
-      end
-      item
-        Column = 4
-        Control = Panel14
-        Row = 1
-      end
-      item
-        Column = 0
-        Control = Panel20
-        Row = 2
-      end
-      item
-        Column = 1
-        Control = Panel21
-        Row = 2
-      end
-      item
-        Column = 2
-        Control = Panel22
-        Row = 2
-      end
-      item
-        Column = 3
-        Control = Panel23
-        Row = 2
-      end
-      item
-        Column = 4
-        Control = Panel24
-        Row = 2
-      end
-      item
-        Column = 0
-        Control = Panel30
-        Row = 3
-      end
-      item
-        Column = 1
-        Control = Panel31
-        Row = 3
-      end
-      item
-        Column = 2
-        Control = Panel32
-        Row = 3
-      end
-      item
-        Column = 3
-        Control = Panel33
-        Row = 3
-      end
-      item
-        Column = 4
-        Control = Panel34
-        Row = 3
-      end
-      item
-        Column = 0
-        Control = Panel40
-        Row = 4
-      end
-      item
-        Column = 1
-        Control = Panel41
-        Row = 4
-      end
-      item
-        Column = 2
-        Control = Panel42
-        Row = 4
-      end
-      item
-        Column = 3
-        Control = Panel43
-        Row = 4
-      end
-      item
-        Column = 4
-        Control = Panel44
-        Row = 4
-      end>
-    RowCollection = <
-      item
-        Value = 20.000000000000000000
-      end
-      item
-        Value = 20.000000000000000000
-      end
-      item
-        Value = 20.000000000000000000
-      end
-      item
-        Value = 20.000000000000000000
-      end
-      item
-        Value = 20.000000000000000000
-      end>
-    TabOrder = 0
-    ExplicitLeft = 8
-    ExplicitTop = 160
-    ExplicitWidth = 729
-    ExplicitHeight = 495
-    object Panel01: TPanel
-      Left = 193
-      Top = 0
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 0
-      ExplicitLeft = 133
-      ExplicitWidth = 133
-      ExplicitHeight = 104
-      object Image01: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel00: TPanel
-      Left = 0
-      Top = 0
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 1
-      ExplicitWidth = 133
-      ExplicitHeight = 104
-      object Image00: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel02: TPanel
-      Left = 386
-      Top = 0
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 2
-      ExplicitLeft = 266
-      ExplicitWidth = 133
-      ExplicitHeight = 104
-      object Image02: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel03: TPanel
-      Left = 579
-      Top = 0
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 3
-      ExplicitLeft = 399
-      ExplicitWidth = 133
-      ExplicitHeight = 104
-      object Image03: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel04: TPanel
-      Left = 772
-      Top = 0
-      Width = 196
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 4
-      ExplicitLeft = 532
-      ExplicitWidth = 133
-      ExplicitHeight = 104
-      object Image04: TImage
-        Left = 11
-        Top = 11
-        Width = 174
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = 6
-        ExplicitTop = 16
-        ExplicitWidth = 111
-        ExplicitHeight = 82
-      end
-    end
-    object Panel10: TPanel
-      Left = 0
-      Top = 132
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 5
-      ExplicitTop = 104
-      ExplicitWidth = 133
-      ExplicitHeight = 104
-      object Image10: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel11: TPanel
-      Left = 193
-      Top = 132
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 6
-      ExplicitLeft = 133
-      ExplicitTop = 104
-      ExplicitWidth = 133
-      ExplicitHeight = 104
-      object Image11: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel12: TPanel
-      Left = 386
-      Top = 132
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 7
-      ExplicitLeft = 266
-      ExplicitTop = 104
-      ExplicitWidth = 133
-      ExplicitHeight = 104
-      object Image12: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel13: TPanel
-      Left = 579
-      Top = 132
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 8
-      ExplicitLeft = 399
-      ExplicitTop = 104
-      ExplicitWidth = 133
-      ExplicitHeight = 104
-      object Image13: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel14: TPanel
-      Left = 772
-      Top = 132
-      Width = 196
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 9
-      ExplicitLeft = 532
-      ExplicitTop = 104
-      ExplicitWidth = 133
-      ExplicitHeight = 104
-      object Image14: TImage
-        Left = 11
-        Top = 11
-        Width = 174
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel20: TPanel
-      Left = 0
-      Top = 264
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 10
-      ExplicitTop = 239
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image20: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel21: TPanel
-      Left = 193
-      Top = 264
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 11
-      ExplicitLeft = 133
-      ExplicitTop = 239
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image21: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel22: TPanel
-      Left = 386
-      Top = 264
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 12
-      ExplicitLeft = 266
-      ExplicitTop = 239
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image22: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel23: TPanel
-      Left = 579
-      Top = 264
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 13
-      ExplicitLeft = 399
-      ExplicitTop = 239
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image23: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel24: TPanel
-      Left = 772
-      Top = 264
-      Width = 196
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 14
-      ExplicitLeft = 532
-      ExplicitTop = 239
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image24: TImage
-        Left = 11
-        Top = 11
-        Width = 174
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = 6
-        ExplicitTop = 16
-        ExplicitWidth = 111
-        ExplicitHeight = 82
-      end
-    end
-    object Panel30: TPanel
-      Left = 0
-      Top = 396
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 15
-      ExplicitTop = 343
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image30: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel31: TPanel
-      Left = 193
-      Top = 396
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 16
-      ExplicitLeft = 133
-      ExplicitTop = 343
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image31: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel32: TPanel
-      Left = 386
-      Top = 396
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 17
-      ExplicitLeft = 266
-      ExplicitTop = 343
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image32: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = 6
-        ExplicitTop = 16
-        ExplicitWidth = 111
-        ExplicitHeight = 82
-      end
-    end
-    object Panel33: TPanel
-      Left = 579
-      Top = 396
-      Width = 193
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 18
-      ExplicitLeft = 399
-      ExplicitTop = 343
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image33: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel34: TPanel
-      Left = 772
-      Top = 396
-      Width = 196
-      Height = 132
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 19
-      ExplicitLeft = 532
-      ExplicitTop = 343
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image34: TImage
-        Left = 11
-        Top = 11
-        Width = 174
-        Height = 110
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel40: TPanel
-      Left = 0
-      Top = 528
-      Width = 193
-      Height = 135
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 20
-      ExplicitTop = 448
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image40: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 113
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel41: TPanel
-      Left = 193
-      Top = 528
-      Width = 193
-      Height = 135
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 21
-      ExplicitLeft = 133
-      ExplicitTop = 448
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image41: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 113
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel42: TPanel
-      Left = 386
-      Top = 528
-      Width = 193
-      Height = 135
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 22
-      ExplicitLeft = 266
-      ExplicitTop = 448
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image42: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 113
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel43: TPanel
-      Left = 579
-      Top = 528
-      Width = 193
-      Height = 135
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 23
-      ExplicitLeft = 399
-      ExplicitTop = 448
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image43: TImage
-        Left = 11
-        Top = 11
-        Width = 171
-        Height = 113
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = -6
-        ExplicitTop = 0
-        ExplicitWidth = 133
-        ExplicitHeight = 104
-      end
-    end
-    object Panel44: TPanel
-      Left = 772
-      Top = 528
-      Width = 196
-      Height = 135
-      Align = alClient
-      BorderWidth = 10
-      TabOrder = 24
-      ExplicitLeft = 532
-      ExplicitTop = 448
-      ExplicitWidth = 133
-      ExplicitHeight = 41
-      object Image44: TImage
-        Left = 11
-        Top = 11
-        Width = 174
-        Height = 113
-        Align = alClient
-        AutoSize = True
-        ExplicitLeft = 6
-        ExplicitTop = 6
-        ExplicitWidth = 111
-        ExplicitHeight = 83
-      end
-    end
-  end
   object Panel1: TPanel
     Left = 968
     Top = 0
     Width = 113
-    Height = 663
+    Height = 622
     Align = alRight
-    Caption = 'Panel1'
+    BevelOuter = bvNone
+    TabOrder = 0
+    ExplicitHeight = 600
+  end
+  object MainPnl: TPanel
+    Left = 0
+    Top = 0
+    Width = 968
+    Height = 622
+    Align = alClient
+    BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = 872
-    ExplicitTop = 112
-    ExplicitHeight = 321
-    object Image1: TImage
-      Left = 16
-      Top = 11
-      Width = 73
-      Height = 73
-      AutoSize = True
+    OnResize = MainPnlResize
+    ExplicitHeight = 600
+    object Panel_1: TPanel
+      Left = 247
+      Top = 189
+      Width = 50
+      Height = 50
+      Caption = '1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 0
+      VerticalAlignment = taAlignBottom
+      object Image_1: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
     end
-    object RenderBtn: TButton
-      Left = 38
-      Top = 296
+    object Panel_1_2: TPanel
+      Left = 277
+      Top = 133
+      Width = 50
+      Height = 50
+      Caption = '1.2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 1
+      VerticalAlignment = taAlignBottom
+      object Image_1_2: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_1: TPanel
+      Left = 221
+      Top = 133
+      Width = 50
+      Height = 50
+      Caption = '1.1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 2
+      VerticalAlignment = taAlignBottom
+      object Image_1_1: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_2_2: TPanel
+      Left = 341
+      Top = 101
+      Width = 50
+      Height = 50
+      Caption = '1.2.2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 3
+      VerticalAlignment = taAlignBottom
+      object Image_1_2_2: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_2_1: TPanel
+      Left = 341
+      Top = 165
+      Width = 50
+      Height = 50
+      Caption = '1.2.1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 4
+      VerticalAlignment = taAlignBottom
+      object Image_1_2_1: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_1_2: TPanel
+      Left = 165
+      Top = 101
+      Width = 50
+      Height = 50
+      Caption = '1.1.2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 5
+      VerticalAlignment = taAlignBottom
+      object Image_1_1_2: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_1_1: TPanel
+      Left = 165
+      Top = 165
+      Width = 50
+      Height = 50
+      Caption = '1.1.1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 6
+      VerticalAlignment = taAlignBottom
+      object Image_1_1_1: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_2_2_2: TPanel
+      Left = 372
+      Top = 45
+      Width = 50
+      Height = 50
+      Caption = '1.2.2.2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 7
+      VerticalAlignment = taAlignBottom
+      object Image_1_2_2_2: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = -3
+        ExplicitTop = 10
+      end
+    end
+    object Panel_1_2_2_1: TPanel
+      Left = 311
+      Top = 45
+      Width = 50
+      Height = 50
+      Caption = '1.2.2.1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 8
+      VerticalAlignment = taAlignBottom
+      object Image_1_2_2_1: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_1_2_2: TPanel
+      Left = 205
+      Top = 45
+      Width = 50
+      Height = 50
+      Caption = '1.1.2.2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 9
+      VerticalAlignment = taAlignBottom
+      object Image_1_1_2_2: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_1_2_1: TPanel
+      Left = 138
+      Top = 45
+      Width = 50
+      Height = 50
+      Caption = '1.1.2.1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 10
+      VerticalAlignment = taAlignBottom
+      object Image_1_1_2_1: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_1_1_1: TPanel
+      Left = 132
+      Top = 221
+      Width = 50
+      Height = 50
+      Caption = '1.1.1.1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 11
+      VerticalAlignment = taAlignBottom
+      object Image_1_1_1_1: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_1_1_2: TPanel
+      Left = 195
+      Top = 221
+      Width = 50
+      Height = 50
+      Caption = '1.1.1.2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 12
+      VerticalAlignment = taAlignBottom
+      object Image_1_1_1_2: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_2_1_2: TPanel
+      Left = 372
+      Top = 221
+      Width = 50
+      Height = 50
+      Caption = '1.2.1.2'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 13
+      VerticalAlignment = taAlignBottom
+      object Image_1_2_1_2: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+    object Panel_1_2_1_1: TPanel
+      Left = 316
+      Top = 221
+      Width = 50
+      Height = 50
+      Caption = '1.2.1.1'
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -8
+      Font.Name = 'Arial'
+      Font.Style = []
+      ParentFont = False
+      TabOrder = 14
+      VerticalAlignment = taAlignBottom
+      object Image_1_2_1_1: TImage
+        AlignWithMargins = True
+        Left = 6
+        Top = 6
+        Width = 38
+        Height = 33
+        Margins.Left = 5
+        Margins.Top = 5
+        Margins.Right = 5
+        Margins.Bottom = 10
+        Align = alClient
+        AutoSize = True
+        ExplicitLeft = 35
+        ExplicitTop = 11
+        ExplicitWidth = 28
+        ExplicitHeight = 28
+      end
+    end
+  end
+  object GridPanel1: TGridPanel
+    Left = 0
+    Top = 622
+    Width = 1081
+    Height = 41
+    Align = alBottom
+    BevelOuter = bvNone
+    ColumnCollection = <
+      item
+        Value = 40.000000000000000000
+      end
+      item
+        Value = 20.000000000000000000
+      end
+      item
+        Value = 40.000000000000000000
+      end>
+    ControlCollection = <
+      item
+        Column = 0
+        Control = ProgressBar
+        Row = 0
+      end
+      item
+        Column = 1
+        Control = MutateBtn
+        Row = 0
+      end>
+    RowCollection = <
+      item
+        Value = 100.000000000000000000
+      end>
+    TabOrder = 2
+    ExplicitLeft = 480
+    ExplicitTop = 6
+    ExplicitWidth = 185
+    DesignSize = (
+      1081
+      41)
+    object ProgressBar: TProgressBar
+      Left = 7
+      Top = 12
+      Width = 417
+      Height = 17
+      Anchors = []
+      Max = 15
+      Position = 10
+      Smooth = True
+      SmoothReverse = True
+      Step = 1
+      TabOrder = 0
+      ExplicitLeft = 24
+    end
+    object MutateBtn: TButton
+      Left = 502
+      Top = 8
       Width = 75
       Height = 25
-      Caption = 'RenderBtn'
-      TabOrder = 0
-      OnClick = RenderBtnClick
+      Anchors = []
+      Caption = 'Mutate!'
+      TabOrder = 1
+      OnClick = MutateBtnClick
+      ExplicitLeft = 475
+      ExplicitTop = 6
     end
   end
 end
