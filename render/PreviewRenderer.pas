@@ -16,18 +16,20 @@ type
     Converted: LongBool;
     bCalcStop: LongBool;
     FMB3DParamsFacade: TMB3DParamsFacade;
+    FProgress: Double;
   protected
   public
     { Public-Deklarationen }
     constructor Create(const MB3DParamsFacade: TMB3DParamsFacade);
     destructor Destroy; override;
     procedure RenderPreview(var bmp: TBitmap; maxWidth, maxHeight: Integer);
+    property Progress: Double read FProgress;
   end;
 
 implementation
 
 uses CustomFormulas, Math, Math3D, HeaderTrafos, DivUtils, Calc, Paint,
-  ImageProcess, CalcHardShadow, CalcSR, DOF;
+  ImageProcess, CalcHardShadow, CalcSR, DOF, SysUtils;
 
 constructor TPreviewRenderer.Create(const MB3DParamsFacade: TMB3DParamsFacade);
 begin
@@ -50,23 +52,37 @@ var
   HAddOn: THeaderCustomAddon;
 
   procedure WaitForThreads(maxDeciSeconds: Integer);
-  var i, t, n: Integer;
+  var
+    i, t, n: Integer;
+    RenderedRows, TotalRows: Integer;
   begin
+    RenderedRows := 0;
+    TotalRows := 0;
     n := maxDeciSeconds;
-    if CalcThreadStats.iTotalThreadCount > 0 then
-    repeat
-      Delay(100);
-      t := 0;
-      for i := 1 to CalcThreadStats.iTotalThreadCount do
-        if CalcThreadStats.CTrecords[i].isActive <> 0 then Inc(t);
-      Dec(n);
-    until (t = 0) or (n <= 0) or bCalcStop;
+    if CalcThreadStats.iTotalThreadCount > 0 then begin
+      repeat
+        Delay(25);
+        t := 0;
+        for i := 1 to CalcThreadStats.iTotalThreadCount do begin
+          if CalcThreadStats.CTrecords[i].isActive <> 0 then begin
+            Inc(t);
+            RenderedRows := RenderedRows + CalcThreadStats.CTrecords[i].iActualYpos;
+          end
+          else begin
+            RenderedRows := RenderedRows + h;
+          end;
+          TotalRows := TotalRows + h;
+        end;
+        Dec(n);
+      until (t = 0) or (n <= 0) or bCalcStop;
+    end;
+    FProgress := RenderedRows / TotalRows;
   end;
 
 begin
     // TODO
     // disable/check for volumetric light
-
+    FProgress:=0;
     Header := FMB3DParamsFacade.Core.Header;
     Header.bCalc3D := 1;
     HAddOn := FMB3DParamsFacade.Core.HAddOn;

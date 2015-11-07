@@ -165,10 +165,7 @@ procedure TMutaGenFrm.MutateBtnClick(Sender: TObject);
 const
   MutationStrength = 1.0;
 var
-  BaseParams: TMB3DParamsFacade;
-  Panel:TMutaGenPanel;
-  Mutation: TMutation;
-  I: Integer;
+
   CurrSet: TMutationParamSet;
 
   function GetMutations: TList;
@@ -181,8 +178,8 @@ var
     Mutation.LocalStrength := 1.0;
     Result.Add(Mutation);
 
-    Mutation := TModifySingleParamMutation.Create;
-    Mutation.LocalStrength := 0.75;
+    Mutation := TAddFormulaMutation.Create;
+    Mutation.LocalStrength := 1.0;
     Result.Add(Mutation);
 
     Mutation := TModifySingleParamMutation.Create;

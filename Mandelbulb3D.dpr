@@ -59,7 +59,8 @@ uses
   PreviewRenderer in 'render\PreviewRenderer.pas',
   MB3DFacade in 'facade\MB3DFacade.pas',
   MutaGenUI in 'mutagen\MutaGenUI.pas' {MutaGenFrm},
-  MutaGen in 'mutagen\MutaGen.pas';
+  MutaGen in 'mutagen\MutaGen.pas',
+  FormulaNames in 'formula\FormulaNames.pas';
 
 {$R *.res}
 

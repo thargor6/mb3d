@@ -235,7 +235,7 @@ var
 implementation
 
 uses Mand, CustomFormulas, DivUtils, Math, HeaderTrafos, FileHandling, formulas,
-  PostProcessForm, Math3D;
+  PostProcessForm, Math3D, FormulaNames;
 
 {$R *.dfm}
 
@@ -346,7 +346,7 @@ end;
 procedure TFormulaGUIForm.AddFormulaName(FName: String; DEfunc: Integer);
 var stat: Integer;
 begin
-  stat := GetFavouriteStatus(FName);
+  stat := TFormulaNamesLoader.GetFavouriteStatus(FName);
   if stat > -2 then
   begin
     FName := IntToStr(stat) + ' ' + FName;

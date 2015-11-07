@@ -4,6 +4,7 @@ __history/*
 mutagen/__history/*
 render/__history/*
 facade/__history/*
+formula/__history/*
 *.exe
 *.zip
 Mandelbulb3D.ini

@@ -127,19 +127,26 @@ type
     constructor Create;
     destructor Destroy;override;
     function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;virtual;abstract;
+    function RequiresProbing: Boolean;virtual;abstract;
     property LocalStrength: Double read FLocalStrength write FLocalStrength;
   end;
 
   TModifySingleParamMutation = class(TMutation)
   public
     function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;override;
+    function RequiresProbing: Boolean;override;
+  end;
+
+  TAddFormulaMutation = class(TMutation)
+  public
+    function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;override;
+    function RequiresProbing: Boolean;override;
   end;
 
 implementation
 
 uses
-  Contnrs, Math;
-
+  Contnrs, Math, FormulaNames, TypeDefinitions;
 { ------------------------------ TMutaGenPanel ------------------------------- }
 constructor TMutaGenPanel.Create(ParentPanel: TMutaGenPanel;const XPos, YPos, XSize, YSize: Double;const Caption: String;const Panel: TPanel;const Image: TImage);
 begin
@@ -563,6 +570,56 @@ begin
   end;
 end;
 
+function TModifySingleParamMutation.RequiresProbing: Boolean;
+begin
+  Result := True;
+end;
+{ ---------------------------- TAddFormulaMutation --------------------------- }
+var
+  AllFormulaNames: TFormulaNames;
 
+function GetAllFormulaNames: TFormulaNames;
+begin
+  if AllFormulaNames = nil then
+    AllFormulaNames := TFormulaNamesLoader.LoadFormulas;
+  Result := AllFormulaNames;
+end;
+
+function TAddFormulaMutation.CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;
+var
+  I, Idx: Integer;
+  ParamIndex: Integer;
+  FormulaNames: TFormulaNames;
+  Formula3DNames: TStringList;
+begin
+  FormulaNames := GetAllFormulaNames;
+  Result := Params.Clone;
+  for I := 0 to MAX_FORMULA_COUNT -1 do begin
+    if Result.Formulas[I].IsEmpty then begin
+      // TODO choose category with more "intelligence"
+      Formula3DNames := FormulaNames.GetFormulaNamesByCategory(fc_3D);
+      if Formula3DNames.Count > 0 then begin
+        Idx := FRandGen.NextRandomInt(Formula3DNames.Count);
+        Result.Formulas[I].FormulaName := Formula3DNames[Idx];
+        if (FRandGen.NextRandomDouble > 0.5) and (Result.Formulas[I].ParamCount > 0) then begin
+          ParamIndex := FRandGen.NextRandomInt(Result.Formulas[I].ParamCount);
+          RandomizeParamValue(Result.Formulas[I].Params[ParamIndex], GlobalStrength);
+        end;
+      end;
+      break;
+    end;
+  end;
+end;
+
+function TAddFormulaMutation.RequiresProbing: Boolean;
+begin
+  Result := True;
+end;
+
+initialization
+  AllFormulaNames := nil;
+finalization
+  if AllFormulaNames<>nil then
+    AllFormulaNames.Free;
 end.
 

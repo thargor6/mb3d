@@ -2942,7 +2942,6 @@ begin
       CheckBox12.Checked := False;
       UpDown3.Position := Min(64, Max(1, StrToIntTry(IniVal[21], UpDown3.Position)));
     end;
-    UpDown3.Position := 1;
     OPD.InitialDir := IniDirs[0];
     SaveDialog3.InitialDir := IniDirs[0];
     OpenDialog1.InitialDir := IniDirs[1];

@@ -36,7 +36,6 @@ procedure ParseExternFormulas(PCFAddon: PTHeaderCustomAddon);
 function GetFileModDate(filename: string): TDatetime;
 function LoadBackgroundPicT(Light: TPLightingParas9): Boolean;
 procedure UpdateLightParasAbove3(var Light: TLightingParas9);
-function GetFavouriteStatus(formulaname: String): Integer;
 procedure StoreFavouriteStatus(formulaname: String; Status: Integer);
 procedure SaveZBuf(FileName: String; stype: Integer); //stype: 0=png, 1=bmp
 procedure SdoAA;
@@ -492,32 +491,6 @@ begin
     s := ExtractFileDirSave(OpenPicDialog.FileName);
     if s > '' then OpenPicDialog.InitialDir := s;
     OpenPicDialog.FileName := ChangeFileExtSave(ExtractFileName(Name), '');
-end;
-
-function GetFavouriteStatus(formulaname: String): Integer;  //-2: hide, -1: dislike, 0: normal, 1: like
-var M: TStringList;
-    i: Integer;
- //   bNotFound: LongBool;
-begin
-    Result := 1;
-   // if (formulaname = '') or not FileExists(AppDataDir + IncludeTrailingPathDelimiter('Formulas') + 'FavouriteList.txt') then Exit;
-    if (formulaname = '') or not FileExists(IncludeTrailingPathDelimiter(IniDirs[3]) + 'FavouriteList.txt') then Exit;
-    M := TStringList.Create;
-    try
-   //   M.LoadFromFile(AppDataDir + IncludeTrailingPathDelimiter('Formulas') + 'FavouriteList.txt');
-      M.LoadFromFile(IncludeTrailingPathDelimiter(IniDirs[3]) + 'FavouriteList.txt');
-    except
-      M.Clear;
-    end;
-//    bNotFound := True;
-    for i := 1 to M.Count do
-      if SameText(StrLastWords(M.Strings[i - 1]), formulaname) then
-      begin
-        Result := StrToInt(StrFirstWord(M.Strings[i - 1]));
-        Break;
-      end;
-    M.Clear;
-    M.Free;
 end;
 
 procedure StoreFavouriteStatus(formulaname: String; Status: Integer);

@@ -548,9 +548,6 @@ object MutaGenFrm: TMutaGenFrm
         Value = 100.000000000000000000
       end>
     TabOrder = 2
-    ExplicitLeft = 480
-    ExplicitTop = 6
-    ExplicitWidth = 185
     DesignSize = (
       1081
       41)
