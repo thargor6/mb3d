@@ -32,6 +32,7 @@ type
     FFormulaIndex: Integer;
     FParams: TList;
     function GetFormulaName: String;
+    procedure SetFormulaName(const FormulaName: String);
     function GetParam(Index: Integer): TMB3DParamFacade;
     function GetParamCount: Integer;
     constructor Create(const FormulaIndex: Integer;const Owner: TMB3DParamsFacade);
@@ -39,7 +40,7 @@ type
   public
     procedure Clear;
     function IsEmpty: Boolean;
-    property FormulaName: String read GetFormulaName;
+    property FormulaName: String read GetFormulaName write SetFormulaName;
     property ParamCount: Integer read GetParamCount;
     property Params[Index: Integer]: TMB3DParamFacade read GetParam;
   end;
@@ -136,6 +137,50 @@ function TMB3DFormulaFacade.GetFormulaName: String;
 begin
   Result := CustomFtoStr(FOwner.Core.HAddon.Formulas[FFormulaIndex].CustomFname);
 end;
+
+procedure TMB3DFormulaFacade.SetFormulaName(const FormulaName: String);
+var
+  sName: String;
+  InternIndex: Integer;
+  success: Boolean;
+  f: PTHAformula;
+begin
+  sName := Trim(FormulaName);
+  success := False;
+  if sName<>'' then begin
+    if isInternFormula(sName, InternIndex) then begin
+      GetHAddOnFromInternFormula(@FOwner.Core.Header, InternIndex, FFormulaIndex);
+      success := True;
+    end
+    else begin
+      f := @FOwner.Core.HAddon.Formulas[FFormulaIndex];
+      PutStringInCustomF(f^.CustomFname, sName);
+      if LoadCustomFormulaFromHeader(f^.CustomFname,
+        PTCustomFormula(FOwner.Core.Header.PHCustomF[FFormulaIndex])^,
+        f^.dOptionValue) then begin
+//        if TabControl2.TabIndex <> 1 then
+          if f^.iItCount < 1 then
+            f^.iItCount := 1;
+          CopyTypeAndOptionFromCFtoHAddon(FOwner.Core.Header.PHCustomF[FFormulaIndex],
+            @FOwner.Core.HAddon, FFormulaIndex);
+          success := True;
+          f^.iFnr := 20;    //for backward compatibilty reason
+//        end;
+
+      end;
+    end;
+  end;
+  if not success then
+    Clear
+  else begin
+//    if FOwner.Core.HAddon.Formulas[FFormulaIndex].iItCount < 1 then
+//      FOwner.Core.HAddon.Formulas[FFormulaIndex].iItCount := 1;
+//    TabControl1Change(Self);
+//    CalcRstop;
+//    Check4DandInfo;
+  end;
+end;
+
 
 function TMB3DFormulaFacade.GetParamCount: Integer;
 begin
