@@ -143,6 +143,12 @@ type
     function RequiresProbing: Boolean;override;
   end;
 
+  TReplaceFormulaMutation = class(TMutation)
+  public
+    function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;override;
+    function RequiresProbing: Boolean;override;
+  end;
+
 implementation
 
 uses
@@ -612,6 +618,36 @@ begin
 end;
 
 function TAddFormulaMutation.RequiresProbing: Boolean;
+begin
+  Result := True;
+end;
+{ -------------------------- TReplaceFormulaMutation ------------------------- }
+function TReplaceFormulaMutation.CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;
+var
+  I, Idx: Integer;
+  ParamIndex: Integer;
+  FormulaNames: TFormulaNames;
+  Formula3DNames: TStringList;
+  Category: TFormulaCategory;
+begin
+  FormulaNames := GetAllFormulaNames;
+  Result := Params.Clone;
+  for I := 0 to MAX_FORMULA_COUNT -1 do begin
+    if not Result.Formulas[I].IsEmpty then begin
+      Category := FormulaNames.GetCategoryByFormulaName(Result.Formulas[I].FormulaName);
+      Formula3DNames := FormulaNames.GetFormulaNamesByCategory(Category);
+      Idx := FRandGen.NextRandomInt(Formula3DNames.Count);
+      Result.Formulas[I].FormulaName := Formula3DNames[Idx];
+      if (FRandGen.NextRandomDouble > 0.5) and (Result.Formulas[I].ParamCount > 0) then begin
+        ParamIndex := FRandGen.NextRandomInt(Result.Formulas[I].ParamCount);
+        RandomizeParamValue(Result.Formulas[I].Params[ParamIndex], GlobalStrength);
+      end;
+      break;
+    end;
+  end;
+end;
+
+function TReplaceFormulaMutation.RequiresProbing: Boolean;
 begin
   Result := True;
 end;

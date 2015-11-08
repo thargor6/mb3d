@@ -174,16 +174,16 @@ var
   begin
     Result := TObjectList.Create;
 
-    Mutation := TModifySingleParamMutation.Create;
-    Mutation.LocalStrength := 1.0;
-    Result.Add(Mutation);
-
     Mutation := TAddFormulaMutation.Create;
     Mutation.LocalStrength := 1.0;
     Result.Add(Mutation);
 
+    Mutation := TReplaceFormulaMutation.Create;
+    Mutation.LocalStrength := 1.0;
+    Result.Add(Mutation);
+
     Mutation := TModifySingleParamMutation.Create;
-    Mutation.LocalStrength := 0.5;
+    Mutation.LocalStrength := 1.0;
     Result.Add(Mutation);
   end;
 

@@ -28,6 +28,7 @@ type
     destructor Destroy; override;
     procedure AddFormulaName(Category: TFormulaCategory; const FormulaName: String);
     function GetFormulaNamesByCategory(const Category: TFormulaCategory): TStringList;
+    function GetCategoryByFormulaName(const FormulaName: String): TFormulaCategory;
     property Count: Integer read GetCount;
     property Formulas[Index: Integer]: TFormulaName read GetFormulaName;
   end;
@@ -106,6 +107,19 @@ begin
     if Formulas[I].Category = Category then
       Result.Add(Formulas[I].FormulaName);
   end;
+end;
+
+function TFormulaNames.GetCategoryByFormulaName(const FormulaName: String): TFormulaCategory;
+var
+  I: Integer;
+begin
+  for I := 0 to Count-1 do begin
+    if Formulas[I].FormulaName = FormulaName then begin
+      Result := Formulas[I].Category;
+      exit;
+    end;
+  end;
+  raise Exception.Create('TFormulaNames.GetCategoryByFormulaName: Formula <'+FormulaName+'> not found');
 end;
 { -------------------------- TFormulaNamesLoader ----------------------------- }
 class function TFormulaNamesLoader.GetFavouriteStatus(formulaname: String): Integer;  //-2: hide, -1: dislike, 0: normal, 1: like
