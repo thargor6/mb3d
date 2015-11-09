@@ -2561,6 +2561,7 @@ procedure TMand3DForm.MutaGenBtnClick(Sender: TObject);
 begin
   MutaGenFrm.Visible := True;
   BringToFront2(MutaGenFrm.Handle);
+  MutaGenFrm.RestartFromMain;
 end;
 
 procedure TMand3DForm.Image1MouseMove(Sender: TObject; Shift: TShiftState; X,

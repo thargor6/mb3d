@@ -1,7 +1,9 @@
 object MutaGenFrm: TMutaGenFrm
   Left = 0
   Top = 0
-  Caption = 'MutaGenFrm'
+  Caption = 
+    'MutaGen [DblClick on Image or Click on "Mutate!"-button to Mutat' +
+    'e, RightClick for Menu]'
   ClientHeight = 663
   ClientWidth = 1081
   Color = clBtnFace
@@ -24,7 +26,6 @@ object MutaGenFrm: TMutaGenFrm
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitHeight = 600
   end
   object MainPnl: TPanel
     Left = 0
@@ -35,7 +36,6 @@ object MutaGenFrm: TMutaGenFrm
     BevelOuter = bvNone
     TabOrder = 1
     OnResize = MainPnlResize
-    ExplicitHeight = 600
     object Panel_1: TPanel
       Left = 247
       Top = 189
@@ -48,8 +48,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 0
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1: TImage
         AlignWithMargins = True
         Left = 6
@@ -62,6 +64,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -80,8 +84,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 1
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_2: TImage
         AlignWithMargins = True
         Left = 6
@@ -94,6 +100,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -112,8 +120,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 2
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_1: TImage
         AlignWithMargins = True
         Left = 6
@@ -126,6 +136,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -144,8 +156,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 3
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_2_2: TImage
         AlignWithMargins = True
         Left = 6
@@ -158,6 +172,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -176,8 +192,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 4
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_2_1: TImage
         AlignWithMargins = True
         Left = 6
@@ -190,6 +208,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -208,8 +228,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 5
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_1_2: TImage
         AlignWithMargins = True
         Left = 6
@@ -222,10 +244,10 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
-        ExplicitLeft = 35
-        ExplicitTop = 11
-        ExplicitWidth = 28
-        ExplicitHeight = 28
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
+        ExplicitLeft = 10
+        ExplicitTop = 2
       end
     end
     object Panel_1_1_1: TPanel
@@ -240,8 +262,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 6
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_1_1: TImage
         AlignWithMargins = True
         Left = 6
@@ -254,6 +278,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -272,8 +298,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 7
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_2_2_2: TImage
         AlignWithMargins = True
         Left = 6
@@ -286,6 +314,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = -3
         ExplicitTop = 10
       end
@@ -302,8 +332,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 8
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_2_2_1: TImage
         AlignWithMargins = True
         Left = 6
@@ -316,6 +348,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -334,8 +368,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 9
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_1_2_2: TImage
         AlignWithMargins = True
         Left = 6
@@ -348,6 +384,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -366,8 +404,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 10
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_1_2_1: TImage
         AlignWithMargins = True
         Left = 6
@@ -380,6 +420,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -398,8 +440,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 11
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_1_1_1: TImage
         AlignWithMargins = True
         Left = 6
@@ -412,6 +456,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -430,8 +476,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 12
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_1_1_2: TImage
         AlignWithMargins = True
         Left = 6
@@ -444,6 +492,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -462,8 +512,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 13
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_2_1_2: TImage
         AlignWithMargins = True
         Left = 6
@@ -476,6 +528,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -494,8 +548,10 @@ object MutaGenFrm: TMutaGenFrm
       Font.Name = 'Arial'
       Font.Style = []
       ParentFont = False
+      PopupMenu = MainPopupMenu
       TabOrder = 14
       VerticalAlignment = taAlignBottom
+      OnDblClick = Panel_1DblClick
       object Image_1_2_1_1: TImage
         AlignWithMargins = True
         Left = 6
@@ -508,6 +564,8 @@ object MutaGenFrm: TMutaGenFrm
         Margins.Bottom = 10
         Align = alClient
         AutoSize = True
+        PopupMenu = MainPopupMenu
+        OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
         ExplicitWidth = 28
@@ -563,7 +621,6 @@ object MutaGenFrm: TMutaGenFrm
       SmoothReverse = True
       Step = 1
       TabOrder = 0
-      ExplicitLeft = 24
     end
     object MutateBtn: TButton
       Left = 502
@@ -574,8 +631,14 @@ object MutaGenFrm: TMutaGenFrm
       Caption = 'Mutate!'
       TabOrder = 1
       OnClick = MutateBtnClick
-      ExplicitLeft = 475
-      ExplicitTop = 6
+    end
+  end
+  object MainPopupMenu: TPopupMenu
+    Left = 496
+    Top = 144
+    object SendtoMainItm: TMenuItem
+      Caption = 'Send to Main'
+      OnClick = SendtoMainItmClick
     end
   end
 end

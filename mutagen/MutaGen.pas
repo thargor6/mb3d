@@ -6,6 +6,12 @@ uses
   Windows, SysUtils, Classes, Vcl.ExtCtrls, Vcl.Graphics, MB3DFacade;
 
 type
+
+  TMutationIndex = (
+    miP_1, miP_1_1, miP_1_1_1, miP_1_1_1_1, miP_1_1_1_2, miP_1_1_2,
+    miP_1_1_2_1, miP_1_1_2_2, miP_1_2, miP_1_2_1, miP_1_2_1_1,
+    miP_1_2_1_2, miP_1_2_2, miP_1_2_2_1, miP_1_2_2_2);
+
   TMutaGenPanel=class
   private
     FParentPanel: TMutaGenPanel;
@@ -14,16 +20,20 @@ type
     FCaption: String;
     FPanel: TPanel;
     FImage: TImage;
+    FMutationIndex: TMutationIndex;
     function GetImageWidth: Integer;
     function GetImageHeight: Integer;
-    procedure SetImage(const Image: TBitmap);
+    procedure SetBitmap(const Image: TBitmap);
   public
-    constructor Create(ParentPanel: TMutaGenPanel;const XPos, YPos, XSize, YSize: Double;const Caption: String;const Panel: TPanel;const Image: TImage);
+    constructor Create(ParentPanel: TMutaGenPanel;const MutationIndex: TMutationIndex;const XPos, YPos, XSize, YSize: Double;const Caption: String;const Panel: TPanel;const Image: TImage);
     property ImageWidth: Integer read GetImageWidth;
     property ImageHeight: Integer read GetImageHeight;
     property ParentPanel: TMutaGenPanel read FParentPanel;
     property Caption: String read FCaption;
-    property Image: TBitMap write SetImage;
+    property Bitmap: TBitMap write SetBitmap;
+    property Panel: TPanel read FPanel;
+    property Image: TImage read FImage;
+    property MutationIndex: TMutationIndex read FMutationIndex;
   end;
 
   TPanelPosition=class
@@ -60,6 +70,7 @@ type
     FPanelLinkList: TList;
     FLinkLinesList: TList;
     function GetPanelPath(const Panel: TMutaGenPanel): String;
+    function GetCount: Integer;
   public
     constructor Create(const RootPanel: TPanel; const XSize, YSize: Double);
     destructor Destroy;override;
@@ -69,6 +80,7 @@ type
     function GetPanel(const Path: String): TMutaGenPanel;overload;
     procedure DoLayout;
     property LinkLinesList: TList read FLinkLinesList;
+    property Count: Integer read GetCount;
   end;
 
   TRandGen = class
@@ -79,38 +91,13 @@ type
 
   TMutationParamSet = class
   private
-    FP_1: TMB3DParamsFacade;
-    FP_1_1: TMB3DParamsFacade;
-    FP_1_1_1: TMB3DParamsFacade;
-    FP_1_1_1_1: TMB3DParamsFacade;
-    FP_1_1_1_2: TMB3DParamsFacade;
-    FP_1_1_2: TMB3DParamsFacade;
-    FP_1_1_2_1: TMB3DParamsFacade;
-    FP_1_1_2_2: TMB3DParamsFacade;
-    FP_1_2: TMB3DParamsFacade;
-    FP_1_2_1: TMB3DParamsFacade;
-    FP_1_2_1_1: TMB3DParamsFacade;
-    FP_1_2_1_2: TMB3DParamsFacade;
-    FP_1_2_2: TMB3DParamsFacade;
-    FP_1_2_2_1: TMB3DParamsFacade;
-    FP_1_2_2_2: TMB3DParamsFacade;
+    FParams: Array [Low(TMutationIndex)..High(TMutationIndex)] of TMB3DParamsFacade;
+    function GetParam(Index: TMutationIndex): TMB3DParamsFacade;
+    procedure SetParam(Index: TMutationIndex; const Param: TMB3DParamsFacade);
   public
+    constructor Create;
     destructor Destroy;override;
-    property P_1: TMB3DParamsFacade read FP_1 write FP_1;
-    property P_1_1: TMB3DParamsFacade read FP_1_1 write FP_1_1;
-    property P_1_1_1: TMB3DParamsFacade read FP_1_1_1 write FP_1_1_1;
-    property P_1_1_1_1: TMB3DParamsFacade read FP_1_1_1_1 write FP_1_1_1_1;
-    property P_1_1_1_2: TMB3DParamsFacade read FP_1_1_1_2 write FP_1_1_1_2;
-    property P_1_1_2: TMB3DParamsFacade read FP_1_1_2 write FP_1_1_2;
-    property P_1_1_2_1: TMB3DParamsFacade read FP_1_1_2_1 write FP_1_1_2_1;
-    property P_1_1_2_2: TMB3DParamsFacade read FP_1_1_2_2 write FP_1_1_2_2;
-    property P_1_2: TMB3DParamsFacade read FP_1_2 write FP_1_2;
-    property P_1_2_1: TMB3DParamsFacade read FP_1_2_1 write FP_1_2_1;
-    property P_1_2_1_1: TMB3DParamsFacade read FP_1_2_1_1 write FP_1_2_1_1;
-    property P_1_2_1_2: TMB3DParamsFacade read FP_1_2_1_2 write FP_1_2_1_2;
-    property P_1_2_2: TMB3DParamsFacade read FP_1_2_2 write FP_1_2_2;
-    property P_1_2_2_1: TMB3DParamsFacade read FP_1_2_2_1 write FP_1_2_2_1;
-    property P_1_2_2_2: TMB3DParamsFacade read FP_1_2_2_2 write FP_1_2_2_2;
+    property Params[Index: TMutationIndex]: TMB3DParamsFacade read GetParam write SetParam;
   end;
 
   TMutation = class
@@ -149,15 +136,22 @@ type
     function RequiresProbing: Boolean;override;
   end;
 
+  TRemoveFormulaMutation = class(TMutation)
+  public
+    function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;override;
+    function RequiresProbing: Boolean;override;
+  end;
+
 implementation
 
 uses
   Contnrs, Math, FormulaNames, TypeDefinitions;
 { ------------------------------ TMutaGenPanel ------------------------------- }
-constructor TMutaGenPanel.Create(ParentPanel: TMutaGenPanel;const XPos, YPos, XSize, YSize: Double;const Caption: String;const Panel: TPanel;const Image: TImage);
+constructor TMutaGenPanel.Create(ParentPanel: TMutaGenPanel;const MutationIndex: TMutationIndex;const XPos, YPos, XSize, YSize: Double;const Caption: String;const Panel: TPanel;const Image: TImage);
 begin
   inherited Create;
   FParentPanel := ParentPanel;
+  FMutationIndex := MutationIndex;
   FCaption := Caption;
   FXPos := XPos;
   FYPos := YPos;
@@ -177,7 +171,7 @@ begin
   Result := FImage.Height;
 end;
 
-procedure TMutaGenPanel.SetImage(const Image: TBitmap);
+procedure TMutaGenPanel.SetBitmap(const Image: TBitmap);
 begin
   FImage.Picture.Bitmap := Image;
 end;
@@ -254,6 +248,7 @@ var
   Panel: TMutaGenPanel;
   Link: TPanelLink;
   X1, Y1, X2, Y2: Integer;
+  PanelPath: String;
 begin
   RootWidth := FRootPanel.Width - 2 * OuterBorder;
   RootHeight := FRootPanel.Height - 2 * OuterBorder;
@@ -263,7 +258,12 @@ begin
   ScaleY := RootHeight / FYSize;
   for I := 0 to FPanels.Count - 1 do begin
     Panel := GetPanel(I);
-    Panel.FPanel.Caption := 'Mutation '+GetPanelPath(Panel);
+    if Panel.ParentPanel = nil then
+      Panel.FPanel.Caption := 'Root'
+    else begin
+      PanelPath := GetPanelPath(Panel);
+      Panel.FPanel.Caption := 'Mutation '+Copy(PanelPath, 3, Length(PanelPath) - 2);
+    end;
     Panel.FPanel.Width := Round( Panel.FXSize * ScaleX );
     Panel.FPanel.Height := Round( Panel.FYSize * ScaleY );
     Panel.FPanel.Left := Round( RootCentreX + Panel.FXPos * ScaleX ) - Panel.FPanel.Width div 2;
@@ -286,6 +286,10 @@ begin
   FPanelLinkList.Add(TPanelLink.Create(TPanelPosition.Create(FromPanel, FromX, FromY), TPanelPosition.Create(ToPanel, ToX, ToY)));
 end;
 
+function TMutaGenPanelList.GetCount: Integer;
+begin
+  Result := FPanels.Count;
+end;
 { ----------------------------- TPanelPosition ------------------------------- }
 constructor TPanelPosition.Create(const Panel: TMutaGenPanel;const XPos, YPos: Double);
 begin
@@ -440,39 +444,36 @@ begin
   Result := Trunc( MaxValue * NextRandomDouble );
 end;
 { --------------------------- TMutationParamSet ------------------------------ }
-destructor TMutationParamSet.Destroy;
+constructor TMutationParamSet.Create;
+var
+  I: TMutationIndex;
 begin
-  if Assigned(FP_1) then
-    FP_1.Free;
-  if Assigned(FP_1_1) then
-    FP_1_1.Free;
-  if Assigned(FP_1_1_1) then
-    FP_1_1_1.Free;
-  if Assigned(FP_1_1_1_1) then
-    FP_1_1_1_1.Free;
-  if Assigned(FP_1_1_1_2) then
-    FP_1_1_1_2.Free;
-  if Assigned(FP_1_1_2) then
-    FP_1_1_2.Free;
-  if Assigned(FP_1_1_2_1) then
-    FP_1_1_2_1.Free;
-  if Assigned(FP_1_1_2_2) then
-    FP_1_1_2_2.Free;
-  if Assigned(FP_1_2) then
-    FP_1_2.Free;
-  if Assigned(FP_1_2_1) then
-    FP_1_2_1.Free;
-  if Assigned(FP_1_2_1_1) then
-    FP_1_2_1_1.Free;
-  if Assigned(FP_1_2_1_2) then
-    FP_1_2_1_2.Free;
-  if Assigned(FP_1_2_2) then
-    FP_1_2_2.Free;
-  if Assigned(FP_1_2_2_1) then
-    FP_1_2_2_1.Free;
-  if Assigned(FP_1_2_2_2) then
-    FP_1_2_2_2.Free;
+  inherited Create;
+  for I:=Low(FParams) to High(FParams) do
+    FParams[I] := nil;
+end;
+
+destructor TMutationParamSet.Destroy;
+var
+  I: TMutationIndex;
+begin
+  for I:=Low(FParams) to High(FParams) do begin
+    if FParams[I]<>nil then
+      FParams[I].Free;
+  end;
   inherited Destroy;
+end;
+
+function TMutationParamSet.GetParam(Index: TMutationIndex): TMB3DParamsFacade;
+begin
+  Result := FParams[Index];
+end;
+
+procedure TMutationParamSet.SetParam(Index: TMutationIndex; const Param: TMB3DParamsFacade);
+begin
+  if FParams[Index] <>nil then
+    FParams[Index].Free;
+  FParams[Index] := Param;
 end;
 { ---------------------------------- TMutation ------------------------------- }
 constructor TMutation.Create;
@@ -632,7 +633,7 @@ var
 begin
   FormulaNames := GetAllFormulaNames;
   Result := Params.Clone;
-  for I := 0 to MAX_FORMULA_COUNT -1 do begin
+  for I := 0 to MAX_FORMULA_COUNT - 1 do begin
     if not Result.Formulas[I].IsEmpty then begin
       Category := FormulaNames.GetCategoryByFormulaName(Result.Formulas[I].FormulaName);
       Formula3DNames := FormulaNames.GetFormulaNamesByCategory(Category);
@@ -651,6 +652,37 @@ function TReplaceFormulaMutation.RequiresProbing: Boolean;
 begin
   Result := True;
 end;
+{ --------------------------- TRemoveFormulaMutation ------------------------- }
+function TRemoveFormulaMutation.CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;
+var
+  I, Idx: Integer;
+  ParamIndex: Integer;
+  Category: TFormulaCategory;
+  IdxList: TStringList;
+begin
+  Result := Params.Clone;
+  IdxList := TStringList.Create;
+  try
+    for I:=MAX_FORMULA_COUNT - 1 downto 1 do begin
+      if not Result.Formulas[I].IsEmpty then begin
+        IdxList.Add(IntToStr(I));
+      end;
+    end;
+    if IdxList.Count > 3 then begin
+      Idx := StrToInt(IdxList[ FRandGen.NextRandomInt(IdxList.Count)]);
+      Result.Formulas[Idx].FormulaName := '';
+    end;
+  finally
+    IdxList.Free;
+  end;
+end;
+
+function TRemoveFormulaMutation.RequiresProbing: Boolean;
+begin
+  Result := True;
+end;
+
+
 
 initialization
   AllFormulaNames := nil;

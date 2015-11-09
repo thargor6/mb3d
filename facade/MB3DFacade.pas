@@ -53,7 +53,7 @@ type
   public
     constructor Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
     destructor Destroy;override;
-
+    procedure ApplyToCore(DestHeader: TMandHeader11;DestHAddOn: THeaderCustomAddon);
     property Header: TMandHeader11 read FHeader;
     property HAddOn: THeaderCustomAddon read FHAddOn;
   end;
@@ -233,6 +233,17 @@ begin
     FreeCF(@FHybridCustoms[i]);
   inherited Destroy;
 end;
+
+procedure TMB3DCoreFacade.ApplyToCore(DestHeader: TMandHeader11;DestHAddOn: THeaderCustomAddon);
+var
+  AddOn: Pointer;
+begin
+  AddOn := DestHeader.PCFAddon;
+  FastMove(FHeader, DestHeader, SizeOf(TMandHeader11));
+  DestHeader.PCFAddon := AddOn;
+  FastMove(FHAddOn, DestHeader.PCFAddon^, SizeOf(THeaderCustomAddon));
+end;
+
 { ---------------------------- TMB3DParamsFacade ----------------------------- }
 constructor TMB3DParamsFacade.Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
 var

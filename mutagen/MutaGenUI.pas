@@ -6,7 +6,7 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, JvExForms,
   JvCustomItemViewer, JvImagesViewer, JvComponentBase, JvFormAnimatedIcon, MutaGen,
-  Vcl.ComCtrls, JvExComCtrls, JvProgressBar;
+  Vcl.ComCtrls, JvExComCtrls, JvProgressBar, MB3DFacade, Vcl.Menus;
 
 type
   TMutaGenFrm = class(TForm)
@@ -45,11 +45,15 @@ type
     GridPanel1: TGridPanel;
     ProgressBar: TProgressBar;
     MutateBtn: TButton;
+    MainPopupMenu: TPopupMenu;
+    SendtoMainItm: TMenuItem;
     procedure MutateBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormPaint(Sender: TObject);
     procedure MainPnlResize(Sender: TObject);
+    procedure Panel_1DblClick(Sender: TObject);
+    procedure SendtoMainItmClick(Sender: TObject);
   private
     { Private declarations }
     FForceAbort: Boolean;
@@ -61,8 +65,13 @@ type
     procedure InitProgress;
     procedure RefreshMutateButtonCaption;
     procedure ProgressStep;
+    procedure CreateInitialSet;
+    procedure CreateMutation(Sender: TObject);
+    procedure RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade);
+    function GetInitialParams(Sender: TObject): TMB3DParamsFacade;
   public
     { Public declarations }
+    procedure RestartFromMain;
   end;
 
 var
@@ -72,7 +81,7 @@ implementation
 
 {$R *.dfm}
 uses
-  Mand, MB3DFacade, PreviewRenderer, TypeDefinitions, CustomFormulas, Contnrs, Math;
+  Mand, PreviewRenderer, TypeDefinitions, CustomFormulas, Contnrs, Math, FileHandling;
 
 const
   MUTAGEN_SIZE = 5;
@@ -99,35 +108,35 @@ const
   DLine = 0.05;
 begin
   Result := TMutaGenPanelList.Create(MainPnl, 5.0, 4.0);
-  FP_1 := TMutaGenPanel.Create(nil, 0.0, -1.0, PnlXSize, PnlYSize, '1', Panel_1, Image_1);
+  FP_1 := TMutaGenPanel.Create(nil, miP_1, 0.0, -1.0, PnlXSize, PnlYSize, '1', Panel_1, Image_1);
   Result.AddPanel(FP_1);
-    FP_1_1 := TMutaGenPanel.Create(FP_1, -0.5, 0.0, PnlXSize, PnlYSize, '1', Panel_1_1, Image_1_1);
+    FP_1_1 := TMutaGenPanel.Create(FP_1, miP_1_1, -0.5, 0.0, PnlXSize, PnlYSize, '1', Panel_1_1, Image_1_1);
     Result.AddPanel(FP_1_1);
-      FP_1_1_1 := TMutaGenPanel.Create(FP_1_1, -1.5, -0.5, PnlXSize, PnlYSize, '1', Panel_1_1_1, Image_1_1_1);
+      FP_1_1_1 := TMutaGenPanel.Create(FP_1_1, miP_1_1_1, -1.5, -0.5, PnlXSize, PnlYSize, '1', Panel_1_1_1, Image_1_1_1);
       Result.AddPanel(FP_1_1_1);
-        FP_1_1_1_1 := TMutaGenPanel.Create(FP_1_1_1, -2.0, -1.5, PnlXSize, PnlYSize, '1', Panel_1_1_1_1, Image_1_1_1_1);
+        FP_1_1_1_1 := TMutaGenPanel.Create(FP_1_1_1, miP_1_1_1_1, -2.0, -1.5, PnlXSize, PnlYSize, '1', Panel_1_1_1_1, Image_1_1_1_1);
         Result.AddPanel(FP_1_1_1_1);
-        FP_1_1_1_2 := TMutaGenPanel.Create(FP_1_1_1, -1.0, -1.5, PnlXSize, PnlYSize, '2', Panel_1_1_1_2, Image_1_1_1_2);
+        FP_1_1_1_2 := TMutaGenPanel.Create(FP_1_1_1, miP_1_1_1_2, -1.0, -1.5, PnlXSize, PnlYSize, '2', Panel_1_1_1_2, Image_1_1_1_2);
         Result.AddPanel(FP_1_1_1_2);
-      FP_1_1_2 := TMutaGenPanel.Create(FP_1_1, -1.5, 0.5, PnlXSize, PnlYSize, '2', Panel_1_1_2, Image_1_1_2);
+      FP_1_1_2 := TMutaGenPanel.Create(FP_1_1, miP_1_1_2, -1.5, 0.5, PnlXSize, PnlYSize, '2', Panel_1_1_2, Image_1_1_2);
       Result.AddPanel(FP_1_1_2);
-        FP_1_1_2_1 := TMutaGenPanel.Create(FP_1_1_2, -2.0, 1.5, PnlXSize, PnlYSize, '1', Panel_1_1_2_1, Image_1_1_2_1);
+        FP_1_1_2_1 := TMutaGenPanel.Create(FP_1_1_2, miP_1_1_2_1, -2.0, 1.5, PnlXSize, PnlYSize, '1', Panel_1_1_2_1, Image_1_1_2_1);
         Result.AddPanel(FP_1_1_2_1);
-        FP_1_1_2_2 := TMutaGenPanel.Create(FP_1_1_2, -1.0, 1.5, PnlXSize, PnlYSize, '2', Panel_1_1_2_2, Image_1_1_2_2);
+        FP_1_1_2_2 := TMutaGenPanel.Create(FP_1_1_2, miP_1_1_2_2, -1.0, 1.5, PnlXSize, PnlYSize, '2', Panel_1_1_2_2, Image_1_1_2_2);
         Result.AddPanel(FP_1_1_2_2);
-    FP_1_2 := TMutaGenPanel.Create(FP_1, 0.5, 0.0, PnlXSize, PnlYSize, '2', Panel_1_2, Image_1_2);
+    FP_1_2 := TMutaGenPanel.Create(FP_1, miP_1_2, 0.5, 0.0, PnlXSize, PnlYSize, '2', Panel_1_2, Image_1_2);
     Result.AddPanel(FP_1_2);
-      FP_1_2_1 := TMutaGenPanel.Create(FP_1_2, 1.5, -0.5, PnlXSize, PnlYSize, '1', Panel_1_2_1, Image_1_2_1);
+      FP_1_2_1 := TMutaGenPanel.Create(FP_1_2, miP_1_2_1, 1.5, -0.5, PnlXSize, PnlYSize, '1', Panel_1_2_1, Image_1_2_1);
       Result.AddPanel(FP_1_2_1);
-        FP_1_2_1_1 := TMutaGenPanel.Create(FP_1_2_1, 1.0, -1.5, PnlXSize, PnlYSize, '1', Panel_1_2_1_1, Image_1_2_1_1);
+        FP_1_2_1_1 := TMutaGenPanel.Create(FP_1_2_1, miP_1_2_1_1, 1.0, -1.5, PnlXSize, PnlYSize, '1', Panel_1_2_1_1, Image_1_2_1_1);
         Result.AddPanel(FP_1_2_1_1);
-        FP_1_2_1_2 := TMutaGenPanel.Create(FP_1_2_1, 2.0, -1.5, PnlXSize, PnlYSize, '2', Panel_1_2_1_2, Image_1_2_1_2);
+        FP_1_2_1_2 := TMutaGenPanel.Create(FP_1_2_1, miP_1_2_1_2, 2.0, -1.5, PnlXSize, PnlYSize, '2', Panel_1_2_1_2, Image_1_2_1_2);
         Result.AddPanel(FP_1_2_1_2);
-      FP_1_2_2 := TMutaGenPanel.Create(FP_1_2, 1.5, 0.5, PnlXSize, PnlYSize, '2', Panel_1_2_2, Image_1_2_2);
+      FP_1_2_2 := TMutaGenPanel.Create(FP_1_2, miP_1_2_2, 1.5, 0.5, PnlXSize, PnlYSize, '2', Panel_1_2_2, Image_1_2_2);
       Result.AddPanel(FP_1_2_2);
-        FP_1_2_2_1 := TMutaGenPanel.Create(FP_1_2_2, 1.0, 1.5, PnlXSize, PnlYSize, '1', Panel_1_2_2_1, Image_1_2_2_1);
+        FP_1_2_2_1 := TMutaGenPanel.Create(FP_1_2_2, miP_1_2_2_1, 1.0, 1.5, PnlXSize, PnlYSize, '1', Panel_1_2_2_1, Image_1_2_2_1);
         Result.AddPanel(FP_1_2_2_1);
-        FP_1_2_2_2 := TMutaGenPanel.Create(FP_1_2_2, 2.0, 1.5, PnlXSize, PnlYSize, '2', Panel_1_2_2_2, Image_1_2_2_2);
+        FP_1_2_2_2 := TMutaGenPanel.Create(FP_1_2_2, miP_1_2_2_2, 2.0, 1.5, PnlXSize, PnlYSize, '2', Panel_1_2_2_2, Image_1_2_2_2);
         Result.AddPanel(FP_1_2_2_2);
 
    Result.AddPanelLink(0.5 - DLine, 1.0, FP_1, 0.5, 0.0, FP_1_1);
@@ -161,12 +170,66 @@ begin
     FPanelList.DoLayout;
 end;
 
+procedure TMutaGenFrm.RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade);
+var
+  MB3DPreviewRenderer: TPreviewRenderer;
+  bmp: TBitmap;
+begin
+  MB3DPreviewRenderer := TPreviewRenderer.Create(Params);
+  try
+    bmp := TBitmap.Create;
+    MB3DPreviewRenderer.RenderPreview(bmp, Panel.ImageWidth, Panel.ImageHeight);
+    Panel.Bitmap := bmp;
+  finally
+    MB3DPreviewRenderer.Free;
+  end;
+end;
+
+procedure TMutaGenFrm.CreateInitialSet;
+var
+  CurrSet: TMutationParamSet;
+begin
+  FMutationHistory.Clear;
+  CurrSet := TMutationParamSet.Create;
+  FMutationHistory.Add(CurrSet);
+  CurrSet.Params[miP_1] := TMB3DParamsFacade.Create(Mand3DForm.MHeader, Mand3DForm.HAddOn);
+  RenderParams(FP_1, CurrSet.Params[miP_1]);
+end;
+
 procedure TMutaGenFrm.MutateBtnClick(Sender: TObject);
+begin
+  CreateMutation(Panel_1);
+end;
+
+function TMutaGenFrm.GetInitialParams(Sender: TObject): TMB3DParamsFacade;
+var
+  I: Integer;
+  PrevSet: TMutationParamSet;
+  MutaGenPanel: TMutaGenPanel;
+begin
+  Result := nil;
+  if FMutationHistory.Count > 0 then begin
+    PrevSet := TMutationParamSet(FMutationHistory[FMutationHistory.Count - 1]);
+    for I := 0 to FPanelList.Count - 1 do begin
+      MutaGenPanel := FPanelList.GetPanel(I);
+      if ((Sender = MutaGenPanel.Panel) or (Sender=MutaGenPanel.Image)) and (PrevSet.Params[MutaGenPanel.MutationIndex]<>nil) then begin
+        Result := PrevSet.Params[MutaGenPanel.MutationIndex].Clone;
+        exit;
+      end;
+    end;
+    if PrevSet.Params[miP_1]<>nil then begin
+      Result := PrevSet.Params[miP_1].Clone;
+      exit;
+    end;
+  end;
+end;
+
+procedure TMutaGenFrm.CreateMutation(Sender: TObject);
 const
   MutationStrength = 1.0;
 var
-
   CurrSet: TMutationParamSet;
+  InitialParams: TMB3DParamsFacade;
 
   function GetMutations: TList;
   var
@@ -178,7 +241,12 @@ var
     Mutation.LocalStrength := 1.0;
     Result.Add(Mutation);
 
+
     Mutation := TReplaceFormulaMutation.Create;
+    Mutation.LocalStrength := 1.0;
+    Result.Add(Mutation);
+
+    Mutation := TRemoveFormulaMutation.Create;
     Mutation.LocalStrength := 1.0;
     Result.Add(Mutation);
 
@@ -203,21 +271,27 @@ var
     end;
   end;
 
-  procedure RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade);
+  function CreateAndRenderMutation(const ToPanel, FromPanel: TMutaGenPanel): Boolean;
   var
-    MB3DPreviewRenderer: TPreviewRenderer;
-    bmp: TBitmap;
+    NewParams: TMB3DParamsFacade;
   begin
-    MB3DPreviewRenderer := TPreviewRenderer.Create(Params);
-    try
-      bmp := TBitmap.Create;
-      MB3DPreviewRenderer.RenderPreview(bmp, Panel.ImageWidth, Panel.ImageHeight);
-      Panel.Image := bmp;
-    finally
-      MB3DPreviewRenderer.Free;
-    end;
+    if FromPanel = nil then
+      NewParams := InitialParams
+    else
+      NewParams := CreateMutation(CurrSet.Params[FromPanel.MutationIndex], MutationStrength);
+    CurrSet.Params[ToPanel.MutationIndex] := NewParams;
+    RenderParams(ToPanel,  CurrSet.Params[ToPanel.MutationIndex]);
+    ProgressStep;
+    Result := not FForceAbort;
   end;
 
+  procedure ClearPanels;
+  var
+    I: Integer;
+  begin
+    for I := 1 to FPanelList.Count-1 do
+      FPanelList.GetPanel(I).Bitmap := nil;
+  end;
 
 begin
   if FIsRunning then begin
@@ -228,101 +302,47 @@ begin
   FIsRunning := True;
   try
     RefreshMutateButtonCaption;
+//    ClearPanels;
     FForceAbort := False;
+    InitialParams := GetInitialParams( Sender );
+    if InitialParams = nil then
+      raise Exception.Create('No params to mutate');
+
     CurrSet := TMutationParamSet.Create;
     FMutationHistory.Add(CurrSet);
 
     InitProgress;
 
-    CurrSet.P_1 := TMB3DParamsFacade.Create(Mand3DForm.MHeader, Mand3DForm.HAddOn);
-    RenderParams(FP_1, CurrSet.P_1);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_1 := CreateMutation(CurrSet.P_1, MutationStrength);
-    RenderParams(FP_1_1, CurrSet.P_1_1);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_2 := CreateMutation(CurrSet.P_1, MutationStrength);
-    RenderParams(FP_1_2, CurrSet.P_1_2);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_1_1 := CreateMutation(CurrSet.P_1_1, MutationStrength);
-    RenderParams(FP_1_1_1, CurrSet.P_1_1_1);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_2_1 := CreateMutation(CurrSet.P_1_2, MutationStrength);
-    RenderParams(FP_1_2_1, CurrSet.P_1_2_1);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_1_2 := CreateMutation(CurrSet.P_1_1, MutationStrength);
-    RenderParams(FP_1_1_2, CurrSet.P_1_1_2);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_2_2 := CreateMutation(CurrSet.P_1_2, MutationStrength);
-    RenderParams(FP_1_2_2, CurrSet.P_1_2_2);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_1_1_1 := CreateMutation(CurrSet.P_1_1_1, MutationStrength);
-    RenderParams(FP_1_1_1_1, CurrSet.P_1_1_1_1);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_1_2_1 := CreateMutation(CurrSet.P_1_1_2, MutationStrength);
-    RenderParams(FP_1_1_2_1, CurrSet.P_1_1_2_1);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_2_1_1 := CreateMutation(CurrSet.P_1_2_1, MutationStrength);
-    RenderParams(FP_1_2_1_1, CurrSet.P_1_2_1_1);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_2_2_1 := CreateMutation(CurrSet.P_1_2_2, MutationStrength);
-    RenderParams(FP_1_2_2_1, CurrSet.P_1_2_2_1);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_1_1_2 := CreateMutation(CurrSet.P_1_1_1, MutationStrength);
-    RenderParams(FP_1_1_1_2, CurrSet.P_1_1_1_2);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_1_2_2 := CreateMutation(CurrSet.P_1_1_2, MutationStrength);
-    RenderParams(FP_1_1_2_2, CurrSet.P_1_1_2_2);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_2_1_2 := CreateMutation(CurrSet.P_1_2_1, MutationStrength);
-    RenderParams(FP_1_2_1_2, CurrSet.P_1_2_1_2);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
-
-    CurrSet.P_1_2_2_2 := CreateMutation(CurrSet.P_1_2_2, MutationStrength);
-    RenderParams(FP_1_2_2_2, CurrSet.P_1_2_2_2);
-    ProgressStep;
-    if FForceAbort then
-      Exit;
+    if not CreateAndRenderMutation(FP_1, nil) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_1, FP_1) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_2, FP_1) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_1_1, FP_1_1) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_2_1, FP_1_2) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_1_2, FP_1_1) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_2_2, FP_1_2) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_1_1_1, FP_1_1_1) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_1_2_1, FP_1_1_2) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_2_1_1, FP_1_2_1) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_2_2_1, FP_1_2_2) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_1_1_2, FP_1_1_1) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_1_2_2, FP_1_1_2) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_2_1_2, FP_1_2_1) then
+      exit;
+    if not CreateAndRenderMutation(FP_1_2_2_2, FP_1_2_2) then
+      exit;
   finally
     FIsRunning := False;
     RefreshMutateButtonCaption;
@@ -333,6 +353,11 @@ end;
 procedure TMutaGenFrm.InitProgress;
 begin
   ProgressBar.Position := 0;
+end;
+
+procedure TMutaGenFrm.Panel_1DblClick(Sender: TObject);
+begin
+  CreateMutation(Sender);
 end;
 
 procedure TMutaGenFrm.ProgressStep;
@@ -350,6 +375,31 @@ begin
     MutateBtn.Caption := 'Mutate!';
   MutateBtn.Repaint;
 end;
+
+procedure TMutaGenFrm.RestartFromMain;
+begin
+  if FMutationHistory.Count > 0 then begin
+    // TODO Display warning?
+    FMutationHistory.Clear;
+  end;
+  CreateInitialSet;
+end;
+
+procedure TMutaGenFrm.SendtoMainItmClick(Sender: TObject);
+var
+  Params: TMB3DParamsFacade;
+  Caller: TObject;
+begin
+  Caller := ((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupComponent;
+
+  Params := GetInitialParams( Caller );
+  if Params = nil then
+    raise Exception.Create('No params to send to main editor');
+  // TODO Caption
+  CopyHeaderAsTextToClipBoard(@Params.Core.Header, Caption);
+  Mand3DForm.SpeedButton8Click(Caller);
+end;
+
 
 
 end.
