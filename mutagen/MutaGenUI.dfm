@@ -19,19 +19,337 @@ object MutaGenFrm: TMutaGenFrm
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 968
+    Left = 848
     Top = 0
-    Width = 113
-    Height = 622
+    Width = 233
+    Height = 663
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 0
+    object CategoryPanelGroup1: TCategoryPanelGroup
+      Left = 0
+      Top = 0
+      Width = 233
+      Height = 663
+      VertScrollBar.Tracking = True
+      VertScrollBar.Visible = False
+      Align = alClient
+      HeaderFont.Charset = DEFAULT_CHARSET
+      HeaderFont.Color = clWindowText
+      HeaderFont.Height = -12
+      HeaderFont.Name = 'Tahoma'
+      HeaderFont.Style = []
+      HeaderHeight = 20
+      TabOrder = 0
+      ExplicitWidth = 151
+      object CategoryPanel2: TCategoryPanel
+        Top = 201
+        Height = 181
+        Caption = 'Mutate'
+        TabOrder = 0
+        ExplicitWidth = 149
+        object MutateBtn: TButton
+          Left = 4
+          Top = 9
+          Width = 221
+          Height = 38
+          Anchors = []
+          Caption = 'Mutate!'
+          TabOrder = 0
+          OnClick = MutateBtnClick
+        end
+        object ProgressBar: TProgressBar
+          Left = 4
+          Top = 134
+          Width = 221
+          Height = 17
+          Max = 15
+          Position = 10
+          Smooth = True
+          SmoothReverse = True
+          Step = 1
+          TabOrder = 1
+        end
+      end
+      object CategoryPanel1: TCategoryPanel
+        Top = 0
+        Height = 201
+        Caption = 'Options'
+        TabOrder = 1
+        ExplicitLeft = 96
+        ExplicitTop = -6
+        ExplicitWidth = 149
+        object GridPanel2: TGridPanel
+          Left = 0
+          Top = 0
+          Width = 229
+          Height = 179
+          Align = alClient
+          BevelOuter = bvNone
+          ColumnCollection = <
+            item
+              Value = 40.000000000000000000
+            end
+            item
+              Value = 30.000000000000000000
+            end
+            item
+              Value = 30.000000000000000000
+            end>
+          ControlCollection = <
+            item
+              Column = 0
+              Control = MinIterLabel
+              Row = 0
+            end
+            item
+              Column = 1
+              Control = ModifyFormulaWeightTBar
+              Row = 1
+            end
+            item
+              Column = 1
+              Control = Label2
+              Row = 0
+            end
+            item
+              Column = 2
+              Control = Label3
+              Row = 0
+            end
+            item
+              Column = 0
+              Control = Panel2
+              Row = 1
+            end
+            item
+              Column = 0
+              Control = Panel3
+              Row = 2
+            end
+            item
+              Column = 1
+              Control = ModifyParamsWeightTBar
+              Row = 2
+            end
+            item
+              Column = 2
+              Control = ModifyParamsStrengthTBar
+              Row = 2
+            end
+            item
+              Column = 2
+              Control = Label9
+              Row = 1
+            end>
+          RowCollection = <
+            item
+              Value = 20.000000000000000000
+            end
+            item
+              Value = 40.000000000000000000
+            end
+            item
+              Value = 40.000000000000000000
+            end>
+          TabOrder = 0
+          ExplicitLeft = -86
+          ExplicitTop = -36
+          ExplicitWidth = 233
+          ExplicitHeight = 215
+          DesignSize = (
+            229
+            179)
+          object MinIterLabel: TLabel
+            Left = 5
+            Top = 11
+            Width = 80
+            Height = 13
+            Alignment = taRightJustify
+            Anchors = []
+            Caption = 'Mutation type'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ExplicitLeft = 3
+            ExplicitTop = 47
+          end
+          object ModifyFormulaWeightTBar: TTrackBarEx
+            Tag = 10
+            Left = 91
+            Top = 60
+            Width = 67
+            Height = 21
+            Anchors = []
+            Ctl3D = True
+            Max = 1000
+            ParentCtl3D = False
+            TabOrder = 0
+            ThumbLength = 18
+            TickMarks = tmBoth
+            TickStyle = tsNone
+            ExplicitLeft = 90
+            ExplicitTop = 71
+          end
+          object Label2: TLabel
+            Left = 94
+            Top = 11
+            Width = 61
+            Height = 13
+            Alignment = taRightJustify
+            Anchors = []
+            Caption = 'Probability'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ExplicitLeft = 93
+            ExplicitTop = 47
+          end
+          object Label3: TLabel
+            Left = 169
+            Top = 11
+            Width = 50
+            Height = 13
+            Alignment = taRightJustify
+            Anchors = []
+            Caption = 'Strength'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -11
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ExplicitTop = 47
+          end
+          object Panel2: TPanel
+            Left = 0
+            Top = 35
+            Width = 91
+            Height = 71
+            Align = alClient
+            BevelOuter = bvNone
+            TabOrder = 1
+            ExplicitHeight = 41
+            DesignSize = (
+              91
+              71)
+            object Label1: TLabel
+              Left = 4
+              Top = 4
+              Width = 72
+              Height = 13
+              Alignment = taRightJustify
+              Anchors = []
+              Caption = 'Exchange, add'
+            end
+            object Label4: TLabel
+              Left = 4
+              Top = 32
+              Width = 43
+              Height = 13
+              Alignment = taRightJustify
+              Anchors = []
+              Caption = 'Formulas'
+            end
+            object Label5: TLabel
+              Left = 4
+              Top = 18
+              Width = 57
+              Height = 13
+              Alignment = taRightJustify
+              Anchors = []
+              Caption = 'and remove'
+            end
+          end
+          object Panel3: TPanel
+            Left = 0
+            Top = 106
+            Width = 91
+            Height = 73
+            Align = alClient
+            BevelOuter = bvNone
+            TabOrder = 2
+            ExplicitTop = 122
+            ExplicitHeight = 41
+            DesignSize = (
+              91
+              73)
+            object Label6: TLabel
+              Left = 1
+              Top = 4
+              Width = 75
+              Height = 13
+              Alignment = taRightJustify
+              Anchors = []
+              Caption = 'Change Params'
+            end
+            object Label8: TLabel
+              Left = 5
+              Top = 18
+              Width = 56
+              Height = 13
+              Alignment = taRightJustify
+              Anchors = []
+              Caption = 'of Formulas'
+            end
+          end
+          object ModifyParamsWeightTBar: TTrackBarEx
+            Tag = 10
+            Left = 91
+            Top = 132
+            Width = 68
+            Height = 21
+            Anchors = []
+            Ctl3D = True
+            Max = 1000
+            ParentCtl3D = False
+            TabOrder = 3
+            ThumbLength = 18
+            TickMarks = tmBoth
+            TickStyle = tsNone
+            ExplicitTop = 120
+          end
+          object ModifyParamsStrengthTBar: TTrackBarEx
+            Tag = 10
+            Left = 159
+            Top = 132
+            Width = 70
+            Height = 21
+            Anchors = []
+            Ctl3D = True
+            Max = 1000
+            ParentCtl3D = False
+            TabOrder = 4
+            ThumbLength = 18
+            TickMarks = tmBoth
+            TickStyle = tsNone
+            ExplicitTop = 120
+          end
+          object Label9: TLabel
+            Left = 192
+            Top = 64
+            Width = 4
+            Height = 13
+            Alignment = taRightJustify
+            Anchors = []
+            Caption = '-'
+            ExplicitLeft = 211
+          end
+        end
+      end
+    end
   end
   object MainPnl: TPanel
     Left = 0
     Top = 0
-    Width = 968
-    Height = 622
+    Width = 848
+    Height = 663
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
@@ -571,66 +889,6 @@ object MutaGenFrm: TMutaGenFrm
         ExplicitWidth = 28
         ExplicitHeight = 28
       end
-    end
-  end
-  object GridPanel1: TGridPanel
-    Left = 0
-    Top = 622
-    Width = 1081
-    Height = 41
-    Align = alBottom
-    BevelOuter = bvNone
-    ColumnCollection = <
-      item
-        Value = 40.000000000000000000
-      end
-      item
-        Value = 20.000000000000000000
-      end
-      item
-        Value = 40.000000000000000000
-      end>
-    ControlCollection = <
-      item
-        Column = 0
-        Control = ProgressBar
-        Row = 0
-      end
-      item
-        Column = 1
-        Control = MutateBtn
-        Row = 0
-      end>
-    RowCollection = <
-      item
-        Value = 100.000000000000000000
-      end>
-    TabOrder = 2
-    DesignSize = (
-      1081
-      41)
-    object ProgressBar: TProgressBar
-      Left = 7
-      Top = 12
-      Width = 417
-      Height = 17
-      Anchors = []
-      Max = 15
-      Position = 10
-      Smooth = True
-      SmoothReverse = True
-      Step = 1
-      TabOrder = 0
-    end
-    object MutateBtn: TButton
-      Left = 502
-      Top = 8
-      Width = 75
-      Height = 25
-      Anchors = []
-      Caption = 'Mutate!'
-      TabOrder = 1
-      OnClick = MutateBtnClick
     end
   end
   object MainPopupMenu: TPopupMenu

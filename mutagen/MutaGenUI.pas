@@ -6,7 +6,8 @@ uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, JvExForms,
   JvCustomItemViewer, JvImagesViewer, JvComponentBase, JvFormAnimatedIcon, MutaGen,
-  Vcl.ComCtrls, JvExComCtrls, JvProgressBar, MB3DFacade, Vcl.Menus;
+  Vcl.ComCtrls, JvExComCtrls, JvProgressBar, MB3DFacade, Vcl.Menus, JvComCtrls,
+  JvxSlider, JvExControls, JvSlider, TrackBarEx, Vcl.Buttons;
 
 type
   TMutaGenFrm = class(TForm)
@@ -42,11 +43,28 @@ type
     Image_1_2_1_2: TImage;
     Panel_1_2_1_1: TPanel;
     Image_1_2_1_1: TImage;
-    GridPanel1: TGridPanel;
-    ProgressBar: TProgressBar;
-    MutateBtn: TButton;
     MainPopupMenu: TPopupMenu;
     SendtoMainItm: TMenuItem;
+    CategoryPanelGroup1: TCategoryPanelGroup;
+    CategoryPanel2: TCategoryPanel;
+    CategoryPanel1: TCategoryPanel;
+    MutateBtn: TButton;
+    ProgressBar: TProgressBar;
+    GridPanel2: TGridPanel;
+    MinIterLabel: TLabel;
+    ModifyFormulaWeightTBar: TTrackBarEx;
+    Label2: TLabel;
+    Label3: TLabel;
+    Panel2: TPanel;
+    Label1: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Panel3: TPanel;
+    Label6: TLabel;
+    Label8: TLabel;
+    ModifyParamsWeightTBar: TTrackBarEx;
+    ModifyParamsStrengthTBar: TTrackBarEx;
+    Label9: TLabel;
     procedure MutateBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -69,6 +87,10 @@ type
     procedure CreateMutation(Sender: TObject);
     procedure RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade);
     function GetInitialParams(Sender: TObject): TMB3DParamsFacade;
+    function CreateParamsCaption(const Params: TMB3DParamsFacade): String;
+    function CreateMutationConfig: TMutationConfig;
+    function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
+    procedure InitOptionsPanel;
   public
     { Public declarations }
     procedure RestartFromMain;
@@ -84,7 +106,8 @@ uses
   Mand, PreviewRenderer, TypeDefinitions, CustomFormulas, Contnrs, Math, FileHandling;
 
 const
-  MUTAGEN_SIZE = 5;
+  TBAR_SCALE = 1000.0;
+
 
 procedure TMutaGenFrm.FormCreate(Sender: TObject);
 begin
@@ -93,6 +116,7 @@ begin
   FPanelList.DoLayout;
   RefreshMutateButtonCaption;
   InitProgress;
+  InitOptionsPanel;
 end;
 
 procedure TMutaGenFrm.FormDestroy(Sender: TObject);
@@ -231,46 +255,6 @@ var
   CurrSet: TMutationParamSet;
   InitialParams: TMB3DParamsFacade;
 
-  function GetMutations: TList;
-  var
-    Mutation: TMutation;
-  begin
-    Result := TObjectList.Create;
-
-    Mutation := TAddFormulaMutation.Create;
-    Mutation.LocalStrength := 1.0;
-    Result.Add(Mutation);
-
-
-    Mutation := TReplaceFormulaMutation.Create;
-    Mutation.LocalStrength := 1.0;
-    Result.Add(Mutation);
-
-    Mutation := TRemoveFormulaMutation.Create;
-    Mutation.LocalStrength := 1.0;
-    Result.Add(Mutation);
-
-    Mutation := TModifySingleParamMutation.Create;
-    Mutation.LocalStrength := 1.0;
-    Result.Add(Mutation);
-  end;
-
-  function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;
-  var
-    I: Integer;
-    Mutations: TList;
-  begin
-    Mutations := GetMutations;
-    try
-      Result := Params;
-      for I := 0 to Mutations.Count-1 do begin
-        Result := TMutation(Mutations[I]).CreateMutation(Result, GlobalStrength);
-      end;
-    finally
-      Mutations.Free;
-    end;
-  end;
-
   function CreateAndRenderMutation(const ToPanel, FromPanel: TMutaGenPanel): Boolean;
   var
     NewParams: TMB3DParamsFacade;
@@ -278,7 +262,7 @@ var
     if FromPanel = nil then
       NewParams := InitialParams
     else
-      NewParams := CreateMutation(CurrSet.Params[FromPanel.MutationIndex], MutationStrength);
+      NewParams := MutateParams(CurrSet.Params[FromPanel.MutationIndex]);
     CurrSet.Params[ToPanel.MutationIndex] := NewParams;
     RenderParams(ToPanel,  CurrSet.Params[ToPanel.MutationIndex]);
     ProgressStep;
@@ -395,11 +379,57 @@ begin
   Params := GetInitialParams( Caller );
   if Params = nil then
     raise Exception.Create('No params to send to main editor');
-  // TODO Caption
-  CopyHeaderAsTextToClipBoard(@Params.Core.Header, Caption);
+  CopyHeaderAsTextToClipBoard(@Params.Core.Header, CreateParamsCaption(Params));
   Mand3DForm.SpeedButton8Click(Caller);
 end;
 
+function TMutaGenFrm.CreateParamsCaption(const Params: TMB3DParamsFacade): String;
+begin
+  Result := 'MutaGen' + Params.UUID;
+end;
 
+function TMutaGenFrm.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
+var
+  I: Integer;
+  Mutations: TList;
+  Config: TMutationConfig;
+begin
+  Config := CreateMutationConfig;
+  try
+    Mutations := TMutationCreator.CreateMutations(Config)
+  finally
+    Config.Free;
+  end;
+  try
+    Result := Params;
+    for I := 0 to Mutations.Count-1 do begin
+      Result := TMutation(Mutations[I]).MutateParams(Result);
+    end;
+  finally
+    Mutations.Free;
+  end;
+end;
+
+function TMutaGenFrm.CreateMutationConfig: TMutationConfig;
+begin
+  Result := TMutationConfig.Create;
+  Result.ModifyFormulaWeight := ModifyFormulaWeightTBar.Position / TBAR_SCALE;
+  Result.ModifyParamsWeight := ModifyParamsWeightTBar.Position / TBAR_SCALE;
+  Result.ModifyParamsStrength := ModifyParamsStrengthTBar.Position / TBAR_SCALE;
+end;
+
+procedure TMutaGenFrm.InitOptionsPanel;
+var
+  Config:TMutationConfig;
+begin
+  Config:=TMutationConfig.Create;
+  try
+    ModifyFormulaWeightTBar.Position := Round(TBAR_SCALE * Config.ModifyFormulaWeight);
+    ModifyParamsWeightTBar.Position := Round(TBAR_SCALE * Config.ModifyParamsWeight);
+    ModifyParamsStrengthTBar.Position := Round(TBAR_SCALE * Config.ModifyParamsStrength);
+  finally
+    Config.Free;
+  end;
+end;
 
 end.

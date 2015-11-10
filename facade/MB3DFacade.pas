@@ -60,6 +60,7 @@ type
 
   TMB3DParamsFacade = class
   private
+    FUUID: String;
     FCore: TMB3DCoreFacade;
     FFormulas: TList;
     function GetFormula(Index: Integer): TMB3DFormulaFacade;
@@ -71,6 +72,7 @@ type
     property Core: TMB3DCoreFacade read FCore;
     property Formulas[Index: Integer]: TMB3DFormulaFacade read GetFormula;
     property FormulaCount: Integer read GetFormulaCount;
+    property UUID: String read FUUID write FUUID;
   end;
 
 implementation
@@ -248,12 +250,23 @@ end;
 constructor TMB3DParamsFacade.Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
 var
   I: Integer;
+  NewGUID: TGUID;
+
+  function GUIDToShortString(const Guid: TGUID): string;
+  begin
+    SetLength(Result, 32);
+    StrLFmt(PChar(Result), 32,'%.8x%.4x%.4x%.4x%',
+      [Guid.D1, Guid.D2, Guid.D3, Integer(Guid.D4[0])+Integer(Guid.D4[1])+Integer(Guid.D4[2])+Integer(Guid.D4[3])+Integer(Guid.D4[4])+Integer(Guid.D4[5])+Integer(Guid.D4[6])+Integer(Guid.D4[7])]);
+  end;
+
 begin
   inherited Create;
   FCore := TMB3DCoreFacade.Create(Header, HAddOn);
   FFormulas:=TObjectList.Create;
   for I := 0 to MAX_FORMULA_COUNT-1 do
     FFormulas.Add(TMB3DFormulaFacade.Create(I, Self));
+  CreateGUID(NewGUID);
+  FUUID := GUIDToShortString(NewGUID);
 end;
 
 destructor TMB3DParamsFacade.Destroy;

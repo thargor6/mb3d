@@ -89,6 +89,23 @@ type
     function NextRandomInt(const MaxValue: Integer): Integer;overload;
   end;
 
+  TMutationConfig = class
+  private
+    FModifyFormulaWeight: Double;
+    FModifyParamsWeight: Double;
+    FModifyParamsStrength: Double;
+  public
+    constructor Create;
+    property ModifyFormulaWeight: Double read FModifyFormulaWeight write FModifyFormulaWeight;
+    property ModifyParamsWeight: Double read FModifyParamsWeight write FModifyParamsWeight;
+    property ModifyParamsStrength: Double read FModifyParamsStrength write FModifyParamsStrength;
+  end;
+
+  TMutationCreator = class
+  public
+    class function CreateMutations(const Config: TMutationConfig ): TList;
+  end;
+
   TMutationParamSet = class
   private
     FParams: Array [Low(TMutationIndex)..High(TMutationIndex)] of TMB3DParamsFacade;
@@ -102,43 +119,45 @@ type
 
   TMutation = class
   private
-    FLocalStrength: Double;
-    FRandGen: TRandGen;
     function GetNonEmptyFormulas(const Params: TMB3DParamsFacade): TStringList;
     function GetNonEmptyFormulasWithParams(const Params: TMB3DParamsFacade): TStringList;
   protected
-    function MutationStrength(const GlobalStrength: Double): Double;
     function ChooseRandomFormula(const Params: TMB3DParamsFacade; const OnlyFormulasWithParams: Boolean): TMB3DFormulaFacade;
-    procedure RandomizeParamValue(const Param: TMB3DParamFacade; const GlobalStrength: Double);
+    procedure RandomizeParamValue(const Param: TMB3DParamFacade; const Strength: Double);
   public
-    constructor Create;
-    destructor Destroy;override;
-    function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;virtual;abstract;
+    function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;virtual;abstract;
     function RequiresProbing: Boolean;virtual;abstract;
-    property LocalStrength: Double read FLocalStrength write FLocalStrength;
   end;
 
-  TModifySingleParamMutation = class(TMutation)
+  TScalableMutation = class(TMutation)
+  private
+    FStrength: Double;
   public
-    function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;override;
+    constructor Create;
+    property Strength: Double read FStrength write FStrength;
+  end;
+
+  TModifySingleParamMutation = class(TScalableMutation)
+  public
+    function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
     function RequiresProbing: Boolean;override;
   end;
 
   TAddFormulaMutation = class(TMutation)
   public
-    function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;override;
+    function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
     function RequiresProbing: Boolean;override;
   end;
 
   TReplaceFormulaMutation = class(TMutation)
   public
-    function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;override;
+    function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
     function RequiresProbing: Boolean;override;
   end;
 
   TRemoveFormulaMutation = class(TMutation)
   public
-    function CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;override;
+    function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
     function RequiresProbing: Boolean;override;
   end;
 
@@ -146,6 +165,9 @@ implementation
 
 uses
   Contnrs, Math, FormulaNames, TypeDefinitions;
+
+var
+  RandGen: TRandGen;
 { ------------------------------ TMutaGenPanel ------------------------------- }
 constructor TMutaGenPanel.Create(ParentPanel: TMutaGenPanel;const MutationIndex: TMutationIndex;const XPos, YPos, XSize, YSize: Double;const Caption: String;const Panel: TPanel;const Image: TImage);
 begin
@@ -476,25 +498,6 @@ begin
   FParams[Index] := Param;
 end;
 { ---------------------------------- TMutation ------------------------------- }
-constructor TMutation.Create;
-begin
-  inherited Create;
-  FLocalStrength := 1.0;
-  FRandGen := TRandGen.Create;
-  // TODO
-  //FRandGen.Randomize();
-end;
-
-destructor TMutation.Destroy;
-begin
-  FRandGen.Free;
-end;
-
-function TMutation.MutationStrength(const GlobalStrength: Double): Double;
-begin
-  Result := FLocalStrength * GlobalStrength;
-end;
-
 function TMutation.GetNonEmptyFormulas(const Params: TMB3DParamsFacade): TStringList;
 var
   I: Integer;
@@ -529,7 +532,7 @@ begin
     IdxList := GetNonEmptyFormulas(Params);
   try
     if IdxList.Count > 0 then begin
-      Index := StrToInt(IdxList[ FRandGen.NextRandomInt(IdxList.Count) ]);
+      Index := StrToInt(IdxList[ RandGen.NextRandomInt(IdxList.Count) ]);
       Result := Params.Formulas[Index];
     end;
   finally
@@ -537,25 +540,25 @@ begin
   end;
 end;
 
-procedure TMutation.RandomizeParamValue(const Param: TMB3DParamFacade; const GlobalStrength: Double);
+procedure TMutation.RandomizeParamValue(const Param: TMB3DParamFacade; const Strength: Double);
 var
   OldValue, Delta: Double;
 begin
   OldValue := Param.Value;
   if Param.Datatype=ptInteger then begin
-    Delta := MutationStrength(GlobalStrength)*(0.5-Random)*2.0;
-    if (Abs(OldValue) > 1.0) and (FRandGen.NextRandomDouble > 0.666) then begin
+    Delta := Strength*(0.5-Random)*2.0;
+    if (Abs(OldValue) > 1.0) and (RandGen.NextRandomDouble > 0.666) then begin
       Delta := Delta * OldValue / 2.0;
     end;
     if Round(Abs(Delta))<1.0 then
-      if FRandGen.NextRandomDouble < 0.5 then
+      if RandGen.NextRandomDouble < 0.5 then
         Delta := Delta - 1.0
       else
         Delta := Delta + 1.0;
   end
   else begin
-    Delta := MutationStrength(GlobalStrength)*(0.5-Random);
-    if (Abs(OldValue) > 0.01) and (FRandGen.NextRandomDouble > 0.8333) then begin
+    Delta := Strength*(0.5-Random);
+    if (Abs(OldValue) > 0.01) and (RandGen.NextRandomDouble > 0.8333) then begin
       Delta := Delta * OldValue / 2.0;
     end;
   end;
@@ -563,8 +566,41 @@ begin
   Windows.OutputDebugString(PChar(Param.Name + ': ' + FloatToStr(OldValue) + '->' + FloatToStr(Param.Value)));
 end;
 
+{ --------------------------- TScalableMutation ------------------------------ }
+constructor TScalableMutation.Create;
+begin
+  inherited Create;
+  FStrength := 1.0;
+end;
+{ ----------------------------- TMutationConfig ------------------------------ }
+constructor TMutationConfig.Create;
+begin
+  inherited Create;
+  ModifyFormulaWeight := 0.75;
+  ModifyParamsWeight := 1.0;
+  ModifyParamsStrength := 1.0;
+end;
+{ ---------------------------- TMutationCreator ------------------------------ }
+class function TMutationCreator.CreateMutations(const Config: TMutationConfig ): TList;
+var
+  Mutation: TScalableMutation;
+begin
+  Result := TObjectList.Create;
+
+  if Config.ModifyFormulaWeight > RandGen.NextRandomDouble then begin
+    Result.Add(TAddFormulaMutation.Create);
+    Result.Add(TReplaceFormulaMutation.Create);
+    Result.Add(TRemoveFormulaMutation.Create);
+  end;
+
+  if Config.ModifyParamsWeight > RandGen.NextRandomDouble then begin
+    Mutation := TModifySingleParamMutation.Create;
+    Mutation.Strength := Config.ModifyParamsStrength;
+    Result.Add(Mutation);
+  end;
+end;
 { ------------------------ TModifySingleParamMutation ------------------------ }
-function TModifySingleParamMutation.CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;
+function TModifySingleParamMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 var
   ParamIndex: Integer;
   Formula: TMB3DFormulaFacade;
@@ -572,8 +608,8 @@ begin
   Result := Params.Clone;
   Formula := ChooseRandomFormula(Result, True);
   if Formula<>nil then begin
-    ParamIndex := FRandGen.NextRandomInt(Formula.ParamCount);
-    RandomizeParamValue(Formula.Params[ParamIndex], GlobalStrength);
+    ParamIndex := RandGen.NextRandomInt(Formula.ParamCount);
+    RandomizeParamValue(Formula.Params[ParamIndex], Strength);
   end;
 end;
 
@@ -592,7 +628,7 @@ begin
   Result := AllFormulaNames;
 end;
 
-function TAddFormulaMutation.CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;
+function TAddFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 var
   I, Idx: Integer;
   ParamIndex: Integer;
@@ -606,12 +642,14 @@ begin
       // TODO choose category with more "intelligence"
       Formula3DNames := FormulaNames.GetFormulaNamesByCategory(fc_3D);
       if Formula3DNames.Count > 0 then begin
-        Idx := FRandGen.NextRandomInt(Formula3DNames.Count);
+        Idx := RandGen.NextRandomInt(Formula3DNames.Count);
         Result.Formulas[I].FormulaName := Formula3DNames[Idx];
-        if (FRandGen.NextRandomDouble > 0.5) and (Result.Formulas[I].ParamCount > 0) then begin
-          ParamIndex := FRandGen.NextRandomInt(Result.Formulas[I].ParamCount);
-          RandomizeParamValue(Result.Formulas[I].Params[ParamIndex], GlobalStrength);
+(*
+        if (RandGen.NextRandomDouble > 0.5) and (Result.Formulas[I].ParamCount > 0) then begin
+          ParamIndex := RandGen.NextRandomInt(Result.Formulas[I].ParamCount);
+          RandomizeParamValue(Result.Formulas[I].Params[ParamIndex], Strength);
         end;
+*)
       end;
       break;
     end;
@@ -623,7 +661,7 @@ begin
   Result := True;
 end;
 { -------------------------- TReplaceFormulaMutation ------------------------- }
-function TReplaceFormulaMutation.CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;
+function TReplaceFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 var
   I, Idx: Integer;
   ParamIndex: Integer;
@@ -637,12 +675,14 @@ begin
     if not Result.Formulas[I].IsEmpty then begin
       Category := FormulaNames.GetCategoryByFormulaName(Result.Formulas[I].FormulaName);
       Formula3DNames := FormulaNames.GetFormulaNamesByCategory(Category);
-      Idx := FRandGen.NextRandomInt(Formula3DNames.Count);
+      Idx := RandGen.NextRandomInt(Formula3DNames.Count);
       Result.Formulas[I].FormulaName := Formula3DNames[Idx];
-      if (FRandGen.NextRandomDouble > 0.5) and (Result.Formulas[I].ParamCount > 0) then begin
-        ParamIndex := FRandGen.NextRandomInt(Result.Formulas[I].ParamCount);
-        RandomizeParamValue(Result.Formulas[I].Params[ParamIndex], GlobalStrength);
+(*
+      if (RandGen.NextRandomDouble > 0.5) and (Result.Formulas[I].ParamCount > 0) then begin
+        ParamIndex := RandGen.NextRandomInt(Result.Formulas[I].ParamCount);
+        RandomizeParamValue(Result.Formulas[I].Params[ParamIndex], Strength);
       end;
+*)
       break;
     end;
   end;
@@ -653,11 +693,9 @@ begin
   Result := True;
 end;
 { --------------------------- TRemoveFormulaMutation ------------------------- }
-function TRemoveFormulaMutation.CreateMutation(const Params: TMB3DParamsFacade; const GlobalStrength: Double): TMB3DParamsFacade;
+function TRemoveFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 var
   I, Idx: Integer;
-  ParamIndex: Integer;
-  Category: TFormulaCategory;
   IdxList: TStringList;
 begin
   Result := Params.Clone;
@@ -669,7 +707,7 @@ begin
       end;
     end;
     if IdxList.Count > 3 then begin
-      Idx := StrToInt(IdxList[ FRandGen.NextRandomInt(IdxList.Count)]);
+      Idx := StrToInt(IdxList[ RandGen.NextRandomInt(IdxList.Count)]);
       Result.Formulas[Idx].FormulaName := '';
     end;
   finally
@@ -682,12 +720,12 @@ begin
   Result := True;
 end;
 
-
-
 initialization
   AllFormulaNames := nil;
+  RandGen := TRandGen.Create;
 finalization
   if AllFormulaNames<>nil then
     AllFormulaNames.Free;
+  RandGen.Free;
 end.
 
