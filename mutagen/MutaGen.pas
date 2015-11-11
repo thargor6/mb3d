@@ -127,7 +127,7 @@ type
     function GetNonEmptyFormulasWithParams(const Params: TMB3DParamsFacade): TStringList;
   protected
     function ChooseRandomFormula(const Params: TMB3DParamsFacade; const OnlyFormulasWithParams: Boolean): TMB3DFormulaFacade;
-    procedure RandomizeParamValue(const Param: TMB3DParamFacade; const Strength: Double);
+    procedure RandomizeParamValue(Param: TMB3DParamFacade; const Strength: Double);
   public
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;virtual;abstract;
     function RequiresProbing: Boolean;virtual;abstract;
@@ -178,6 +178,10 @@ uses
 
 var
   RandGen: TRandGen;
+
+const
+  Epsilon = 1.0e-8;
+
 { ------------------------------ TMutaGenPanel ------------------------------- }
 constructor TMutaGenPanel.Create(ParentPanel: TMutaGenPanel;const MutationIndex: TMutationIndex;const XPos, YPos, XSize, YSize: Double;const Caption: String;const Panel: TPanel;const Image: TImage);
 begin
@@ -550,27 +554,23 @@ begin
   end;
 end;
 
-procedure TMutation.RandomizeParamValue(const Param: TMB3DParamFacade; const Strength: Double);
+procedure TMutation.RandomizeParamValue(Param: TMB3DParamFacade; const Strength: Double);
 var
-  OldValue, Delta: Double;
+  OldValue, Delta, Magnitude: Double;
 begin
   OldValue := Param.Value;
   if Param.Datatype=ptInteger then begin
-    Delta := Strength*(0.5-Random)*2.0;
-    if (Abs(OldValue) > 1.0) and (RandGen.NextRandomDouble > 0.666) then begin
-      Delta := Delta * OldValue / 2.0;
-    end;
-    if Round(Abs(Delta))<1.0 then
-      if RandGen.NextRandomDouble < 0.5 then
-        Delta := Delta - 1.0
-      else
-        Delta := Delta + 1.0;
+    Delta := (1.0+RandGen.NextRandomDouble * 1.5) * Strength;
+    if RandGen.NextRandomDouble > 0.5 then
+      Delta := 0.0 - Delta;
   end
   else begin
-    Delta := Strength*(0.5-Random);
-    if (Abs(OldValue) > 0.01) and (RandGen.NextRandomDouble > 0.8333) then begin
-      Delta := Delta * OldValue / 2.0;
-    end;
+    if Abs(OldValue) > Epsilon then begin
+      Magnitude := Log10(Abs(OldValue*0.1));
+      Delta := Exp(Magnitude+(0.5+RandGen.NextRandomDouble))* (0.5-RandGen.NextRandomDouble) * Strength
+    end
+    else
+      Delta := (0.5-RandGen.NextRandomDouble) * Strength;
   end;
   Param.Value := OldValue + Delta;
   Windows.OutputDebugString(PChar(Param.Name + ': ' + FloatToStr(OldValue) + '->' + FloatToStr(Param.Value)));
@@ -740,18 +740,34 @@ begin
 end;
 { -------------------------- TModifyJuliaModeMutation ------------------------ }
 function TModifyJuliaModeMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
+const
+  JuliaScale = 1.5;
 begin
   Result := Params.Clone;
   Result.JuliaMode.IsJulia := (RandGen.NextRandomDouble > 0.25);
   if (Result.JuliaMode.IsJulia) then begin
     if RandGen.NextRandomDouble > 0.5 then
-      Result.JuliaMode.Jx := Strength * (0.5-RandGen.NextRandomDouble) * 2.0;
+      Result.JuliaMode.Jx := Strength * (0.5-RandGen.NextRandomDouble) * JuliaScale;
     if RandGen.NextRandomDouble > 0.5 then
-      Result.JuliaMode.Jy := Strength * (0.5-RandGen.NextRandomDouble) * 2.0;
+      Result.JuliaMode.Jy := Strength * (0.5-RandGen.NextRandomDouble) * JuliaScale;
     if RandGen.NextRandomDouble > 0.5 then
-      Result.JuliaMode.Jz := Strength * (0.5-RandGen.NextRandomDouble) * 2.0;
+      Result.JuliaMode.Jz := Strength * (0.5-RandGen.NextRandomDouble) * JuliaScale;
     if RandGen.NextRandomDouble > 0.75 then
-      Result.JuliaMode.Jw := Strength * (0.5-RandGen.NextRandomDouble) * 2.0;
+      Result.JuliaMode.Jw := Strength * (0.5-RandGen.NextRandomDouble) * JuliaScale;
+    if (Abs(Result.JuliaMode.Jx)<Epsilon) and (Abs(Result.JuliaMode.Jy)<Epsilon) and (Abs(Result.JuliaMode.Jz)<Epsilon) then begin
+      if RandGen.NextRandomDouble > 0.5 then begin
+        if RandGen.NextRandomDouble > 0.5 then
+          Result.JuliaMode.Jx := Strength * (0.5-RandGen.NextRandomDouble) * JuliaScale
+        else
+          Result.JuliaMode.Jz := Strength * (0.5-RandGen.NextRandomDouble) * JuliaScale;
+      end
+      else begin
+        if RandGen.NextRandomDouble > 0.5 then
+          Result.JuliaMode.Jy := Strength * (0.5-RandGen.NextRandomDouble) * JuliaScale
+        else
+          Result.JuliaMode.Jw := Strength * (0.5-RandGen.NextRandomDouble) * JuliaScale;
+      end;
+    end;
   end
   else begin
     Result.JuliaMode.Jx := 0.0;

@@ -50,12 +50,14 @@ type
     FHybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
     FHeader: TMandHeader11;
     FHAddOn: THeaderCustomAddon;
+    function GetHeaderPointer: TPMandHeader11;
+    function GetHAddonPointer: PTHeaderCustomAddon;
   public
     constructor Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
     destructor Destroy;override;
     procedure ApplyToCore(DestHeader: TMandHeader11;DestHAddOn: THeaderCustomAddon);
-    property Header: TMandHeader11 read FHeader;
-    property HAddOn: THeaderCustomAddon read FHAddOn;
+    property PHeader: TPMandHeader11 read GetHeaderPointer;
+    property PHAddOn: PTHeaderCustomAddon read GetHAddOnPointer;
   end;
 
   TMB3DRootFacade = class
@@ -123,7 +125,7 @@ type
 implementation
 
 uses
-  DivUtils, CustomFormulas, HeaderTrafos, Contnrs, SysUtils;
+  DivUtils, CustomFormulas, HeaderTrafos, Contnrs, SysUtils, Windows;
 
 { ---------------------------- TMB3DParamFacade ------------------------------ }
 constructor TMB3DParamFacade.Create(const ParamIndex: Integer;const Owner: TMB3DFormulaFacade);
@@ -135,31 +137,36 @@ end;
 
 function TMB3DParamFacade.GetName: String;
 begin
-  Result := PTCustomFormula(FOwner.FOwner.Core.Header.PHCustomF[FOwner.FFormulaIndex]).sOptionStrings[FParamIndex];
+  with FOwner.FOwner.Core.PHeader^ do begin
+    Result := PTCustomFormula(PHCustomF[FOwner.FFormulaIndex]).sOptionStrings[FParamIndex];
+  end;
 end;
 
 function TMB3DParamFacade.GetDatatype: TMB3DParamType;
 begin
-  if CustomFormulas.isIntType(PTCustomFormula(FOwner.FOwner.Core.Header.PHCustomF[FOwner.FFormulaIndex]).byOptionTypes[FParamIndex]) then
-    Result := ptInteger
-  else
-    Result := ptFloat;
+  with FOwner.FOwner.Core.PHeader^ do begin
+    if CustomFormulas.isIntType(PTCustomFormula(PHCustomF[FOwner.FFormulaIndex]).byOptionTypes[FParamIndex]) then
+      Result := ptInteger
+    else
+      Result := ptFloat;
+    end;
 end;
 
 function TMB3DParamFacade.GetValue: Double;
 begin
-  Result := FOwner.FOwner.Core.HAddon.Formulas[FOwner.FFormulaIndex].dOptionValue[FParamIndex];
+  with FOwner.FOwner.Core.PHAddon^ do begin
+    Result := Formulas[FOwner.FFormulaIndex].dOptionValue[FParamIndex];
+  end;
 end;
 
 procedure TMB3DParamFacade.SetValue(const Value: Double);
-var
-  f: PTHAformula;
 begin
-  f := @FOwner.FOwner.Core.HAddon.Formulas[FParamIndex];
-  if Datatype = ptInteger then
-    f^.dOptionValue[FParamIndex] := Round(Value)
-  else
-    f^.dOptionValue[FParamIndex] := Value;
+  with FOwner.FOwner.Core.PHAddon^ do begin
+    if Datatype = ptInteger then
+      Formulas[FOwner.FFormulaIndex].dOptionValue[FParamIndex] := Round(Value)
+    else
+      Formulas[FOwner.FFormulaIndex].dOptionValue[FParamIndex] := Value;
+  end;
 end;
 { --------------------------- TMB3DFormulaFacade ----------------------------- }
 constructor TMB3DFormulaFacade.Create(const FormulaIndex: Integer;const Owner: TMB3DParamsFacade);
@@ -182,7 +189,7 @@ end;
 
 function TMB3DFormulaFacade.GetFormulaName: String;
 begin
-  Result := CustomFtoStr(FOwner.Core.HAddon.Formulas[FFormulaIndex].CustomFname);
+  Result := CustomFtoStr(FOwner.Core.PHAddon^.Formulas[FFormulaIndex].CustomFname);
 end;
 
 procedure TMB3DFormulaFacade.SetFormulaName(const FormulaName: String);
@@ -196,20 +203,20 @@ begin
   success := False;
   if sName<>'' then begin
     if isInternFormula(sName, InternIndex) then begin
-      GetHAddOnFromInternFormula(@FOwner.Core.Header, InternIndex, FFormulaIndex);
+      GetHAddOnFromInternFormula(FOwner.Core.PHeader, InternIndex, FFormulaIndex);
       success := True;
     end
     else begin
-      f := @FOwner.Core.HAddon.Formulas[FFormulaIndex];
+      f := @FOwner.Core.PHAddon^.Formulas[FFormulaIndex];
       PutStringInCustomF(f^.CustomFname, sName);
       if LoadCustomFormulaFromHeader(f^.CustomFname,
-        PTCustomFormula(FOwner.Core.Header.PHCustomF[FFormulaIndex])^,
+        PTCustomFormula(FOwner.Core.PHeader^.PHCustomF[FFormulaIndex])^,
         f^.dOptionValue) then begin
 //        if TabControl2.TabIndex <> 1 then
           if f^.iItCount < 1 then
             f^.iItCount := 1;
-          CopyTypeAndOptionFromCFtoHAddon(FOwner.Core.Header.PHCustomF[FFormulaIndex],
-            @FOwner.Core.HAddon, FFormulaIndex);
+          CopyTypeAndOptionFromCFtoHAddon(FOwner.Core.PHeader^.PHCustomF[FFormulaIndex],
+            FOwner.Core.PHAddon, FFormulaIndex);
           success := True;
           f^.iFnr := 20;    //for backward compatibilty reason
 //        end;
@@ -231,12 +238,12 @@ end;
 
 function TMB3DFormulaFacade.GetParamCount: Integer;
 begin
-  Result := FOwner.Core.HAddon.Formulas[FFormulaIndex].iOptionCount;
+  Result := FOwner.Core.PHAddon^.Formulas[FFormulaIndex].iOptionCount;
 end;
 
 procedure TMB3DFormulaFacade.Clear;
 begin
-  with FOwner.Core.FHAddOn.Formulas[FFormulaIndex] do begin
+  with FOwner.Core.PHAddOn^.Formulas[FFormulaIndex] do begin
     iItCount := 0;
     iFnr := -1;
     iOptionCount := 0;
@@ -246,7 +253,7 @@ end;
 
 function TMB3DFormulaFacade.IsEmpty: Boolean;
 begin
-  Result := FOwner.Core.FHAddOn.Formulas[FFormulaIndex].iItCount = 0;
+  Result := FOwner.Core.PHAddOn^.Formulas[FFormulaIndex].iItCount = 0;
 end;
 
 function TMB3DFormulaFacade.GetParam(Index: Integer): TMB3DParamFacade;
@@ -285,6 +292,16 @@ begin
   FastMove(FHeader, DestHeader, SizeOf(TMandHeader11));
   DestHeader.PCFAddon := AddOn;
   FastMove(FHAddOn, DestHeader.PCFAddon^, SizeOf(THeaderCustomAddon));
+end;
+
+function TMB3DCoreFacade.GetHeaderPointer: TPMandHeader11;
+begin
+  Result := @FHeader;
+end;
+
+function TMB3DCoreFacade.GetHAddonPointer: PTHeaderCustomAddon;
+begin
+  Result := @FHAddOn;
 end;
 
 { ---------------------------- TMB3DParamsFacade ----------------------------- }
@@ -330,7 +347,7 @@ end;
 
 function TMB3DParamsFacade.Clone: TMB3DParamsFacade;
 begin
-  Result := TMB3DParamsFacade.Create( Core.Header, Core.HAddOn );
+  Result := TMB3DParamsFacade.Create( Core.PHeader^, Core.PHAddOn^ );
 end;
 
 function TMB3DParamsFacade.GetFormulaCount: Integer;
@@ -346,82 +363,82 @@ end;
 { -------------------------- TMB3DIterationsFacade --------------------------- }
 function TMB3DIterationsFacade.GetMinIterations: Integer;
 begin
-  Result := FOwner.Core.Header.MinimumIterations;
+  Result := FOwner.Core.PHeader^.MinimumIterations;
 end;
 
 procedure TMB3DIterationsFacade.SetMinIterations(const MinIterations: Integer);
 begin
-   TPMandHeader11(@(FOwner.Core.Header))^.MinimumIterations := MinIterations;
+   FOwner.Core.PHeader^.MinimumIterations := MinIterations;
 end;
 
 function TMB3DIterationsFacade.GetIterations: Integer;
 begin
-  Result := FOwner.Core.Header.Iterations;
+  Result := FOwner.Core.PHeader^.Iterations;
 end;
 
 procedure TMB3DIterationsFacade.SetIterations(const Iterations: Integer);
 begin
-   TPMandHeader11(@(FOwner.Core.Header))^.Iterations := Iterations;
+  FOwner.Core.PHeader^.Iterations := Iterations;
 end;
 
 function TMB3DIterationsFacade.GetRBailout: Double;
 begin
-  Result := FOwner.Core.Header.RStop;
+  Result := FOwner.Core.PHeader^.RStop;
 end;
 
 procedure TMB3DIterationsFacade.SetRBailout(const RBailout: Double);
 begin
-   TPMandHeader11(@(FOwner.Core.Header))^.RStop := RBailout;
+  FOwner.Core.PHeader^.RStop := RBailout;
 end;
 { --------------------------- TMB3DJuliaModeFacade --------------------------- }
 function TMB3DJuliaModeFacade.GetIsJulia: Boolean;
 begin
-  Result := FOwner.Core.Header.bIsJulia > 0;
+  Result := FOwner.Core.PHeader^.bIsJulia > 0;
 end;
 
 procedure TMB3DJuliaModeFacade.SetIsJulia(const IsJulia: Boolean);
 begin
-  TPMandHeader11(@(FOwner.Core.Header))^.bIsJulia := Byte(Ord(IsJulia));
+  FOwner.Core.PHeader^.bIsJulia := Byte(Ord(IsJulia));
 end;
 
 function TMB3DJuliaModeFacade.GetJx: Double;
 begin
-  Result := FOwner.Core.Header.dJx;
+  Result := FOwner.Core.PHeader^.dJx;
 end;
 
 procedure TMB3DJuliaModeFacade.SetJx(const Jx: Double);
 begin
-  TPMandHeader11(@(FOwner.Core.Header))^.dJx := Jx;
+  FOwner.Core.PHeader^.dJx := Jx;
 end;
 
 function TMB3DJuliaModeFacade.GetJy: Double;
 begin
-  Result := FOwner.Core.Header.dJy;
+  Result := FOwner.Core.PHeader^.dJy;
 end;
 
 procedure TMB3DJuliaModeFacade.SetJy(const Jy: Double);
 begin
-  TPMandHeader11(@(FOwner.Core.Header))^.dJy := Jy;
+  FOwner.Core.PHeader^.dJy := Jy;
 end;
 
 function TMB3DJuliaModeFacade.GetJz: Double;
 begin
-  Result := FOwner.Core.Header.dJz;
+  Result := FOwner.Core.PHeader^.dJz;
 end;
 
 procedure TMB3DJuliaModeFacade.SetJz(const Jz: Double);
 begin
-  TPMandHeader11(@(FOwner.Core.Header))^.dJz := Jz;
+  FOwner.Core.PHeader^.dJz := Jz;
 end;
 
 function TMB3DJuliaModeFacade.GetJw: Double;
 begin
-  Result := FOwner.Core.Header.dJw;
+  Result := FOwner.Core.PHeader^.dJw;
 end;
 
 procedure TMB3DJuliaModeFacade.SetJw(const Jw: Double);
 begin
-  TPMandHeader11(@(FOwner.Core.Header))^.dJw := Jw;
+  FOwner.Core.PHeader^.dJw := Jw;
 end;
 
 end.

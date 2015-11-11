@@ -70,6 +70,8 @@ type
     Label10: TLabel;
     ModifyJuliaModeWeightTBar: TTrackBarEx;
     ModifyJuliaModeStrengthTBar: TTrackBarEx;
+    Panel5: TPanel;
+    DisableAllBtn: TButton;
     procedure MutateBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -77,6 +79,7 @@ type
     procedure MainPnlResize(Sender: TObject);
     procedure Panel_1DblClick(Sender: TObject);
     procedure SendtoMainItmClick(Sender: TObject);
+    procedure DisableAllBtnClick(Sender: TObject);
   private
     { Private declarations }
     FForceAbort: Boolean;
@@ -367,11 +370,9 @@ end;
 
 procedure TMutaGenFrm.RestartFromMain;
 begin
-  if FMutationHistory.Count > 0 then begin
-    // TODO Display warning?
-    FMutationHistory.Clear;
-  end;
-  CreateInitialSet;
+  FMutationHistory.Clear;
+  if FMutationHistory.Count = 0 then
+    CreateInitialSet;
 end;
 
 procedure TMutaGenFrm.SendtoMainItmClick(Sender: TObject);
@@ -384,7 +385,7 @@ begin
   Params := GetInitialParams( Caller );
   if Params = nil then
     raise Exception.Create('No params to send to main editor');
-  CopyHeaderAsTextToClipBoard(@Params.Core.Header, CreateParamsCaption(Params));
+  CopyHeaderAsTextToClipBoard(Params.Core.PHeader, CreateParamsCaption(Params));
   Mand3DForm.SpeedButton8Click(Caller);
 end;
 
@@ -440,5 +441,13 @@ begin
     Config.Free;
   end;
 end;
+
+procedure TMutaGenFrm.DisableAllBtnClick(Sender: TObject);
+begin
+  ModifyFormulaWeightTBar.Position := 0;
+  ModifyParamsWeightTBar.Position := 0;
+  ModifyJuliaModeWeightTBar.Position := 0;
+end;
+
 
 end.

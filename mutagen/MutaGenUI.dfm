@@ -42,10 +42,11 @@ object MutaGenFrm: TMutaGenFrm
       HeaderHeight = 20
       TabOrder = 0
       object CategoryPanel2: TCategoryPanel
-        Top = 201
+        Top = 369
         Height = 181
         Caption = 'Mutate'
         TabOrder = 0
+        ExplicitTop = 201
         object MutateBtn: TButton
           Left = 4
           Top = 9
@@ -71,15 +72,16 @@ object MutaGenFrm: TMutaGenFrm
       end
       object CategoryPanel1: TCategoryPanel
         Top = 0
-        Height = 201
+        Height = 369
         Caption = 'Options'
         TabOrder = 1
         object GridPanel2: TGridPanel
           Left = 0
           Top = 0
           Width = 229
-          Height = 179
+          Height = 306
           Align = alClient
+          BevelKind = bkSoft
           BevelOuter = bvNone
           ColumnCollection = <
             item
@@ -167,11 +169,11 @@ object MutaGenFrm: TMutaGenFrm
             end>
           TabOrder = 0
           DesignSize = (
-            229
-            179)
+            225
+            302)
           object MinIterLabel: TLabel
             Left = 5
-            Top = 15
+            Top = 31
             Width = 80
             Height = 13
             Alignment = taRightJustify
@@ -188,8 +190,8 @@ object MutaGenFrm: TMutaGenFrm
           end
           object ModifyFormulaWeightTBar: TTrackBarEx
             Tag = 10
-            Left = 91
-            Top = 55
+            Left = 90
+            Top = 102
             Width = 67
             Height = 21
             Anchors = []
@@ -200,10 +202,12 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
+            ExplicitLeft = 91
+            ExplicitTop = 55
           end
           object Label2: TLabel
-            Left = 94
-            Top = 15
+            Left = 93
+            Top = 31
             Width = 61
             Height = 13
             Alignment = taRightJustify
@@ -215,12 +219,11 @@ object MutaGenFrm: TMutaGenFrm
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
             ParentFont = False
-            ExplicitLeft = 93
             ExplicitTop = 47
           end
           object Label3: TLabel
-            Left = 169
-            Top = 15
+            Left = 166
+            Top = 31
             Width = 50
             Height = 13
             Alignment = taRightJustify
@@ -232,18 +235,21 @@ object MutaGenFrm: TMutaGenFrm
             Font.Name = 'Tahoma'
             Font.Style = [fsBold]
             ParentFont = False
+            ExplicitLeft = 169
             ExplicitTop = 47
           end
           object Panel2: TPanel
             Left = 0
-            Top = 44
-            Width = 91
+            Top = 75
+            Width = 90
             Height = 42
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 1
+            ExplicitTop = 44
+            ExplicitWidth = 91
             DesignSize = (
-              91
+              90
               42)
             object Label1: TLabel
               Left = 4
@@ -272,14 +278,16 @@ object MutaGenFrm: TMutaGenFrm
           end
           object Panel3: TPanel
             Left = 0
-            Top = 88
-            Width = 91
+            Top = 150
+            Width = 90
             Height = 42
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 2
+            ExplicitTop = 88
+            ExplicitWidth = 91
             DesignSize = (
-              91
+              90
               42)
             object Label6: TLabel
               Left = 4
@@ -300,9 +308,9 @@ object MutaGenFrm: TMutaGenFrm
           end
           object ModifyParamsWeightTBar: TTrackBarEx
             Tag = 10
-            Left = 91
-            Top = 99
-            Width = 68
+            Left = 90
+            Top = 177
+            Width = 67
             Height = 21
             Anchors = []
             Ctl3D = True
@@ -312,12 +320,14 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
+            ExplicitLeft = 91
+            ExplicitTop = 99
           end
           object ModifyParamsStrengthTBar: TTrackBarEx
             Tag = 10
-            Left = 159
-            Top = 99
-            Width = 70
+            Left = 157
+            Top = 177
+            Width = 68
             Height = 21
             Anchors = []
             Ctl3D = True
@@ -327,10 +337,12 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
+            ExplicitLeft = 159
+            ExplicitTop = 99
           end
           object Label9: TLabel
-            Left = 192
-            Top = 59
+            Left = 189
+            Top = 106
             Width = 4
             Height = 13
             Alignment = taRightJustify
@@ -341,15 +353,16 @@ object MutaGenFrm: TMutaGenFrm
           end
           object Panel4: TPanel
             Left = 0
-            Top = 132
-            Width = 91
+            Top = 225
+            Width = 90
             Height = 41
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 5
             ExplicitTop = 135
+            ExplicitWidth = 91
             DesignSize = (
-              91
+              90
               41)
             object Label7: TLabel
               Left = 4
@@ -370,9 +383,9 @@ object MutaGenFrm: TMutaGenFrm
           end
           object ModifyJuliaModeWeightTBar: TTrackBarEx
             Tag = 10
-            Left = 91
-            Top = 145
-            Width = 68
+            Left = 90
+            Top = 253
+            Width = 67
             Height = 21
             Anchors = []
             Ctl3D = True
@@ -382,13 +395,14 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
+            ExplicitLeft = 91
             ExplicitTop = 133
           end
           object ModifyJuliaModeStrengthTBar: TTrackBarEx
             Tag = 10
-            Left = 159
-            Top = 145
-            Width = 70
+            Left = 157
+            Top = 253
+            Width = 68
             Height = 21
             Anchors = []
             Ctl3D = True
@@ -398,7 +412,33 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
+            ExplicitLeft = 159
             ExplicitTop = 133
+          end
+        end
+        object Panel5: TPanel
+          Left = 0
+          Top = 306
+          Width = 229
+          Height = 41
+          Align = alBottom
+          BevelOuter = bvNone
+          TabOrder = 1
+          ExplicitLeft = 96
+          ExplicitTop = 320
+          ExplicitWidth = 185
+          DesignSize = (
+            229
+            41)
+          object DisableAllBtn: TButton
+            Left = 140
+            Top = 3
+            Width = 85
+            Height = 33
+            Anchors = []
+            Caption = 'Disable all'
+            TabOrder = 0
+            OnClick = DisableAllBtnClick
           end
         end
       end
