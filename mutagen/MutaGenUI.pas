@@ -65,6 +65,11 @@ type
     ModifyParamsWeightTBar: TTrackBarEx;
     ModifyParamsStrengthTBar: TTrackBarEx;
     Label9: TLabel;
+    Panel4: TPanel;
+    Label7: TLabel;
+    Label10: TLabel;
+    ModifyJuliaModeWeightTBar: TTrackBarEx;
+    ModifyJuliaModeStrengthTBar: TTrackBarEx;
     procedure MutateBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -416,6 +421,8 @@ begin
   Result.ModifyFormulaWeight := ModifyFormulaWeightTBar.Position / TBAR_SCALE;
   Result.ModifyParamsWeight := ModifyParamsWeightTBar.Position / TBAR_SCALE;
   Result.ModifyParamsStrength := ModifyParamsStrengthTBar.Position / TBAR_SCALE;
+  Result.ModifyJuliaModeWeight := ModifyJuliaModeWeightTBar.Position / TBAR_SCALE;
+  Result.ModifyJuliaModeStrength := ModifyJuliaModeStrengthTBar.Position / TBAR_SCALE;
 end;
 
 procedure TMutaGenFrm.InitOptionsPanel;
@@ -427,6 +434,8 @@ begin
     ModifyFormulaWeightTBar.Position := Round(TBAR_SCALE * Config.ModifyFormulaWeight);
     ModifyParamsWeightTBar.Position := Round(TBAR_SCALE * Config.ModifyParamsWeight);
     ModifyParamsStrengthTBar.Position := Round(TBAR_SCALE * Config.ModifyParamsStrength);
+    ModifyJuliaModeWeightTBar.Position := Round(TBAR_SCALE * Config.ModifyJuliaModeWeight);
+    ModifyJuliaModeStrengthTBar.Position := Round(TBAR_SCALE * Config.ModifyJuliaModeStrength);
   finally
     Config.Free;
   end;

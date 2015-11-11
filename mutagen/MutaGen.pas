@@ -94,11 +94,15 @@ type
     FModifyFormulaWeight: Double;
     FModifyParamsWeight: Double;
     FModifyParamsStrength: Double;
+    FModifyJuliaModeWeight: Double;
+    FModifyJuliaModeStrength: Double;
   public
     constructor Create;
     property ModifyFormulaWeight: Double read FModifyFormulaWeight write FModifyFormulaWeight;
     property ModifyParamsWeight: Double read FModifyParamsWeight write FModifyParamsWeight;
     property ModifyParamsStrength: Double read FModifyParamsStrength write FModifyParamsStrength;
+    property ModifyJuliaModeWeight: Double read FModifyJuliaModeWeight write FModifyJuliaModeWeight;
+    property ModifyJuliaModeStrength: Double read FModifyJuliaModeStrength write FModifyJuliaModeStrength;
   end;
 
   TMutationCreator = class
@@ -156,6 +160,12 @@ type
   end;
 
   TRemoveFormulaMutation = class(TMutation)
+  public
+    function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
+    function RequiresProbing: Boolean;override;
+  end;
+
+  TModifyJuliaModeMutation = class(TScalableMutation)
   public
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
     function RequiresProbing: Boolean;override;
@@ -579,6 +589,8 @@ begin
   ModifyFormulaWeight := 0.75;
   ModifyParamsWeight := 1.0;
   ModifyParamsStrength := 1.0;
+  ModifyJuliaModeWeight := 0.5;
+  ModifyJuliaModeStrength := 1.0;
 end;
 { ---------------------------- TMutationCreator ------------------------------ }
 class function TMutationCreator.CreateMutations(const Config: TMutationConfig ): TList;
@@ -598,6 +610,13 @@ begin
     Mutation.Strength := Config.ModifyParamsStrength;
     Result.Add(Mutation);
   end;
+
+  if Config.ModifyJuliaModeWeight > RandGen.NextRandomDouble then begin
+    Mutation := TModifyJuliaModeMutation.Create;
+    Mutation.Strength := Config.ModifyJuliaModeStrength;
+    Result.Add(Mutation);
+  end;
+
 end;
 { ------------------------ TModifySingleParamMutation ------------------------ }
 function TModifySingleParamMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
@@ -716,6 +735,33 @@ begin
 end;
 
 function TRemoveFormulaMutation.RequiresProbing: Boolean;
+begin
+  Result := True;
+end;
+{ -------------------------- TModifyJuliaModeMutation ------------------------ }
+function TModifyJuliaModeMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
+begin
+  Result := Params.Clone;
+  Result.JuliaMode.IsJulia := (RandGen.NextRandomDouble > 0.25);
+  if (Result.JuliaMode.IsJulia) then begin
+    if RandGen.NextRandomDouble > 0.5 then
+      Result.JuliaMode.Jx := Strength * (0.5-RandGen.NextRandomDouble) * 2.0;
+    if RandGen.NextRandomDouble > 0.5 then
+      Result.JuliaMode.Jy := Strength * (0.5-RandGen.NextRandomDouble) * 2.0;
+    if RandGen.NextRandomDouble > 0.5 then
+      Result.JuliaMode.Jz := Strength * (0.5-RandGen.NextRandomDouble) * 2.0;
+    if RandGen.NextRandomDouble > 0.75 then
+      Result.JuliaMode.Jw := Strength * (0.5-RandGen.NextRandomDouble) * 2.0;
+  end
+  else begin
+    Result.JuliaMode.Jx := 0.0;
+    Result.JuliaMode.Jy := 0.0;
+    Result.JuliaMode.Jz := 0.0;
+    Result.JuliaMode.Jw := 0.0;
+  end;
+end;
+
+function TModifyJuliaModeMutation.RequiresProbing: Boolean;
 begin
   Result := True;
 end;

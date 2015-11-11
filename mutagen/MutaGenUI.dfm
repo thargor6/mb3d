@@ -41,13 +41,11 @@ object MutaGenFrm: TMutaGenFrm
       HeaderFont.Style = []
       HeaderHeight = 20
       TabOrder = 0
-      ExplicitWidth = 151
       object CategoryPanel2: TCategoryPanel
         Top = 201
         Height = 181
         Caption = 'Mutate'
         TabOrder = 0
-        ExplicitWidth = 149
         object MutateBtn: TButton
           Left = 4
           Top = 9
@@ -76,9 +74,6 @@ object MutaGenFrm: TMutaGenFrm
         Height = 201
         Caption = 'Options'
         TabOrder = 1
-        ExplicitLeft = 96
-        ExplicitTop = -6
-        ExplicitWidth = 149
         object GridPanel2: TGridPanel
           Left = 0
           Top = 0
@@ -141,28 +136,42 @@ object MutaGenFrm: TMutaGenFrm
               Column = 2
               Control = Label9
               Row = 1
+            end
+            item
+              Column = 0
+              Control = Panel4
+              Row = 3
+            end
+            item
+              Column = 1
+              Control = ModifyJuliaModeWeightTBar
+              Row = 3
+            end
+            item
+              Column = 2
+              Control = ModifyJuliaModeStrengthTBar
+              Row = 3
             end>
           RowCollection = <
             item
-              Value = 20.000000000000000000
+              Value = 25.000000000000000000
             end
             item
-              Value = 40.000000000000000000
+              Value = 25.000000000000000000
             end
             item
-              Value = 40.000000000000000000
+              Value = 25.000000000000000000
+            end
+            item
+              Value = 25.000000000000000000
             end>
           TabOrder = 0
-          ExplicitLeft = -86
-          ExplicitTop = -36
-          ExplicitWidth = 233
-          ExplicitHeight = 215
           DesignSize = (
             229
             179)
           object MinIterLabel: TLabel
             Left = 5
-            Top = 11
+            Top = 15
             Width = 80
             Height = 13
             Alignment = taRightJustify
@@ -180,7 +189,7 @@ object MutaGenFrm: TMutaGenFrm
           object ModifyFormulaWeightTBar: TTrackBarEx
             Tag = 10
             Left = 91
-            Top = 60
+            Top = 55
             Width = 67
             Height = 21
             Anchors = []
@@ -191,12 +200,10 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 90
-            ExplicitTop = 71
           end
           object Label2: TLabel
             Left = 94
-            Top = 11
+            Top = 15
             Width = 61
             Height = 13
             Alignment = taRightJustify
@@ -213,7 +220,7 @@ object MutaGenFrm: TMutaGenFrm
           end
           object Label3: TLabel
             Left = 169
-            Top = 11
+            Top = 15
             Width = 50
             Height = 13
             Alignment = taRightJustify
@@ -229,22 +236,20 @@ object MutaGenFrm: TMutaGenFrm
           end
           object Panel2: TPanel
             Left = 0
-            Top = 35
+            Top = 44
             Width = 91
-            Height = 71
-            Align = alClient
+            Height = 42
+            Align = alTop
             BevelOuter = bvNone
             TabOrder = 1
-            ExplicitHeight = 41
             DesignSize = (
               91
-              71)
+              42)
             object Label1: TLabel
               Left = 4
               Top = 4
               Width = 72
               Height = 13
-              Alignment = taRightJustify
               Anchors = []
               Caption = 'Exchange, add'
             end
@@ -253,7 +258,6 @@ object MutaGenFrm: TMutaGenFrm
               Top = 32
               Width = 43
               Height = 13
-              Alignment = taRightJustify
               Anchors = []
               Caption = 'Formulas'
             end
@@ -262,39 +266,34 @@ object MutaGenFrm: TMutaGenFrm
               Top = 18
               Width = 57
               Height = 13
-              Alignment = taRightJustify
               Anchors = []
               Caption = 'and remove'
             end
           end
           object Panel3: TPanel
             Left = 0
-            Top = 106
+            Top = 88
             Width = 91
-            Height = 73
-            Align = alClient
+            Height = 42
+            Align = alTop
             BevelOuter = bvNone
             TabOrder = 2
-            ExplicitTop = 122
-            ExplicitHeight = 41
             DesignSize = (
               91
-              73)
+              42)
             object Label6: TLabel
-              Left = 1
+              Left = 4
               Top = 4
               Width = 75
               Height = 13
-              Alignment = taRightJustify
               Anchors = []
               Caption = 'Change Params'
             end
             object Label8: TLabel
-              Left = 5
+              Left = 4
               Top = 18
               Width = 56
               Height = 13
-              Alignment = taRightJustify
               Anchors = []
               Caption = 'of Formulas'
             end
@@ -302,7 +301,7 @@ object MutaGenFrm: TMutaGenFrm
           object ModifyParamsWeightTBar: TTrackBarEx
             Tag = 10
             Left = 91
-            Top = 132
+            Top = 99
             Width = 68
             Height = 21
             Anchors = []
@@ -313,12 +312,11 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitTop = 120
           end
           object ModifyParamsStrengthTBar: TTrackBarEx
             Tag = 10
             Left = 159
-            Top = 132
+            Top = 99
             Width = 70
             Height = 21
             Anchors = []
@@ -329,17 +327,78 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitTop = 120
           end
           object Label9: TLabel
             Left = 192
-            Top = 64
+            Top = 59
             Width = 4
             Height = 13
             Alignment = taRightJustify
             Anchors = []
             Caption = '-'
             ExplicitLeft = 211
+            ExplicitTop = 64
+          end
+          object Panel4: TPanel
+            Left = 0
+            Top = 132
+            Width = 91
+            Height = 41
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 5
+            ExplicitTop = 135
+            DesignSize = (
+              91
+              41)
+            object Label7: TLabel
+              Left = 4
+              Top = 4
+              Width = 37
+              Height = 13
+              Anchors = []
+              Caption = 'Change'
+            end
+            object Label10: TLabel
+              Left = 4
+              Top = 18
+              Width = 50
+              Height = 13
+              Anchors = []
+              Caption = 'Julia Mode'
+            end
+          end
+          object ModifyJuliaModeWeightTBar: TTrackBarEx
+            Tag = 10
+            Left = 91
+            Top = 145
+            Width = 68
+            Height = 21
+            Anchors = []
+            Ctl3D = True
+            Max = 1000
+            ParentCtl3D = False
+            TabOrder = 6
+            ThumbLength = 18
+            TickMarks = tmBoth
+            TickStyle = tsNone
+            ExplicitTop = 133
+          end
+          object ModifyJuliaModeStrengthTBar: TTrackBarEx
+            Tag = 10
+            Left = 159
+            Top = 145
+            Width = 70
+            Height = 21
+            Anchors = []
+            Ctl3D = True
+            Max = 1000
+            ParentCtl3D = False
+            TabOrder = 7
+            ThumbLength = 18
+            TickMarks = tmBoth
+            TickStyle = tsNone
+            ExplicitTop = 133
           end
         end
       end

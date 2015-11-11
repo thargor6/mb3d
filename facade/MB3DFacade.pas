@@ -35,9 +35,9 @@ type
     procedure SetFormulaName(const FormulaName: String);
     function GetParam(Index: Integer): TMB3DParamFacade;
     function GetParamCount: Integer;
+  public
     constructor Create(const FormulaIndex: Integer;const Owner: TMB3DParamsFacade);
     destructor Destroy;override;
-  public
     procedure Clear;
     function IsEmpty: Boolean;
     property FormulaName: String read GetFormulaName write SetFormulaName;
@@ -58,10 +58,53 @@ type
     property HAddOn: THeaderCustomAddon read FHAddOn;
   end;
 
+  TMB3DRootFacade = class
+  private
+    FOwner: TMB3DParamsFacade;
+  public
+    constructor Create(const Owner: TMB3DParamsFacade);
+  end;
+
+  TMB3DIterationsFacade = class (TMB3DRootFacade)
+  private
+    function GetMinIterations: Integer;
+    procedure SetMinIterations(const MinIterations: Integer);
+    function GetIterations: Integer;
+    procedure SetIterations(const Iterations: Integer);
+    function GetRBailout: Double;
+    procedure SetRBailout(const RBailout: Double);
+  public
+    property MinIterations: Integer read GetMinIterations write SetMinIterations;
+    property Iterations: Integer read GetIterations write SetIterations;
+    property RBailout: Double read GetRBailout write SetRBailout;
+  end;
+
+  TMB3DJuliaModeFacade = class(TMB3DRootFacade)
+  private
+    function GetIsJulia: Boolean;
+    procedure SetIsJulia(const IsJulia: Boolean);
+    function GetJx: Double;
+    procedure SetJx(const Jx: Double);
+    function GetJy: Double;
+    procedure SetJy(const Jy: Double);
+    function GetJz: Double;
+    procedure SetJz(const Jz: Double);
+    function GetJw: Double;
+    procedure SetJw(const Jw: Double);
+  public
+    property IsJulia: Boolean read GetIsJulia write SetIsJulia;
+    property Jx: Double read GetJx write SetJx;
+    property Jy: Double read GetJy write SetJy;
+    property Jz: Double read GetJz write SetJz;
+    property Jw: Double read GetJw write SetJw;
+  end;
+
   TMB3DParamsFacade = class
   private
     FUUID: String;
     FCore: TMB3DCoreFacade;
+    FIterations: TMB3DIterationsFacade;
+    FJuliaMode: TMB3DJuliaModeFacade;
     FFormulas: TList;
     function GetFormula(Index: Integer): TMB3DFormulaFacade;
     function GetFormulaCount: Integer;
@@ -72,6 +115,8 @@ type
     property Core: TMB3DCoreFacade read FCore;
     property Formulas[Index: Integer]: TMB3DFormulaFacade read GetFormula;
     property FormulaCount: Integer read GetFormulaCount;
+    property JuliaMode: TMB3DJuliaModeFacade read FJuliaMode write FJuliaMode;
+    property Iterations: TMB3DIterationsFacade read FIterations;
     property UUID: String read FUUID write FUUID;
   end;
 
@@ -212,16 +257,12 @@ begin
 end;
 { ----------------------------- TMB3DCoreFacade ------------------------------ }
 constructor TMB3DCoreFacade.Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
-var
-  i: Integer;
 begin
   inherited Create;
 //  AssignHeader(@FHeader, @Header);
-    FastMove(Header, FHeader, SizeOf(TMandHeader11));
-    FHeader.PCFAddon := @FHAddOn;
-    FastMove(HAddOn, FHeader.PCFAddon^, SizeOf(THeaderCustomAddon));
-
-
+  FastMove(Header, FHeader, SizeOf(TMandHeader11));
+  FHeader.PCFAddon := @FHAddOn;
+  FastMove(HAddOn, FHeader.PCFAddon^, SizeOf(THeaderCustomAddon));
 //  for i := 0 to MAX_FORMULA_COUNT - 1 do
 //    FHeader.PHCustomF[i] := @FHybridCustoms[i];
 //  IniCFsFromHAddon(FHeader.PCFAddon, Header.PHCustomF);
@@ -265,12 +306,16 @@ begin
   FFormulas:=TObjectList.Create;
   for I := 0 to MAX_FORMULA_COUNT-1 do
     FFormulas.Add(TMB3DFormulaFacade.Create(I, Self));
+  FIterations := TMB3DIterationsFacade.Create(Self);
+  FJuliaMode := TMB3DJuliaModeFacade.Create(Self);
   CreateGUID(NewGUID);
   FUUID := GUIDToShortString(NewGUID);
 end;
 
 destructor TMB3DParamsFacade.Destroy;
 begin
+  FJuliaMode.Free;
+  FIterations.Free;
   FFormulas.Free;
   FCore.Free;
   inherited Destroy;
@@ -292,6 +337,91 @@ function TMB3DParamsFacade.GetFormulaCount: Integer;
 begin
   Result := FFormulas.Count;
 end;
+{ ------------------------------ TMB3DRootFacade ----------------------------- }
+constructor TMB3DRootFacade.Create(const Owner: TMB3DParamsFacade);
+begin
+  inherited Create;
+  FOwner := Owner;
+end;
+{ -------------------------- TMB3DIterationsFacade --------------------------- }
+function TMB3DIterationsFacade.GetMinIterations: Integer;
+begin
+  Result := FOwner.Core.Header.MinimumIterations;
+end;
 
+procedure TMB3DIterationsFacade.SetMinIterations(const MinIterations: Integer);
+begin
+   TPMandHeader11(@(FOwner.Core.Header))^.MinimumIterations := MinIterations;
+end;
+
+function TMB3DIterationsFacade.GetIterations: Integer;
+begin
+  Result := FOwner.Core.Header.Iterations;
+end;
+
+procedure TMB3DIterationsFacade.SetIterations(const Iterations: Integer);
+begin
+   TPMandHeader11(@(FOwner.Core.Header))^.Iterations := Iterations;
+end;
+
+function TMB3DIterationsFacade.GetRBailout: Double;
+begin
+  Result := FOwner.Core.Header.RStop;
+end;
+
+procedure TMB3DIterationsFacade.SetRBailout(const RBailout: Double);
+begin
+   TPMandHeader11(@(FOwner.Core.Header))^.RStop := RBailout;
+end;
+{ --------------------------- TMB3DJuliaModeFacade --------------------------- }
+function TMB3DJuliaModeFacade.GetIsJulia: Boolean;
+begin
+  Result := FOwner.Core.Header.bIsJulia > 0;
+end;
+
+procedure TMB3DJuliaModeFacade.SetIsJulia(const IsJulia: Boolean);
+begin
+  TPMandHeader11(@(FOwner.Core.Header))^.bIsJulia := Byte(Ord(IsJulia));
+end;
+
+function TMB3DJuliaModeFacade.GetJx: Double;
+begin
+  Result := FOwner.Core.Header.dJx;
+end;
+
+procedure TMB3DJuliaModeFacade.SetJx(const Jx: Double);
+begin
+  TPMandHeader11(@(FOwner.Core.Header))^.dJx := Jx;
+end;
+
+function TMB3DJuliaModeFacade.GetJy: Double;
+begin
+  Result := FOwner.Core.Header.dJy;
+end;
+
+procedure TMB3DJuliaModeFacade.SetJy(const Jy: Double);
+begin
+  TPMandHeader11(@(FOwner.Core.Header))^.dJy := Jy;
+end;
+
+function TMB3DJuliaModeFacade.GetJz: Double;
+begin
+  Result := FOwner.Core.Header.dJz;
+end;
+
+procedure TMB3DJuliaModeFacade.SetJz(const Jz: Double);
+begin
+  TPMandHeader11(@(FOwner.Core.Header))^.dJz := Jz;
+end;
+
+function TMB3DJuliaModeFacade.GetJw: Double;
+begin
+  Result := FOwner.Core.Header.dJw;
+end;
+
+procedure TMB3DJuliaModeFacade.SetJw(const Jw: Double);
+begin
+  TPMandHeader11(@(FOwner.Core.Header))^.dJw := Jw;
+end;
 
 end.
