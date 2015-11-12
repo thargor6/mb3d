@@ -72,6 +72,11 @@ type
     ModifyJuliaModeStrengthTBar: TTrackBarEx;
     Panel5: TPanel;
     DisableAllBtn: TButton;
+    ToClipboardItm: TMenuItem;
+    CategoryPanel3: TCategoryPanel;
+    GenerationLbl: TLabel;
+    GenerationBtn: TUpDown;
+    ClearPrevGenerations: TButton;
     procedure MutateBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -80,6 +85,8 @@ type
     procedure Panel_1DblClick(Sender: TObject);
     procedure SendtoMainItmClick(Sender: TObject);
     procedure DisableAllBtnClick(Sender: TObject);
+    procedure ToClipboardItmClick(Sender: TObject);
+    procedure ClearPrevGenerationsClick(Sender: TObject);
   private
     { Private declarations }
     FForceAbort: Boolean;
@@ -87,18 +94,23 @@ type
     FPanelList: TMutaGenPanelList;
     FP_1, FP_1_1, FP_1_1_1, FP_1_1_1_1, FP_1_1_1_2, FP_1_1_2, FP_1_1_2_1, FP_1_1_2_2, FP_1_2, FP_1_2_1, FP_1_2_1_1, FP_1_2_1_2, FP_1_2_2, FP_1_2_2_1, FP_1_2_2_2: TMutaGenPanel;
     FMutationHistory: TList;
+    FCurrGenerationIndex: Integer;
     function CreatePanelList: TMutaGenPanelList;
     procedure InitProgress;
     procedure RefreshMutateButtonCaption;
     procedure ProgressStep;
     procedure CreateInitialSet;
     procedure CreateMutation(Sender: TObject);
-    procedure RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade);
+    function RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
     function GetInitialParams(Sender: TObject): TMB3DParamsFacade;
     function CreateParamsCaption(const Params: TMB3DParamsFacade): String;
     function CreateMutationConfig: TMutationConfig;
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
     procedure InitOptionsPanel;
+    procedure RefreshGenerationLabel;
+    function AddGeneration:TMutationParamSet;
+    procedure ClearPanels;
+    function CloneBitmap(const Src: TBitmap): TBitmap;
   public
     { Public declarations }
     procedure RestartFromMain;
@@ -202,30 +214,22 @@ begin
     FPanelList.DoLayout;
 end;
 
-procedure TMutaGenFrm.RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade);
+function TMutaGenFrm.RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
 var
   MB3DPreviewRenderer: TPreviewRenderer;
-  bmp: TBitmap;
 begin
-  MB3DPreviewRenderer := TPreviewRenderer.Create(Params);
+  Result := TBitmap.Create;
   try
-    bmp := TBitmap.Create;
-    MB3DPreviewRenderer.RenderPreview(bmp, Panel.ImageWidth, Panel.ImageHeight);
-    Panel.Bitmap := bmp;
-  finally
-    MB3DPreviewRenderer.Free;
+    MB3DPreviewRenderer := TPreviewRenderer.Create(Params);
+    try
+      MB3DPreviewRenderer.RenderPreview(Result, Panel.ImageWidth, Panel.ImageHeight);
+    finally
+      MB3DPreviewRenderer.Free;
+    end;
+  except
+    Result.Free;
+    raise;
   end;
-end;
-
-procedure TMutaGenFrm.CreateInitialSet;
-var
-  CurrSet: TMutationParamSet;
-begin
-  FMutationHistory.Clear;
-  CurrSet := TMutationParamSet.Create;
-  FMutationHistory.Add(CurrSet);
-  CurrSet.Params[miP_1] := TMB3DParamsFacade.Create(Mand3DForm.MHeader, Mand3DForm.HAddOn);
-  RenderParams(FP_1, CurrSet.Params[miP_1]);
 end;
 
 procedure TMutaGenFrm.MutateBtnClick(Sender: TObject);
@@ -266,23 +270,18 @@ var
   function CreateAndRenderMutation(const ToPanel, FromPanel: TMutaGenPanel): Boolean;
   var
     NewParams: TMB3DParamsFacade;
+    NewBitmap: TBitmap;
   begin
     if FromPanel = nil then
       NewParams := InitialParams
     else
       NewParams := MutateParams(CurrSet.Params[FromPanel.MutationIndex]);
     CurrSet.Params[ToPanel.MutationIndex] := NewParams;
-    RenderParams(ToPanel,  CurrSet.Params[ToPanel.MutationIndex]);
+    NewBitmap := RenderParams(ToPanel,  CurrSet.Params[ToPanel.MutationIndex]);
+    CurrSet.Bitmaps[ToPanel.MutationIndex] := NewBitmap;
+    ToPanel.Bitmap := CloneBitmap( NewBitmap );
     ProgressStep;
     Result := not FForceAbort;
-  end;
-
-  procedure ClearPanels;
-  var
-    I: Integer;
-  begin
-    for I := 1 to FPanelList.Count-1 do
-      FPanelList.GetPanel(I).Bitmap := nil;
   end;
 
 begin
@@ -294,15 +293,13 @@ begin
   FIsRunning := True;
   try
     RefreshMutateButtonCaption;
-//    ClearPanels;
+    ClearPanels;
     FForceAbort := False;
     InitialParams := GetInitialParams( Sender );
     if InitialParams = nil then
       raise Exception.Create('No params to mutate');
 
-    CurrSet := TMutationParamSet.Create;
-    FMutationHistory.Add(CurrSet);
-
+    CurrSet := AddGeneration;
     InitProgress;
 
     if not CreateAndRenderMutation(FP_1, nil) then
@@ -370,23 +367,26 @@ end;
 
 procedure TMutaGenFrm.RestartFromMain;
 begin
-  FMutationHistory.Clear;
-  if FMutationHistory.Count = 0 then
-    CreateInitialSet;
+  ClearPanels;
+  CreateInitialSet;
 end;
 
-procedure TMutaGenFrm.SendtoMainItmClick(Sender: TObject);
+procedure TMutaGenFrm.ToClipboardItmClick(Sender: TObject);
 var
   Params: TMB3DParamsFacade;
   Caller: TObject;
 begin
   Caller := ((Sender as TMenuItem).GetParentMenu as TPopupMenu).PopupComponent;
-
   Params := GetInitialParams( Caller );
   if Params = nil then
     raise Exception.Create('No params to send to main editor');
   CopyHeaderAsTextToClipBoard(Params.Core.PHeader, CreateParamsCaption(Params));
-  Mand3DForm.SpeedButton8Click(Caller);
+end;
+
+procedure TMutaGenFrm.SendtoMainItmClick(Sender: TObject);
+begin
+  ToClipboardItmClick(Sender);
+  Mand3DForm.SpeedButton8Click(Sender);
 end;
 
 function TMutaGenFrm.CreateParamsCaption(const Params: TMB3DParamsFacade): String;
@@ -449,5 +449,61 @@ begin
   ModifyJuliaModeWeightTBar.Position := 0;
 end;
 
+procedure TMutaGenFrm.CreateInitialSet;
+var
+  CurrSet: TMutationParamSet;
+  NewBitmap: TBitmap;
+begin
+  FMutationHistory.Clear;
+  CurrSet := AddGeneration;
+  CurrSet.Params[miP_1] := TMB3DParamsFacade.Create(Mand3DForm.MHeader, Mand3DForm.HAddOn);
+  NewBitmap := RenderParams(FP_1, CurrSet.Params[miP_1]);
+  CurrSet.Bitmaps[miP_1] := NewBitmap;
+  FP_1.Bitmap := CloneBitmap( NewBitmap );
+end;
+
+function TMutaGenFrm.AddGeneration:TMutationParamSet;
+begin
+  Result := TMutationParamSet.Create;;
+  FCurrGenerationIndex := FMutationHistory.Count;
+  FMutationHistory.Add(Result);
+  RefreshGenerationLabel;
+end;
+
+procedure TMutaGenFrm.RefreshGenerationLabel;
+begin
+  GenerationLbl.Caption := 'Generation '+IntToStr(FCurrGenerationIndex+1)+' of '+IntToStr(FMutationHistory.Count);
+end;
+
+procedure TMutaGenFrm.ClearPrevGenerationsClick(Sender: TObject);
+begin
+  //ClearPanels;
+
+end;
+
+procedure TMutaGenFrm.ClearPanels;
+var
+  I: Integer;
+  Panel: TMutaGenPanel;
+  bmp: TBitmap;
+begin
+  for I := 1 to FPanelList.Count-1 do begin
+    Panel := FPanelList.GetPanel(I);
+    bmp := TBitmap.Create;
+    bmp.PixelFormat := pf32Bit;
+    bmp.Width  := Panel.ImageWidth;
+    bmp.Height := Panel.ImageHeight;
+    Panel.Bitmap := bmp;
+  end;
+end;
+
+function TMutaGenFrm.CloneBitmap(const Src: TBitmap): TBitmap;
+begin
+  Result := TBitmap.Create;
+  Result.Assign(Src);
+end;
+
 
 end.
+
+

@@ -33,7 +33,7 @@ uses CustomFormulas, Math, Math3D, HeaderTrafos, DivUtils, Calc, Paint,
 
 constructor TPreviewRenderer.Create(const MB3DParamsFacade: TMB3DParamsFacade);
 begin
-  FMB3DParamsFacade := MB3DParamsFacade;
+  FMB3DParamsFacade := MB3DParamsFacade.Clone;
 end;
 
 destructor TPreviewRenderer.Destroy;

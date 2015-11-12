@@ -41,12 +41,47 @@ object MutaGenFrm: TMutaGenFrm
       HeaderFont.Style = []
       HeaderHeight = 20
       TabOrder = 0
+      object CategoryPanel3: TCategoryPanel
+        Top = 550
+        Caption = 'Generations'
+        TabOrder = 0
+        object GenerationLbl: TLabel
+          Left = 4
+          Top = 15
+          Width = 198
+          Height = 13
+          Alignment = taRightJustify
+          Anchors = []
+          AutoSize = False
+          Caption = 'Generation n of N'
+          Transparent = False
+        end
+        object GenerationBtn: TUpDown
+          Left = 208
+          Top = 8
+          Width = 17
+          Height = 25
+          TabOrder = 0
+        end
+        object ClearPrevGenerations: TButton
+          Left = 96
+          Top = 39
+          Width = 129
+          Height = 33
+          Hint = 'Clear all generations before the selected one'
+          Anchors = []
+          Caption = 'Clear all previous'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 1
+          OnClick = ClearPrevGenerationsClick
+        end
+      end
       object CategoryPanel2: TCategoryPanel
         Top = 369
         Height = 181
         Caption = 'Mutate'
-        TabOrder = 0
-        ExplicitTop = 201
+        TabOrder = 1
         object MutateBtn: TButton
           Left = 4
           Top = 9
@@ -74,7 +109,7 @@ object MutaGenFrm: TMutaGenFrm
         Top = 0
         Height = 369
         Caption = 'Options'
-        TabOrder = 1
+        TabOrder = 2
         object GridPanel2: TGridPanel
           Left = 0
           Top = 0
@@ -202,8 +237,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 91
-            ExplicitTop = 55
           end
           object Label2: TLabel
             Left = 93
@@ -242,15 +275,13 @@ object MutaGenFrm: TMutaGenFrm
             Left = 0
             Top = 75
             Width = 90
-            Height = 42
+            Height = 52
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 1
-            ExplicitTop = 44
-            ExplicitWidth = 91
             DesignSize = (
               90
-              42)
+              52)
             object Label1: TLabel
               Left = 4
               Top = 4
@@ -284,8 +315,6 @@ object MutaGenFrm: TMutaGenFrm
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 2
-            ExplicitTop = 88
-            ExplicitWidth = 91
             DesignSize = (
               90
               42)
@@ -320,8 +349,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 91
-            ExplicitTop = 99
           end
           object ModifyParamsStrengthTBar: TTrackBarEx
             Tag = 10
@@ -337,8 +364,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 159
-            ExplicitTop = 99
           end
           object Label9: TLabel
             Left = 189
@@ -359,8 +384,6 @@ object MutaGenFrm: TMutaGenFrm
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 5
-            ExplicitTop = 135
-            ExplicitWidth = 91
             DesignSize = (
               90
               41)
@@ -395,8 +418,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 91
-            ExplicitTop = 133
           end
           object ModifyJuliaModeStrengthTBar: TTrackBarEx
             Tag = 10
@@ -412,8 +433,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 159
-            ExplicitTop = 133
           end
         end
         object Panel5: TPanel
@@ -424,16 +443,13 @@ object MutaGenFrm: TMutaGenFrm
           Align = alBottom
           BevelOuter = bvNone
           TabOrder = 1
-          ExplicitLeft = 96
-          ExplicitTop = 320
-          ExplicitWidth = 185
           DesignSize = (
             229
             41)
           object DisableAllBtn: TButton
-            Left = 140
+            Left = 96
             Top = 3
-            Width = 85
+            Width = 129
             Height = 33
             Anchors = []
             Caption = 'Disable all'
@@ -994,8 +1010,12 @@ object MutaGenFrm: TMutaGenFrm
     Left = 496
     Top = 144
     object SendtoMainItm: TMenuItem
-      Caption = 'Send to Main'
+      Caption = 'Send to Main Editor'
       OnClick = SendtoMainItmClick
+    end
+    object ToClipboardItm: TMenuItem
+      Caption = 'Copy Params to Clipboard'
+      OnClick = ToClipboardItmClick
     end
   end
 end
