@@ -13,6 +13,7 @@ object MutaGenFrm: TMutaGenFrm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnPaint = FormPaint
@@ -41,42 +42,6 @@ object MutaGenFrm: TMutaGenFrm
       HeaderFont.Style = []
       HeaderHeight = 20
       TabOrder = 0
-      object CategoryPanel3: TCategoryPanel
-        Top = 550
-        Caption = 'Generations'
-        TabOrder = 0
-        object GenerationLbl: TLabel
-          Left = 4
-          Top = 15
-          Width = 198
-          Height = 13
-          Alignment = taRightJustify
-          Anchors = []
-          AutoSize = False
-          Caption = 'Generation n of N'
-          Transparent = False
-        end
-        object GenerationBtn: TUpDown
-          Left = 208
-          Top = 8
-          Width = 17
-          Height = 25
-          TabOrder = 0
-        end
-        object ClearPrevGenerations: TButton
-          Left = 96
-          Top = 39
-          Width = 129
-          Height = 33
-          Hint = 'Clear all generations before the selected one'
-          Anchors = []
-          Caption = 'Clear all previous'
-          ParentShowHint = False
-          ShowHint = True
-          TabOrder = 1
-          OnClick = ClearPrevGenerationsClick
-        end
-      end
       object CategoryPanel2: TCategoryPanel
         Top = 369
         Height = 181
@@ -103,6 +68,46 @@ object MutaGenFrm: TMutaGenFrm
           SmoothReverse = True
           Step = 1
           TabOrder = 1
+        end
+      end
+      object CategoryPanel3: TCategoryPanel
+        Top = 550
+        Caption = 'Generations'
+        TabOrder = 0
+        object GenerationLbl: TLabel
+          Left = 4
+          Top = 15
+          Width = 173
+          Height = 13
+          Alignment = taRightJustify
+          Anchors = []
+          AutoSize = False
+          Caption = 'Generation n of N'
+          Transparent = False
+        end
+        object GenerationBtn: TUpDown
+          Left = 183
+          Top = 8
+          Width = 42
+          Height = 25
+          Min = -1000000
+          Max = 1000000
+          Orientation = udHorizontal
+          TabOrder = 0
+          OnClick = GenerationBtnClick
+        end
+        object ClearPrevGenerations: TButton
+          Left = 96
+          Top = 39
+          Width = 129
+          Height = 33
+          Hint = 'Clear all generations before the selected one'
+          Anchors = []
+          Caption = 'Clear all previous'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 1
+          OnClick = ClearPrevGenerationsClick
         end
       end
       object CategoryPanel1: TCategoryPanel

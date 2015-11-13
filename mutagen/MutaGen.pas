@@ -471,8 +471,6 @@ begin
     intery := intery + gradient;
   end;
 end;
-
-
 { -------------------------------- TRandGen ---------------------------------- }
 function TRandGen.NextRandomDouble: Double;
 begin
