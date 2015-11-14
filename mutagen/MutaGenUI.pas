@@ -7,7 +7,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, JvExForms,
   JvCustomItemViewer, JvImagesViewer, JvComponentBase, JvFormAnimatedIcon, MutaGen,
   Vcl.ComCtrls, JvExComCtrls, JvProgressBar, MB3DFacade, Vcl.Menus, JvComCtrls,
-  JvxSlider, JvExControls, JvSlider, TrackBarEx, Vcl.Buttons;
+  JvxSlider, JvExControls, JvSlider, TrackBarEx, Vcl.Buttons, PreviewRenderer;
 
 type
   TMutaGenFrm = class(TForm)
@@ -77,6 +77,12 @@ type
     GenerationLbl: TLabel;
     GenerationBtn: TUpDown;
     ClearPrevGenerations: TButton;
+    Panel6: TPanel;
+    Label11: TLabel;
+    Label12: TLabel;
+    ModifyIterationCountWeightTBar: TTrackBarEx;
+    ModifyIterationCountStrengthTBar: TTrackBarEx;
+    PreviewRenderTimer: TTimer;
     procedure MutateBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -97,6 +103,7 @@ type
     FP_1, FP_1_1, FP_1_1_1, FP_1_1_1_1, FP_1_1_1_2, FP_1_1_2, FP_1_1_2_1, FP_1_1_2_2, FP_1_2, FP_1_2_1, FP_1_2_1_1, FP_1_2_1_2, FP_1_2_2, FP_1_2_2_1, FP_1_2_2_2: TMutaGenPanel;
     FMutationHistory: TList;
     FCurrGenerationIndex: Integer;
+    FMB3DPreviewRenderer: TPreviewRenderer;
     function CreatePanelList: TMutaGenPanelList;
     procedure InitProgress;
     procedure RefreshMutateButtonCaption;
@@ -104,6 +111,8 @@ type
     procedure CreateInitialSet;
     procedure CreateMutation(Sender: TObject);
     function RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
+    function RenderParamsSync(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
+    function RenderParamsAsync(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
     function GetInitialParams(Sender: TObject): TMB3DParamsFacade;
     function GetInitialBitmap(Sender: TObject): TBitmap;
     function CreateParamsCaption(const Params: TMB3DParamsFacade): String;
@@ -117,6 +126,7 @@ type
     procedure ReDisplayCurrGeneration;
     function CreateBlankBitmap(const Width, Height: Integer): TBitmap;
     procedure EnableControls;
+    procedure SignalCancel;
   public
     { Public declarations }
     procedure RestartFromMain;
@@ -129,10 +139,11 @@ implementation
 
 {$R *.dfm}
 uses
-  Mand, PreviewRenderer, TypeDefinitions, CustomFormulas, Contnrs, Math, FileHandling;
+  Mand, TypeDefinitions, CustomFormulas, Contnrs, Math, FileHandling;
 
 const
   TBAR_SCALE = 1000.0;
+  RENDER_ASYNC = True;
 
 procedure TMutaGenFrm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
@@ -153,6 +164,8 @@ procedure TMutaGenFrm.FormDestroy(Sender: TObject);
 begin
   FMutationHistory.Free;
   FPanelList.Free;
+  if FMB3DPreviewRenderer <> nil then
+    FreeAndNil(FMB3DPreviewRenderer);
 end;
 
 function TMutaGenFrm.CreatePanelList: TMutaGenPanelList;
@@ -222,24 +235,6 @@ procedure TMutaGenFrm.MainPnlResize(Sender: TObject);
 begin
   if Assigned(FPanelList) then
     FPanelList.DoLayout;
-end;
-
-function TMutaGenFrm.RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
-var
-  MB3DPreviewRenderer: TPreviewRenderer;
-begin
-  Result := TBitmap.Create;
-  try
-    MB3DPreviewRenderer := TPreviewRenderer.Create(Params);
-    try
-      MB3DPreviewRenderer.RenderPreview(Result, Panel.ImageWidth, Panel.ImageHeight);
-    finally
-      MB3DPreviewRenderer.Free;
-    end;
-  except
-    Result.Free;
-    raise;
-  end;
 end;
 
 procedure TMutaGenFrm.MutateBtnClick(Sender: TObject);
@@ -323,7 +318,7 @@ var
 
 begin
   if FIsRunning then begin
-    FForceAbort := True;
+    SignalCancel;
     Exit;
   end;
 
@@ -466,6 +461,8 @@ begin
   Result.ModifyParamsStrength := ModifyParamsStrengthTBar.Position / TBAR_SCALE;
   Result.ModifyJuliaModeWeight := ModifyJuliaModeWeightTBar.Position / TBAR_SCALE;
   Result.ModifyJuliaModeStrength := ModifyJuliaModeStrengthTBar.Position / TBAR_SCALE;
+  Result.ModifyIterationCountWeight := ModifyIterationCountWeightTBar.Position / TBAR_SCALE;
+  Result.ModifyIterationCountStrength := ModifyIterationCountStrengthTBar.Position / TBAR_SCALE;
 end;
 
 procedure TMutaGenFrm.InitOptionsPanel;
@@ -479,6 +476,8 @@ begin
     ModifyParamsStrengthTBar.Position := Round(TBAR_SCALE * Config.ModifyParamsStrength);
     ModifyJuliaModeWeightTBar.Position := Round(TBAR_SCALE * Config.ModifyJuliaModeWeight);
     ModifyJuliaModeStrengthTBar.Position := Round(TBAR_SCALE * Config.ModifyJuliaModeStrength);
+    ModifyIterationCountWeightTBar.Position := Round(TBAR_SCALE * Config.ModifyIterationCountWeight);
+    ModifyIterationCountStrengthTBar.Position := Round(TBAR_SCALE * Config.ModifyIterationCountStrength);
   finally
     Config.Free;
   end;
@@ -489,6 +488,7 @@ begin
   ModifyFormulaWeightTBar.Position := 0;
   ModifyParamsWeightTBar.Position := 0;
   ModifyJuliaModeWeightTBar.Position := 0;
+  ModifyIterationCountWeightTBar.Position := 0;
 end;
 
 procedure TMutaGenFrm.CreateInitialSet;
@@ -603,11 +603,56 @@ begin
   end;
 end;
 
-end.
-(*
-TODO
-  - Strength -> more influence on modify param mutation
-  - iter-count-mutation
-  - enable cancel while rendering
+function TMutaGenFrm.RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
+begin
+  if RENDER_ASYNC then
+    Result := RenderParamsASync(Panel, Params)
+  else
+    Result := RenderParamsSync(Panel, Params);
+end;
 
-*)
+function TMutaGenFrm.RenderParamsSync(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
+var
+  MB3DPreviewRenderer: TPreviewRenderer;
+begin
+  Result := TBitmap.Create;
+  try
+    MB3DPreviewRenderer := TPreviewRenderer.Create(Params);
+    try
+      MB3DPreviewRenderer.RenderPreview(Result, Panel.ImageWidth, Panel.ImageHeight);
+    finally
+      MB3DPreviewRenderer.Free;
+    end;
+  except
+    Result.Free;
+    raise;
+  end;
+end;
+
+function TMutaGenFrm.RenderParamsAsync(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
+begin
+  if FMB3DPreviewRenderer <> nil then
+    FreeAndNil(FMB3DPreviewRenderer);
+  Result := TBitmap.Create;
+  try
+    FMB3DPreviewRenderer := TPreviewRenderer.Create(Params);
+    try
+      FMB3DPreviewRenderer.RenderPreview(Result, Panel.ImageWidth, Panel.ImageHeight);
+    finally
+      FreeAndNil( FMB3DPreviewRenderer );
+    end;
+  except
+    Result.Free;
+    raise;
+  end;
+end;
+
+procedure TMutaGenFrm.SignalCancel;
+begin
+  FForceAbort := True;
+  if FMB3DPreviewRenderer<>nil then
+    FMB3DPreviewRenderer.SignalCancel;
+end;
+
+end.
+

@@ -1,10 +1,18 @@
-V1.90 ALPHA 1 
-- Number-Fields in the Formula-Window have now buttons to decrease/increase the value. The Increment can be specified at the bottom of the window
-- Option to perform automatic refresh of the Navigator-window when changing formulas-parameters in the Formula-window
-- The Formula-Window is resizable now
-- Exchanging of formulas in the Formula-window now works in two directions
-- Started to increase the number of formulas from 6 to 8. Many changes are already done, but not all. Unfortunately most required changes are only detected by crashing the program.
-It was necessary to create new revisions for all file-formats involved, currently only saving in the *m3p-format is supported.
+V1.90 BETA 1 
+- new MutaGen-module to easily explore new combinations of formulas and settings
+   - four types of mutation: 
+       - add, remove, exchange formulas
+       - modify params of formulas
+       - modify Julia-mode
+       - modify iteration count    
+   - in the UI you may turn on/off those types individually, by specifying a weight, and you may specify an additional strength-parameter
+   - you may browse through the already generated generations of mutations and restart on interesting results
+   - you may resize the window to alter the size (and render-speed) of the generated thumbnail images
+   - you may cancel/restart the mutation-process at any time (sometimes there occur combinations of parameters 
+     which may lead to "endless" calculations, in such cases it is helpful to be able to just restart)
 
-Please note that this is work in progress and an ALPHA version. And PLEASE BEWARE: Do not create serious artwork with this version, 
-it can not be garuanteed that you can save and load the params in all cases yet. But when you succeed in loading/saving a certain set of params it will probably work the next time, too. 
+- some enhancements of the Formula-window
+   - it is resizable now
+   - exchanging of formulas now works in two directions
+   - Number-Fields have now buttons to decrease/increase the value. The Increment can be specified at the bottom of the window
+   - Option to perform automatic refresh of the Navigator-window when changing formulas-parameters in the Formula-window

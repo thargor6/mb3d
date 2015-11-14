@@ -96,6 +96,8 @@ type
     FModifyParamsStrength: Double;
     FModifyJuliaModeWeight: Double;
     FModifyJuliaModeStrength: Double;
+    FModifyIterationCountWeight: Double;
+    FModifyIterationCountStrength: Double;
   public
     constructor Create;
     property ModifyFormulaWeight: Double read FModifyFormulaWeight write FModifyFormulaWeight;
@@ -103,6 +105,8 @@ type
     property ModifyParamsStrength: Double read FModifyParamsStrength write FModifyParamsStrength;
     property ModifyJuliaModeWeight: Double read FModifyJuliaModeWeight write FModifyJuliaModeWeight;
     property ModifyJuliaModeStrength: Double read FModifyJuliaModeStrength write FModifyJuliaModeStrength;
+    property ModifyIterationCountWeight: Double read FModifyIterationCountWeight write FModifyIterationCountWeight;
+    property ModifyIterationCountStrength: Double read FModifyIterationCountStrength write FModifyIterationCountStrength;
   end;
 
   TMutationCreator = class
@@ -170,6 +174,12 @@ type
   end;
 
   TModifyJuliaModeMutation = class(TScalableMutation)
+  public
+    function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
+    function RequiresProbing: Boolean;override;
+  end;
+
+  TModifyIterationCountMutation = class(TScalableMutation)
   public
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
     function RequiresProbing: Boolean;override;
@@ -611,6 +621,8 @@ begin
   ModifyParamsStrength := 1.0;
   ModifyJuliaModeWeight := 0.5;
   ModifyJuliaModeStrength := 1.0;
+  ModifyIterationCountWeight := 0.5;
+  ModifyIterationCountStrength := 1.0;
 end;
 { ---------------------------- TMutationCreator ------------------------------ }
 class function TMutationCreator.CreateMutations(const Config: TMutationConfig ): TList;
@@ -637,6 +649,11 @@ begin
     Result.Add(Mutation);
   end;
 
+  if Config.ModifyIterationCountWeight > RandGen.NextRandomDouble then begin
+    Mutation := TModifyIterationCountMutation.Create;
+    Mutation.Strength := Config.ModifyIterationCountStrength;
+    Result.Add(Mutation);
+  end;
 end;
 { ------------------------ TModifySingleParamMutation ------------------------ }
 function TModifySingleParamMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
@@ -649,6 +666,34 @@ begin
   if Formula<>nil then begin
     ParamIndex := RandGen.NextRandomInt(Formula.ParamCount);
     RandomizeParamValue(Formula.Params[ParamIndex], Strength);
+    if (Formula.ParamCount > 2) and (Strength > 0.25) then begin
+      ParamIndex := RandGen.NextRandomInt(Formula.ParamCount);
+      RandomizeParamValue(Formula.Params[ParamIndex], Strength);
+    end;
+    if (Formula.ParamCount > 3) and (Strength > 0.5) then begin
+      ParamIndex := RandGen.NextRandomInt(Formula.ParamCount);
+      RandomizeParamValue(Formula.Params[ParamIndex], Strength);
+    end;
+    if (Formula.ParamCount > 4) and (Strength > 0.75) then begin
+      ParamIndex := RandGen.NextRandomInt(Formula.ParamCount);
+      RandomizeParamValue(Formula.Params[ParamIndex], Strength);
+    end;
+    if (Formula.ParamCount > 5) and (Strength > 1.0) then begin
+      ParamIndex := RandGen.NextRandomInt(Formula.ParamCount);
+      RandomizeParamValue(Formula.Params[ParamIndex], Strength);
+    end;
+    if (Formula.ParamCount > 6) and (Strength > 1.25) then begin
+      ParamIndex := RandGen.NextRandomInt(Formula.ParamCount);
+      RandomizeParamValue(Formula.Params[ParamIndex], Strength);
+    end;
+    if (Formula.ParamCount > 7) and (Strength > 1.5) then begin
+      ParamIndex := RandGen.NextRandomInt(Formula.ParamCount);
+      RandomizeParamValue(Formula.Params[ParamIndex], Strength);
+    end;
+    if (Formula.ParamCount > 8) and (Strength > 1.75) then begin
+      ParamIndex := RandGen.NextRandomInt(Formula.ParamCount);
+      RandomizeParamValue(Formula.Params[ParamIndex], Strength);
+    end;
   end;
 end;
 
@@ -670,7 +715,6 @@ end;
 function TAddFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 var
   I, Idx: Integer;
-  ParamIndex: Integer;
   FormulaNames: TFormulaNames;
   Formula3DNames: TStringList;
 begin
@@ -683,12 +727,6 @@ begin
       if Formula3DNames.Count > 0 then begin
         Idx := RandGen.NextRandomInt(Formula3DNames.Count);
         Result.Formulas[I].FormulaName := Formula3DNames[Idx];
-(*
-        if (RandGen.NextRandomDouble > 0.5) and (Result.Formulas[I].ParamCount > 0) then begin
-          ParamIndex := RandGen.NextRandomInt(Result.Formulas[I].ParamCount);
-          RandomizeParamValue(Result.Formulas[I].Params[ParamIndex], Strength);
-        end;
-*)
       end;
       break;
     end;
@@ -703,7 +741,6 @@ end;
 function TReplaceFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 var
   I, Idx: Integer;
-  ParamIndex: Integer;
   FormulaNames: TFormulaNames;
   Formula3DNames: TStringList;
   Category: TFormulaCategory;
@@ -716,12 +753,6 @@ begin
       Formula3DNames := FormulaNames.GetFormulaNamesByCategory(Category);
       Idx := RandGen.NextRandomInt(Formula3DNames.Count);
       Result.Formulas[I].FormulaName := Formula3DNames[Idx];
-(*
-      if (RandGen.NextRandomDouble > 0.5) and (Result.Formulas[I].ParamCount > 0) then begin
-        ParamIndex := RandGen.NextRandomInt(Result.Formulas[I].ParamCount);
-        RandomizeParamValue(Result.Formulas[I].Params[ParamIndex], Strength);
-      end;
-*)
       break;
     end;
   end;
@@ -801,7 +832,41 @@ function TModifyJuliaModeMutation.RequiresProbing: Boolean;
 begin
   Result := True;
 end;
+{ ---------------------- TModifyIterationCountMutation ----------------------- }
+function TModifyIterationCountMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
+var
+  I, P, Idx, Passes: Integer;
+  IdxList: TStringList;
+begin
+  Result := Params.Clone;
+  IdxList := GetNonEmptyFormulas(Params);
+  try
+    if IdxList.Count > 1 then begin
+      Passes := 1;
+      if Strength > 0.5 then
+        Inc(Passes);
+      if Strength > 1.0 then
+        Inc(Passes);
+      if Strength > 1.5 then
+        Inc(Passes);
+      for I := 0 to IdxList.Count-1 do
+        Result.Formulas[StrToInt(IdxList[I])].IterationCount := 1;
+      for P := 1 to Passes do begin
+        Idx := RandGen.NextRandomInt(IdxList.Count);
+        Idx := StrToInt(IdxList[Idx]);
+        Result.Formulas[Idx].IterationCount := 1+ RandGen.NextRandomInt(Round(2.0 + 2.0* Strength));
+      end;
+    end;
+  finally
+    IdxList.Free;
+  end;
+end;
 
+function TModifyIterationCountMutation.RequiresProbing: Boolean;
+begin
+  Result := True;
+end;
+{ ----------------------------------- Main ----------------------------------- }
 initialization
   AllFormulaNames := nil;
   RandGen := TRandGen.Create;

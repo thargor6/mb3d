@@ -35,6 +35,8 @@ type
     procedure SetFormulaName(const FormulaName: String);
     function GetParam(Index: Integer): TMB3DParamFacade;
     function GetParamCount: Integer;
+    procedure SetIterationCount(const IterationCount: Integer);
+    function GetIterationCount: Integer;
   public
     constructor Create(const FormulaIndex: Integer;const Owner: TMB3DParamsFacade);
     destructor Destroy;override;
@@ -43,6 +45,7 @@ type
     property FormulaName: String read GetFormulaName write SetFormulaName;
     property ParamCount: Integer read GetParamCount;
     property Params[Index: Integer]: TMB3DParamFacade read GetParam;
+    property IterationCount: Integer read GetIterationCount write SetIterationCount;
   end;
 
   TMB3DCoreFacade = class
@@ -261,6 +264,18 @@ begin
   if (Index < 0) or (Index >= FParams.Count) then
     raise Exception.Create('TMB3DFormulaFacade.GetParam: Invalid param index <'+IntToStr(Index)+'>');
   Result := TMB3DParamFacade(FParams[Index]);
+end;
+
+procedure TMB3DFormulaFacade.SetIterationCount(const IterationCount: Integer);
+begin
+  with FOwner.Core.PHAddOn^.Formulas[FFormulaIndex] do begin
+    iItCount := IterationCount;
+  end;
+end;
+
+function TMB3DFormulaFacade.GetIterationCount: Integer;
+begin
+  Result := FOwner.Core.PHAddOn^.Formulas[FFormulaIndex].iItCount;
 end;
 { ----------------------------- TMB3DCoreFacade ------------------------------ }
 constructor TMB3DCoreFacade.Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);

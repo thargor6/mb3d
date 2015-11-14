@@ -193,19 +193,40 @@ object MutaGenFrm: TMutaGenFrm
               Column = 2
               Control = ModifyJuliaModeStrengthTBar
               Row = 3
+            end
+            item
+              Column = 0
+              Control = Panel6
+              Row = 4
+            end
+            item
+              Column = 1
+              Control = ModifyIterationCountWeightTBar
+              Row = 4
+            end
+            item
+              Column = 2
+              Control = ModifyIterationCountStrengthTBar
+              Row = 4
             end>
           RowCollection = <
             item
-              Value = 25.000000000000000000
+              Value = 10.000000000000000000
             end
             item
-              Value = 25.000000000000000000
+              Value = 20.000000000000000000
             end
             item
-              Value = 25.000000000000000000
+              Value = 20.000000000000000000
             end
             item
-              Value = 25.000000000000000000
+              Value = 20.000000000000000000
+            end
+            item
+              Value = 20.000000000000000000
+            end
+            item
+              Value = 10.000000000000000000
             end>
           TabOrder = 0
           DesignSize = (
@@ -213,7 +234,7 @@ object MutaGenFrm: TMutaGenFrm
             302)
           object MinIterLabel: TLabel
             Left = 5
-            Top = 31
+            Top = 8
             Width = 80
             Height = 13
             Alignment = taRightJustify
@@ -231,7 +252,7 @@ object MutaGenFrm: TMutaGenFrm
           object ModifyFormulaWeightTBar: TTrackBarEx
             Tag = 10
             Left = 90
-            Top = 102
+            Top = 49
             Width = 67
             Height = 21
             Anchors = []
@@ -245,7 +266,7 @@ object MutaGenFrm: TMutaGenFrm
           end
           object Label2: TLabel
             Left = 93
-            Top = 31
+            Top = 8
             Width = 61
             Height = 13
             Alignment = taRightJustify
@@ -261,7 +282,7 @@ object MutaGenFrm: TMutaGenFrm
           end
           object Label3: TLabel
             Left = 166
-            Top = 31
+            Top = 8
             Width = 50
             Height = 13
             Alignment = taRightJustify
@@ -278,7 +299,7 @@ object MutaGenFrm: TMutaGenFrm
           end
           object Panel2: TPanel
             Left = 0
-            Top = 75
+            Top = 30
             Width = 90
             Height = 52
             Align = alTop
@@ -314,7 +335,7 @@ object MutaGenFrm: TMutaGenFrm
           end
           object Panel3: TPanel
             Left = 0
-            Top = 150
+            Top = 90
             Width = 90
             Height = 42
             Align = alTop
@@ -343,7 +364,7 @@ object MutaGenFrm: TMutaGenFrm
           object ModifyParamsWeightTBar: TTrackBarEx
             Tag = 10
             Left = 90
-            Top = 177
+            Top = 109
             Width = 67
             Height = 21
             Anchors = []
@@ -358,12 +379,12 @@ object MutaGenFrm: TMutaGenFrm
           object ModifyParamsStrengthTBar: TTrackBarEx
             Tag = 10
             Left = 157
-            Top = 177
+            Top = 109
             Width = 68
             Height = 21
             Anchors = []
             Ctl3D = True
-            Max = 1000
+            Max = 2000
             ParentCtl3D = False
             TabOrder = 4
             ThumbLength = 18
@@ -372,7 +393,7 @@ object MutaGenFrm: TMutaGenFrm
           end
           object Label9: TLabel
             Left = 189
-            Top = 106
+            Top = 53
             Width = 4
             Height = 13
             Alignment = taRightJustify
@@ -383,7 +404,7 @@ object MutaGenFrm: TMutaGenFrm
           end
           object Panel4: TPanel
             Left = 0
-            Top = 225
+            Top = 150
             Width = 90
             Height = 41
             Align = alTop
@@ -412,7 +433,7 @@ object MutaGenFrm: TMutaGenFrm
           object ModifyJuliaModeWeightTBar: TTrackBarEx
             Tag = 10
             Left = 90
-            Top = 253
+            Top = 169
             Width = 67
             Height = 21
             Anchors = []
@@ -427,14 +448,72 @@ object MutaGenFrm: TMutaGenFrm
           object ModifyJuliaModeStrengthTBar: TTrackBarEx
             Tag = 10
             Left = 157
-            Top = 253
+            Top = 169
             Width = 68
+            Height = 21
+            Anchors = []
+            Ctl3D = True
+            Max = 2000
+            ParentCtl3D = False
+            TabOrder = 7
+            ThumbLength = 18
+            TickMarks = tmBoth
+            TickStyle = tsNone
+          end
+          object Panel6: TPanel
+            Left = 0
+            Top = 210
+            Width = 90
+            Height = 41
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 8
+            DesignSize = (
+              90
+              41)
+            object Label11: TLabel
+              Left = 4
+              Top = 4
+              Width = 37
+              Height = 13
+              Anchors = []
+              Caption = 'Change'
+            end
+            object Label12: TLabel
+              Left = 4
+              Top = 18
+              Width = 74
+              Height = 13
+              Anchors = []
+              Caption = 'Iteration Count'
+            end
+          end
+          object ModifyIterationCountWeightTBar: TTrackBarEx
+            Tag = 10
+            Left = 90
+            Top = 229
+            Width = 67
             Height = 21
             Anchors = []
             Ctl3D = True
             Max = 1000
             ParentCtl3D = False
-            TabOrder = 7
+            TabOrder = 9
+            ThumbLength = 18
+            TickMarks = tmBoth
+            TickStyle = tsNone
+          end
+          object ModifyIterationCountStrengthTBar: TTrackBarEx
+            Tag = 10
+            Left = 157
+            Top = 229
+            Width = 68
+            Height = 21
+            Anchors = []
+            Ctl3D = True
+            Max = 2000
+            ParentCtl3D = False
+            TabOrder = 10
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
@@ -1022,5 +1101,11 @@ object MutaGenFrm: TMutaGenFrm
       Caption = 'Copy Params to Clipboard'
       OnClick = ToClipboardItmClick
     end
+  end
+  object PreviewRenderTimer: TTimer
+    Enabled = False
+    Interval = 50
+    Left = 592
+    Top = 296
   end
 end

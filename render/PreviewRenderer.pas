@@ -23,6 +23,7 @@ type
     constructor Create(const MB3DParamsFacade: TMB3DParamsFacade);
     destructor Destroy; override;
     procedure RenderPreview(var bmp: TBitmap; maxWidth, maxHeight: Integer);
+    procedure SignalCancel;
     property Progress: Double read FProgress;
   end;
 
@@ -31,6 +32,7 @@ implementation
 uses CustomFormulas, Math, Math3D, HeaderTrafos, DivUtils, Calc, Paint,
   ImageProcess, CalcHardShadow, CalcSR, DOF, SysUtils;
 
+{ ---------------------------- TPreviewRenderer ------------------------------ }
 constructor TPreviewRenderer.Create(const MB3DParamsFacade: TMB3DParamsFacade);
 begin
   FMB3DParamsFacade := MB3DParamsFacade.Clone;
@@ -79,11 +81,10 @@ var
   end;
 
 begin
-    // TODO
-    // disable/check for volumetric light
     FProgress:=0;
     PHeader := FMB3DParamsFacade.Core.PHeader;
     PHeader^.bCalc3D := 1;
+    PHeader^.bVolLightNr := 2 shl 4;
     bCalcStop := False;
     d := MinCD(maxHeight / PHeader^.Height, maxWidth / PHeader^.Width);
     w := Round(PHeader^.Width * d);
@@ -186,6 +187,11 @@ begin
         PaintM(PHeader, @HeaderLightVals, @siLight5[0], aFSIstart, aFSIoffset);
       bmp.Modified := True;
     end;
+end;
+
+procedure TPreviewRenderer.SignalCancel;
+begin
+  bCalcStop := True;
 end;
 
 end.
