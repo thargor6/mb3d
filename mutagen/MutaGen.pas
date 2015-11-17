@@ -3,7 +3,7 @@ unit MutaGen;
 interface
 
 uses
-  Windows, SysUtils, Classes, Vcl.ExtCtrls, Vcl.Graphics, MB3DFacade;
+  Windows, SysUtils, Classes, Vcl.ExtCtrls, Vcl.Graphics, MB3DFacade, FormulaNames;
 
 type
 
@@ -132,6 +132,8 @@ type
   TMutation = class
   private
     function GetNonEmptyFormulas(const Params: TMB3DParamsFacade): TStringList;
+    function GetNonEmptyFormulaCount(const Params: TMB3DParamsFacade): Integer;
+    function GetNonEmptyFormulasByCategory(const Params: TMB3DParamsFacade; const Category: TFormulaCategory): TStringList;
     function GetNonEmptyFormulasWithParams(const Params: TMB3DParamsFacade): TStringList;
   protected
     function ChooseRandomFormula(const Params: TMB3DParamsFacade; const OnlyFormulasWithParams: Boolean): TMB3DFormulaFacade;
@@ -188,7 +190,7 @@ type
 implementation
 
 uses
-  Contnrs, Math, FormulaNames, TypeDefinitions;
+  Contnrs, Math, TypeDefinitions;
 
 var
   RandGen: TRandGen;
@@ -196,6 +198,16 @@ var
 const
   Epsilon = 1.0e-8;
 
+{ ---------------------------- AllFormulaNames ------------------------------- }
+var
+  AllFormulaNames: TFormulaNames;
+
+function GetAllFormulaNames: TFormulaNames;
+begin
+  if AllFormulaNames = nil then
+    AllFormulaNames := TFormulaNamesLoader.LoadFormulas;
+  Result := AllFormulaNames;
+end;
 { ------------------------------ TMutaGenPanel ------------------------------- }
 constructor TMutaGenPanel.Create(ParentPanel: TMutaGenPanel;const MutationIndex: TMutationIndex;const XPos, YPos, XSize, YSize: Double;const Caption: String;const Panel: TPanel;const Image: TImage);
 begin
@@ -553,6 +565,34 @@ begin
   end;
 end;
 
+function TMutation.GetNonEmptyFormulaCount(const Params: TMB3DParamsFacade): Integer;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := 0 to Params.FormulaCount-1 do begin
+    if not Params.Formulas[I].IsEmpty then
+      Inc(Result);
+  end;
+end;
+
+function TMutation.GetNonEmptyFormulasByCategory(const Params: TMB3DParamsFacade; const Category: TFormulaCategory): TStringList;
+var
+  I: Integer;
+  FormulaNamesOfCategory: TStringList;
+begin
+  Result := TStringList.Create;
+  FormulaNamesOfCategory := GetAllFormulaNames.GetFormulaNamesByCategory(Category);
+  try
+    for I := 0 to Params.FormulaCount-1 do begin
+      if (not Params.Formulas[I].IsEmpty) and (FormulaNamesOfCategory.IndexOf(Params.Formulas[I].FormulaName)>=0) then
+        Result.Add(IntToStr(I));
+    end;
+  finally
+    FormulaNamesOfCategory.Free;
+  end;
+end;
+
 function TMutation.GetNonEmptyFormulasWithParams(const Params: TMB3DParamsFacade): TStringList;
 var
   I: Integer;
@@ -702,16 +742,6 @@ begin
   Result := True;
 end;
 { ---------------------------- TAddFormulaMutation --------------------------- }
-var
-  AllFormulaNames: TFormulaNames;
-
-function GetAllFormulaNames: TFormulaNames;
-begin
-  if AllFormulaNames = nil then
-    AllFormulaNames := TFormulaNamesLoader.LoadFormulas;
-  Result := AllFormulaNames;
-end;
-
 function TAddFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 var
   I, Idx: Integer;
@@ -740,9 +770,10 @@ end;
 { -------------------------- TReplaceFormulaMutation ------------------------- }
 function TReplaceFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 var
-  I, Idx: Integer;
+  I, Idx, Attempts: Integer;
   FormulaNames: TFormulaNames;
-  Formula3DNames: TStringList;
+  FormulaNamesOfSameCategory: TStringList;
+  NewFormulaname: String;
   Category: TFormulaCategory;
 begin
   FormulaNames := GetAllFormulaNames;
@@ -750,9 +781,17 @@ begin
   for I := 0 to MAX_FORMULA_COUNT - 1 do begin
     if not Result.Formulas[I].IsEmpty then begin
       Category := FormulaNames.GetCategoryByFormulaName(Result.Formulas[I].FormulaName);
-      Formula3DNames := FormulaNames.GetFormulaNamesByCategory(Category);
-      Idx := RandGen.NextRandomInt(Formula3DNames.Count);
-      Result.Formulas[I].FormulaName := Formula3DNames[Idx];
+      FormulaNamesOfSameCategory := FormulaNames.GetFormulaNamesByCategory(Category);
+      Attempts := 0;
+      while(Attempts < 10) do begin
+        Idx := RandGen.NextRandomInt(FormulaNamesOfSameCategory.Count);
+        NewFormulaname := FormulaNamesOfSameCategory[Idx];
+        if NewFormulaname <> Result.Formulas[I].FormulaName then begin
+          Result.Formulas[I].FormulaName := NewFormulaname;
+          break;
+        end;
+        Inc(Attempts);
+      end;
       break;
     end;
   end;
@@ -764,24 +803,26 @@ begin
 end;
 { --------------------------- TRemoveFormulaMutation ------------------------- }
 function TRemoveFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
+const
+  CategoriesByPriority: array [0..6] of TFormulaCategory=(fc_dIFSa, fc_4Da, fc_3Da, fc_Ads, fc_dIFS, fc_4D, fc_3D);
 var
   I, Idx: Integer;
   IdxList: TStringList;
 begin
   Result := Params.Clone;
-  IdxList := TStringList.Create;
-  try
-    for I:=MAX_FORMULA_COUNT - 1 downto 1 do begin
-      if not Result.Formulas[I].IsEmpty then begin
-        IdxList.Add(IntToStr(I));
+  if GetNonEmptyFormulaCount(Result) > 1 then begin
+    for I := Low(CategoriesByPriority) to High(CategoriesByPriority) do begin
+      IdxList := GetNonEmptyFormulasByCategory( Result, CategoriesByPriority[I]);
+      try
+        if IdxList.Count > 0 then begin
+          Idx := StrToInt(IdxList[ RandGen.NextRandomInt(IdxList.Count)]);
+          Result.Formulas[Idx].FormulaName := '';
+          break;
+        end;
+      finally
+        IdxList.Free;
       end;
     end;
-    if IdxList.Count > 3 then begin
-      Idx := StrToInt(IdxList[ RandGen.NextRandomInt(IdxList.Count)]);
-      Result.Formulas[Idx].FormulaName := '';
-    end;
-  finally
-    IdxList.Free;
   end;
 end;
 
