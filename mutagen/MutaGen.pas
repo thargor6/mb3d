@@ -126,23 +126,29 @@ type
     class function CreateMutations(const Config: TMutationConfig ): TList;
   end;
 
-  TMutationParamSet = class
+  TMutationParams = class
   private
-    FParams: Array [Low(TMutationIndex)..High(TMutationIndex)] of TMB3DParamsFacade;
-    FBitmaps: Array [Low(TMutationIndex)..High(TMutationIndex)] of TBitmap;
-    FProbingBitmaps: Array [Low(TMutationIndex)..High(TMutationIndex)] of TBitmap;
-    function GetParam(Index: TMutationIndex): TMB3DParamsFacade;
-    procedure SetParam(Index: TMutationIndex; const Param: TMB3DParamsFacade);
-    function GetBitmap(Index: TMutationIndex): TBitmap;
-    procedure SetBitmap(Index: TMutationIndex; const Bitmap: TBitmap);
-    function GetProbingBitmap(Index: TMutationIndex): TBitmap;
-    procedure SetProbingBitmap(Index: TMutationIndex; const Bitmap: TBitmap);
+    FParams: TMB3DParamsFacade;
+    FBitmap: TBitmap;
+    FProbingBitmap: TBitmap;
+    procedure SetBitmap(const Bitmap: TBitmap);
+    procedure SetProbingBitmap(const ProbingBitmap: TBitmap);
+  public
+    destructor Destroy; override;
+    property Params: TMB3DParamsFacade read FParams write FParams;
+    property Bitmap: TBitmap read FBitmap write SetBitmap;
+    property ProbingBitmap: TBitmap read FProbingBitmap write SetProbingBitmap;
+  end;
+
+  TMutationParamsSet = class
+  private
+    FParams: Array [Low(TMutationIndex)..High(TMutationIndex)] of TMutationParams;
+    function GetParam(Index: TMutationIndex): TMutationParams;
+    procedure SetParam(Index: TMutationIndex; const Param: TMutationParams);
   public
     constructor Create;
     destructor Destroy;override;
-    property Params[Index: TMutationIndex]: TMB3DParamsFacade read GetParam write SetParam;
-    property Bitmaps[Index: TMutationIndex]: TBitmap read GetBitmap write SetBitmap;
-    property ProbingBitmaps[Index: TMutationIndex]: TBitmap read GetProbingBitmap write SetProbingBitmap;
+    property Params[Index: TMutationIndex]: TMutationParams read GetParam write SetParam;
   end;
 
   TMutation = class
@@ -515,19 +521,42 @@ function TRandGen.NextRandomInt(const MaxValue: Integer): Integer;
 begin
   Result := Trunc( MaxValue * NextRandomDouble );
 end;
-{ --------------------------- TMutationParamSet ------------------------------ }
-constructor TMutationParamSet.Create;
+{ ---------------------------- TMutationParams ------------------------------- }
+destructor TMutationParams.Destroy;
+begin
+  if FParams <> nil then
+    FParams.Free;
+  if FBitmap <> nil then
+    FBitmap.Free;
+  if FProbingBitmap <>nil then
+    FProbingBitmap.Free;
+  inherited Destroy;
+end;
+
+procedure TMutationParams.SetBitmap(const Bitmap: TBitmap);
+begin
+  if FBitmap <> nil then
+    FBitmap.Free;
+  FBitmap :=Bitmap;
+end;
+
+procedure TMutationParams.SetProbingBitmap(const ProbingBitmap: TBitmap);
+begin
+  if FProbingBitmap <>nil then
+    FProbingBitmap.Free;
+  FProbingBitmap := ProbingBitmap;
+end;
+{ --------------------------- TMutationParamsSet ------------------------------ }
+constructor TMutationParamsSet.Create;
 var
   I: TMutationIndex;
 begin
   inherited Create;
   for I:=Low(FParams) to High(FParams) do
-    FParams[I] := nil;
-  for I:=Low(FBitmaps) to High(FBitmaps) do
-    FBitmaps[I] := nil;
+    FParams[I] := TMutationParams.Create;
 end;
 
-destructor TMutationParamSet.Destroy;
+destructor TMutationParamsSet.Destroy;
 var
   I: TMutationIndex;
 begin
@@ -535,47 +564,19 @@ begin
     if FParams[I]<>nil then
       FParams[I].Free;
   end;
-  for I:=Low(FBitmaps) to High(FBitmaps) do begin
-    if FBitmaps[I]<>nil then
-      FBitmaps[I].Free;
-  end;
   inherited Destroy;
 end;
 
-function TMutationParamSet.GetParam(Index: TMutationIndex): TMB3DParamsFacade;
+function TMutationParamsSet.GetParam(Index: TMutationIndex): TMutationParams;
 begin
   Result := FParams[Index];
 end;
 
-procedure TMutationParamSet.SetParam(Index: TMutationIndex; const Param: TMB3DParamsFacade);
+procedure TMutationParamsSet.SetParam(Index: TMutationIndex; const Param: TMutationParams);
 begin
   if FParams[Index] <>nil then
     FParams[Index].Free;
   FParams[Index] := Param;
-end;
-
-function TMutationParamSet.GetBitmap(Index: TMutationIndex): TBitmap;
-begin
-  Result := FBitmaps[Index];
-end;
-
-procedure TMutationParamSet.SetBitmap(Index: TMutationIndex; const Bitmap: TBitmap);
-begin
-  if FBitmaps[Index] <>nil then
-    FBitmaps[Index].Free;
-  FBitmaps[Index] := Bitmap;
-end;
-
-function TMutationParamSet.GetProbingBitmap(Index: TMutationIndex): TBitmap;
-begin
-  Result := FProbingBitmaps[Index];
-end;
-
-procedure TMutationParamSet.SetProbingBitmap(Index: TMutationIndex; const Bitmap: TBitmap);
-begin
-  if FProbingBitmaps[Index] <>nil then
-    FProbingBitmaps[Index].Free;
-  FProbingBitmaps[Index] := Bitmap;
 end;
 { ---------------------------------- TMutation ------------------------------- }
 function TMutation.GetNonEmptyFormulas(const Params: TMB3DParamsFacade): TStringList;
