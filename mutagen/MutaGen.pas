@@ -98,6 +98,12 @@ type
     FModifyJuliaModeStrength: Double;
     FModifyIterationCountWeight: Double;
     FModifyIterationCountStrength: Double;
+    FProbing: Boolean;
+    FProbingWidth: Integer;
+    FProbingHeight: Integer;
+    FProbingMaxCount: Integer;
+    FProbingMinCoverage: Double;
+    FProbingMinDifference: Double;
   public
     constructor Create;
     property ModifyFormulaWeight: Double read FModifyFormulaWeight write FModifyFormulaWeight;
@@ -107,6 +113,12 @@ type
     property ModifyJuliaModeStrength: Double read FModifyJuliaModeStrength write FModifyJuliaModeStrength;
     property ModifyIterationCountWeight: Double read FModifyIterationCountWeight write FModifyIterationCountWeight;
     property ModifyIterationCountStrength: Double read FModifyIterationCountStrength write FModifyIterationCountStrength;
+    property Probing: Boolean read FProbing;
+    property ProbingWidth: Integer read FProbingWidth;
+    property ProbingHeight: Integer read FProbingHeight;
+    property ProbingMaxCount: Integer read FProbingMaxCount;
+    property ProbingMinCoverage: Double read FProbingMinCoverage;
+    property ProbingMinDifference: Double read FProbingMinDifference;
   end;
 
   TMutationCreator = class
@@ -118,15 +130,19 @@ type
   private
     FParams: Array [Low(TMutationIndex)..High(TMutationIndex)] of TMB3DParamsFacade;
     FBitmaps: Array [Low(TMutationIndex)..High(TMutationIndex)] of TBitmap;
+    FProbingBitmaps: Array [Low(TMutationIndex)..High(TMutationIndex)] of TBitmap;
     function GetParam(Index: TMutationIndex): TMB3DParamsFacade;
     procedure SetParam(Index: TMutationIndex; const Param: TMB3DParamsFacade);
     function GetBitmap(Index: TMutationIndex): TBitmap;
     procedure SetBitmap(Index: TMutationIndex; const Bitmap: TBitmap);
+    function GetProbingBitmap(Index: TMutationIndex): TBitmap;
+    procedure SetProbingBitmap(Index: TMutationIndex; const Bitmap: TBitmap);
   public
     constructor Create;
     destructor Destroy;override;
     property Params[Index: TMutationIndex]: TMB3DParamsFacade read GetParam write SetParam;
     property Bitmaps[Index: TMutationIndex]: TBitmap read GetBitmap write SetBitmap;
+    property ProbingBitmaps[Index: TMutationIndex]: TBitmap read GetProbingBitmap write SetProbingBitmap;
   end;
 
   TMutation = class
@@ -140,7 +156,6 @@ type
     procedure RandomizeParamValue(Param: TMB3DParamFacade; const Strength: Double);
   public
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;virtual;abstract;
-    function RequiresProbing: Boolean;virtual;abstract;
   end;
 
   TScalableMutation = class(TMutation)
@@ -154,43 +169,40 @@ type
   TModifySingleParamMutation = class(TScalableMutation)
   public
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
-    function RequiresProbing: Boolean;override;
   end;
 
   TAddFormulaMutation = class(TMutation)
+  private
+    function HasFormulaOfCategory(const Params: TMB3DParamsFacade; const Category: TFormulaCategory): Boolean;
+    function GuessFormulaCategory(const FormulaIndex: Integer;const Params: TMB3DParamsFacade): TFormulaCategory;
   public
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
-    function RequiresProbing: Boolean;override;
   end;
 
   TReplaceFormulaMutation = class(TMutation)
   public
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
-    function RequiresProbing: Boolean;override;
   end;
 
   TRemoveFormulaMutation = class(TMutation)
   public
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
-    function RequiresProbing: Boolean;override;
   end;
 
   TModifyJuliaModeMutation = class(TScalableMutation)
   public
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
-    function RequiresProbing: Boolean;override;
   end;
 
   TModifyIterationCountMutation = class(TScalableMutation)
   public
     function MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;override;
-    function RequiresProbing: Boolean;override;
   end;
 
 implementation
 
 uses
-  Contnrs, Math, TypeDefinitions;
+  Contnrs, Math, TypeDefinitions, Dialogs;
 
 var
   RandGen: TRandGen;
@@ -553,6 +565,18 @@ begin
     FBitmaps[Index].Free;
   FBitmaps[Index] := Bitmap;
 end;
+
+function TMutationParamSet.GetProbingBitmap(Index: TMutationIndex): TBitmap;
+begin
+  Result := FProbingBitmaps[Index];
+end;
+
+procedure TMutationParamSet.SetProbingBitmap(Index: TMutationIndex; const Bitmap: TBitmap);
+begin
+  if FProbingBitmaps[Index] <>nil then
+    FProbingBitmaps[Index].Free;
+  FProbingBitmaps[Index] := Bitmap;
+end;
 { ---------------------------------- TMutation ------------------------------- }
 function TMutation.GetNonEmptyFormulas(const Params: TMB3DParamsFacade): TStringList;
 var
@@ -663,6 +687,13 @@ begin
   ModifyJuliaModeStrength := 1.0;
   ModifyIterationCountWeight := 0.5;
   ModifyIterationCountStrength := 1.0;
+
+  FProbing := True;
+  FProbingWidth := 80;
+  FProbingHeight := 60;
+  FProbingMaxCount := 10;
+  FProbingMinCoverage := 0.42;
+  FProbingMinDifference := 0.12;
 end;
 { ---------------------------- TMutationCreator ------------------------------ }
 class function TMutationCreator.CreateMutations(const Config: TMutationConfig ): TList;
@@ -736,36 +767,73 @@ begin
     end;
   end;
 end;
-
-function TModifySingleParamMutation.RequiresProbing: Boolean;
-begin
-  Result := True;
-end;
 { ---------------------------- TAddFormulaMutation --------------------------- }
+function TAddFormulaMutation.HasFormulaOfCategory(const Params: TMB3DParamsFacade; const Category: TFormulaCategory): Boolean;
+var
+  IdxList: TStringList;
+begin
+  IdxList := GetNonEmptyFormulasByCategory( Params, Category);
+  try
+    Result := IdxList.Count > 0;
+  finally
+    IdxList.Free;
+  end;
+end;
+
+function TAddFormulaMutation.GuessFormulaCategory(const FormulaIndex: Integer;const Params: TMB3DParamsFacade): TFormulaCategory;
+const
+  CategoriesForDIFS: array [0..1] of TFormulaCategory=(fc_dIFS, fc_dIFSa);
+  CategoriesFor4D: array [0..1] of TFormulaCategory=(fc_4D, fc_4Da);
+  CategoriesFor3D: array [0..2] of TFormulaCategory=(fc_3D, fc_Ads, fc_3Da);
+begin
+  if HasFormulaOfCategory(Params, fc_dIFS) or HasFormulaOfCategory(Params, fc_dIFSa) then begin
+    if FormulaIndex > 0 then
+      Result :=  CategoriesForDIFS[RandGen.NextRandomInt(High(CategoriesForDIFS))]
+    else
+      Result := fc_dIFS;
+  end
+  else if HasFormulaOfCategory(Params, fc_4D) or HasFormulaOfCategory(Params, fc_4Da) then begin
+    if FormulaIndex > 0 then
+      Result := CategoriesFor4D[ RandGen.NextRandomInt(High(CategoriesFor4D))]
+    else
+      Result := fc_4D;
+  end
+  else if HasFormulaOfCategory(Params, fc_3D) or HasFormulaOfCategory(Params, fc_3Da) or HasFormulaOfCategory(Params, fc_Ads) then begin
+    if FormulaIndex > 0 then
+      Result := CategoriesFor3D[ RandGen.NextRandomInt(High(CategoriesFor3D))]
+    else
+      Result := fc_3D;
+  end
+  else begin
+    Result := fc_3D;
+  end;
+end;
+
 function TAddFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 var
-  I, Idx: Integer;
+  I, Idx, Attempts: Integer;
   FormulaNames: TFormulaNames;
-  Formula3DNames: TStringList;
+  FormulaNamesForCategory: TStringList;
 begin
   FormulaNames := GetAllFormulaNames;
   Result := Params.Clone;
   for I := 0 to MAX_FORMULA_COUNT -1 do begin
     if Result.Formulas[I].IsEmpty then begin
-      // TODO choose category with more "intelligence"
-      Formula3DNames := FormulaNames.GetFormulaNamesByCategory(fc_3D);
-      if Formula3DNames.Count > 0 then begin
-        Idx := RandGen.NextRandomInt(Formula3DNames.Count);
-        Result.Formulas[I].FormulaName := Formula3DNames[Idx];
+      FormulaNamesForCategory := FormulaNames.GetFormulaNamesByCategory(GuessFormulaCategory(I, Result));
+      if FormulaNamesForCategory.Count > 0 then begin
+        Attempts := 0;
+        while(Attempts < 25) do begin
+          Idx := RandGen.NextRandomInt(FormulaNamesForCategory.Count);
+          if (Pos('_', FormulaNamesForCategory[Idx]) <> 1) then begin
+            Result.Formulas[I].FormulaName := FormulaNamesForCategory[Idx];
+            break;
+          end;
+          Inc(Attempts);
+        end;
       end;
       break;
     end;
   end;
-end;
-
-function TAddFormulaMutation.RequiresProbing: Boolean;
-begin
-  Result := True;
 end;
 { -------------------------- TReplaceFormulaMutation ------------------------- }
 function TReplaceFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
@@ -773,20 +841,26 @@ var
   I, Idx, Attempts: Integer;
   FormulaNames: TFormulaNames;
   FormulaNamesOfSameCategory: TStringList;
-  NewFormulaname: String;
+  NewFormulaName: String;
   Category: TFormulaCategory;
+
+  function StartsWithUnderScore(const Name: String): Boolean;
+  begin
+    Result := Pos('_', Name) = 1;
+  end;
+
 begin
-  FormulaNames := GetAllFormulaNames;
   Result := Params.Clone;
+  FormulaNames := GetAllFormulaNames;
   for I := 0 to MAX_FORMULA_COUNT - 1 do begin
     if not Result.Formulas[I].IsEmpty then begin
       Category := FormulaNames.GetCategoryByFormulaName(Result.Formulas[I].FormulaName);
       FormulaNamesOfSameCategory := FormulaNames.GetFormulaNamesByCategory(Category);
       Attempts := 0;
-      while(Attempts < 10) do begin
+      while(Attempts < 24) do begin
         Idx := RandGen.NextRandomInt(FormulaNamesOfSameCategory.Count);
-        NewFormulaname := FormulaNamesOfSameCategory[Idx];
-        if NewFormulaname <> Result.Formulas[I].FormulaName then begin
+        NewFormulaName := FormulaNamesOfSameCategory[Idx];
+        if (NewFormulaName <> Result.Formulas[I].FormulaName) and (StartsWithUnderScore(NewFormulaName)=StartsWithUnderScore(Result.Formulas[I].FormulaName)) then begin
           Result.Formulas[I].FormulaName := NewFormulaname;
           break;
         end;
@@ -796,26 +870,22 @@ begin
     end;
   end;
 end;
-
-function TReplaceFormulaMutation.RequiresProbing: Boolean;
-begin
-  Result := True;
-end;
 { --------------------------- TRemoveFormulaMutation ------------------------- }
 function TRemoveFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 const
   CategoriesByPriority: array [0..6] of TFormulaCategory=(fc_dIFSa, fc_4Da, fc_3Da, fc_Ads, fc_dIFS, fc_4D, fc_3D);
 var
-  I, Idx: Integer;
+  I, Idx, FCount: Integer;
   IdxList: TStringList;
 begin
   Result := Params.Clone;
-  if GetNonEmptyFormulaCount(Result) > 1 then begin
+  FCount := GetNonEmptyFormulaCount(Result);
+  if (FCount > 4) or ((FCount > 3) and (RandGen.NextRandomDouble > 0.5)) then begin
     for I := Low(CategoriesByPriority) to High(CategoriesByPriority) do begin
       IdxList := GetNonEmptyFormulasByCategory( Result, CategoriesByPriority[I]);
       try
         if IdxList.Count > 0 then begin
-          Idx := StrToInt(IdxList[ RandGen.NextRandomInt(IdxList.Count)]);
+          Idx := StrToInt(IdxList[IdxList.Count-1]);
           Result.Formulas[Idx].FormulaName := '';
           break;
         end;
@@ -824,11 +894,6 @@ begin
       end;
     end;
   end;
-end;
-
-function TRemoveFormulaMutation.RequiresProbing: Boolean;
-begin
-  Result := True;
 end;
 { -------------------------- TModifyJuliaModeMutation ------------------------ }
 function TModifyJuliaModeMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
@@ -868,11 +933,6 @@ begin
     Result.JuliaMode.Jw := 0.0;
   end;
 end;
-
-function TModifyJuliaModeMutation.RequiresProbing: Boolean;
-begin
-  Result := True;
-end;
 { ---------------------- TModifyIterationCountMutation ----------------------- }
 function TModifyIterationCountMutation.MutateParams(const Params: TMB3DParamsFacade): TMB3DParamsFacade;
 var
@@ -903,10 +963,6 @@ begin
   end;
 end;
 
-function TModifyIterationCountMutation.RequiresProbing: Boolean;
-begin
-  Result := True;
-end;
 { ----------------------------------- Main ----------------------------------- }
 initialization
   AllFormulaNames := nil;

@@ -17,6 +17,7 @@ type
     bCalcStop: LongBool;
     FMB3DParamsFacade: TMB3DParamsFacade;
     FProgress: Double;
+    FBlankBackground: Boolean;
   protected
   public
     { Public-Deklarationen }
@@ -25,6 +26,7 @@ type
     procedure RenderPreview(var bmp: TBitmap; maxWidth, maxHeight: Integer);
     procedure SignalCancel;
     property Progress: Double read FProgress;
+    property BlankBackground: Boolean read FBlankBackground write FBlankBackground;
   end;
 
 implementation
@@ -85,6 +87,12 @@ begin
     PHeader := FMB3DParamsFacade.Core.PHeader;
     PHeader^.bCalc3D := 1;
     PHeader^.bVolLightNr := 2 shl 4;
+    if FBlankBackground then begin
+      PHeader^.Light.BGbmp[0] := 0;
+      PHeader^.Light.DepthCol := CardinalToRGB(0);
+      PHeader^.Light.DepthCol2 := CardinalToRGB(0);
+    end;
+
     bCalcStop := False;
     d := MinCD(maxHeight / PHeader^.Height, maxWidth / PHeader^.Width);
     w := Round(PHeader^.Width * d);

@@ -111,8 +111,6 @@ type
     procedure CreateInitialSet;
     procedure CreateMutation(Sender: TObject);
     function RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
-    function RenderParamsSync(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
-    function RenderParamsAsync(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
     function GetInitialParams(Sender: TObject): TMB3DParamsFacade;
     function GetInitialBitmap(Sender: TObject): TBitmap;
     function CreateParamsCaption(const Params: TMB3DParamsFacade): String;
@@ -143,7 +141,6 @@ uses
 
 const
   TBAR_SCALE = 1000.0;
-  RENDER_ASYNC = True;
 
 procedure TMutaGenFrm.FormCloseQuery(Sender: TObject; var CanClose: Boolean);
 begin
@@ -604,32 +601,6 @@ begin
 end;
 
 function TMutaGenFrm.RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
-begin
-  if RENDER_ASYNC then
-    Result := RenderParamsASync(Panel, Params)
-  else
-    Result := RenderParamsSync(Panel, Params);
-end;
-
-function TMutaGenFrm.RenderParamsSync(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
-var
-  MB3DPreviewRenderer: TPreviewRenderer;
-begin
-  Result := TBitmap.Create;
-  try
-    MB3DPreviewRenderer := TPreviewRenderer.Create(Params);
-    try
-      MB3DPreviewRenderer.RenderPreview(Result, Panel.ImageWidth, Panel.ImageHeight);
-    finally
-      MB3DPreviewRenderer.Free;
-    end;
-  except
-    Result.Free;
-    raise;
-  end;
-end;
-
-function TMutaGenFrm.RenderParamsAsync(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
 begin
   if FMB3DPreviewRenderer <> nil then
     FreeAndNil(FMB3DPreviewRenderer);
