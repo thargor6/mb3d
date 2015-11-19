@@ -103,14 +103,16 @@ type
     FP_1, FP_1_1, FP_1_1_1, FP_1_1_1_1, FP_1_1_1_2, FP_1_1_2, FP_1_1_2_1, FP_1_1_2_2, FP_1_2, FP_1_2_1, FP_1_2_1_1, FP_1_2_1_2, FP_1_2_2, FP_1_2_2_1, FP_1_2_2_2: TMutaGenPanel;
     FMutationHistory: TList;
     FCurrGenerationIndex: Integer;
-    FMB3DPreviewRenderer: TPreviewRenderer;
+    FPreviewImageRenderer: TPreviewRenderer;
+    FProbingImageRenderer: TPreviewRenderer;
     function CreatePanelList: TMutaGenPanelList;
     procedure InitProgress;
     procedure RefreshMutateButtonCaption;
     procedure ProgressStep;
     procedure CreateInitialSet;
     procedure CreateMutation(Sender: TObject);
-    function RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
+    function CreatePreviewImage(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
+    function CreateProbingImage(Config: TMutationConfig; const Params: TMB3DParamsFacade): TBitmap;
     function CreateParamsCaption(const Params: TMB3DParamsFacade): String;
     function CreateMutationConfig: TMutationConfig;
     function MutateParams(Config: TMutationConfig;const Params: TMB3DParamsFacade): TMB3DParamsFacade;
@@ -160,8 +162,10 @@ procedure TMutaGenFrm.FormDestroy(Sender: TObject);
 begin
   FMutationHistory.Free;
   FPanelList.Free;
-  if FMB3DPreviewRenderer <> nil then
-    FreeAndNil(FMB3DPreviewRenderer);
+  if FPreviewImageRenderer <> nil then
+    FreeAndNil(FPreviewImageRenderer);
+  if FProbingImageRenderer <> nil then
+    FreeAndNil(FProbingImageRenderer);
 end;
 
 function TMutaGenFrm.CreatePanelList: TMutaGenPanelList;
@@ -270,27 +274,90 @@ var
   begin
     NewParams := InitialParams.Params.Clone;
     CurrSet.Params[ToPanel.MutationIndex].Params := NewParams;
-    NewBitmap := InitialParams.Bitmap;
-    if NewBitmap = nil then
-      NewBitmap := RenderParams(ToPanel,  CurrSet.Params[ToPanel.MutationIndex].Params )
+
+    if InitialParams.Bitmap = nil then
+      NewBitmap := CreatePreviewImage(ToPanel, CurrSet.Params[ToPanel.MutationIndex].Params )
     else
-      NewBitmap := CloneBitmap( NewBitmap );
+      NewBitmap := CloneBitmap( InitialParams.Bitmap );
     CurrSet.Params[ToPanel.MutationIndex].Bitmap := NewBitmap;
+
     ToPanel.Bitmap := CloneBitmap( NewBitmap );
+
+    if Config.Probing then begin
+      if InitialParams.ProbingBitmap = nil then
+        NewBitmap := CreateProbingImage(Config, CurrSet.Params[ToPanel.MutationIndex].Params )
+      else
+        NewBitmap := CloneBitmap( InitialParams.ProbingBitmap );
+      CurrSet.Params[ToPanel.MutationIndex].ProbingBitmap := NewBitmap;
+    end;
+
     ProgressStep;
     Result := True;
   end;
 
   function CreateMutation(const ToPanel, FromPanel: TMutaGenPanel): Boolean;
   var
+    I: Integer;
     NewParams: TMB3DParamsFacade;
     NewBitmap: TBitmap;
+    ProbedParams: TProbedParamsList;
+    Coverage, DiffCoverage: Double;
+    BestParams: TProbedParams;
   begin
-    NewParams := MutateParams( Config, CurrSet.Params[FromPanel.MutationIndex].Params );
-    CurrSet.Params[ToPanel.MutationIndex].Params := NewParams;
-    NewBitmap := RenderParams(ToPanel,  CurrSet.Params[ToPanel.MutationIndex].Params );
-    CurrSet.Params[ToPanel.MutationIndex].Bitmap := NewBitmap;
-    ToPanel.Bitmap := CloneBitmap( NewBitmap );
+    if Config.Probing then begin
+      ProbedParams := TProbedParamsList.Create(Config);
+      try
+        OutputDebugString(PChar('Probing...'));
+        for I := 0 to Config.ProbingMaxCount -1  do begin
+          NewParams := MutateParams( Config, CurrSet.Params[FromPanel.MutationIndex].Params );
+          NewBitmap := CreateProbingImage(Config,  NewParams );
+          if (NewBitmap = nil) or FForceAbort then begin
+            Result := False;
+            Exit;
+          end;
+          Coverage := TMutationCoverage.CalcCoverage(NewBitmap);
+          DiffCoverage := TMutationCoverage.CalcDiffCoverage(NewBitmap, CurrSet.Params[FromPanel.MutationIndex].ProbingBitmap);
+          ProbedParams.AddProbedParam( TProbedParams.Create(NewParams, Coverage, DiffCoverage, NewBitmap ) );
+
+          BestParams := ProbedParams.GetBestValidParam;
+          if (BestParams <> nil) and (BestParams.Coverage >= Config.ProbingMinCoverage)  then
+            break;
+          OutputDebugString(PChar('  '+IntToStr(I)));
+        end;
+        OutputDebugString(PChar('Done...'));
+        BestParams := ProbedParams.GetBestValidParam;
+        if BestParams = nil then
+          BestParams := ProbedParams.GetBestInvalidParam;
+
+        NewParams := BestParams.ExtractParams;
+        CurrSet.Params[ToPanel.MutationIndex].Params := NewParams;
+        CurrSet.Params[ToPanel.MutationIndex].ProbingBitmap := BestParams.ExtractProbingBitmap;
+
+        NewBitmap := CreatePreviewImage(ToPanel,  CurrSet.Params[ToPanel.MutationIndex].Params );
+        CurrSet.Params[ToPanel.MutationIndex].Bitmap := NewBitmap;
+        if NewBitmap = nil then begin
+          Result := False;
+          Exit;
+        end;
+        ToPanel.Bitmap := CloneBitmap( NewBitmap );
+      finally
+        ProbedParams.Free;
+      end;
+    end
+    else begin
+      NewParams := MutateParams( Config, CurrSet.Params[FromPanel.MutationIndex].Params );
+      CurrSet.Params[ToPanel.MutationIndex].Params := NewParams;
+
+      NewBitmap := CreatePreviewImage(ToPanel,  CurrSet.Params[ToPanel.MutationIndex].Params );
+      CurrSet.Params[ToPanel.MutationIndex].Bitmap := NewBitmap;
+      if NewBitmap = nil then begin
+        Result := False;
+        Exit;
+      end;
+
+      ToPanel.Bitmap := CloneBitmap( NewBitmap );
+    end;
+
     ProgressStep;
     Result := not FForceAbort;
   end;
@@ -484,7 +551,7 @@ var
 begin
   CurrSet := AddGeneration;
   CurrSet.Params[miP_1].Params := TMB3DParamsFacade.Create(Mand3DForm.MHeader, Mand3DForm.HAddOn);
-  NewBitmap := RenderParams(FP_1, CurrSet.Params[miP_1].Params );
+  NewBitmap := CreatePreviewImage(FP_1, CurrSet.Params[miP_1].Params );
   CurrSet.Params[miP_1].Bitmap := NewBitmap;
   if True then
 
@@ -591,17 +658,36 @@ begin
   end;
 end;
 
-function TMutaGenFrm.RenderParams(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
+function TMutaGenFrm.CreatePreviewImage(const Panel: TMutaGenPanel; const Params: TMB3DParamsFacade): TBitmap;
 begin
-  if FMB3DPreviewRenderer <> nil then
-    FreeAndNil(FMB3DPreviewRenderer);
+  if FPreviewImageRenderer <> nil then
+    FreeAndNil(FPreviewImageRenderer);
   Result := TBitmap.Create;
   try
-    FMB3DPreviewRenderer := TPreviewRenderer.Create(Params);
+    FPreviewImageRenderer := TPreviewRenderer.Create(Params);
     try
-      FMB3DPreviewRenderer.RenderPreview(Result, Panel.ImageWidth, Panel.ImageHeight);
+      FPreviewImageRenderer.RenderPreview(Result, Panel.ImageWidth, Panel.ImageHeight );
     finally
-      FreeAndNil( FMB3DPreviewRenderer );
+      FreeAndNil( FPreviewImageRenderer );
+    end;
+  except
+    Result.Free;
+    raise;
+  end;
+end;
+
+function TMutaGenFrm.CreateProbingImage(Config: TMutationConfig; const Params: TMB3DParamsFacade): TBitmap;
+begin
+  if FProbingImageRenderer <> nil then
+    FreeAndNil(FProbingImageRenderer);
+  Result := TBitmap.Create;
+  try
+    FProbingImageRenderer := TPreviewRenderer.Create(Params);
+    try
+      FProbingImageRenderer.BlankBackground := True;
+      FProbingImageRenderer.RenderPreview(Result, Config.ProbingWidth, Config.ProbingHeight );
+    finally
+      FreeAndNil( FProbingImageRenderer );
     end;
   except
     Result.Free;
@@ -612,8 +698,10 @@ end;
 procedure TMutaGenFrm.SignalCancel;
 begin
   FForceAbort := True;
-  if FMB3DPreviewRenderer<>nil then
-    FMB3DPreviewRenderer.SignalCancel;
+  if FPreviewImageRenderer<>nil then
+    FPreviewImageRenderer.SignalCancel;
+  if FProbingImageRenderer<>nil then
+    FProbingImageRenderer.SignalCancel;
 end;
 
 end.

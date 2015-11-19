@@ -1,3 +1,8 @@
+V1.90 BETA 2
+- MutaGen changes:
+   - added an internal probing mode, which generates a collection of mutations at each step and selects the msot "interesting" one, leading to much betters results
+   - avoiding certain problematic combinations of formulas (causing program crash or weird looking results)
+
 V1.90 BETA 1 
 - new MutaGen-module to easily explore new combinations of formulas and settings
    - four types of mutation: 

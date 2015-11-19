@@ -8,6 +8,8 @@ uses
 type
   TFormulaCategory = (fc_3D, fc_3Da, fc_4D, fc_4Da, fc_Ads, fc_dIFS, fc_dIFSa);
 
+  TFilterUnderscore = (fuIgnore, fuWithUnderscore, fuWithoutUnderscore);
+
   TFormulaName=class
     FCategory: TFormulaCategory;
     FFormulaName: String;

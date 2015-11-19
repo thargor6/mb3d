@@ -55,7 +55,6 @@ type
   TPanelLinkLine=class
   private
     FX1, FY1, FX2, FY2: Integer;
-    procedure DrawAntialisedLine(Canvas: TCanvas; const AX1, AY1, AX2, AY2: real; const LineColor: TColor);
   public
     constructor Create(X1, Y1, X2, Y2: Integer);
     procedure Draw(Canvas: TCanvas);
@@ -149,6 +148,40 @@ type
     constructor Create;
     destructor Destroy;override;
     property Params[Index: TMutationIndex]: TMutationParams read GetParam write SetParam;
+  end;
+
+  TMutationCoverage = class
+  public
+    class function CalcCoverage(const Bitmap: TBitmap): Double;
+    class function CalcDiffCoverage(const Bitmap1, Bitmap2: TBitmap): Double;
+  end;
+
+  TProbedParams = class
+  private
+    FParams: TMB3DParamsFacade;
+    FProbingBitmap: TBitmap;
+    FCoverage: Double;
+    FDiffCoverage: Double;
+  public
+    constructor Create(const Params: TMB3DParamsFacade; const Coverage, DiffCoverage: Double; const ProbingBitmap: TBitmap);
+    destructor Destroy;override;
+    function ExtractParams: TMB3DParamsFacade;
+    function ExtractProbingBitmap: TBitmap;
+    property Coverage: Double read FCoverage;
+    property DiffCoverage: Double read FDiffCoverage;
+  end;
+
+  TProbedParamsList = class
+  private
+    FConfig: TMutationConfig;
+    FInvalidParams: TList;
+    FValidParams: TList;
+  public
+    constructor Create(Config: TMutationConfig);
+    destructor Destroy;override;
+    procedure AddProbedParam(const Params: TProbedParams);
+    function GetBestValidParam: TProbedParams;
+    function GetBestInvalidParam: TProbedParams;
   end;
 
   TMutation = class
@@ -416,100 +449,11 @@ procedure TPanelLinkLine.Draw(Canvas: TCanvas);
 const
   Color = clRed;
 begin
-//   DrawAntialisedLine(Canvas, FX1, FY1, FX2, FY2, Color);
    Canvas.Pen.Style := psSolid;
    Canvas.Pen.Color := Color;
    Canvas.Pen.Width := 1;
    Canvas.MoveTo(FX1, FY1);
    Canvas.LineTo(FX2, FY2);
-end;
-
-// Taken from http://stackoverflow.com/questions/3613130/simple-anti-aliasing-function-for-delphi-7
-procedure TPanelLinkLine.DrawAntialisedLine(Canvas: TCanvas; const AX1, AY1, AX2, AY2: real; const LineColor: TColor);
-var
-  swapped: boolean;
-
-  procedure plot(const x, y, c: real);
-  var
-    resclr: TColor;
-  begin
-    if swapped then
-      resclr := Canvas.Pixels[round(y), round(x)]
-    else
-      resclr := Canvas.Pixels[round(x), round(y)];
-    resclr := RGB(round(GetRValue(resclr) * (1-c) + GetRValue(LineColor) * c),
-                  round(GetGValue(resclr) * (1-c) + GetGValue(LineColor) * c),
-                  round(GetBValue(resclr) * (1-c) + GetBValue(LineColor) * c));
-    if swapped then
-      Canvas.Pixels[round(y), round(x)] := resclr
-    else
-      Canvas.Pixels[round(x), round(y)] := resclr;
-  end;
-
-  function rfrac(const x: real): real; inline;
-  begin
-    rfrac := 1 - frac(x);
-  end;
-
-  procedure swap(var a, b: real);
-  var
-    tmp: real;
-  begin
-    tmp := a;
-    a := b;
-    b := tmp;
-  end;
-
-var
-  x1, x2, y1, y2, dx, dy, gradient, xend, yend, xgap, xpxl1, ypxl1,
-  xpxl2, ypxl2, intery: real;
-  x: integer;
-begin
-  x1 := AX1;
-  x2 := AX2;
-  y1 := AY1;
-  y2 := AY2;
-
-  dx := x2 - x1;
-  dy := y2 - y1;
-  swapped := abs(dx) < abs(dy);
-  if swapped then
-  begin
-    swap(x1, y1);
-    swap(x2, y2);
-    swap(dx, dy);
-  end;
-  if x2 < x1 then
-  begin
-    swap(x1, x2);
-    swap(y1, y2);
-  end;
-
-  gradient := dy / dx;
-
-  xend := round(x1);
-  yend := y1 + gradient * (xend - x1);
-  xgap := rfrac(x1 + 0.5);
-  xpxl1 := xend;
-  ypxl1 := floor(yend);
-  plot(xpxl1, ypxl1, rfrac(yend) * xgap);
-  plot(xpxl1, ypxl1 + 1, frac(yend) * xgap);
-  intery := yend + gradient;
-
-  xend := round(x2);
-  yend := y2 + gradient * (xend - x2);
-  xgap := frac(x2 + 0.5);
-  xpxl2 := xend;
-  ypxl2 := floor(yend);
-  plot(xpxl2, ypxl2, rfrac(yend) * xgap);
-  plot(xpxl2, ypxl2 + 1, frac(yend) * xgap);
-
-  for x := round(xpxl1) + 1 to round(xpxl2) - 1 do
-  begin
-    plot(x, floor(intery), rfrac(intery));
-    plot(x, floor(intery) + 1, frac(intery));
-    intery := intery + gradient;
-  end;
 end;
 { -------------------------------- TRandGen ---------------------------------- }
 function TRandGen.NextRandomDouble: Double;
@@ -690,9 +634,9 @@ begin
   ModifyIterationCountStrength := 1.0;
 
   FProbing := True;
-  FProbingWidth := 80;
-  FProbingHeight := 60;
-  FProbingMaxCount := 10;
+  FProbingWidth := 40;
+  FProbingHeight := 30;
+  FProbingMaxCount := 16;
   FProbingMinCoverage := 0.42;
   FProbingMinDifference := 0.12;
 end;
@@ -876,22 +820,34 @@ function TRemoveFormulaMutation.MutateParams(const Params: TMB3DParamsFacade): T
 const
   CategoriesByPriority: array [0..6] of TFormulaCategory=(fc_dIFSa, fc_4Da, fc_3Da, fc_Ads, fc_dIFS, fc_4D, fc_3D);
 var
-  I, Idx, FCount: Integer;
+  I, J, Pass, Idx, FCount: Integer;
   IdxList: TStringList;
 begin
   Result := Params.Clone;
   FCount := GetNonEmptyFormulaCount(Result);
-  if (FCount > 4) or ((FCount > 3) and (RandGen.NextRandomDouble > 0.5)) then begin
-    for I := Low(CategoriesByPriority) to High(CategoriesByPriority) do begin
-      IdxList := GetNonEmptyFormulasByCategory( Result, CategoriesByPriority[I]);
-      try
-        if IdxList.Count > 0 then begin
-          Idx := StrToInt(IdxList[IdxList.Count-1]);
-          Result.Formulas[Idx].FormulaName := '';
-          break;
+  if (FCount > 4) or ((FCount > 2) and (RandGen.NextRandomDouble > 0.5)) then begin
+    for Pass := 0 to 1 do begin
+      for I := Low(CategoriesByPriority) to High(CategoriesByPriority) do begin
+        IdxList := GetNonEmptyFormulasByCategory( Result, CategoriesByPriority[I]);
+        if Pass = 0 then begin
+          J := 0;
+          while J< IdxList.Count do begin
+            Idx := StrToInt(IdxList[J]);
+            if Pos('_', Result.Formulas[Idx].FormulaName) <> 1 then
+              IdxList.Delete(J)
+            else
+              Inc(J);
+          end;
         end;
-      finally
-        IdxList.Free;
+        try
+          if IdxList.Count > 0 then begin
+            Idx := StrToInt(IdxList[RandGen.NextRandomInt(IdxList.Count)]);
+            Result.Formulas[Idx].FormulaName := '';
+            exit;
+          end;
+        finally
+          IdxList.Free;
+        end;
       end;
     end;
   end;
@@ -963,7 +919,145 @@ begin
     IdxList.Free;
   end;
 end;
+{ ----------------------------- TMutationCoverage ---------------------------- }
+class function TMutationCoverage.CalcCoverage(const Bitmap: TBitmap): Double;
+const
+  Threshold = 10;
+var
+  Scanline: PRGBTriple;
+  X, Y, Count: Integer;
+  Lum: Double;
+begin
+  Count := 0;
+  for Y := 0 to Bitmap.Height - 1 do begin
+    Scanline := Bitmap.ScanLine[Y];
+    for X := 0 to Bitmap.Width - 1 do begin
+      with Scanline^ do begin
+        Lum := 0.299*rgbtRed + 0.587*rgbtGreen + 0.114*rgbtBlue;
+        if Lum > Threshold then
+          Inc(Count);
+      end;
+      Inc(Scanline);
+    end;
+  end;
+  Result := Count/(Bitmap.Height*Bitmap.Width);
+end;
 
+class function TMutationCoverage.CalcDiffCoverage(const Bitmap1, Bitmap2: TBitmap): Double;
+const
+  Threshold = 5.0;
+  RThreshold = Threshold * 0.299;
+  GThreshold = Threshold * 0.587;
+  BThreshold = Threshold * 0.114;
+var
+  Scanline1, Scanline2: PRGBTriple;
+  X, Y, Count: Integer;
+begin
+  if (Bitmap1.Width <> Bitmap2.Width) or (Bitmap1.Height <> Bitmap2.Height) then
+    raise Exception.Create('Non-matching bitmaps');
+  Count := 0;
+  for Y := 0 to Bitmap1.Height - 1 do begin
+    Scanline1 := Bitmap1.ScanLine[Y];
+    Scanline2 := Bitmap2.ScanLine[Y];
+    for X := 0 to Bitmap1.Width - 1 do begin
+      if (Abs(Scanline1^.rgbtRed - Scanline2.rgbtRed) > RThreshold) or
+         (Abs(Scanline1^.rgbtGreen - Scanline2.rgbtGreen) > GThreshold) or
+         (Abs(Scanline1^.rgbtBlue - Scanline2.rgbtBlue) > BThreshold) then
+        Inc(Count);
+      Inc(Scanline1);
+      Inc(Scanline2);
+    end;
+  end;
+  Result := Count/(Bitmap1.Height*Bitmap1.Width);
+end;
+{ ------------------------------- TProbedParams ------------------------------ }
+constructor TProbedParams.Create(const Params: TMB3DParamsFacade; const Coverage, DiffCoverage: Double; const ProbingBitmap: TBitmap);
+begin
+  inherited Create;
+  FParams := Params;
+  FCoverage := Coverage;
+  FDiffCoverage := DiffCoverage;
+  FProbingBitmap := ProbingBitmap;
+end;
+
+destructor TProbedParams.Destroy;
+begin
+  if FParams <> nil then
+    FParams.Free;
+  if FProbingBitmap <> nil then
+    FProbingBitmap.Free;
+end;
+
+function TProbedParams.ExtractParams: TMB3DParamsFacade;
+begin
+  Result := FParams;
+  FParams := nil;
+end;
+
+function TProbedParams.ExtractProbingBitmap: TBitmap;
+begin
+  Result := FProbingBitmap;
+  FProbingBitmap := nil;
+end;
+{ ----------------------------- TProbedParamsList ---------------------------- }
+constructor TProbedParamsList.Create(Config: TMutationConfig);
+begin
+  inherited Create;
+  FConfig := Config;
+  FValidParams := TObjectList.Create;
+  FInvalidParams := TObjectList.Create;
+end;
+
+destructor TProbedParamsList.Destroy;
+begin
+  FValidParams.Free;
+  FInvalidParams.Free;
+  inherited Destroy;
+end;
+
+procedure TProbedParamsList.AddProbedParam(const Params: TProbedParams);
+begin
+  if Params.DiffCoverage >= FConfig.ProbingMinCoverage then
+    FValidParams.Add(Params)
+  else
+    FInvalidParams.Add(Params);
+end;
+
+function CompareCoverage(Item1, Item2: Pointer): Integer;
+var
+  P1, P2: TProbedParams;
+begin
+  P1 := TProbedParams(Item1);
+  P2 := TProbedParams(Item2);
+  if P1.Coverage > P2.Coverage then
+    Result := -1
+  else if P1.Coverage < P2.Coverage then
+    Result := 1
+  else
+    Result := 0;
+end;
+
+function TProbedParamsList.GetBestValidParam: TProbedParams;
+begin
+  if FValidParams.Count > 0 then begin
+    FValidParams.Sort(CompareCoverage);
+    Result := FValidParams[0];
+  end
+  else begin
+    Result := nil;
+  end;
+end;
+
+function TProbedParamsList.GetBestInvalidParam: TProbedParams;
+begin
+  if FInvalidParams.Count > 0 then begin
+    FInvalidParams.Sort(CompareCoverage);
+    Result := FInvalidParams[0];
+  end
+  else begin
+    Result := nil;
+  end;
+end;
 { ----------------------------------- Main ----------------------------------- }
 initialization
   AllFormulaNames := nil;
