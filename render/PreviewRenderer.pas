@@ -91,6 +91,10 @@ begin
       PHeader^.Light.BGbmp[0] := 0;
       PHeader^.Light.DepthCol := CardinalToRGB(0);
       PHeader^.Light.DepthCol2 := CardinalToRGB(0);
+      PHeader^.Light.DynFogR := 0;
+      PHeader^.Light.DynFogG := 0;
+      PHeader^.Light.DynFogB := 0;
+      PHeader^.Light.DynFogCol2 := CardinalToRGB(0);
     end;
 
     bCalcStop := False;

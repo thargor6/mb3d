@@ -315,7 +315,7 @@ var
             Result := False;
             Exit;
           end;
-          Coverage := TMutationCoverage.CalcCoverage(NewBitmap);
+          Coverage := TMutationCoverage.CalcFilteredCoverage(NewBitmap);
           DiffCoverage := TMutationCoverage.CalcDiffCoverage(NewBitmap, CurrSet.Params[FromPanel.MutationIndex].ProbingBitmap);
           ProbedParams.AddProbedParam( TProbedParams.Create(NewParams, Coverage, DiffCoverage, NewBitmap ) );
 
@@ -332,9 +332,16 @@ var
         NewParams := BestParams.ExtractParams;
         CurrSet.Params[ToPanel.MutationIndex].Params := NewParams;
         CurrSet.Params[ToPanel.MutationIndex].ProbingBitmap := BestParams.ExtractProbingBitmap;
-
+        //// For Debugging
+        // Probing Bitmap;
+        //   NewBitmap := CloneBitmap(CurrSet.Params[ToPanel.MutationIndex].ProbingBitmap);
+        // Filtered Bitmap:
+        //   NewBitmap := TMutationCoverage.CreateFilteredImage(CurrSet.Params[ToPanel.MutationIndex].ProbingBitmap);
+        //// Regular display
         NewBitmap := CreatePreviewImage(ToPanel,  CurrSet.Params[ToPanel.MutationIndex].Params );
+
         CurrSet.Params[ToPanel.MutationIndex].Bitmap := NewBitmap;
+
         if NewBitmap = nil then begin
           Result := False;
           Exit;

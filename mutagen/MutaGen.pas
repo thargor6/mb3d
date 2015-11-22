@@ -151,9 +151,16 @@ type
   end;
 
   TMutationCoverage = class
+  private
+    class function CalcFilteredCoverage24(const Bitmap: TBitmap): Double;
+    class function CalcFilteredCoverage32(const Bitmap: TBitmap): Double;
+    class function CreateFilteredImage24(const Bitmap: TBitmap): TBitmap;
+    class function CreateFilteredImage32(const Bitmap: TBitmap): TBitmap;
   public
     class function CalcCoverage(const Bitmap: TBitmap): Double;
     class function CalcDiffCoverage(const Bitmap1, Bitmap2: TBitmap): Double;
+    class function CalcFilteredCoverage(const Bitmap: TBitmap): Double;
+    class function CreateFilteredImage(const Bitmap: TBitmap): TBitmap;
   end;
 
   TProbedParams = class
@@ -637,8 +644,8 @@ begin
   FProbingWidth := 40;
   FProbingHeight := 30;
   FProbingMaxCount := 16;
-  FProbingMinCoverage := 0.42;
-  FProbingMinDifference := 0.12;
+  FProbingMinCoverage := 0.36;
+  FProbingMinDifference := 0.16;
 end;
 { ---------------------------- TMutationCreator ------------------------------ }
 class function TMutationCreator.CreateMutations(const Config: TMutationConfig ): TList;
@@ -969,6 +976,245 @@ begin
     end;
   end;
   Result := Count/(Bitmap1.Height*Bitmap1.Width);
+end;
+
+class function TMutationCoverage.CalcFilteredCoverage(const Bitmap: TBitmap): Double;
+begin
+  if Bitmap.PixelFormat = pf24bit then
+    Result := CalcFilteredCoverage24(Bitmap)
+  else if Bitmap.PixelFormat = pf32bit then
+    Result := CalcFilteredCoverage32(Bitmap)
+  else
+    raise Exception.Create('Invalid Bitmap Format <'+IntToSTr(Ord(Bitmap.PixelFormat))+'>');
+end;
+
+class function TMutationCoverage.CalcFilteredCoverage24(const Bitmap: TBitmap): Double;
+const
+  Threshold = 20.0;
+  RThreshold = Threshold * 0.299;
+  GThreshold = Threshold * 0.587;
+  BThreshold = Threshold * 0.114;
+var
+  PScanline1, PScanline2, PScanline3: PRGBTriple;
+  NScanline1, NScanline2, NScanline3: PRGBTriple;
+  X, Y, Count: Integer;
+  Lum: Double;
+  FilteredRed, FilteredGreen, FilteredBlue: Double;
+begin
+  Count := 0;
+  for Y := 1 to Bitmap.Height - 2 do begin
+    PScanline1 := Bitmap.ScanLine[Y-1];
+    PScanline2 := Bitmap.ScanLine[Y];
+    PScanline3 := Bitmap.ScanLine[Y+1];
+    NScanline1 := PScanline1; Inc(NScanline1, 2);
+    NScanline2 := PScanline2; Inc(NScanline2, 2);
+    NScanline3 := PScanline3; Inc(NScanline3, 2);
+    for X := 1 to Bitmap.Width - 2 do begin
+      FilteredRed := - PScanline1^.rgbtRed
+                     + NScanline1^.rgbtRed
+                     - 2 * PScanline2^.rgbtRed
+                     + 2 * NScanline2^.rgbtRed
+                     - PScanline3^.rgbtRed
+                     + NScanline3^.rgbtRed;
+      FilteredGreen := - PScanline1^.rgbtGreen
+                     + NScanline1^.rgbtGreen
+                     - 2 * PScanline2^.rgbtGreen
+                     + 2 * NScanline2^.rgbtGreen
+                     - PScanline3^.rgbtGreen
+                     + NScanline3^.rgbtGreen;
+      FilteredBlue := - PScanline1^.rgbtBlue
+                     + NScanline1^.rgbtBlue
+                     - 2 * PScanline2^.rgbtBlue
+                     + 2 * NScanline2^.rgbtBlue
+                     - PScanline3^.rgbtBlue
+                     + NScanline3^.rgbtBlue;
+
+      Lum := 0.299*FilteredRed + 0.587*FilteredGreen + 0.114*FilteredBlue;
+      if Lum > Threshold then
+        Inc(Count);
+      Inc(PScanline1); Inc(PScanline2); Inc(PScanline3);
+      Inc(NScanline1); Inc(NScanline2); Inc(NScanline3);
+    end;
+  end;
+  Result := Count/((Bitmap.Height-2)*(Bitmap.Width-2));
+end;
+
+class function TMutationCoverage.CalcFilteredCoverage32(const Bitmap: TBitmap): Double;
+const
+  Threshold = 20.0;
+  RThreshold = Threshold * 0.299;
+  GThreshold = Threshold * 0.587;
+  BThreshold = Threshold * 0.114;
+var
+  PScanline1, PScanline2, PScanline3: PRGBQuad;
+  NScanline1, NScanline2, NScanline3: PRGBQuad;
+  X, Y, Count: Integer;
+  Lum: Double;
+  FilteredRed, FilteredGreen, FilteredBlue: Double;
+begin
+  Count := 0;
+  for Y := 1 to Bitmap.Height - 2 do begin
+    PScanline1 := Bitmap.ScanLine[Y-1];
+    PScanline2 := Bitmap.ScanLine[Y];
+    PScanline3 := Bitmap.ScanLine[Y+1];
+    NScanline1 := PScanline1; Inc(NScanline1, 2);
+    NScanline2 := PScanline2; Inc(NScanline2, 2);
+    NScanline3 := PScanline3; Inc(NScanline3, 2);
+    for X := 1 to Bitmap.Width - 2 do begin
+      FilteredRed := - PScanline1^.rgbRed
+                     + NScanline1^.rgbRed
+                     - 2 * PScanline2^.rgbRed
+                     + 2 * NScanline2^.rgbRed
+                     - PScanline3^.rgbRed
+                     + NScanline3^.rgbRed;
+      FilteredGreen := - PScanline1^.rgbGreen
+                     + NScanline1^.rgbGreen
+                     - 2 * PScanline2^.rgbGreen
+                     + 2 * NScanline2^.rgbGreen
+                     - PScanline3^.rgbGreen
+                     + NScanline3^.rgbGreen;
+      FilteredBlue := - PScanline1^.rgbBlue
+                     + NScanline1^.rgbBlue
+                     - 2 * PScanline2^.rgbBlue
+                     + 2 * NScanline2^.rgbBlue
+                     - PScanline3^.rgbBlue
+                     + NScanline3^.rgbBlue;
+
+      Lum := 0.299*FilteredRed + 0.587*FilteredGreen + 0.114*FilteredBlue;
+      if Lum > Threshold then
+        Inc(Count);
+      Inc(PScanline1); Inc(PScanline2); Inc(PScanline3);
+      Inc(NScanline1); Inc(NScanline2); Inc(NScanline3);
+    end;
+  end;
+  Result := Count/((Bitmap.Height-2)*(Bitmap.Width-2));
+end;
+
+class function TMutationCoverage.CreateFilteredImage(const Bitmap: TBitmap): TBitmap;
+begin
+  if Bitmap.PixelFormat = pf24bit then
+    Result := CreateFilteredImage24(Bitmap)
+  else if Bitmap.PixelFormat = pf32bit then
+    Result := CreateFilteredImage32(Bitmap)
+  else
+    raise Exception.Create('Invalid Bitmap Format <'+IntToSTr(Ord(Bitmap.PixelFormat))+'>');
+end;
+
+class function TMutationCoverage.CreateFilteredImage24(const Bitmap: TBitmap): TBitmap;
+var
+  PScanline1, PScanline2, PScanline3: PRGBTriple;
+  NScanline1, NScanline2, NScanline3: PRGBTriple;
+  DScanline: PRGBTriple;
+  X, Y, Value: Integer;
+  BValue: Byte;
+  FilteredRed, FilteredGreen, FilteredBlue: Double;
+begin
+  Result := TBitmap.Create;
+  Result.Assign(Bitmap);
+  if Result.PixelFormat <> Bitmap.PixelFormat then
+    raise Exception.Create('Invalid bitmap');
+  for Y := 1 to Bitmap.Height - 2 do begin
+    DScanline := Result.ScanLine[Y];
+    PScanline1 := Bitmap.ScanLine[Y-1];
+    PScanline2 := Bitmap.ScanLine[Y];
+    PScanline3 := Bitmap.ScanLine[Y+1];
+    NScanline1 := PScanline1; Inc(NScanline1, 2);
+    NScanline2 := PScanline2; Inc(NScanline2, 2);
+    NScanline3 := PScanline3; Inc(NScanline3, 2);
+    Inc(DScanline);
+    for X := 1 to Bitmap.Width - 2 do begin
+      // Sobel filter
+      FilteredRed := - PScanline1^.rgbtRed
+                     + NScanline1^.rgbtRed
+                     - 2 * PScanline2^.rgbtRed
+                     + 2 * NScanline2^.rgbtRed
+                     - PScanline3^.rgbtRed
+                     + NScanline3^.rgbtRed;
+      FilteredGreen := - PScanline1^.rgbtGreen
+                     + NScanline1^.rgbtGreen
+                     - 2 * PScanline2^.rgbtGreen
+                     + 2 * NScanline2^.rgbtGreen
+                     - PScanline3^.rgbtGreen
+                     + NScanline3^.rgbtGreen;
+      FilteredBlue := - PScanline1^.rgbtBlue
+                     + NScanline1^.rgbtBlue
+                     - 2 * PScanline2^.rgbtBlue
+                     + 2 * NScanline2^.rgbtBlue
+                     - PScanline3^.rgbtBlue
+                     + NScanline3^.rgbtBlue;
+      Value := Round(FilteredRed * 0.299 + FilteredGreen * 0.587 + FilteredBlue * 0.114);
+      if Value < 0 then
+        Value := 0
+      else if Value > 255 then
+        Value := 255;
+      BValue := Byte(Value);
+
+      DScanline^.rgbtRed := BValue;
+      DScanline^.rgbtGreen := BValue;
+      DScanline^.rgbtBlue := BValue;
+      Inc(PScanline1); Inc(PScanline2); Inc(PScanline3);
+      Inc(NScanline1); Inc(NScanline2); Inc(NScanline3);
+      Inc(DScanline);
+    end;
+  end;
+end;
+
+class function TMutationCoverage.CreateFilteredImage32(const Bitmap: TBitmap): TBitmap;
+var
+  PScanline1, PScanline2, PScanline3: PRGBQuad;
+  NScanline1, NScanline2, NScanline3: PRGBQuad;
+  DScanline: PRGBQuad;
+  X, Y, Value: Integer;
+  BValue: Byte;
+  FilteredRed, FilteredGreen, FilteredBlue: Double;
+begin
+  Result := TBitmap.Create;
+  Result.Assign(Bitmap);
+  if Result.PixelFormat <> Bitmap.PixelFormat then
+    raise Exception.Create('Invalid bitmap');
+  for Y := 1 to Bitmap.Height - 2 do begin
+    DScanline := Result.ScanLine[Y];
+    PScanline1 := Bitmap.ScanLine[Y-1];
+    PScanline2 := Bitmap.ScanLine[Y];
+    PScanline3 := Bitmap.ScanLine[Y+1];
+    NScanline1 := PScanline1; Inc(NScanline1, 2);
+    NScanline2 := PScanline2; Inc(NScanline2, 2);
+    NScanline3 := PScanline3; Inc(NScanline3, 2);
+    Inc(DScanline);
+    for X := 1 to Bitmap.Width - 2 do begin
+      FilteredRed := - PScanline1^.rgbRed
+                     + NScanline1^.rgbRed
+                     - 2 * PScanline2^.rgbRed
+                     + 2 * NScanline2^.rgbRed
+                     - PScanline3^.rgbRed
+                     + NScanline3^.rgbRed;
+      FilteredGreen := - PScanline1^.rgbGreen
+                     + NScanline1^.rgbGreen
+                     - 2 * PScanline2^.rgbGreen
+                     + 2 * NScanline2^.rgbGreen
+                     - PScanline3^.rgbGreen
+                     + NScanline3^.rgbGreen;
+      FilteredBlue := - PScanline1^.rgbBlue
+                     + NScanline1^.rgbBlue
+                     - 2 * PScanline2^.rgbBlue
+                     + 2 * NScanline2^.rgbBlue
+                     - PScanline3^.rgbBlue
+                     + NScanline3^.rgbBlue;
+      Value := Round(FilteredRed * 0.299 + FilteredGreen * 0.587 + FilteredBlue * 0.114);
+      if Value < 0 then
+        Value := 0
+      else if Value > 255 then
+        Value := 255;
+      BValue := Byte(Value);
+
+      DScanline^.rgbRed := BValue;
+      DScanline^.rgbGreen := BValue;
+      DScanline^.rgbBlue := BValue;
+      Inc(PScanline1); Inc(PScanline2); Inc(PScanline3);
+      Inc(NScanline1); Inc(NScanline2); Inc(NScanline3);
+      Inc(DScanline);
+    end;
+  end;
 end;
 { ------------------------------- TProbedParams ------------------------------ }
 constructor TProbedParams.Create(const Params: TMB3DParamsFacade; const Coverage, DiffCoverage: Double; const ProbingBitmap: TBitmap);
