@@ -56,8 +56,8 @@ procedure SetDialogDirectory(SaveDialog: TSaveDialog; FDir: String);  overload;
 procedure SetDialogDirectory(OpenDialog: TOpenDialog; FDir: String);  overload;
 procedure SetDialogDirectory(OpenPicDialog: TOpenPictureDialog; FDir: String);  overload;
 
-var IniVal: array[0..34] of String = ('81','5','20','5','30','30','60','50','10', '3','0','0:0','','0','1','1','0','','',
-      'No','No','Auto','','No','65 100','779 671','844 100','844 100','844 100','-1','No','Yes','','','0');
+var IniVal: array[0..35] of String = ('81','5','20','5','30','30','60','50','10', '3','0','0:0','','0','1','1','0','','',
+      'No','No','Auto','','No','65 100','779 671','844 100','844 100','844 100','-1','No','Yes','','','0','Windows');
     IniDirs: array[0..11] of String = ('','','','','','','','','','','',''); //M3Idir, M3Pdir, BMPdir, FormulaDir, M3Adir, AniOut, BGpic, Lightparas, BigRenders, LightMaps, voxel, M3C
     IniHigherVersion: array of String;
     IniFileDate: TDateTime;
@@ -67,14 +67,14 @@ var IniVal: array[0..34] of String = ('81','5','20','5','30','30','60','50','10'
     LastHisParSaveTime: TDateTime;
     LHPSLight: TLightingParas9;
 const
-    IniMax: Integer = 34;
-    IniItem: array[0..34] of String = ('StickOption','MandRotDeg','NavSlideStep',
+    IniMax: Integer = 35;
+    IniItem: array[0..35] of String = ('StickOption','MandRotDeg','NavSlideStep',
       'NavLookAngle','NavFarPlane','NavFOVy','NavMaxIts','AniFrameCount','AniPrevFPS',  //NavFarPlane not used anymore
       'AniSmoothPar','NaviAZERTY','UserAspect','M3LFolder','ImageSharp','NavFkey',
       'ScaleDEstop','SaveImagePNG','BigRendersFolder','LightMapsFolder','NavHiQ',
       'NavDoubleClickMode','ThreadCount','VoxelFolder','SavePNGtextPars','m3dPos',
       'm3dSize','FormulaPos','LightPos','PostpPos','ThreadPriority','DisableTBoost',
-      'SaveImgInM3I','M3CFolder','Author','NaviPanelShow');
+      'SaveImgInM3I','M3CFolder','Author','NaviPanelShow','VisualTheme');
     AccPresetFileNames: array[0..3] of String = ('preset_preview.txt',
       'preset_video.txt', 'preset_mid.txt', 'preset_high.txt');
     AccPresetItemNames: array[0..7] of String = ('SmoothNormals', 'DEstop',
@@ -93,7 +93,7 @@ implementation
 
 uses Mand, ImageProcess, Clipbrd, DivUtils, Math, CustomFormulas, HeaderTrafos,
      Animation, FormulaGUI, Navigator, AniPreviewWindow, Interpolation, Tiling,
-     Math3D, Forms, Maps, Undo;
+     Math3D, Forms, Maps, Undo, Vcl.Themes;
 
 function FileIsBigger1(Fname: String): LongBool;
 var F: TSearchRec;
@@ -637,6 +637,7 @@ begin
       if IniVal[22] <> '' then IniDirs[10] := IniVal[22];
       if IniVal[32] <> '' then IniDirs[11] := IniVal[32];
       if not CheckAuthorValid(IniVal[33]) then IniVal[33] := '';
+      if IniVal[35] <> '' then TStyleManager.TrySetStyle(IniVal[35]);
     end;
 end;
 
@@ -654,6 +655,7 @@ begin
       IniVal[18] := IniDirs[9]; //LightMaps folder
       IniVal[22] := IniDirs[10]; //voxel folder
       IniVal[32] := IniDirs[11]; //m3c folder
+      IniVal[35] := TStyleManager.ActiveStyle.Name;
       Rewrite(f);
       for i := 0 to 6 do Writeln(f, IniDirs[i]);
       for i := 0 to IniMax do
