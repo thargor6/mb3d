@@ -7,9 +7,16 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, JvExForms,
   JvCustomItemViewer, JvImagesViewer, JvComponentBase, JvFormAnimatedIcon, MutaGen,
   Vcl.ComCtrls, JvExComCtrls, JvProgressBar, MB3DFacade, Vcl.Menus, JvComCtrls,
-  JvxSlider, JvExControls, JvSlider, TrackBarEx, Vcl.Buttons, PreviewRenderer;
+  JvxSlider, JvExControls, JvSlider, TrackBarEx, Vcl.Buttons, PreviewRenderer,
+  JvExStdCtrls, JvGroupBox, JvOutlookBar, JvExExtCtrls, JvExtComponent,
+  JvCaptionPanel, JvPageList, JvNavigationPane, JvClipboardMonitor;
 
 type
+  TCategoryPanel = class(Vcl.ExtCtrls.TCategoryPanel)
+  protected
+    procedure DrawCollapsedPanel(ACanvas: TCanvas); override;
+  end;
+
   TMutaGenFrm = class(TForm)
     Panel1: TPanel;
     MainPnl: TPanel;
@@ -45,12 +52,21 @@ type
     Image_1_2_1_1: TImage;
     MainPopupMenu: TPopupMenu;
     SendtoMainItm: TMenuItem;
-    CategoryPanelGroup1: TCategoryPanelGroup;
-    CategoryPanel2: TCategoryPanel;
-    CategoryPanel3: TCategoryPanel;
-    CategoryPanel1: TCategoryPanel;
-    MutateBtn: TButton;
+    ToClipboardItm: TMenuItem;
+    PreviewRenderTimer: TTimer;
+    JvClipboardMonitor1: TJvClipboardMonitor;
+    GenerationsGrp: TJvGroupBox;
+    Panel9: TPanel;
+    GenerationBtn: TUpDown;
+    ClearPrevGenerations: TButton;
+    MutateGrp: TJvGroupBox;
+    Panel8: TPanel;
     ProgressBar: TProgressBar;
+    MutateBtn: TButton;
+    OptionsGrp: TJvGroupBox;
+    Panel7: TPanel;
+    Panel5: TPanel;
+    DisableAllBtn: TButton;
     GridPanel2: TGridPanel;
     MinIterLabel: TLabel;
     ModifyFormulaWeightTBar: TTrackBarEx;
@@ -71,18 +87,12 @@ type
     Label10: TLabel;
     ModifyJuliaModeWeightTBar: TTrackBarEx;
     ModifyJuliaModeStrengthTBar: TTrackBarEx;
-    Panel5: TPanel;
-    DisableAllBtn: TButton;
-    ToClipboardItm: TMenuItem;
-    GenerationLbl: TLabel;
-    GenerationBtn: TUpDown;
-    ClearPrevGenerations: TButton;
     Panel6: TPanel;
     Label11: TLabel;
     Label12: TLabel;
     ModifyIterationCountWeightTBar: TTrackBarEx;
     ModifyIterationCountStrengthTBar: TTrackBarEx;
-    PreviewRenderTimer: TTimer;
+    GenerationEdit: TEdit;
     procedure MutateBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -576,7 +586,7 @@ end;
 
 procedure TMutaGenFrm.RefreshGenerationLabel;
 begin
-  GenerationLbl.Caption := 'Generation '+IntToStr(FCurrGenerationIndex+1)+' of '+IntToStr(FMutationHistory.Count);
+  GenerationEdit.Text := 'Generation '+IntToStr(FCurrGenerationIndex+1)+' of '+IntToStr(FMutationHistory.Count);
 end;
 
 function TMutaGenFrm.CreateBlankBitmap(const Width, Height: Integer): TBitmap;
@@ -711,6 +721,17 @@ begin
     FPreviewImageRenderer.SignalCancel;
   if FProbingImageRenderer<>nil then
     FProbingImageRenderer.SignalCancel;
+end;
+
+procedure TCategoryPanel.DrawCollapsedPanel(ACanvas: TCanvas);
+var
+  LRect: TRect;
+begin
+  LRect := ClientRect;
+  LRect.Top := HeaderHeight;
+  LRect.Bottom := GetCollapsedHeight;
+  ACanvas.Brush.Color := Color;
+  ACanvas.FillRect(LRect);
 end;
 
 end.
