@@ -13,6 +13,7 @@ object MutaGenFrm: TMutaGenFrm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -28,24 +29,28 @@ object MutaGenFrm: TMutaGenFrm
     BevelOuter = bvNone
     TabOrder = 0
     object CategoryPanelGroup1: TCategoryPanelGroup
-      Left = 0
+      Left = 100
       Top = 0
       Width = 233
       Height = 663
       VertScrollBar.Tracking = True
       VertScrollBar.Visible = False
-      Align = alClient
+      Align = alNone
+      Color = clBtnFace
       HeaderFont.Charset = DEFAULT_CHARSET
       HeaderFont.Color = clWindowText
       HeaderFont.Height = -12
       HeaderFont.Name = 'Tahoma'
       HeaderFont.Style = []
       HeaderHeight = 20
+      ParentBackground = True
       TabOrder = 0
       object CategoryPanel2: TCategoryPanel
         Top = 369
         Height = 181
         Caption = 'Mutate'
+        DoubleBuffered = False
+        ParentDoubleBuffered = False
         TabOrder = 1
         object MutateBtn: TButton
           Left = 4
@@ -496,8 +501,10 @@ object MutaGenFrm: TMutaGenFrm
             Height = 21
             Anchors = []
             Ctl3D = True
+            DoubleBuffered = False
             Max = 1000
             ParentCtl3D = False
+            ParentDoubleBuffered = False
             TabOrder = 9
             ThumbLength = 18
             TickMarks = tmBoth
@@ -582,6 +589,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -618,6 +626,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -654,6 +663,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -690,6 +700,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -726,6 +737,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -762,6 +774,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 10
         ExplicitTop = 2
@@ -796,6 +809,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -832,6 +846,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = -3
         ExplicitTop = 10
@@ -866,6 +881,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -902,6 +918,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -938,6 +955,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -974,6 +992,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -1010,6 +1029,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -1046,6 +1066,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11
@@ -1082,6 +1103,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         AutoSize = True
         PopupMenu = MainPopupMenu
+        Transparent = True
         OnDblClick = Panel_1DblClick
         ExplicitLeft = 35
         ExplicitTop = 11

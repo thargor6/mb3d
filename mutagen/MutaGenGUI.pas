@@ -1,4 +1,4 @@
-unit MutaGenUI;
+unit MutaGenGUI;
 
 interface
 
@@ -504,7 +504,7 @@ var
 begin
   Mutations := TMutationCreator.CreateMutations(Config);
   try
-    Result := Params;
+    Result := Params.Clone;
     for I := 0 to Mutations.Count-1 do begin
       Result := TMutation(Mutations[I]).MutateParams(Result);
     end;
@@ -585,6 +585,8 @@ begin
   Result.PixelFormat := pf32Bit;
   Result.Width  := Width;
   Result.Height := Height;
+  Result.Canvas.Brush.Color := ColorToRGB(clBackground);
+  Result.Canvas.FillRect(Rect(0,0, Width, Height));
 end;
 
 procedure TMutaGenFrm.ClearPanels;
