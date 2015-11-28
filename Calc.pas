@@ -43,7 +43,8 @@ var CalcMaps: array[0..2] of TLightMap; //max 3 lightmaps?   todo: Global Map Ha
 implementation
 
 uses Mand, LightAdjust, CalcThread, CalcThread2D, HeaderTrafos, Math, Maps,
-     Navigator, SysUtils, Types, DivUtils, Forms, ImageProcess, FileHandling;
+     Navigator, SysUtils, Types, DivUtils, Forms, ImageProcess, FileHandling,
+     MapSequences;
 
 //{$CODEALIGN 8}
 
@@ -105,8 +106,7 @@ begin
           if (n > 0) and (n < 32001) and (Mcount < 3) then
           begin
             for c := 0 to Mcount - 1 do if MA[c] = n then n := 0;  //already in list
-            if n > 0 then
-            begin
+            if n > 0 then begin
               MA[Mcount] := n;
               Inc(Mcount);
             end;  
@@ -119,8 +119,7 @@ begin
       c := 0;
       while j < Mcount do // delete already loaded maps from list
       begin
-        if CalcMaps[i].LMnumber = MA[j] then
-        begin
+        if (CalcMaps[i].LMnumber = MA[j]) and (TMapSequenceListProvider.GetInstance.GetSequence(MA[j]) = nil) then begin
           Dec(Mcount);
           for n := j to Mcount - 1 do MA[n] := MA[n + 1];
           Inc(c);

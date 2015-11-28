@@ -57,7 +57,7 @@ procedure SetDialogDirectory(OpenDialog: TOpenDialog; FDir: String);  overload;
 procedure SetDialogDirectory(OpenPicDialog: TOpenPictureDialog; FDir: String);  overload;
 
 var IniVal: array[0..35] of String = ('81','5','20','5','30','30','60','50','10', '3','0','0:0','','0','1','1','0','','',
-      'No','No','Auto','','No','65 100','779 671','844 100','844 100','844 100','-1','No','Yes','','','0','Windows');
+      'No','No','Auto','','No','65 100','779 671','844 100','844 100','844 100','-1','No','Yes','','','0','Glossy' (*'Windows'*));
     IniDirs: array[0..11] of String = ('','','','','','','','','','','',''); //M3Idir, M3Pdir, BMPdir, FormulaDir, M3Adir, AniOut, BGpic, Lightparas, BigRenders, LightMaps, voxel, M3C
     IniHigherVersion: array of String;
     IniFileDate: TDateTime;
@@ -637,7 +637,6 @@ begin
       if IniVal[22] <> '' then IniDirs[10] := IniVal[22];
       if IniVal[32] <> '' then IniDirs[11] := IniVal[32];
       if not CheckAuthorValid(IniVal[33]) then IniVal[33] := '';
-      if IniVal[35] <> '' then TStyleManager.TrySetStyle(IniVal[35]);
     end;
 end;
 

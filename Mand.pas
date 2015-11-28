@@ -187,7 +187,7 @@ type
     StartrenderingandsaveafterwardstheM3Ifile1: TMenuItem;
     CheckBox14: TCheckBox;
     TabSheet13: TTabSheet;
-    SpeedButton14: TSpeedButton;
+    IniDirsBtn: TSpeedButton;
     CheckBox15: TCheckBox;
     Edit16: TEdit;
     Label47: TLabel;
@@ -267,6 +267,8 @@ type
     Label61: TLabel;
     ScriptEditorBtn: TSpeedButton;
     MutaGenBtn: TSpeedButton;
+    MapSequencesBtn: TSpeedButton;
+    VisualThemesBtn: TSpeedButton;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -304,7 +306,7 @@ type
     procedure SpeedButton12Click(Sender: TObject);
     procedure SpinEdit2Change(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure SpeedButton14Click(Sender: TObject);
+    procedure IniDirsBtnClick(Sender: TObject);
     procedure Button10Click(Sender: TObject);
     procedure SpeedButton15Click(Sender: TObject);
     procedure Button14Click(Sender: TObject);
@@ -382,6 +384,7 @@ type
     procedure ButtonVolLightClick(Sender: TObject);
     procedure UpDown5Click(Sender: TObject; Button: TUDBtnType);
     procedure MutaGenBtnClick(Sender: TObject);
+    procedure VisualThemesBtnClick(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
   //    const Rect: TRect; Active: Boolean);
@@ -524,7 +527,8 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      HeaderTrafos, Calc, IniDirsForm, FormulaGUI, Navigator, PostProcessForm,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
-     uMapCalcWindow, FormulaCompiler, MutaGenUI;
+     uMapCalcWindow, FormulaCompiler, MutaGenGUI, VisualThemesGUI,
+     Vcl.Themes;
 
 {$R *.dfm}
 
@@ -624,6 +628,11 @@ begin
     if (Button = btPrev) and (i > -2) then Dec(i);
     if i > 0 then Label61.Caption := '+' + IntToStr(i)
              else Label61.Caption := IntToStr(i);
+end;
+
+procedure TMand3DForm.VisualThemesBtnClick(Sender: TObject);
+begin
+  VisualThemesFrm.Visible := True;
 end;
 
 procedure TMand3DForm.ScaleDEstop(s: Single);
@@ -1017,7 +1026,9 @@ begin
     SpeedButton1.Enabled := True;
     SpeedButton2.Enabled := True;
     SpeedButton4.Enabled := True;
-    SpeedButton14.Enabled := True;
+    IniDirsBtn.Enabled := True;
+    MapSequencesBtn.Enabled := True;
+    VisualThemesBtn.Enabled := True;
     if PPFormCreated then
     begin
       PostProForm.Button1.Enabled := True;
@@ -1102,7 +1113,9 @@ begin
     SpeedButton1.Enabled := False;
     SpeedButton2.Enabled := False;
     SpeedButton4.Enabled := False;
-    SpeedButton14.Enabled := False;
+    IniDirsBtn.Enabled := False;
+    MapSequencesBtn.Enabled := False;
+    VisualThemesBtn.Enabled := False;
     MCalcStop := False;
     if PPFormCreated then
     begin
@@ -1603,6 +1616,8 @@ procedure TMand3DForm.FormCreate(Sender: TObject);
 var i: Integer;
 begin
     LoadIni;
+    if IniVal[35] <> '' then TStyleManager.TrySetStyle(IniVal[35]);
+
     OPD := TOpenPictureDialogM3D.Create(Self);
     OPD.Filter := 'M3D Image + Parameter (*.m3i)|*.m3i';
     OPD.DefaultExt := 'm3i';
@@ -3314,7 +3329,7 @@ begin
     OPD.Free;
 end;
 
-procedure TMand3DForm.SpeedButton14Click(Sender: TObject);
+procedure TMand3DForm.IniDirsBtnClick(Sender: TObject);
 begin
     LoadIni;
     IniDirForm.Visible := True;

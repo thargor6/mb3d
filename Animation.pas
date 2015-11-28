@@ -137,6 +137,7 @@ type
     procedure SpeedButton12Click(Sender: TObject);
     procedure SpeedButton13Click(Sender: TObject);
     procedure SpeedButton14Click(Sender: TObject);
+    procedure Edit1Exit(Sender: TObject);
   private
     { Private-Deklarationen }
     CalcThreadStats: TCalcThreadStats;
@@ -214,7 +215,7 @@ implementation
 
 uses Math, DivUtils, AniPreviewWindow, Calc, ImageProcess, AniProcess, CalcSR,
      CustomFormulas, DOF, Paint, CalcHardShadow, Interpolation, PaintThread,
-     Navigator, Maps;
+     Navigator, Maps, MapSequences;
 
 {$R *.dfm}
 
@@ -576,6 +577,12 @@ begin
     end;
 end;
 
+procedure TAnimationForm.Edit1Exit(Sender: TObject);
+begin
+  if CurrentNr < HeaderCount then
+    RenderPrevBMP(KFposLUT[CurrentNr]);
+end;
+
 procedure TAnimationForm.Button3Click(Sender: TObject);
 begin
     AniOutputFolder := GetDirectory(IniDirs[5], AnimationForm);
@@ -719,6 +726,8 @@ procedure TAnimationForm.RenderPrevBMP(nr: Integer);
 var d: Double;
     w, h: Integer;
 begin
+    TMapSequenceFrameNumberHolder.SetCurrFrameNumber(TotalBMPsToRender(1, nr + 1, 1));
+
     if AniWidth >= AniHeight * 1.25 then d := 100 / AniWidth
                                     else d :=  80 / AniHeight;
     w := Round(AniWidth * d);
@@ -960,6 +969,7 @@ begin
       Button2.Enabled  := True;
       RenderStartTime  := now;
       AniFileIndex     := StrToIntTrim(Edit3.Text);
+      TMapSequenceFrameNumberHolder.SetCurrFrameNumber(AniFileIndex);
       iTotalBMPsToRender := TotalBMPsToRender(1, HeaderCount, 1);
       AniIpolType      := RadioGroup2.ItemIndex;
       AniOutputFormat  := RadioGroup3.ItemIndex;
@@ -1004,6 +1014,7 @@ end;  }
 procedure TAnimationForm.IncSubFrame;
 begin
     Inc(AniFileIndex, StrToIntTrim(Edit4.Text));
+    TMapSequenceFrameNumberHolder.SetCurrFrameNumber(AniFileIndex);
     Inc(RenderedSoFar);
     Inc(ActualKFsubframe);
     Label19.Caption := 'Done: ' + IntToStr(RenderedSoFar) + ' of ' + IntToStr(Min(iTotalBMPsToRender,

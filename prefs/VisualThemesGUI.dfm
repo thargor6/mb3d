@@ -1,10 +1,10 @@
 object VisualThemesFrm: TVisualThemesFrm
   Left = 148
   Top = 170
-  BorderStyle = bsDialog
+  BorderStyle = bsToolWindow
   Caption = 'Setting the Visual Theme'
   ClientHeight = 93
-  ClientWidth = 325
+  ClientWidth = 322
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -25,9 +25,9 @@ object VisualThemesFrm: TVisualThemesFrm
     Caption = 'Theme'
   end
   object SaveAndExitBtn: TButton
-    Left = 222
-    Top = 57
-    Width = 91
+    Left = 118
+    Top = 60
+    Width = 195
     Height = 25
     Caption = 'Save + exit'
     TabOrder = 0
@@ -44,9 +44,9 @@ object VisualThemesFrm: TVisualThemesFrm
     OnChange = StylesCmbChange
   end
   object DefaultBtn: TButton
-    Left = 64
-    Top = 57
-    Width = 91
+    Left = 8
+    Top = 60
+    Width = 73
     Height = 25
     Caption = 'Default'
     TabOrder = 2

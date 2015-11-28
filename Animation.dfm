@@ -1301,6 +1301,7 @@ object AnimationForm: TAnimationForm
     TabOrder = 2
     Text = '30'
     OnChange = Edit1Change
+    OnExit = Edit1Exit
   end
   object OpenDialog4: TOpenDialog
     DefaultExt = 'm3a'

@@ -78,7 +78,7 @@ var
 implementation
 
 uses Mand, DivUtils, LightAdjust, Math, Calc, ImageProcess, MMSystem, CalcSR,
-     CustomFormulas, DOF, Paint, CalcHardShadow, Interpolation, Maps;
+     CustomFormulas, DOF, Paint, CalcHardShadow, Interpolation, Maps, MapSequences;
 
 {$R *.dfm}
 
@@ -171,6 +171,7 @@ begin
         DrawFrame(IFrendered);
       end;
       Inc(IFrendered);
+      TMapSequenceFrameNumberHolder.SetCurrFrameNumber(IFrendered * iFStep + 1);
       ProgressBar1.Position := IFrendered;
       if iActKeyFrame < AnimationForm.HeaderCount then
       begin
@@ -403,6 +404,7 @@ begin
     PreviewStartFrame := AnimationForm.SubFramesToKF(iActKeyFrame) + 1;
     iActSubFrame  := 0;
     IFrendered    := 0;
+    TMapSequenceFrameNumberHolder.SetCurrFrameNumber(IFrendered * iFStep + 1);
     if iFrameCount > 1 then
     begin
       CheckBox3.Checked := True;
