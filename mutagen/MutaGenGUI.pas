@@ -216,20 +216,20 @@ begin
         FP_1_2_2_2 := TMutaGenPanel.Create(FP_1_2_2, miP_1_2_2_2, 2.0, 1.5, PnlXSize, PnlYSize, '2', Panel_1_2_2_2, Image_1_2_2_2);
         Result.AddPanel(FP_1_2_2_2);
 
-   Result.AddPanelLink(0.5 - DLine, 1.0, FP_1, 0.5, 0.0, FP_1_1);
-     Result.AddPanelLink(0.0, 0.5 - DLine, FP_1_1, 1.0, 0.5, FP_1_1_1);
-       Result.AddPanelLink(0.5 - DLine, 0.0, FP_1_1_1, 0.5, 1.0, FP_1_1_1_1);
-       Result.AddPanelLink(0.5 + Dline, 0.0, FP_1_1_1, 0.5, 1.0, FP_1_1_1_2);
-     Result.AddPanelLink(0.0, 0.5 + DLine, FP_1_1, 1.0, 0.5, FP_1_1_2);
-       Result.AddPanelLink(0.5 - DLine, 1.0, FP_1_1_2, 0.5, 0.0, FP_1_1_2_1);
-       Result.AddPanelLink(0.5 + Dline, 1.0, FP_1_1_2, 0.5, 0.0, FP_1_1_2_2);
-   Result.AddPanelLink(0.5 + DLine, 1.0, FP_1, 0.5, 0.0, FP_1_2);
-     Result.AddPanelLink(1.0, 0.5 - DLine, FP_1_2, 0.0, 0.5, FP_1_2_1);
-       Result.AddPanelLink(0.5 - DLine, 0.0, FP_1_2_1, 0.5, 1.0, FP_1_2_1_1);
-       Result.AddPanelLink(0.5 + Dline, 0.0, FP_1_2_1, 0.5, 1.0, FP_1_2_1_2);
-     Result.AddPanelLink(1.0, 0.5 + DLine, FP_1_2, 0.0, 0.5, FP_1_2_2);
-       Result.AddPanelLink(0.5 - DLine, 1.0, FP_1_2_2, 0.5, 0.0, FP_1_2_2_1);
-       Result.AddPanelLink(0.5 + Dline, 1.0, FP_1_2_2, 0.5, 0.0, FP_1_2_2_2);
+   Result.AddPanelLink(0.5 - DLine, 1.0, poTop, FP_1, 0.5, 0.0, poBottom, FP_1_1);
+     Result.AddPanelLink(0.0, 0.5 - DLine, poLeft, FP_1_1, 1.0, 0.5, poRight, FP_1_1_1);
+       Result.AddPanelLink(0.5 - DLine, 0.0, poBottom, FP_1_1_1, 0.5, 1.0, poTop, FP_1_1_1_1);
+       Result.AddPanelLink(0.5 + Dline, 0.0, poBottom, FP_1_1_1, 0.5, 1.0, poTop, FP_1_1_1_2);
+     Result.AddPanelLink(0.0, 0.5 + DLine, poLeft, FP_1_1, 1.0, 0.5, poRight, FP_1_1_2);
+       Result.AddPanelLink(0.5 - DLine, 1.0, poTop, FP_1_1_2, 0.5, 0.0, poBottom, FP_1_1_2_1);
+       Result.AddPanelLink(0.5 + Dline, 1.0, poTop, FP_1_1_2, 0.5, 0.0, poBottom, FP_1_1_2_2);
+   Result.AddPanelLink(0.5 + DLine, 1.0, poTop, FP_1, 0.5, 0.0, poBottom, FP_1_2);
+     Result.AddPanelLink(1.0, 0.5 - DLine, poRight, FP_1_2, 0.0, 0.5, poLeft, FP_1_2_1);
+       Result.AddPanelLink(0.5 - DLine, 0.0, poBottom, FP_1_2_1, 0.5, 1.0, poTop, FP_1_2_1_1);
+       Result.AddPanelLink(0.5 + Dline, 0.0, poBottom, FP_1_2_1, 0.5, 1.0, poTop, FP_1_2_1_2);
+     Result.AddPanelLink(1.0, 0.5 + DLine, poRight, FP_1_2, 0.0, 0.5, poLeft, FP_1_2_2);
+       Result.AddPanelLink(0.5 - DLine, 1.0, poTop, FP_1_2_2, 0.5, 0.0, poBottom, FP_1_2_2_1);
+       Result.AddPanelLink(0.5 + Dline, 1.0, poTop, FP_1_2_2, 0.5, 0.0, poBottom, FP_1_2_2_2);
  end;
 
 procedure TMutaGenFrm.FormPaint(Sender: TObject);

@@ -36,13 +36,18 @@ type
     property MutationIndex: TMutationIndex read FMutationIndex;
   end;
 
+  TPanelOrientation = (poLeft, poRight, poTop, poBottom);
+
   TPanelPosition=class
   private
     FPanel: TMutaGenPanel;
     FXPos, FYPos: Double;
+    FOrientation: TPanelOrientation;
   public
-    constructor Create(const Panel: TMutaGenPanel;const XPos, YPos: Double);
+    constructor Create(const Panel: TMutaGenPanel;const XPos, YPos: Double; const Orientation: TPanelOrientation);
+    property Orientation: TPanelOrientation read FOrientation;
   end;
+
 
   TPanelLink=class
   private
@@ -74,7 +79,7 @@ type
     constructor Create(const RootPanel: TPanel; const XSize, YSize: Double);
     destructor Destroy;override;
     procedure AddPanel(const Panel: TMutaGenPanel);
-    procedure AddPanelLink(const FromX, FromY: Double; const FromPanel: TMutaGenPanel; const ToX, ToY: Double; const ToPanel: TMutaGenPanel);
+    procedure AddPanelLink(const FromX, FromY: Double; const FromOrientation: TPanelOrientation; const FromPanel: TMutaGenPanel; const ToX, ToY: Double; const ToOrientation: TPanelOrientation;const ToPanel: TMutaGenPanel);
     function GetPanel(const Index: Integer): TMutaGenPanel;overload;
     function GetPanel(const Path: String): TMutaGenPanel;overload;
     procedure DoLayout;
@@ -368,6 +373,8 @@ var
   Panel: TMutaGenPanel;
   Link: TPanelLink;
   X1, Y1, X2, Y2: Integer;
+  XI1, YI1, XI2, YI2: Integer;
+  O1, O2: TPanelOrientation;
   PanelPath: String;
 begin
   RootWidth := FRootPanel.Width - 2 * OuterBorder;
@@ -395,15 +402,37 @@ begin
     Link := TPanelLink(FPanelLinkList[I]);
     X1 := Link.FFromPanel.FPanel.FPanel.Left + Round( Link.FFromPanel.FXPos * Link.FFromPanel.FPanel.FPanel.Width);
     Y1 := Link.FFromPanel.FPanel.FPanel.Top + Round( (1.0 - Link.FFromPanel.FYPos) * Link.FFromPanel.FPanel.FPanel.Height);
+    O1 := Link.FFromPanel.Orientation;
     X2 := Link.FToPanel.FPanel.FPanel.Left + Round( Link.FToPanel.FXPos * Link.FToPanel.FPanel.FPanel.Width);
     Y2 := Link.FToPanel.FPanel.FPanel.Top + Round( (1.0 - Link.FToPanel.FYPos) * Link.FToPanel.FPanel.FPanel.Height);
-    FLinkLinesList.Add(TPanelLinkLine.Create(X1, Y1, X2, Y2));
+    O2 := Link.FToPanel.Orientation;
+
+    if ((O1 = poLeft) and (O2=poRight)) or ((O1 = poRight) and (O2=poLeft)) then begin
+      XI1 := Round(X1 + (X2 - X1) * 0.5);
+      YI1 := Y1;
+      XI2 := XI1;
+      YI2 := Y2;
+      FLinkLinesList.Add(TPanelLinkLine.Create(X1, Y1, XI1, YI1));
+      FLinkLinesList.Add(TPanelLinkLine.Create(XI1, YI1, XI2, YI2));
+      FLinkLinesList.Add(TPanelLinkLine.Create(XI2, YI2, X2, Y2));
+    end
+    else if ((O1 = poTop) and (O2=poBottom)) or ((O1 = poBottom) and (O2=poTop)) then begin
+      XI1 := X1;
+      YI1 := Round(Y1 + (Y2 - Y1) * 0.5);
+      XI2 := X2;
+      YI2 := YI1;
+      FLinkLinesList.Add(TPanelLinkLine.Create(X1, Y1, XI1, YI1));
+      FLinkLinesList.Add(TPanelLinkLine.Create(XI1, YI1, XI2, YI2));
+      FLinkLinesList.Add(TPanelLinkLine.Create(XI2, YI2, X2, Y2));
+    end
+    else
+      FLinkLinesList.Add(TPanelLinkLine.Create(X1, Y1, X2, Y2));
   end;
 end;
 
-procedure TMutaGenPanelList.AddPanelLink(const FromX, FromY: Double; const FromPanel: TMutaGenPanel; const ToX, ToY: Double; const ToPanel: TMutaGenPanel);
+procedure TMutaGenPanelList.AddPanelLink(const FromX, FromY: Double; const FromOrientation: TPanelOrientation; const FromPanel: TMutaGenPanel; const ToX, ToY: Double; const ToOrientation: TPanelOrientation;const ToPanel: TMutaGenPanel);
 begin
-  FPanelLinkList.Add(TPanelLink.Create(TPanelPosition.Create(FromPanel, FromX, FromY), TPanelPosition.Create(ToPanel, ToX, ToY)));
+  FPanelLinkList.Add(TPanelLink.Create(TPanelPosition.Create(FromPanel, FromX, FromY, FromOrientation), TPanelPosition.Create(ToPanel, ToX, ToY, ToOrientation)));
 end;
 
 function TMutaGenPanelList.GetCount: Integer;
@@ -411,7 +440,7 @@ begin
   Result := FPanels.Count;
 end;
 { ----------------------------- TPanelPosition ------------------------------- }
-constructor TPanelPosition.Create(const Panel: TMutaGenPanel;const XPos, YPos: Double);
+constructor TPanelPosition.Create(const Panel: TMutaGenPanel;const XPos, YPos: Double; const Orientation: TPanelOrientation);
 begin
   inherited Create;
   FPanel := Panel;
@@ -427,6 +456,8 @@ begin
     FYPos := 0.0
   else if (FYPos > 1.0) then
     FYPos := 1.0;
+
+  FOrientation := Orientation;
 end;
 { -------------------------------- TPanelLink -------------------------------- }
 constructor TPanelLink.Create(FromPanel, ToPanel: TPanelPosition);
@@ -456,11 +487,11 @@ procedure TPanelLinkLine.Draw(Canvas: TCanvas);
 const
   Color = clRed;
 begin
-   Canvas.Pen.Style := psSolid;
-   Canvas.Pen.Color := Color;
-   Canvas.Pen.Width := 1;
-   Canvas.MoveTo(FX1, FY1);
-   Canvas.LineTo(FX2, FY2);
+  Canvas.Pen.Style := psSolid;
+  Canvas.Pen.Color := Color;
+  Canvas.Pen.Width := 1;
+  Canvas.MoveTo(FX1, FY1);
+  Canvas.LineTo(FX2, FY2);
 end;
 { -------------------------------- TRandGen ---------------------------------- }
 function TRandGen.NextRandomDouble: Double;
@@ -641,9 +672,9 @@ begin
   ModifyIterationCountStrength := 1.0;
 
   FProbing := True;
-  FProbingWidth := 40;
-  FProbingHeight := 30;
-  FProbingMaxCount := 16;
+  FProbingWidth := 32;
+  FProbingHeight := 24;
+  FProbingMaxCount := 12;
   FProbingMinCoverage := 0.36;
   FProbingMinDifference := 0.16;
 end;
