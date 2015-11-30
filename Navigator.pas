@@ -169,6 +169,10 @@ type
     Label55: TLabel;
     TrackBarEx14: TTrackBarEx;
     SpeedButton33: TSpeedButton;
+    SizeGroup: TGroupBox;
+    DecreaseNaviSizeBtn: TSpeedButton;
+    IncreaseNaviSizeBtn: TSpeedButton;
+    NaviSizeCmb: TComboBox;
     procedure SpeedButton1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -236,6 +240,9 @@ type
     procedure Label39MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure SpeedButton33Click(Sender: TObject);
+    procedure NaviSizeCmbChange(Sender: TObject);
+    procedure DecreaseNaviSizeBtnClick(Sender: TObject);
+    procedure IncreaseNaviSizeBtnClick(Sender: TObject);
   private
     { Private-Deklarationen }
     FirstStart: LongBool;
@@ -289,6 +296,7 @@ type
     procedure PaintCoord;
     procedure SetHeaderSize;
     procedure CheckFormulaImageVis;
+    procedure EnableButtons;
   protected
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
     procedure WmThreadStat(var Msg: TMessage); message WM_ThreadStat;
@@ -635,13 +643,28 @@ begin
 end;
 
 procedure TFNavigator.SetHeaderSize;
-var hmax, p2h: Integer;
+var
+  hmax, p2h: Integer;
+  NaviScale: Double;
+  s: String;
 begin
+    if NaviSizeCmb.ItemIndex >= 0 then begin
+      s := NaviSizeCmb.Items[NaviSizeCmb.ItemIndex];
+      NaviScale := StrToFloat(Copy(s, 1, Length(s) - 1)) / 100;
+      if NaviScale < 0.2 then
+        NaviScale := 0.2
+      else if NaviScale > 2.0 then
+        NaviScale := 2.0;
+    end
+    else
+      NaviScale := 1.0;
+
+    if Panel2.Visible then p2h := Panel2.Height else p2h := 0;
+    hmax := Screen.WorkAreaHeight - 20 - FNavigator.Height + ClientHeight - Panel1.Height - p2h;
+    if hmax < 200 then hmax := 200;
+
     with NaviHeader do
     begin
-      if Panel2.Visible then p2h := Panel2.Height else p2h := 0;
-      hmax := Screen.WorkAreaHeight - 20 - FNavigator.Height + ClientHeight - Panel1.Height - p2h;
-      if hmax < 200 then hmax := 200;
       if (OriginalSize.Y * 640) div OriginalSize.X > hmax then
       begin
         Height := (hmax + 7) and $FF8;
@@ -654,6 +677,8 @@ begin
         Height := Min(hmax, (OriginalSize.Y * 640) div OriginalSize.X + 4) and $FF8;
         if Height < 8 then Height := 8;
       end;
+      Width := Round(Width * NaviScale);
+      Height := Round(Height * NaviScale);
  //     ClientHeight := Height + Panel1.Height + p2h;
     end;
 end;
@@ -691,13 +716,17 @@ begin
 end;
 
 procedure TFNavigator.SetWindowSize(Panel2visible: LongBool); //todo: modify also maxwidth if to high
-var p2h, i: Integer;
+var p2h, i, j: Integer;
 begin
     Panel2.Visible := Panel2visible;
     SetHeaderSize;
     if Panel2visible then p2h := Panel2.Height else p2h := 0;
     if Screen.WorkAreaHeight > 810 then i := 660 else i := 580;
     ClientHeight := Max(i, NaviHeader.Height + Panel1.Height + p2h);
+    j := 646;
+    if Panel3.Visible then
+      Inc(j, Panel3.Width);
+    ClientWidth := Max(j, NaviHeader.Width + Panel5.Width);
     Panel1.Top := ClientHeight - p2h - Panel1.Height;
     Panel2.Top := ClientHeight - p2h;
     if (Image1.Picture.Bitmap.Width <> NaviHeader.Width) or
@@ -705,8 +734,11 @@ begin
     begin
       if iActiveThreads > 0 then WaitForCalcToStop(2000);
       Image1.Picture.Bitmap.SetSize(NaviHeader.Width, NaviHeader.Height);
-      Image1.SetBounds((640 - NaviHeader.Width) div 2, (Panel1.Top - NaviHeader.Height) div 2,
-                       NaviHeader.Width, NaviHeader.Height);
+      if( NaviHeader.Width > 640) then
+        Image1.SetBounds(0,0, NaviHeader.Width, NaviHeader.Height)
+      else
+        Image1.SetBounds((640 - NaviHeader.Width) div 2, (Panel1.Top - NaviHeader.Height) div 2,
+                         NaviHeader.Width, NaviHeader.Height);
     end
     else Image1.Top := (Panel1.Top - NaviHeader.Height) div 2;
     Image6.Top := Image1.Top + NaviHeader.Height div 2 - 60;  //onclick disabled when visible!
@@ -1165,6 +1197,7 @@ begin
       DisableLightStoring;
     end;
     bUserChange := True;
+    EnableButtons;
 end;
 
 procedure TFNavigator.FormCreate(Sender: TObject);
@@ -2090,7 +2123,7 @@ end;
 procedure TFNavigator.AdjustPanel3positions;
 var i: Integer;
 begin
-    i := RadioGroup1.Height + 1;
+    i := RadioGroup1.Height + 1 + SizeGroup.Height;
     Button2.Top := i;
     Inc(i, Button2.Height);
     Panel4.Top := i;
@@ -2343,6 +2376,40 @@ begin    //formula nr
     end;
     SpeedButton26Click(Sender);
 end;
+
+procedure TFNavigator.NaviSizeCmbChange(Sender: TObject);
+var
+  Height: Integer;
+begin
+  EnableButtons;
+  Height := NaviHeader.Height;
+  SetWindowSize(Panel2.Visible);
+  if Height <> NaviHeader.Height then
+    NewCalc;
+end;
+
+procedure TFNavigator.EnableButtons;
+begin
+  DecreaseNaviSizeBtn.Enabled := NaviSizeCmb.ItemIndex > 0;
+  IncreaseNaviSizeBtn.Enabled := NaviSizeCmb.ItemIndex < NaviSizeCmb.Items.Count - 1;
+end;
+
+procedure TFNavigator.DecreaseNaviSizeBtnClick(Sender: TObject);
+begin
+  if NaviSizeCmb.ItemIndex > 0 then begin
+    NaviSizeCmb.ItemIndex := NaviSizeCmb.ItemIndex - 1;
+    NaviSizeCmbChange(Sender);
+  end;
+end;
+
+procedure TFNavigator.IncreaseNaviSizeBtnClick(Sender: TObject);
+begin
+  if NaviSizeCmb.ItemIndex < NaviSizeCmb.Items.Count - 1 then begin
+    NaviSizeCmb.ItemIndex := NaviSizeCmb.ItemIndex + 1;
+    NaviSizeCmbChange(Sender);
+  end;
+end;
+
 
 end.
 
