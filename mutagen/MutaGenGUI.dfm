@@ -46,7 +46,6 @@ object MutaGenFrm: TMutaGenFrm
         BevelOuter = bvNone
         BorderWidth = 4
         TabOrder = 0
-        ExplicitHeight = 143
         DesignSize = (
           229
           83)
@@ -98,9 +97,6 @@ object MutaGenFrm: TMutaGenFrm
       Caption = 'Mutate'
       TabOrder = 1
       PropagateEnable = True
-      ExplicitLeft = -80
-      ExplicitTop = 241
-      ExplicitWidth = 313
       object Panel8: TPanel
         Left = 2
         Top = 15
@@ -110,7 +106,6 @@ object MutaGenFrm: TMutaGenFrm
         BevelOuter = bvNone
         BorderWidth = 4
         TabOrder = 0
-        ExplicitWidth = 309
         object ProgressBar: TProgressBar
           Left = 4
           Top = 91
@@ -123,7 +118,6 @@ object MutaGenFrm: TMutaGenFrm
           SmoothReverse = True
           Step = 1
           TabOrder = 0
-          ExplicitWidth = 301
         end
         object MutateBtn: TButton
           Left = 4
@@ -134,7 +128,6 @@ object MutaGenFrm: TMutaGenFrm
           Caption = 'Mutate!'
           TabOrder = 1
           OnClick = MutateBtnClick
-          ExplicitWidth = 301
         end
       end
     end
@@ -147,10 +140,6 @@ object MutaGenFrm: TMutaGenFrm
       Caption = 'Options'
       TabOrder = 2
       PropagateEnable = True
-      ExplicitLeft = -80
-      ExplicitTop = 22
-      ExplicitWidth = 313
-      ExplicitHeight = 395
       object Panel7: TPanel
         Left = 2
         Top = 15
@@ -159,10 +148,7 @@ object MutaGenFrm: TMutaGenFrm
         Align = alClient
         BevelOuter = bvNone
         BorderWidth = 4
-        Enabled = False
         TabOrder = 0
-        ExplicitWidth = 309
-        ExplicitHeight = 378
         object Panel5: TPanel
           Left = 4
           Top = 372
@@ -171,8 +157,6 @@ object MutaGenFrm: TMutaGenFrm
           Align = alBottom
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitTop = 333
-          ExplicitWidth = 301
           DesignSize = (
             221
             41)
@@ -185,7 +169,6 @@ object MutaGenFrm: TMutaGenFrm
             Caption = 'Disable all'
             TabOrder = 0
             OnClick = DisableAllBtnClick
-            ExplicitLeft = 96
           end
         end
         object GridPanel2: TGridPanel
@@ -302,8 +285,6 @@ object MutaGenFrm: TMutaGenFrm
               Value = 10.000000000000000000
             end>
           TabOrder = 1
-          ExplicitWidth = 301
-          ExplicitHeight = 329
           DesignSize = (
             217
             364)
@@ -337,8 +318,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 129
-            ExplicitTop = 54
           end
           object Label2: TLabel
             Left = 88
@@ -382,8 +361,6 @@ object MutaGenFrm: TMutaGenFrm
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 1
-            ExplicitTop = 32
-            ExplicitWidth = 118
             DesignSize = (
               86
               52)
@@ -420,8 +397,6 @@ object MutaGenFrm: TMutaGenFrm
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 2
-            ExplicitTop = 97
-            ExplicitWidth = 118
             DesignSize = (
               86
               42)
@@ -456,8 +431,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 129
-            ExplicitTop = 119
           end
           object ModifyParamsStrengthTBar: TTrackBarEx
             Tag = 10
@@ -473,8 +446,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 218
-            ExplicitTop = 119
           end
           object Label9: TLabel
             Left = 182
@@ -495,8 +466,6 @@ object MutaGenFrm: TMutaGenFrm
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 5
-            ExplicitTop = 162
-            ExplicitWidth = 118
             DesignSize = (
               86
               41)
@@ -531,8 +500,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 129
-            ExplicitTop = 184
           end
           object ModifyJuliaModeStrengthTBar: TTrackBarEx
             Tag = 10
@@ -548,8 +515,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 218
-            ExplicitTop = 184
           end
           object Panel6: TPanel
             Left = 0
@@ -559,8 +524,6 @@ object MutaGenFrm: TMutaGenFrm
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 8
-            ExplicitTop = 227
-            ExplicitWidth = 118
             DesignSize = (
               86
               41)
@@ -597,8 +560,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 129
-            ExplicitTop = 249
           end
           object ModifyIterationCountStrengthTBar: TTrackBarEx
             Tag = 10
@@ -614,8 +575,6 @@ object MutaGenFrm: TMutaGenFrm
             ThumbLength = 18
             TickMarks = tmBoth
             TickStyle = tsNone
-            ExplicitLeft = 218
-            ExplicitTop = 249
           end
         end
       end
@@ -630,8 +589,6 @@ object MutaGenFrm: TMutaGenFrm
     BevelOuter = bvNone
     TabOrder = 1
     OnResize = MainPnlResize
-    ExplicitLeft = -6
-    ExplicitTop = -8
     object Panel_1: TPanel
       Left = 247
       Top = 189
@@ -1201,9 +1158,5 @@ object MutaGenFrm: TMutaGenFrm
     Interval = 50
     Left = 592
     Top = 296
-  end
-  object JvClipboardMonitor1: TJvClipboardMonitor
-    Left = 720
-    Top = 264
   end
 end

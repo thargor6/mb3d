@@ -54,7 +54,6 @@ type
     SendtoMainItm: TMenuItem;
     ToClipboardItm: TMenuItem;
     PreviewRenderTimer: TTimer;
-    JvClipboardMonitor1: TJvClipboardMonitor;
     GenerationsGrp: TJvGroupBox;
     Panel9: TPanel;
     GenerationBtn: TUpDown;

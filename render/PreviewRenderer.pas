@@ -87,6 +87,9 @@ begin
     PHeader := FMB3DParamsFacade.Core.PHeader;
     PHeader^.bCalc3D := 1;
     PHeader^.bVolLightNr := 2 shl 4;
+    PHeader^.mZstepDiv := 0.5;
+    PHeader^.sRaystepLimiter := 1.0;
+
     if FBlankBackground then begin
       PHeader^.Light.BGbmp[0] := 0;
       PHeader^.Light.DepthCol := CardinalToRGB(0);
