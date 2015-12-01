@@ -56,8 +56,8 @@ procedure SetDialogDirectory(SaveDialog: TSaveDialog; FDir: String);  overload;
 procedure SetDialogDirectory(OpenDialog: TOpenDialog; FDir: String);  overload;
 procedure SetDialogDirectory(OpenPicDialog: TOpenPictureDialog; FDir: String);  overload;
 
-var IniVal: array[0..35] of String = ('81','5','20','5','30','30','60','50','10', '3','0','0:0','','0','1','1','0','','',
-      'No','No','Auto','','No','65 100','779 671','844 100','844 100','844 100','-1','No','Yes','','','0','Glossy' (*'Windows'*));
+var IniVal: array[0..36] of String = ('81','5','20','5','30','30','60','50','10', '3','0','0:0','','0','1','1','0','','',
+      'No','No','Auto','','No','65 100','779 671','844 100','844 100','844 100','-1','No','Yes','','','0','Glossy', '100%' (*'Windows'*));
     IniDirs: array[0..11] of String = ('','','','','','','','','','','',''); //M3Idir, M3Pdir, BMPdir, FormulaDir, M3Adir, AniOut, BGpic, Lightparas, BigRenders, LightMaps, voxel, M3C
     IniHigherVersion: array of String;
     IniFileDate: TDateTime;
@@ -67,14 +67,14 @@ var IniVal: array[0..35] of String = ('81','5','20','5','30','30','60','50','10'
     LastHisParSaveTime: TDateTime;
     LHPSLight: TLightingParas9;
 const
-    IniMax: Integer = 35;
-    IniItem: array[0..35] of String = ('StickOption','MandRotDeg','NavSlideStep',
+    IniMax: Integer = 36;
+    IniItem: array[0..36] of String = ('StickOption','MandRotDeg','NavSlideStep',
       'NavLookAngle','NavFarPlane','NavFOVy','NavMaxIts','AniFrameCount','AniPrevFPS',  //NavFarPlane not used anymore
       'AniSmoothPar','NaviAZERTY','UserAspect','M3LFolder','ImageSharp','NavFkey',
       'ScaleDEstop','SaveImagePNG','BigRendersFolder','LightMapsFolder','NavHiQ',
       'NavDoubleClickMode','ThreadCount','VoxelFolder','SavePNGtextPars','m3dPos',
       'm3dSize','FormulaPos','LightPos','PostpPos','ThreadPriority','DisableTBoost',
-      'SaveImgInM3I','M3CFolder','Author','NaviPanelShow','VisualTheme');
+      'SaveImgInM3I','M3CFolder','Author','NaviPanelShow','VisualTheme','NaviSize');
     AccPresetFileNames: array[0..3] of String = ('preset_preview.txt',
       'preset_video.txt', 'preset_mid.txt', 'preset_high.txt');
     AccPresetItemNames: array[0..7] of String = ('SmoothNormals', 'DEstop',

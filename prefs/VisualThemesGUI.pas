@@ -11,11 +11,13 @@ type
     SaveAndExitBtn: TButton;
     StylesCmb: TComboBox;
     Label1: TLabel;
-    DefaultBtn: TButton;
+    DefaultThemeBtn: TButton;
+    ThemesOffBtn: TButton;
     procedure SaveAndExitBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
-    procedure DefaultBtnClick(Sender: TObject);
+    procedure DefaultThemeBtnClick(Sender: TObject);
     procedure StylesCmbChange(Sender: TObject);
+    procedure ThemesOffBtnClick(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -44,9 +46,15 @@ begin
   TStyleManager.TrySetStyle(StylesCmb.Items[StylesCmb.ItemIndex]);
 end;
 
-procedure TVisualThemesFrm.DefaultBtnClick(Sender: TObject);
+procedure TVisualThemesFrm.ThemesOffBtnClick(Sender: TObject);
 begin
   StylesCmb.ItemIndex := StylesCmb.Items.IndexOf('Windows');
+  StylesCmbChange(Sender);
+end;
+
+procedure TVisualThemesFrm.DefaultThemeBtnClick(Sender: TObject);
+begin
+  StylesCmb.ItemIndex := StylesCmb.Items.IndexOf('Glossy');
   StylesCmbChange(Sender);
 end;
 

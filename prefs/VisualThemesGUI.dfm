@@ -3,8 +3,8 @@ object VisualThemesFrm: TVisualThemesFrm
   Top = 170
   BorderStyle = bsToolWindow
   Caption = 'Setting the Visual Theme'
-  ClientHeight = 93
-  ClientWidth = 322
+  ClientHeight = 117
+  ClientWidth = 390
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,38 +18,54 @@ object VisualThemesFrm: TVisualThemesFrm
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 8
+    Left = 72
     Top = 19
-    Width = 33
+    Width = 73
     Height = 13
-    Caption = 'Theme'
+    AutoSize = False
+    Caption = 'Chose Theme:'
   end
   object SaveAndExitBtn: TButton
-    Left = 118
-    Top = 60
-    Width = 195
+    Left = 151
+    Top = 84
+    Width = 231
     Height = 25
     Caption = 'Save + exit'
     TabOrder = 0
     OnClick = SaveAndExitBtnClick
   end
   object StylesCmb: TComboBox
-    Left = 64
+    Left = 151
     Top = 16
-    Width = 249
+    Width = 231
     Height = 21
     Style = csDropDownList
     DropDownCount = 32
     TabOrder = 1
     OnChange = StylesCmbChange
   end
-  object DefaultBtn: TButton
+  object DefaultThemeBtn: TButton
     Left = 8
-    Top = 60
-    Width = 73
+    Top = 84
+    Width = 137
     Height = 25
-    Caption = 'Default'
+    Hint = 'Switch back to the default theme'
+    Caption = 'Default Theme'
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 2
-    OnClick = DefaultBtnClick
+    OnClick = DefaultThemeBtnClick
+  end
+  object ThemesOffBtn: TButton
+    Left = 8
+    Top = 53
+    Width = 137
+    Height = 25
+    Hint = 'Use the default visual settings without a theme'
+    Caption = 'Disable Themes'
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 3
+    OnClick = ThemesOffBtnClick
   end
 end

@@ -1221,6 +1221,7 @@ begin
     tmpBMPc.SetSize(240, 240);
     Panel1.DoubleBuffered := True;
     FNaviFormCreated := True;
+    NaviSizeCmb.ItemIndex := NaviSizeCmb.Items.IndexOf(IniVal[36]);
 end;
 
 procedure TFNavigator.SpeedButton11Click(Sender: TObject); //insert main paras
@@ -2381,6 +2382,8 @@ procedure TFNavigator.NaviSizeCmbChange(Sender: TObject);
 var
   Height: Integer;
 begin
+  if NaviSizeCmb.ItemIndex >= 0 then
+    IniVal[36] := NaviSizeCmb.Items[NaviSizeCmb.ItemIndex];
   EnableButtons;
   Height := NaviHeader.Height;
   SetWindowSize(Panel2.Visible);
