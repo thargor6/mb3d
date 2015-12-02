@@ -104,6 +104,10 @@ type
     Edit11: TEdit;
     Edit12: TEdit;
     Label1: TLabel;
+    PositionBtn: TButton;
+    PositionPnl: TPanel;
+    RotationBtn: TButton;
+    RotationPnl: TPanel;
     Memo1: TMemo;
     SpeedButton19: TSpeedButton;
     SpeedButton20: TSpeedButton;
@@ -210,33 +214,6 @@ type
     CheckBox16: TCheckBox;
     Label49: TLabel;
     Label50: TLabel;
-    CategoryPanelGroup1: TCategoryPanelGroup;
-    CategoryPanel1: TCategoryPanel;
-    CategoryPanel2: TCategoryPanel;
-    Label9: TLabel;
-    Label10: TLabel;
-    SpeedButton32: TSpeedButton;
-    SpeedButton33: TSpeedButton;
-    SpeedButton34: TSpeedButton;
-    Edit1: TEdit;
-    Edit3: TEdit;
-    Edit9: TEdit;
-    Edit10: TEdit;
-    Edit17: TEdit;
-    SpeedButton30: TSpeedButton;
-    SpeedButton31: TSpeedButton;
-    Label5: TLabel;
-    Edit5: TEdit;
-    Label53: TLabel;
-    Edit27: TEdit;
-    Label54: TLabel;
-    Edit31: TEdit;
-    Edit32: TEdit;
-    Label55: TLabel;
-    Label56: TLabel;
-    Button7: TButton;
-    Label57: TLabel;
-    ButtonR0: TButton;
     Panel6: TPanel;
     SpeedButton3: TSpeedButton;
     SpeedButton5: TSpeedButton;
@@ -269,6 +246,33 @@ type
     MutaGenBtn: TSpeedButton;
     MapSequencesBtn: TSpeedButton;
     VisualThemesBtn: TSpeedButton;
+    FrameEdit: TEdit;
+    Label46: TLabel;
+    UpDown6: TUpDown;
+    Label9: TLabel;
+    Edit9: TEdit;
+    Label10: TLabel;
+    Edit10: TEdit;
+    SpeedButton32: TSpeedButton;
+    Edit17: TEdit;
+    SpeedButton33: TSpeedButton;
+    Edit1: TEdit;
+    SpeedButton34: TSpeedButton;
+    Edit3: TEdit;
+    SpeedButton30: TSpeedButton;
+    SpeedButton31: TSpeedButton;
+    Edit5: TEdit;
+    Label5: TLabel;
+    Button7: TButton;
+    ButtonR0: TButton;
+    Edit27: TEdit;
+    Edit31: TEdit;
+    Edit32: TEdit;
+    Label53: TLabel;
+    Label54: TLabel;
+    Label55: TLabel;
+    Label56: TLabel;
+    Label57: TLabel;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -363,10 +367,7 @@ type
     procedure SpinButton2UpClick(Sender: TObject);
     procedure UpDown2Click(Sender: TObject; Button: TUDBtnType);
     procedure UpDown4Click(Sender: TObject; Button: TUDBtnType);
-    procedure CategoryPanel1Expand(Sender: TObject);
-    procedure CategoryPanel2Expand(Sender: TObject);
     procedure Button7Click(Sender: TObject);
-    procedure CategoryPanel2Collapse(Sender: TObject);
     procedure ButtonR0Click(Sender: TObject);
     procedure Edit33Change(Sender: TObject);
     procedure Edit34Change(Sender: TObject);
@@ -385,6 +386,9 @@ type
     procedure UpDown5Click(Sender: TObject; Button: TUDBtnType);
     procedure MutaGenBtnClick(Sender: TObject);
     procedure VisualThemesBtnClick(Sender: TObject);
+    procedure MapSequencesBtnClick(Sender: TObject);
+    procedure PositionBtnClick(Sender: TObject);
+    procedure RotationBtnClick(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
   //    const Rect: TRect; Active: Boolean);
@@ -527,8 +531,8 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      HeaderTrafos, Calc, IniDirsForm, FormulaGUI, Navigator, PostProcessForm,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
-     uMapCalcWindow, FormulaCompiler, MutaGenGUI, VisualThemesGUI,
-     Vcl.Themes;
+     uMapCalcWindow, FormulaCompiler, MutaGenGUI, VisualThemesGUI, Vcl.Themes,
+     MapSequencesGUI;
 
 {$R *.dfm}
 
@@ -663,6 +667,12 @@ procedure TMand3DForm.ParasChanged;
 begin
     Image1.Picture.Bitmap.Canvas.TextOut(8, 16, 'Press ''Calculate 3D'' to render');
     bImageText := True;
+end;
+
+procedure TMand3DForm.PositionBtnClick(Sender: TObject);
+begin
+  PositionPnl.Top := PositionBtn.Top+PositionBtn.Height;
+  PositionPnl.Visible := not PositionPnl.Visible;
 end;
 
 procedure TriggerRepaint;
@@ -1436,6 +1446,11 @@ begin
     end;
 end;
 
+procedure TMand3DForm.MapSequencesBtnClick(Sender: TObject);
+begin
+  MapSequencesFrm.Visible := True;
+end;
+
 function TMand3DForm.SizeOK(Verbose: LongBool): LongBool;
 var sp: TPoint;
 begin
@@ -1899,25 +1914,6 @@ begin
       Label40.Caption := IntToStr(iMa);
       Label52.Caption := IntToTimeStr(iCalcTime);
     end;
-end;
-
-procedure TMand3DForm.CategoryPanel1Expand(Sender: TObject);
-begin
-    CategoryPanel2.Collapse;
-    CategoryPanel1.Height := Edit5.Top + Edit5.Height + 4 + CategoryPanelGroup1.HeaderHeight;
-    CategoryPanelGroup1.Height := CategoryPanel1.Height + CategoryPanel2.Height;
-end;
-
-procedure TMand3DForm.CategoryPanel2Collapse(Sender: TObject);
-begin
-    CategoryPanelGroup1.Height := CategoryPanel1.Height + CategoryPanel2.Height;
-end;
-
-procedure TMand3DForm.CategoryPanel2Expand(Sender: TObject);
-begin
-    CategoryPanel1.Collapse;
-    CategoryPanel2.Height := Label57.Top + Label57.Height + 4 + CategoryPanelGroup1.HeaderHeight;
-    CategoryPanelGroup1.Height := CategoryPanel1.Height + CategoryPanel2.Height;
 end;
 
 procedure TMand3DForm.WaitForPaintStop(maxSeconds: Integer);
@@ -3270,6 +3266,12 @@ begin
       BuildSMatrix4(x, y, z, Smatrix4);
       Rotate4Dex(@v3b, @vec, @Smatrix4);
     end;
+end;
+
+procedure TMand3DForm.RotationBtnClick(Sender: TObject);
+begin
+  RotationPnl.Top := RotationBtn.Top+RotationBtn.Height;
+  RotationPnl.Visible := not RotationPnl.Visible;
 end;
 
 procedure TMand3DForm.Button13Click(Sender: TObject);  //insert julia values

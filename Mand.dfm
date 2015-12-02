@@ -35,9 +35,376 @@ object Mand3DForm: TMand3DForm
     ParentShowHint = False
     ShowHint = False
     TabOrder = 0
+    object PositionBtn: TButton
+      Left = 1
+      Top = 1
+      Width = 151
+      Height = 21
+      Hint = 'Click to hide/show'
+      Align = alTop
+      Caption = 'Position'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 0
+      OnClick = PositionBtnClick
+    end
+    object PositionPnl: TPanel
+      Left = 1
+      Top = 22
+      Width = 151
+      Height = 150
+      Align = alTop
+      BevelOuter = bvNone
+      UseDockManager = False
+      TabOrder = 1
+      Visible = False
+      object Label9: TLabel
+        Left = 5
+        Top = 4
+        Width = 29
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'X mid:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Label10: TLabel
+        Left = 6
+        Top = 26
+        Width = 29
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'Y mid:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+      end
+      object SpeedButton32: TSpeedButton
+        Tag = 2
+        Left = -1
+        Top = 45
+        Width = 40
+        Height = 19
+        Hint = 'Click to render the 2d plane at the midpoint.'
+        Caption = 'Z mid'
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = Button1Click
+      end
+      object SpeedButton33: TSpeedButton
+        Tag = 1
+        Left = -1
+        Top = 67
+        Width = 40
+        Height = 19
+        Hint = 'Click to render the 2d startplane.'
+        Caption = 'Z start'
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = Button1Click
+      end
+      object SpeedButton34: TSpeedButton
+        Tag = 3
+        Left = -1
+        Top = 89
+        Width = 40
+        Height = 18
+        Hint = 'Click to render the Z endplane.'
+        Caption = 'Z end'
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = Button1Click
+      end
+      object SpeedButton30: TSpeedButton
+        Left = 40
+        Top = 109
+        Width = 70
+        Height = 19
+        Hint = 
+          'Click on the object in the image to be centered.'#13#10'The camera dir' +
+          'ection will not be changed, use the rotation'#13#10'options to rotate ' +
+          'around the midpoint.'
+        Caption = 'get midpoint'
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = SpeedButton30Click
+      end
+      object SpeedButton31: TSpeedButton
+        Left = 112
+        Top = 109
+        Width = 35
+        Height = 19
+        Hint = 
+          'Reset the position and the rotation to the start values.'#13#10'On box' +
+          ' formulas it will be automatically zoomed out more.'
+        Caption = 'reset'
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = Button14Click
+      end
+      object Label5: TLabel
+        Left = 5
+        Top = 131
+        Width = 30
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'Zoom:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Edit9: TEdit
+        Left = 38
+        Top = 1
+        Width = 109
+        Height = 21
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Serif'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 0
+        Text = '0.0'
+      end
+      object Edit10: TEdit
+        Left = 38
+        Top = 23
+        Width = 109
+        Height = 21
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Serif'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 1
+        Text = '0.0'
+      end
+      object Edit17: TEdit
+        Left = 38
+        Top = 45
+        Width = 109
+        Height = 21
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Serif'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 2
+        Text = '0.0'
+      end
+      object Edit1: TEdit
+        Left = 38
+        Top = 67
+        Width = 109
+        Height = 21
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Serif'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 3
+        Text = '-2.0'
+      end
+      object Edit3: TEdit
+        Left = 38
+        Top = 89
+        Width = 109
+        Height = 21
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Serif'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 4
+        Text = '30.0'
+      end
+      object Edit5: TEdit
+        Left = 38
+        Top = 128
+        Width = 109
+        Height = 21
+        Hint = 
+          'Defines the size of the Zstart viewplane.'#13#10'It is set automatical' +
+          'ly when using the navigator,'#13#10'change only if objects are cutted ' +
+          'at the image'#13#10'borders.'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Serif'
+        Font.Style = []
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 5
+        Text = '1.0'
+      end
+    end
+    object RotationBtn: TButton
+      Left = 1
+      Top = 172
+      Width = 151
+      Height = 21
+      Hint = 'Click to hide/show'
+      Align = alTop
+      Caption = 'Rotation'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 2
+      OnClick = RotationBtnClick
+    end
+    object RotationPnl: TPanel
+      Left = 1
+      Top = 193
+      Width = 151
+      Height = 158
+      Align = alTop
+      BevelOuter = bvNone
+      UseDockManager = False
+      TabOrder = 3
+      Visible = False
+      object Label53: TLabel
+        Left = 10
+        Top = 3
+        Width = 61
+        Height = 13
+        Alignment = taCenter
+        Caption = 'Euler angles:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Label54: TLabel
+        Left = 9
+        Top = 24
+        Width = 10
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'X:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Label55: TLabel
+        Left = 9
+        Top = 48
+        Width = 10
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'Y:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Label56: TLabel
+        Left = 9
+        Top = 72
+        Width = 10
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'Z:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+      end
+      object Label57: TLabel
+        Left = 3
+        Top = 116
+        Width = 139
+        Height = 26
+        Alignment = taCenter
+        Caption = 'Apply your changed values, because edits are only output'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+        WordWrap = True
+      end
+      object Button7: TButton
+        Left = 3
+        Top = 94
+        Width = 88
+        Height = 22
+        Hint = 'The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)'
+        Caption = 'Apply to image'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 0
+        OnClick = Button7Click
+      end
+      object ButtonR0: TButton
+        Left = 97
+        Top = 94
+        Width = 49
+        Height = 22
+        Caption = 'Reset 0'
+        TabOrder = 1
+        OnClick = ButtonR0Click
+      end
+      object Edit27: TEdit
+        Left = 25
+        Top = 21
+        Width = 120
+        Height = 21
+        TabOrder = 2
+        Text = '0.0'
+        OnChange = SpinEdit2Change
+      end
+      object Edit31: TEdit
+        Left = 25
+        Top = 45
+        Width = 120
+        Height = 21
+        Hint = 
+          'Case Y angle is at 90 or -90 degrees, euler angles can'#39't be calc' +
+          'ulated!'
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+        Text = '0.0'
+        OnChange = SpinEdit2Change
+      end
+      object Edit32: TEdit
+        Left = 25
+        Top = 69
+        Width = 120
+        Height = 21
+        TabOrder = 4
+        Text = '0.0'
+        OnChange = SpinEdit2Change
+      end
+    end
     object Memo1: TMemo
       Left = 1
-      Top = 411
+      Top = 710
       Width = 151
       Height = 80
       Hint = 'Shows messages'
@@ -55,11 +422,11 @@ object Mand3DForm: TMand3DForm
       ParentShowHint = False
       ReadOnly = True
       ShowHint = True
-      TabOrder = 2
+      TabOrder = 7
     end
     object PageControl1: TPageControl
       Left = 1
-      Top = 147
+      Top = 446
       Width = 151
       Height = 264
       ActivePage = TabSheet3
@@ -76,7 +443,7 @@ object Mand3DForm: TMand3DForm
       ParentBiDiMode = False
       ParentDoubleBuffered = False
       ParentFont = False
-      TabOrder = 0
+      TabOrder = 5
       Touch.ParentTabletOptions = False
       Touch.TabletOptions = []
       OnChange = PageControl1Change
@@ -84,10 +451,6 @@ object Mand3DForm: TMand3DForm
         Caption = 'Calculation'
         Highlighted = True
         ImageIndex = 1
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label16: TLabel
           Left = 4
           Top = 125
@@ -473,10 +836,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet5: TTabSheet
         Caption = 'Infos'
         ImageIndex = 4
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label29: TLabel
           Left = 9
           Top = 67
@@ -640,10 +999,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet8: TTabSheet
         Caption = 'Cutting'
         ImageIndex = 7
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label37: TLabel
           Left = 9
           Top = 66
@@ -783,10 +1138,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet9: TTabSheet
         Caption = 'Julia Off'
         ImageIndex = 8
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label43: TLabel
           Left = 9
           Top = 80
@@ -945,10 +1296,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet1: TTabSheet
         Caption = 'Camera'
         ImageIndex = 5
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label21: TLabel
           Left = 24
           Top = 10
@@ -1123,10 +1470,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet6: TTabSheet
         Caption = 'Stereo'
         ImageIndex = 7
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label28: TLabel
           Left = 25
           Top = 62
@@ -1286,7 +1629,7 @@ object Mand3DForm: TMand3DForm
       Height = 40
       Align = alBottom
       BevelOuter = bvNone
-      TabOrder = 1
+      TabOrder = 6
       object Image2: TImage
         Left = 127
         Top = 16
@@ -1378,364 +1721,9 @@ object Mand3DForm: TMand3DForm
         Height = 13
       end
     end
-    object CategoryPanelGroup1: TCategoryPanelGroup
-      Left = 1
-      Top = 1
-      Width = 151
-      Height = 51
-      VertScrollBar.Tracking = True
-      VertScrollBar.Visible = False
-      Align = alTop
-      HeaderFont.Charset = DEFAULT_CHARSET
-      HeaderFont.Color = clWindowText
-      HeaderFont.Height = -12
-      HeaderFont.Name = 'Tahoma'
-      HeaderFont.Style = []
-      HeaderHeight = 20
-      TabOrder = 3
-      object CategoryPanel2: TCategoryPanel
-        Top = 26
-        Height = 26
-        Caption = 'Rotation'
-        Collapsed = True
-        TabOrder = 0
-        OnCollapse = CategoryPanel2Collapse
-        OnExpand = CategoryPanel2Expand
-        ExpandedHeight = 181
-        object Label53: TLabel
-          Left = 10
-          Top = 3
-          Width = 61
-          Height = 13
-          Alignment = taCenter
-          Caption = 'Euler angles:'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Sans Serif'
-          Font.Style = []
-          ParentFont = False
-        end
-        object Label54: TLabel
-          Left = 9
-          Top = 24
-          Width = 10
-          Height = 13
-          Alignment = taRightJustify
-          Caption = 'X:'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Sans Serif'
-          Font.Style = []
-          ParentFont = False
-        end
-        object Label55: TLabel
-          Left = 9
-          Top = 48
-          Width = 10
-          Height = 13
-          Alignment = taRightJustify
-          Caption = 'Y:'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Sans Serif'
-          Font.Style = []
-          ParentFont = False
-        end
-        object Label56: TLabel
-          Left = 9
-          Top = 72
-          Width = 10
-          Height = 13
-          Alignment = taRightJustify
-          Caption = 'Z:'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Sans Serif'
-          Font.Style = []
-          ParentFont = False
-        end
-        object Label57: TLabel
-          Left = 2
-          Top = 119
-          Width = 134
-          Height = 39
-          Alignment = taCenter
-          Caption = 'Apply your changed values, because edits are only output'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Sans Serif'
-          Font.Style = []
-          ParentFont = False
-          WordWrap = True
-        end
-        object Edit27: TEdit
-          Left = 25
-          Top = 21
-          Width = 120
-          Height = 21
-          TabOrder = 0
-          Text = '0.0'
-          OnChange = SpinEdit2Change
-        end
-        object Edit31: TEdit
-          Left = 25
-          Top = 45
-          Width = 120
-          Height = 21
-          Hint = 
-            'Case Y angle is at 90 or -90 degrees, euler angles can'#39't be calc' +
-            'ulated!'
-          ParentShowHint = False
-          ShowHint = True
-          TabOrder = 1
-          Text = '0.0'
-          OnChange = SpinEdit2Change
-        end
-        object Edit32: TEdit
-          Left = 25
-          Top = 69
-          Width = 120
-          Height = 21
-          TabOrder = 2
-          Text = '0.0'
-          OnChange = SpinEdit2Change
-        end
-        object Button7: TButton
-          Left = 3
-          Top = 94
-          Width = 88
-          Height = 22
-          Hint = 'The rotation is performed around the Midpoint (Xmid, Ymid, Zmid)'
-          Caption = 'Apply to image'
-          ParentShowHint = False
-          ShowHint = True
-          TabOrder = 3
-          OnClick = Button7Click
-        end
-        object ButtonR0: TButton
-          Left = 97
-          Top = 94
-          Width = 49
-          Height = 22
-          Caption = 'Reset 0'
-          TabOrder = 4
-          OnClick = ButtonR0Click
-        end
-      end
-      object CategoryPanel1: TCategoryPanel
-        Top = 0
-        Height = 26
-        Caption = 'Position'
-        Collapsed = True
-        TabOrder = 1
-        OnCollapse = CategoryPanel2Collapse
-        OnExpand = CategoryPanel1Expand
-        ExpandedHeight = 201
-        object Label9: TLabel
-          Left = 5
-          Top = 4
-          Width = 29
-          Height = 13
-          Alignment = taRightJustify
-          Caption = 'X mid:'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Sans Serif'
-          Font.Style = []
-          ParentFont = False
-        end
-        object Label10: TLabel
-          Left = 6
-          Top = 26
-          Width = 29
-          Height = 13
-          Alignment = taRightJustify
-          Caption = 'Y mid:'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Sans Serif'
-          Font.Style = []
-          ParentFont = False
-        end
-        object SpeedButton32: TSpeedButton
-          Tag = 2
-          Left = -1
-          Top = 45
-          Width = 40
-          Height = 19
-          Hint = 'Click to render the 2d plane at the midpoint.'
-          Caption = 'Z mid'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = Button1Click
-        end
-        object SpeedButton33: TSpeedButton
-          Tag = 1
-          Left = -1
-          Top = 67
-          Width = 40
-          Height = 19
-          Hint = 'Click to render the 2d startplane.'
-          Caption = 'Z start'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = Button1Click
-        end
-        object SpeedButton34: TSpeedButton
-          Tag = 3
-          Left = -1
-          Top = 89
-          Width = 40
-          Height = 18
-          Hint = 'Click to render the Z endplane.'
-          Caption = 'Z end'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = Button1Click
-        end
-        object SpeedButton30: TSpeedButton
-          Left = 40
-          Top = 109
-          Width = 70
-          Height = 19
-          Hint = 
-            'Click on the object in the image to be centered.'#13#10'The camera dir' +
-            'ection will not be changed, use the rotation'#13#10'options to rotate ' +
-            'around the midpoint.'
-          Caption = 'get midpoint'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = SpeedButton30Click
-        end
-        object SpeedButton31: TSpeedButton
-          Left = 112
-          Top = 109
-          Width = 35
-          Height = 19
-          Hint = 
-            'Reset the position and the rotation to the start values.'#13#10'On box' +
-            ' formulas it will be automatically zoomed out more.'
-          Caption = 'reset'
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = Button14Click
-        end
-        object Label5: TLabel
-          Left = 5
-          Top = 131
-          Width = 30
-          Height = 13
-          Alignment = taRightJustify
-          Caption = 'Zoom:'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Sans Serif'
-          Font.Style = []
-          ParentFont = False
-        end
-        object Edit1: TEdit
-          Left = 38
-          Top = 67
-          Width = 109
-          Height = 21
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Serif'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 0
-          Text = '-2.0'
-        end
-        object Edit3: TEdit
-          Left = 38
-          Top = 89
-          Width = 109
-          Height = 21
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Serif'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 1
-          Text = '30.0'
-        end
-        object Edit9: TEdit
-          Left = 38
-          Top = 1
-          Width = 109
-          Height = 21
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Serif'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 2
-          Text = '0.0'
-        end
-        object Edit10: TEdit
-          Left = 38
-          Top = 23
-          Width = 109
-          Height = 21
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Serif'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 3
-          Text = '0.0'
-        end
-        object Edit17: TEdit
-          Left = 38
-          Top = 45
-          Width = 109
-          Height = 21
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Serif'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 4
-          Text = '0.0'
-        end
-        object Edit5: TEdit
-          Left = 38
-          Top = 128
-          Width = 109
-          Height = 21
-          Hint = 
-            'Defines the size of the Zstart viewplane.'#13#10'It is set automatical' +
-            'ly when using the navigator,'#13#10'change only if objects are cutted ' +
-            'at the image'#13#10'borders.'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -12
-          Font.Name = 'MS Serif'
-          Font.Style = []
-          ParentFont = False
-          ParentShowHint = False
-          ShowHint = True
-          TabOrder = 5
-          Text = '1.0'
-        end
-      end
-    end
     object Panel6: TPanel
       Left = 1
-      Top = 52
+      Top = 351
       Width = 151
       Height = 95
       Align = alTop
@@ -2465,6 +2453,19 @@ object Mand3DForm: TMand3DForm
         ShowHint = True
         OnMouseUp = SpeedButton18MouseUp
       end
+      object Label46: TLabel
+        Left = 502
+        Top = 9
+        Width = 32
+        Height = 13
+        Caption = 'Frame:'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+      end
       object ProgressBar1: TProgressBar
         Left = 288
         Top = 8
@@ -2484,6 +2485,32 @@ object Mand3DForm: TMand3DForm
         ShowHint = True
         TabOrder = 1
         Text = '5'
+      end
+      object FrameEdit: TEdit
+        Tag = 1
+        Left = 536
+        Top = 7
+        Width = 49
+        Height = 21
+        Hint = 'Frame number to show '
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 2
+        Text = '480'
+        OnChange = Edit11Change
+      end
+      object UpDown6: TUpDown
+        Left = 587
+        Top = 7
+        Width = 30
+        Height = 21
+        Hint = 'Increase/decrease frame number'
+        Min = -30000
+        Max = 30000
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 3
+        OnClick = UpDown2Click
       end
     end
     object ScrollBox1: TScrollBox
@@ -3012,10 +3039,6 @@ object Mand3DForm: TMand3DForm
         TabOrder = 1
         object TabSheet7: TTabSheet
           Caption = 'Open'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Button9: TSpeedButton
             Left = 9
             Top = 3
@@ -3200,10 +3223,6 @@ object Mand3DForm: TMand3DForm
         object TabSheet10: TTabSheet
           Caption = 'Save'
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Button8: TSpeedButton
             Left = 9
             Top = 3
@@ -3360,10 +3379,6 @@ object Mand3DForm: TMand3DForm
         object TabSheet12: TTabSheet
           Caption = 'Save pic'
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Button3: TSpeedButton
             Left = 3
             Top = 4
@@ -3506,10 +3521,6 @@ object Mand3DForm: TMand3DForm
         object TabSheet11: TTabSheet
           Caption = 'Utilities'
           ImageIndex = 3
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object SpeedButton25: TSpeedButton
             Left = 2
             Top = 4
@@ -3640,6 +3651,7 @@ object Mand3DForm: TMand3DForm
             Caption = 'Map Sequences'
             ParentShowHint = False
             ShowHint = True
+            OnClick = MapSequencesBtnClick
           end
           object VisualThemesBtn: TSpeedButton
             Left = 166
