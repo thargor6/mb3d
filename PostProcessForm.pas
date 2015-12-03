@@ -4,7 +4,8 @@ interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, ExtCtrls, TypeDefinitions, ComCtrls, Vcl.ImgList;
+  Dialogs, StdCtrls, ExtCtrls, TypeDefinitions, ComCtrls, Vcl.ImgList,
+  Vcl.Buttons;
 
 type
   TPostProForm = class(TForm)
@@ -25,99 +26,103 @@ type
     Shape6: TShape;
     Button20: TButton;
     CheckBox26: TCheckBox;
-    CategoryPanelGroup1: TCategoryPanelGroup;
-    CategoryPanel1: TCategoryPanel;
-    CheckBox21: TCheckBox;
+    ImageList1: TImageList;
+    PostProcessHintPnl: TPanel;
+    Label3: TLabel;
+    Button16: TButton;
+    RecalcSectionPnl: TPanel;
     Button13: TButton;
     CheckBox19: TCheckBox;
-    Label4: TLabel;
+    CheckBox21: TCheckBox;
+    CheckBox30: TCheckBox;
     Edit12: TEdit;
+    Label4: TLabel;
     UpDown4: TUpDown;
-    CategoryPanel2: TCategoryPanel;
-    CheckBox23: TCheckBox;
+    NormalsOnZBufferPnl: TPanel;
     Button14: TButton;
+    CheckBox23: TCheckBox;
     Label7: TLabel;
-    ImageList1: TImageList;
-    CategoryPanel3: TCategoryPanel;
-    CheckBox9: TCheckBox;
+    HardShadowsPnl: TPanel;
     Button3: TButton;
-    CheckBox2: TCheckBox;
-    CheckBox3: TCheckBox;
-    CheckBox4: TCheckBox;
     Button4: TButton;
     Button5: TButton;
     Button6: TButton;
-    CheckBox5: TCheckBox;
-    CheckBox6: TCheckBox;
-    CheckBox7: TCheckBox;
     Button7: TButton;
     Button8: TButton;
     Button9: TButton;
     CheckBox10: TCheckBox;
+    CheckBox2: TCheckBox;
+    CheckBox29: TCheckBox;
+    CheckBox3: TCheckBox;
+    CheckBox4: TCheckBox;
+    CheckBox5: TCheckBox;
+    CheckBox6: TCheckBox;
+    CheckBox7: TCheckBox;
+    CheckBox9: TCheckBox;
     Edit5: TEdit;
+    Edit7: TEdit;
+    Label6: TLabel;
     Label8: TLabel;
-    CategoryPanel4: TCategoryPanel;
+    AmbientShadowsPnl: TPanel;
     Button10: TButton;
     CheckBox11: TCheckBox;
-    CategoryPanelGroup2: TCategoryPanelGroup;
-    CategoryPanel5: TCategoryPanel;
-    Button15: TButton;
-    CheckBox25: TCheckBox;
-    CheckBox24: TCheckBox;
-    CheckBox27: TCheckBox;
-    CheckBox28: TCheckBox;
-    Edit6: TEdit;
-    UpDown2: TUpDown;
-    Edit11: TEdit;
-    Label12: TLabel;
-    Label11: TLabel;
-    Label21: TLabel;
-    Label22: TLabel;
-    Label23: TLabel;
-    Edit13: TEdit;
-    Edit14: TEdit;
-    Edit17: TEdit;
-    Panel1: TPanel;
-    Label3: TLabel;
+    Label24: TLabel;
     TabControl1: TTabControl;
-    CheckBox22: TCheckBox;
-    CheckBox12: TCheckBox;
-    Edit21: TEdit;
-    Edit34: TEdit;
-    Edit8: TEdit;
-    Edit9: TEdit;
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
     Label20: TLabel;
     Label50: TLabel;
+    CheckBox12: TCheckBox;
+    CheckBox22: TCheckBox;
+    Edit21: TEdit;
+    Edit34: TEdit;
+    Edit8: TEdit;
+    Edit9: TEdit;
     RadioGroup5: TRadioGroup;
     UpDown1: TUpDown;
     UpDown3: TUpDown;
-    CategoryPanel6: TCategoryPanel;
-    CheckBox1: TCheckBox;
+    ReflTransparencyPnl: TPanel;
+    Button15: TButton;
+    CheckBox24: TCheckBox;
+    CheckBox25: TCheckBox;
+    CheckBox27: TCheckBox;
+    CheckBox28: TCheckBox;
+    Edit11: TEdit;
+    Edit13: TEdit;
+    Edit14: TEdit;
+    Edit17: TEdit;
+    Edit6: TEdit;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label21: TLabel;
+    Label22: TLabel;
+    Label23: TLabel;
+    UpDown2: TUpDown;
+    DepthOfFieldPnl: TPanel;
     Button1: TButton;
-    Button16: TButton;
-    Label18: TLabel;
-    Label1: TLabel;
-    Edit1: TEdit;
-    Button2: TButton;
-    Label19: TLabel;
-    Edit10: TEdit;
     Button18: TButton;
     Button19: TButton;
-    RadioGroup2: TRadioGroup;
-    RadioGroup1: TRadioGroup;
-    Label2: TLabel;
-    Label5: TLabel;
+    Button2: TButton;
+    CheckBox1: TCheckBox;
+    Edit1: TEdit;
+    Edit10: TEdit;
     Edit2: TEdit;
     Edit3: TEdit;
-    Label24: TLabel;
-    CheckBox29: TCheckBox;
-    Edit7: TEdit;
-    Label6: TLabel;
-    CheckBox30: TCheckBox;
+    Label1: TLabel;
+    Label18: TLabel;
+    Label19: TLabel;
+    Label2: TLabel;
+    Label5: TLabel;
+    RadioGroup1: TRadioGroup;
+    RadioGroup2: TRadioGroup;
+    NormalsOnZBufferBtn: TSpeedButton;
+    HardShadowsBtn: TSpeedButton;
+    AmbientShadowsBtn: TSpeedButton;
+    ReflTransparencyBtn: TSpeedButton;
+    DepthOfFieldBtn: TSpeedButton;
+    RecalcSectionBtn: TSpeedButton;
     procedure FormShow(Sender: TObject);
     procedure CheckBox8Click(Sender: TObject);
     procedure Button1Click(Sender: TObject);
@@ -138,19 +143,21 @@ type
     procedure FormMouseWheel(Sender: TObject; Shift: TShiftState;
       WheelDelta: Integer; MousePos: TPoint; var Handled: Boolean);
     procedure Button16Click(Sender: TObject);
-    procedure UpDown1ChangingEx(Sender: TObject; var AllowChange: Boolean;
-      NewValue: Smallint; Direction: TUpDownDirection);
     procedure Button19Click(Sender: TObject);
     procedure FormActivate(Sender: TObject);
     procedure FormHide(Sender: TObject);
     procedure Button20Click(Sender: TObject);
     procedure CategoryPanel1Collapse(Sender: TObject);
     procedure CategoryPanel1Expand(Sender: TObject);
-    procedure CategoryPanel5Expand(Sender: TObject);
-    procedure CategoryPanel6Expand(Sender: TObject);
-    procedure CategoryPanel3Expand(Sender: TObject);
-    procedure CategoryPanel4Expand(Sender: TObject);
     procedure CheckBox2Click(Sender: TObject);
+    procedure UpDown1ChangingEx(Sender: TObject; var AllowChange: Boolean;
+      NewValue: Integer; Direction: TUpDownDirection);
+    procedure RecalcSectionBtnClick(Sender: TObject);
+    procedure NormalsOnZBufferBtnClick(Sender: TObject);
+    procedure HardShadowsBtnClick(Sender: TObject);
+    procedure AmbientShadowsBtnClick(Sender: TObject);
+    procedure ReflTransparencyBtnClick(Sender: TObject);
+    procedure DepthOfFieldBtnClick(Sender: TObject);
   private
     { Private-Deklarationen }
     function ClipIRect: LongBool;
@@ -177,6 +184,13 @@ uses Mand, DOF, DivUtils, ImageProcess, DoubleSize, CalcPart, HeaderTrafos,
 
 {$R *.dfm}
 
+procedure TPostProForm.HardShadowsBtnClick(Sender: TObject);
+begin
+  HardShadowsPnl.Top := HardShadowsBtn.Top+HardShadowsBtn.Height;
+  HardShadowsPnl.Visible := not HardShadowsPnl.Visible;
+  AlignPanels(Sender);
+end;
+
 function TPostProForm.HSoptions: Integer;
 var i: Integer;
 begin
@@ -187,29 +201,46 @@ begin
         + IntToStr(i)) as TCheckBox).Checked) and 1) shl i;
 end;
 
-procedure TPostProForm.AlignPanels(Sender: TObject);
-var t: Integer;
-    B: TButton;
+procedure TPostProForm.NormalsOnZBufferBtnClick(Sender: TObject);
 begin
-    if Sender is TCategoryPanel then
-    begin
-      if not (Sender as TCategoryPanel).Collapsed then
-      begin
-        t := (Sender as TCategoryPanel).Tag;
-        if t < 1 then Exit;
-        B := FindComponent('Button' + IntToStr(t)) as TButton;
-        if B = nil then Exit;
-        (Sender as TCategoryPanel).Height := B.Top + B.Height + 8 + CategoryPanelGroup1.HeaderHeight;
-      end;
-    end;
-    CategoryPanelGroup1.Height := CategoryPanel1.Height + CategoryPanel2.Height +
-      CategoryPanel3.Height + CategoryPanel4.Height;
-    Panel1.Top := CategoryPanelGroup1.Height;
-    CategoryPanelGroup2.Top := Panel1.Top + Panel1.Height;
-    CategoryPanelGroup2.Height := CategoryPanel5.Height + CategoryPanel6.Height;// +
-    ClientHeight := CategoryPanelGroup2.Top + CategoryPanelGroup2.Height;
-   //   CategoryPanel3.Height + CategoryPanel4.Height;
-//   if not CategoryPanel4.Collapsed then TabControl1.Refresh;
+  NormalsOnZBufferPnl.Top := NormalsOnZBufferBtn.Top+NormalsOnZBufferBtn.Height;
+  NormalsOnZBufferPnl.Visible := not NormalsOnZBufferPnl.Visible;
+  AlignPanels(Sender);
+end;
+
+procedure TPostProForm.AlignPanels(Sender: TObject);
+var
+  H: Integer;
+begin
+  H := 0;
+
+  Inc(H, RecalcSectionBtn.Height);
+  if RecalcSectionPnl.Visible then
+    Inc(H, RecalcSectionPnl.Height);
+
+  Inc(H, NormalsOnZBufferBtn.Height);
+  if NormalsOnZBufferPnl.Visible then
+    Inc(H, NormalsOnZBufferPnl.Height);
+
+  Inc(H, HardShadowsBtn.Height);
+  if HardShadowsPnl.Visible then
+    Inc(H, HardShadowsPnl.Height);
+
+  Inc(H, AmbientShadowsBtn.Height);
+  if AmbientShadowsPnl.Visible then
+    Inc(H, AmbientShadowsPnl.Height);
+
+  Inc(H, PostProcessHintPnl.Height);
+
+  Inc(H, ReflTransparencyBtn.Height);
+  if ReflTransparencyPnl.Visible then
+    Inc(H, ReflTransparencyPnl.Height);
+
+  Inc(H, DepthOfFieldBtn.Height);
+  if DepthOfFieldPnl.Visible then
+    Inc(H, DepthOfFieldPnl.Height);
+
+  ClientHeight := H;
 end;
 
 procedure TPostProForm.FormShow(Sender: TObject);
@@ -412,6 +443,13 @@ begin
     end;
 end;
 
+procedure TPostProForm.AmbientShadowsBtnClick(Sender: TObject);
+begin
+  AmbientShadowsPnl.Top := AmbientShadowsBtn.Top+AmbientShadowsBtn.Height;
+  AmbientShadowsPnl.Visible := not AmbientShadowsPnl.Visible;
+  AlignPanels(Sender);
+end;
+
 procedure TPostProForm.Button10Click(Sender: TObject); //AO calc
 begin
     TilingForm.SaveThisTile := False;
@@ -541,6 +579,27 @@ begin
     Edit9.Visible := b;
 end;
 
+procedure TPostProForm.RecalcSectionBtnClick(Sender: TObject);
+begin
+  RecalcSectionPnl.Top := RecalcSectionBtn.Top+RecalcSectionBtn.Height;
+  RecalcSectionPnl.Visible := not RecalcSectionPnl.Visible;
+  AlignPanels(Sender);
+end;
+
+procedure TPostProForm.ReflTransparencyBtnClick(Sender: TObject);
+begin
+  ReflTransparencyPnl.Top := ReflTransparencyBtn.Top+ReflTransparencyBtn.Height;
+  ReflTransparencyPnl.Visible := not ReflTransparencyPnl.Visible;
+  AlignPanels(Sender);
+end;
+
+procedure TPostProForm.UpDown1ChangingEx(Sender: TObject;
+  var AllowChange: Boolean; NewValue: Integer; Direction: TUpDownDirection);
+const ci: array[-1..4] of Integer = (3, 3, 7, 17, 33, 33);
+begin
+    Label17.Caption := IntToStr(ci[NewValue]);
+end;
+
 procedure TPostProForm.CategoryPanel1Collapse(Sender: TObject);
 begin
     CheckBox21.Checked := False;
@@ -549,30 +608,6 @@ end;
 
 procedure TPostProForm.CategoryPanel1Expand(Sender: TObject);
 begin
-    AlignPanels(Sender);
-end;
-
-procedure TPostProForm.CategoryPanel3Expand(Sender: TObject);
-begin
-    if not CategoryPanel4.Collapsed then CategoryPanel4.Collapsed := True;
-    AlignPanels(Sender);
-end;
-
-procedure TPostProForm.CategoryPanel4Expand(Sender: TObject);
-begin
-    if not CategoryPanel3.Collapsed then CategoryPanel3.Collapsed := True;
-    AlignPanels(Sender);
-end;
-
-procedure TPostProForm.CategoryPanel5Expand(Sender: TObject);
-begin
-    if not CategoryPanel6.Collapsed then CategoryPanel6.Collapsed := True;
-    AlignPanels(Sender);
-end;
-
-procedure TPostProForm.CategoryPanel6Expand(Sender: TObject);
-begin
-    if not CategoryPanel5.Collapsed then CategoryPanel5.Collapsed := True;
     AlignPanels(Sender);
 end;
 
@@ -630,6 +665,13 @@ begin
       if not Mand3DForm.Shape1.Visible then Showmessage('Please make a selection in the image first.')
       else Showmessage('The selection must be bigger than 2 pixels in width and height.');
     end;
+end;
+
+procedure TPostProForm.DepthOfFieldBtnClick(Sender: TObject);
+begin
+  DepthOfFieldPnl.Top := DepthOfFieldBtn.Top+DepthOfFieldBtn.Height;
+  DepthOfFieldPnl.Visible := not DepthOfFieldPnl.Visible;
+  AlignPanels(Sender);
 end;
 
 procedure TPostProForm.Button13Click(Sender: TObject); //Recalc parts
@@ -733,14 +775,6 @@ end;
 procedure TPostProForm.Button16Click(Sender: TObject);
 begin
     TriggerRepaint;
-end;
-
-procedure TPostProForm.UpDown1ChangingEx(Sender: TObject;
-  var AllowChange: Boolean; NewValue: Smallint;
-  Direction: TUpDownDirection);
-const ci: array[-1..4] of Integer = (3, 3, 7, 17, 33, 33);
-begin
-    Label17.Caption := IntToStr(ci[NewValue]);
 end;
 
 procedure TPostProForm.Button19Click(Sender: TObject);
