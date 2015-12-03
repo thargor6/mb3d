@@ -104,9 +104,7 @@ type
     Edit11: TEdit;
     Edit12: TEdit;
     Label1: TLabel;
-    PositionBtn: TButton;
     PositionPnl: TPanel;
-    RotationBtn: TButton;
     RotationPnl: TPanel;
     Memo1: TMemo;
     SpeedButton19: TSpeedButton;
@@ -273,6 +271,8 @@ type
     Label55: TLabel;
     Label56: TLabel;
     Label57: TLabel;
+    PositionBtn: TSpeedButton;
+    RotationBtn: TSpeedButton;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);

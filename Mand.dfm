@@ -35,18 +35,38 @@ object Mand3DForm: TMand3DForm
     ParentShowHint = False
     ShowHint = False
     TabOrder = 0
-    object PositionBtn: TButton
+    object PositionBtn: TSpeedButton
       Left = 1
       Top = 1
       Width = 151
       Height = 21
       Hint = 'Click to hide/show'
       Align = alTop
+      AllowAllUp = True
+      GroupIndex = 1
       Caption = 'Position'
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 0
       OnClick = PositionBtnClick
+      ExplicitLeft = -8
+      ExplicitTop = -1
+      ExplicitWidth = 255
+    end
+    object RotationBtn: TSpeedButton
+      Left = 1
+      Top = 172
+      Width = 151
+      Height = 21
+      Hint = 'Click to hide/show'
+      Align = alTop
+      AllowAllUp = True
+      GroupIndex = 2
+      Caption = 'Rotation'
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = RotationBtnClick
+      ExplicitLeft = 6
+      ExplicitTop = 211
     end
     object PositionPnl: TPanel
       Left = 1
@@ -56,7 +76,7 @@ object Mand3DForm: TMand3DForm
       Align = alTop
       BevelOuter = bvNone
       UseDockManager = False
-      TabOrder = 1
+      TabOrder = 0
       Visible = False
       object Label9: TLabel
         Left = 5
@@ -254,19 +274,6 @@ object Mand3DForm: TMand3DForm
         Text = '1.0'
       end
     end
-    object RotationBtn: TButton
-      Left = 1
-      Top = 172
-      Width = 151
-      Height = 21
-      Hint = 'Click to hide/show'
-      Align = alTop
-      Caption = 'Rotation'
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 2
-      OnClick = RotationBtnClick
-    end
     object RotationPnl: TPanel
       Left = 1
       Top = 193
@@ -275,7 +282,7 @@ object Mand3DForm: TMand3DForm
       Align = alTop
       BevelOuter = bvNone
       UseDockManager = False
-      TabOrder = 3
+      TabOrder = 1
       Visible = False
       object Label53: TLabel
         Left = 10
@@ -422,7 +429,7 @@ object Mand3DForm: TMand3DForm
       ParentShowHint = False
       ReadOnly = True
       ShowHint = True
-      TabOrder = 7
+      TabOrder = 5
     end
     object PageControl1: TPageControl
       Left = 1
@@ -443,7 +450,7 @@ object Mand3DForm: TMand3DForm
       ParentBiDiMode = False
       ParentDoubleBuffered = False
       ParentFont = False
-      TabOrder = 5
+      TabOrder = 3
       Touch.ParentTabletOptions = False
       Touch.TabletOptions = []
       OnChange = PageControl1Change
@@ -1629,7 +1636,7 @@ object Mand3DForm: TMand3DForm
       Height = 40
       Align = alBottom
       BevelOuter = bvNone
-      TabOrder = 6
+      TabOrder = 4
       object Image2: TImage
         Left = 127
         Top = 16
@@ -1728,7 +1735,7 @@ object Mand3DForm: TMand3DForm
       Height = 95
       Align = alTop
       BevelOuter = bvNone
-      TabOrder = 4
+      TabOrder = 2
       object SpeedButton3: TSpeedButton
         Left = 2
         Top = 71
@@ -2465,6 +2472,7 @@ object Mand3DForm: TMand3DForm
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         ParentFont = False
+        Visible = False
       end
       object ProgressBar1: TProgressBar
         Left = 288
@@ -2496,8 +2504,8 @@ object Mand3DForm: TMand3DForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 2
-        Text = '480'
-        OnChange = Edit11Change
+        Text = '1'
+        Visible = False
       end
       object UpDown6: TUpDown
         Left = 587
@@ -2510,7 +2518,7 @@ object Mand3DForm: TMand3DForm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 3
-        OnClick = UpDown2Click
+        Visible = False
       end
     end
     object ScrollBox1: TScrollBox
@@ -3651,6 +3659,7 @@ object Mand3DForm: TMand3DForm
             Caption = 'Map Sequences'
             ParentShowHint = False
             ShowHint = True
+            Visible = False
             OnClick = MapSequencesBtnClick
           end
           object VisualThemesBtn: TSpeedButton
