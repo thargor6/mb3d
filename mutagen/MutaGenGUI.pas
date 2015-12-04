@@ -497,6 +497,8 @@ end;
 
 procedure TMutaGenFrm.SendtoMainItmClick(Sender: TObject);
 begin
+  if Mand3DForm.IsCalculating then
+    raise Exception.Create('The main editor is still rendering. Please stop it first or wait until it is done.');
   ToClipboardItmClick(Sender);
   Mand3DForm.SpeedButton8Click(Sender);
 end;

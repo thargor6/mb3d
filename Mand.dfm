@@ -3043,7 +3043,7 @@ object Mand3DForm: TMand3DForm
         Top = 4
         Width = 248
         Height = 64
-        ActivePage = TabSheet13
+        ActivePage = TabSheet7
         TabOrder = 1
         object TabSheet7: TTabSheet
           Caption = 'Open'

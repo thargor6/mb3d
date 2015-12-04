@@ -497,6 +497,7 @@ type
     procedure TextParsLoadSuccess;
     procedure UpdateAndScaleImageFull(NewScale: Integer);
     procedure RefreshNavigator(const Enabled: Boolean);
+    function IsCalculating: Boolean;
   end;
 procedure TriggerRepaint;
 function AniFileAlreadyExists(var s: String): LongBool;
@@ -4001,6 +4002,11 @@ begin
   end;
 end;
 
+function TMand3DForm.IsCalculating: Boolean;
+begin
+  Result := Button2.Caption = 'Stop';
+end;
+
 Initialization
 
     AppFolder  := ExtractFilePath(Application.ExeName);
@@ -4008,6 +4014,6 @@ Initialization
     if not SysUtils.DirectoryExists(AppDataDir) then AppDataDir := AppFolder;
     AppDataDir := IncludeTrailingPathDelimiter(AppDataDir);
     M3DBackGroundPic.LMnumber := 0;
-    M3DBackGroundPic.LMWidth := 0;  
+    M3DBackGroundPic.LMWidth := 0;
 
 end.
