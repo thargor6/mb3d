@@ -109,7 +109,6 @@ type
     RadioGroup1: TRadioGroup;
     Panel4: TPanel;
     Panel5: TPanel;
-    Button3: TButton;
     CheckBox7: TCheckBox;
     Label44: TLabel;
     Bevel2: TBevel;
@@ -128,9 +127,7 @@ type
     Label51: TLabel;
     SpeedButton29: TSpeedButton;
     SpeedButton30: TSpeedButton;
-    Button4: TButton;
     Image8: TImage;
-    Button2: TButton;
     Panel7: TPanel;
     LabelV3: TLabel;
     SpeedButton31: TSpeedButton;
@@ -140,7 +137,6 @@ type
     Label48: TLabel;
     LabelV5: TLabel;
     Label53: TLabel;
-    Button5: TButton;
     UpDown1: TUpDown;
     Label38: TLabel;
     TrackBarEx2: TTrackBarEx;
@@ -173,6 +169,10 @@ type
     DecreaseNaviSizeBtn: TSpeedButton;
     IncreaseNaviSizeBtn: TSpeedButton;
     NaviSizeCmb: TComboBox;
+    Button2: TSpeedButton;
+    Button3: TSpeedButton;
+    Button4: TSpeedButton;
+    Button5: TSpeedButton;
     procedure SpeedButton1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormShow(Sender: TObject);

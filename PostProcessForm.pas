@@ -158,10 +158,15 @@ type
     procedure AmbientShadowsBtnClick(Sender: TObject);
     procedure ReflTransparencyBtnClick(Sender: TObject);
     procedure DepthOfFieldBtnClick(Sender: TObject);
+    procedure CheckBox23Click(Sender: TObject);
+    procedure CheckBox11Click(Sender: TObject);
+    procedure CheckBox24Click(Sender: TObject);
+    procedure CheckBox1Click(Sender: TObject);
   private
     { Private-Deklarationen }
     function ClipIRect: LongBool;
     procedure AlignPanels(Sender: TObject);
+    procedure UpdateButtonCaption(Btn: TSpeedButton; const Checkbox: TCheckBox);
   public
     { Public-Deklarationen }
     iRect: TRect;
@@ -189,6 +194,7 @@ begin
   HardShadowsPnl.Top := HardShadowsBtn.Top+HardShadowsBtn.Height;
   HardShadowsPnl.Visible := not HardShadowsPnl.Visible;
   AlignPanels(Sender);
+  CheckBox9Click(Sender);
 end;
 
 function TPostProForm.HSoptions: Integer;
@@ -206,6 +212,7 @@ begin
   NormalsOnZBufferPnl.Top := NormalsOnZBufferBtn.Top+NormalsOnZBufferBtn.Height;
   NormalsOnZBufferPnl.Visible := not NormalsOnZBufferPnl.Visible;
   AlignPanels(Sender);
+  CheckBox23Click(Sender);
 end;
 
 procedure TPostProForm.AlignPanels(Sender: TObject);
@@ -254,6 +261,12 @@ begin
     Edit12.Hint := 'Divides the actual "Raystep multiplier" by this value,' + #13#10 +
                    'increase the value to reduce overstepping.';
     AlignPanels(Sender);
+    UpdateButtonCaption(RecalcSectionBtn, CheckBox21);
+    CheckBox23Click(Sender);
+    CheckBox9Click(Sender);
+    CheckBox11Click(Sender);
+    CheckBox24Click(Sender);
+    CheckBox1Click(Sender);
 end;
 
 procedure TPostProForm.CheckBox8Click(Sender: TObject);
@@ -403,29 +416,6 @@ begin
     end;
 end;
 
-procedure TPostProForm.CheckBox9Click(Sender: TObject);
-var CB: TCheckBox;
-    C: TCategoryPanel;
-    T, i: Integer;
-begin
-    CB := Sender as TCheckBox;
-    T := CB.Tag;
-    C := FindComponent('CategoryPanel' + IntToStr(T)) as TCategoryPanel;
-    if C = nil then Exit;
-    if CB.Checked then i := 2 else i := 0;
-    C.CollapsedImageIndex := i;
-    Inc(i);
-    C.ExpandedImageIndex := i;
-    Inc(i, 3);
-    C.CollapsedHotImageIndex := i;
-    C.CollapsedPressedImageIndex := i;
-    Inc(i);
-    C.ExpandedHotImageIndex := i;
-    C.ExpandedPressedImageIndex := i;
-    if CB.Checked then C.Caption := ' ' + Trim(C.Caption) + ' '  //to repaint header image
-                  else C.Caption := Trim(C.Caption);
-end;
-
 procedure TPostProForm.PutAmbientParsToHeader(Header: TPMandHeader11);
 begin
     with Header^ do
@@ -448,6 +438,7 @@ begin
   AmbientShadowsPnl.Top := AmbientShadowsBtn.Top+AmbientShadowsBtn.Height;
   AmbientShadowsPnl.Visible := not AmbientShadowsPnl.Visible;
   AlignPanels(Sender);
+  CheckBox11Click(Sender);
 end;
 
 procedure TPostProForm.Button10Click(Sender: TObject); //AO calc
@@ -486,6 +477,7 @@ var SLoff, Moff: Integer;
     TSize: TPoint;
     tmpR: TRect;
 begin
+    CheckBox24Click(Sender);
     with Mand3DForm do
     begin
       CalcStart := GetTickCount;
@@ -584,6 +576,7 @@ begin
   RecalcSectionPnl.Top := RecalcSectionBtn.Top+RecalcSectionBtn.Height;
   RecalcSectionPnl.Visible := not RecalcSectionPnl.Visible;
   AlignPanels(Sender);
+  UpdateButtonCaption(RecalcSectionBtn, CheckBox21);
 end;
 
 procedure TPostProForm.ReflTransparencyBtnClick(Sender: TObject);
@@ -591,6 +584,7 @@ begin
   ReflTransparencyPnl.Top := ReflTransparencyBtn.Top+ReflTransparencyBtn.Height;
   ReflTransparencyPnl.Visible := not ReflTransparencyPnl.Visible;
   AlignPanels(Sender);
+  CheckBox24Click(Sender);
 end;
 
 procedure TPostProForm.UpDown1ChangingEx(Sender: TObject;
@@ -611,8 +605,19 @@ begin
     AlignPanels(Sender);
 end;
 
+procedure TPostProForm.CheckBox11Click(Sender: TObject);
+begin
+  UpdateButtonCaption(AmbientShadowsBtn, CheckBox11);
+end;
+
+procedure TPostProForm.CheckBox1Click(Sender: TObject);
+begin
+  UpdateButtonCaption(DepthOfFieldBtn, CheckBox1);
+end;
+
 procedure TPostProForm.CheckBox21Click(Sender: TObject);   //enable Recalc parts
 begin
+    UpdateButtonCaption(RecalcSectionBtn, CheckBox21);
     Button13.Enabled := CheckBox21.Checked;
     if CheckBox21.Checked then
     begin
@@ -623,6 +628,16 @@ begin
       Mand3DForm.Shape1.Visible := False;
       if not Button3.Enabled then Mand3DForm.EnableButtons;
     end;
+end;
+
+procedure TPostProForm.CheckBox23Click(Sender: TObject);
+begin
+  UpdateButtonCaption(NormalsOnZBufferBtn, CheckBox23);
+end;
+
+procedure TPostProForm.CheckBox24Click(Sender: TObject);
+begin
+  UpdateButtonCaption(ReflTransparencyBtn, CheckBox24);
 end;
 
 procedure DelayDEAOT(ThreadCount: Integer; PCTS: TPCalcThreadStats);
@@ -672,6 +687,7 @@ begin
   DepthOfFieldPnl.Top := DepthOfFieldBtn.Top+DepthOfFieldBtn.Height;
   DepthOfFieldPnl.Visible := not DepthOfFieldPnl.Visible;
   AlignPanels(Sender);
+  CheckBox1Click(Sender);
 end;
 
 procedure TPostProForm.Button13Click(Sender: TObject); //Recalc parts
@@ -792,5 +808,30 @@ begin
     IniVal[28] := IntToStr(Left) + ' ' + IntToStr(Top);
 end;
 
+procedure TPostProForm.UpdateButtonCaption(Btn: TSpeedButton; const Checkbox: TCheckBox);
+var
+  GlyphId: Integer;
+begin
+  if Btn.Down then
+    if CheckBox.Checked then
+      GlyphId := 3
+    else
+      GlyphId := 1
+  else
+    if CheckBox.Checked then
+      GlyphId := 2
+    else
+      GlyphId := 0;
+  Btn.Glyph := nil;
+  ImageList1.GetBitmap(GlyphId,Btn.Glyph);
+end;
+
+procedure TPostProForm.CheckBox9Click(Sender: TObject);
+begin
+  UpdateButtonCaption(HardShadowsBtn, CheckBox9);
+end;
+
+
 end.
+
 

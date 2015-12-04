@@ -28,7 +28,7 @@ object PostProForm: TPostProForm
     Align = alTop
     AllowAllUp = True
     GroupIndex = 2
-    Caption = 'Normals on Z-buffer'
+    Caption = ' Normals on Z-buffer'
     ParentShowHint = False
     ShowHint = True
     OnClick = NormalsOnZBufferBtnClick
@@ -43,7 +43,7 @@ object PostProForm: TPostProForm
     Align = alTop
     AllowAllUp = True
     GroupIndex = 3
-    Caption = 'Hard Shadows'
+    Caption = ' Hard Shadows'
     ParentShowHint = False
     ShowHint = True
     OnClick = HardShadowsBtnClick
@@ -58,7 +58,7 @@ object PostProForm: TPostProForm
     Align = alTop
     AllowAllUp = True
     GroupIndex = 4
-    Caption = 'Ambient Shadows'
+    Caption = ' Ambient Shadows'
     ParentShowHint = False
     ShowHint = True
     OnClick = AmbientShadowsBtnClick
@@ -74,7 +74,7 @@ object PostProForm: TPostProForm
     Align = alTop
     AllowAllUp = True
     GroupIndex = 5
-    Caption = 'Reflections + Transparency'
+    Caption = ' Reflections + Transparency'
     ParentShowHint = False
     ShowHint = True
     OnClick = ReflTransparencyBtnClick
@@ -90,7 +90,7 @@ object PostProForm: TPostProForm
     Align = alTop
     AllowAllUp = True
     GroupIndex = 6
-    Caption = 'Depth of Field'
+    Caption = ' Depth of Field'
     ParentShowHint = False
     ShowHint = True
     OnClick = DepthOfFieldBtnClick
@@ -106,7 +106,7 @@ object PostProForm: TPostProForm
     Align = alTop
     AllowAllUp = True
     GroupIndex = 1
-    Caption = 'Recalculate a Selection'
+    Caption = ' Recalculate a Selection'
     ParentShowHint = False
     ShowHint = True
     OnClick = RecalcSectionBtnClick
@@ -134,6 +134,8 @@ object PostProForm: TPostProForm
       Caption = 
         'Caution:  The processings below must be calculated'#13#10'from top to ' +
         'bottom and light changes will reset'#13#10'these calculations!'
+      ExplicitWidth = 246
+      ExplicitHeight = 39
     end
     object Button16: TButton
       Left = 180
@@ -157,8 +159,6 @@ object PostProForm: TPostProForm
     BevelOuter = bvNone
     TabOrder = 4
     Visible = False
-    ExplicitLeft = 1
-    ExplicitTop = 24
     object Label4: TLabel
       Left = 65
       Top = 49
@@ -270,9 +270,6 @@ object PostProForm: TPostProForm
     BevelOuter = bvNone
     TabOrder = 5
     Visible = False
-    ExplicitLeft = 93
-    ExplicitTop = 183
-    ExplicitWidth = 241
     object Label7: TLabel
       Left = 106
       Top = 34
@@ -314,7 +311,7 @@ object PostProForm: TPostProForm
       ParentShowHint = False
       ShowHint = False
       TabOrder = 1
-      OnClick = CheckBox9Click
+      OnClick = CheckBox23Click
     end
   end
   object HardShadowsPnl: TPanel
@@ -326,9 +323,6 @@ object PostProForm: TPostProForm
     BevelOuter = bvNone
     TabOrder = 6
     Visible = False
-    ExplicitLeft = 20
-    ExplicitTop = 652
-    ExplicitWidth = 253
     object Label6: TLabel
       Left = 29
       Top = 117
@@ -634,7 +628,7 @@ object PostProForm: TPostProForm
       ShowHint = True
       State = cbChecked
       TabOrder = 1
-      OnClick = CheckBox9Click
+      OnClick = CheckBox11Click
     end
     object TabControl1: TTabControl
       Left = 1
@@ -877,8 +871,6 @@ object PostProForm: TPostProForm
     BevelOuter = bvNone
     TabOrder = 8
     Visible = False
-    ExplicitLeft = 101
-    ExplicitTop = 691
     object Label11: TLabel
       Left = 134
       Top = 39
@@ -954,7 +946,7 @@ object PostProForm: TPostProForm
       ParentShowHint = False
       ShowHint = True
       TabOrder = 1
-      OnClick = CheckBox9Click
+      OnClick = CheckBox24Click
     end
     object CheckBox25: TCheckBox
       Left = 12
@@ -1079,9 +1071,6 @@ object PostProForm: TPostProForm
     BevelOuter = bvNone
     TabOrder = 9
     Visible = False
-    ExplicitLeft = 31
-    ExplicitTop = 966
-    ExplicitWidth = 252
     object Label1: TLabel
       Left = 30
       Top = 37
@@ -1200,7 +1189,7 @@ object PostProForm: TPostProForm
       ParentShowHint = False
       ShowHint = True
       TabOrder = 4
-      OnClick = CheckBox9Click
+      OnClick = CheckBox1Click
     end
     object Edit1: TEdit
       Left = 81
@@ -1532,7 +1521,7 @@ object PostProForm: TPostProForm
     Left = 8
     Top = 40
     Bitmap = {
-      494C010108000E00100020001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010108000E00140020001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000003000000001002000000000000060
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

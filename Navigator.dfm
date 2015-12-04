@@ -90,6 +90,59 @@ object FNavigator: TFNavigator
     Color = clMoneyGreen
     TabOrder = 2
     Visible = False
+    object Button2: TSpeedButton
+      Left = 0
+      Top = 8
+      Width = 152
+      Height = 21
+      Hint = 'Click to hide/show'
+      AllowAllUp = True
+      GroupIndex = 1
+      Caption = 'Julia values (x,y,z):'
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = Button2Click
+    end
+    object Button3: TSpeedButton
+      Left = 0
+      Top = 16
+      Width = 152
+      Height = 21
+      Hint = 'Click to hide/show'
+      AllowAllUp = True
+      GroupIndex = 2
+      Down = True
+      Caption = 'Formula values:'
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = Button3Click
+    end
+    object Button4: TSpeedButton
+      Left = 0
+      Top = 24
+      Width = 152
+      Height = 21
+      Hint = 'Click to hide/show'
+      AllowAllUp = True
+      GroupIndex = 3
+      Caption = '4d rotation (xw,yw,zw): '
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = Button4Click
+    end
+    object Button5: TSpeedButton
+      Left = 0
+      Top = 32
+      Width = 152
+      Height = 21
+      Hint = 'Click to hide/show'
+      AllowAllUp = True
+      GroupIndex = 4
+      Caption = 'Misc:'
+      ParentShowHint = False
+      ShowHint = True
+      OnClick = Button5Click
+    end
     object RadioGroup1: TRadioGroup
       Left = 0
       Top = 0
@@ -613,36 +666,12 @@ object FNavigator: TFNavigator
         OnClick = UpDown2Click
       end
     end
-    object Button3: TButton
-      Left = 0
-      Top = 161
-      Width = 153
-      Height = 21
-      Hint = 'Click to hide/show'
-      Caption = 'Formula values:'
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 3
-      OnClick = Button3Click
-    end
-    object Button2: TButton
-      Left = 0
-      Top = 0
-      Width = 153
-      Height = 21
-      Hint = 'Click to hide/show'
-      Caption = 'Julia values (x,y,z):'
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 6
-      OnClick = Button2Click
-    end
     object Panel7: TPanel
       Left = 28
       Top = 65
       Width = 152
       Height = 221
-      TabOrder = 7
+      TabOrder = 4
       Visible = False
       object LabelV3: TLabel
         Tag = 9
@@ -916,24 +945,12 @@ object FNavigator: TFNavigator
         OnMouseUp = RxSlider1MouseUp
       end
     end
-    object Button5: TButton
-      Left = 0
-      Top = 370
-      Width = 153
-      Height = 21
-      Hint = 'Click to hide/show'
-      Caption = 'Misc:'
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 8
-      OnClick = Button5Click
-    end
     object Panel6: TPanel
       Left = 0
       Top = 450
       Width = 152
       Height = 105
-      TabOrder = 4
+      TabOrder = 3
       Visible = False
       object Label52: TLabel
         Tag = 8
@@ -1062,25 +1079,13 @@ object FNavigator: TFNavigator
         OnMouseUp = RxSlider1MouseUp
       end
     end
-    object Button4: TButton
-      Left = 0
-      Top = 429
-      Width = 153
-      Height = 21
-      Hint = 'Click to hide/show'
-      Caption = '4d rotation (xw,yw,zw): '
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 5
-      OnClick = Button4Click
-    end
     object SizeGroup: TGroupBox
       Left = 0
       Top = 30
       Width = 152
       Height = 38
       Caption = 'Navigator Size'
-      TabOrder = 9
+      TabOrder = 5
       object DecreaseNaviSizeBtn: TSpeedButton
         Tag = 9
         Left = 5
@@ -2207,7 +2212,7 @@ object FNavigator: TFNavigator
     Left = 48
     Top = 32
     Bitmap = {
-      494C01010400090010000C000B00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010400090018000C000B00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000001600000001002000000000008010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
