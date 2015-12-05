@@ -814,14 +814,14 @@ var
 begin
   if Btn.Down then
     if CheckBox.Checked then
-      GlyphId := 3
+      GlyphId := 0//3
     else
-      GlyphId := 1
+      GlyphId := -1 //1
   else
     if CheckBox.Checked then
-      GlyphId := 2
+      GlyphId := 0 //2
     else
-      GlyphId := 0;
+      GlyphId := -1; //0
   Btn.Glyph := nil;
   ImageList1.GetBitmap(GlyphId,Btn.Glyph);
 end;
