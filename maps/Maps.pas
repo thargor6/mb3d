@@ -645,17 +645,20 @@ begin
       Sequence := TMapSequenceListProvider.GetInstance.GetSequence(nr);
       if Sequence <> nil then begin
         s := Sequence.GetFilename(TMapSequenceFrameNumberHolder.GetCurrFrameNumber);
+        Mand3DForm.OutMessage('Loading map <'+s+'>');
         if (s<>'') and FileExists(s) then begin
           FreeLightMap(LMap);
           Result := LoadLightMap(LMap^, s, False, False, False, 0);
           if Result then begin
             LMap.LMnumber := nr;
             CalcLMavrgCol(LMap);
+            Mand3DForm.OutMessage('OK');
           end;
         end;
         if not Result then begin
           FreeLightMap(LMap);
           BannLM(nr);
+          Mand3DForm.OutMessage('Failed');
         end;
       end
       else begin

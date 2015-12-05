@@ -333,7 +333,8 @@ var
 implementation
 
 uses NaviCalcThread, DivUtils, HeaderTrafos, Mand, Math, CustomFormulas,
-  LightAdjust, FileHandling, Animation, FormulaGUI, Calc, ThreadUtils;
+  LightAdjust, FileHandling, Animation, FormulaGUI, Calc, ThreadUtils,
+  MapSequences;
 
 {$R *.dfm}
 
@@ -1171,6 +1172,7 @@ begin
     begin
       if FirstStart then
       begin
+        Mand3DForm.PropagateCurrFrameNumber;
         if not Assigned(Image1.Picture.Bitmap) then
           Image1.Picture.Bitmap := TBitmap.Create;
         Image1.Picture.Bitmap.PixelFormat := pf32Bit;
@@ -1226,6 +1228,7 @@ end;
 
 procedure TFNavigator.SpeedButton11Click(Sender: TObject); //insert main paras
 begin
+    Mand3DForm.PropagateCurrFrameNumber;
     WaitForCalcToStop(1000);
     Mand3DForm.MakeHeader;
     AssignHeader(@NaviHeader, @Mand3DForm.MHeader);

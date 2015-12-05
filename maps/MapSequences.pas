@@ -14,12 +14,14 @@ type
     FLastImage: Integer;
     FLoop: Boolean;
   public
+    class function FormatFrameFilename(const Filename: String; const Frame: Integer): String;
     function GetFilename(const Frame: Integer): String;
-    property DestChannel: Integer read FDestChannel;
-    property ImageFilename: String read FImageFilename;
-    property FirstImage: Integer read FFirstImage;
-    property LastImage: Integer read FLastImage;
-    property Loop: Boolean read FLoop;
+    procedure Assign(const Src: TMapSequence);
+    property DestChannel: Integer read FDestChannel write FDestChannel;
+    property ImageFilename: String read FImageFilename write FImageFilename;
+    property FirstImage: Integer read FFirstImage write FFirstImage;
+    property LastImage: Integer read FLastImage write FLastImage;
+    property Loop: Boolean read FLoop write FLoop;
   end;
 
   TMapSequenceList = class
@@ -33,6 +35,8 @@ type
     procedure Clear;
     function GetSequence(const Channel: Integer): TMapSequence;
     procedure AddSequence(const Sequence: TMapSequence);
+    procedure DeleteSequence(const Idx: Integer);
+    procedure Assign(const Src: TMapSequenceList);
     property Count: Integer read GetCount;
     property Items[Index: Integer]: TMapSequence read GetItem;
   end;
@@ -62,7 +66,7 @@ uses
   Contnrs, Windows, Mand;
 
 { ------------------------------ TMapSequence -------------------------------- }
-function TMapSequence.GetFilename(const Frame: Integer): String;
+class function TMapSequence.FormatFrameFilename(const Filename: String; const Frame: Integer): String;
 var
   I, NumLen: Integer;
   PosExtension, PosNumStart, LFrame: Integer;
@@ -71,8 +75,8 @@ begin
   Result := '';
 
   PosExtension := -1;
-  for I := Length(FImageFilename) downto 1 do
-    if FImageFilename[I] = '.' then begin
+  for I := Length(Filename) downto 1 do
+    if Filename[I] = '.' then begin
       PosExtension := I;
       break;
     end;
@@ -81,7 +85,7 @@ begin
 
   PosNumStart := -1;
   for I := PosExtension - 1  downto 1 do
-    if (FImageFilename[I] < '0') or (FImageFilename[I]>'9') then begin
+    if (Filename[I] < '0') or (Filename[I]>'9') then begin
       PosNumStart := I + 1;
       break;
     end;
@@ -90,17 +94,37 @@ begin
 
   NumLen := PosExtension - PosNumStart;
 
-  LFrame := Frame + FirstImage - 1;
-  if LFrame < FirstImage then
-    LFrame := FirstImage
-  else if LFrame > LastImage then
-    LFrame := LastImage;
-  hs := IntToStr( LFrame );
+  hs := IntToStr( Frame );
 
   while Length(hs)<NumLen do
     hs := '0' + hs;
 
-  Result := Copy(FImageFilename, 1, PosNumStart - 1) + hs + Copy(FImageFilename, PosExtension, Length(FImageFilename) - PosExtension +1);
+  Result := Copy(Filename, 1, PosNumStart - 1) + hs + Copy(Filename, PosExtension, Length(Filename) - PosExtension +1);
+end;
+
+function TMapSequence.GetFilename(const Frame: Integer): String;
+var
+  LFrame: Integer;
+begin
+  LFrame := Frame + FirstImage - 1;
+  if LFrame < FirstImage then
+    LFrame := FirstImage
+  else if LFrame > LastImage then begin
+    if FLoop then
+      LFrame := Frame mod ( LastImage - FirstImage + 1) + FirstImage
+    else
+      LFrame := LastImage;
+  end;
+  Result := FormatFrameFilename(FImageFilename, LFrame);
+end;
+
+procedure TMapSequence.Assign(const Src: TMapSequence);
+begin
+  FDestChannel := Src.FDestChannel;
+  FImageFilename := Src.FImageFilename;
+  FFirstImage := Src.FFirstImage;
+  FLastImage := Src.FLastImage;
+  FLoop := Src.FLoop;
 end;
 { ---------------------------- TMapSequenceList ------------------------------ }
 constructor TMapSequenceList.Create;
@@ -109,6 +133,7 @@ begin
   FList := TStringList.Create;
   FList.CaseSensitive := True;
   FList.Sorted := True;
+  Flist.Duplicates := dupAccept;
 end;
 
 destructor TMapSequenceList.Destroy;
@@ -126,6 +151,13 @@ begin
     if FList.Objects[I] <> nil then
       FList.Objects[I].Free;
   FList.Clear;
+end;
+
+procedure TMapSequenceList.DeleteSequence(const Idx: Integer);
+begin
+  if FList.Objects[Idx] <> nil then
+    FList.Objects[Idx].Free;
+  FList.Delete(Idx);
 end;
 
 function TMapSequenceList.GetSequence(const Channel: Integer): TMapSequence;
@@ -158,6 +190,24 @@ function TMapSequenceList.GetItem(Index: Integer): TMapSequence;
 begin
   Result := TMapSequence(FList.Objects[Index]);
 end;
+
+procedure TMapSequenceList.Assign(const Src: TMapSequenceList);
+var
+  I: Integer;
+  Sequence: TMapSequence;
+begin
+  Clear;
+  for I := 0 to Src.Count - 1 do begin
+    Sequence := TMapSequence.Create;
+    try
+      Sequence.Assign(Src.Items[I]);
+    except
+      Sequence.Free;
+      raise;
+    end;
+    AddSequence(Sequence);
+  end;
+end;
 { ------------------------ TMapSequenceListPersister ------------------------- }
 const
   PropName_Count = 'Count';
@@ -189,12 +239,12 @@ begin
       for I := 0 to Count - 1 do begin
         PostFix := '#'+IntToStr(I);
         Sequence := TMapSequence.Create;
-        Sequences.AddSequence(Sequence);
         Sequence.FDestChannel := StrToInt('0'+Lst.Values[PropName_DestChannel+PostFix]);
         Sequence.FImageFilename := Lst.Values[PropName_ImageFilename+PostFix];
         Sequence.FFirstImage := StrToInt('0'+Lst.Values[PropName_FirstImage+PostFix]);
         Sequence.FLastImage := StrToInt('0'+Lst.Values[PropName_LastImage+PostFix]);
         Sequence.FLoop := Boolean(StrToInt('0'+Lst.Values[PropName_Loop+PostFix]));
+        Sequences.AddSequence(Sequence);
       end;
     finally
       Lst.Free;

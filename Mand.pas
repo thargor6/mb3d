@@ -244,9 +244,6 @@ type
     MutaGenBtn: TSpeedButton;
     MapSequencesBtn: TSpeedButton;
     VisualThemesBtn: TSpeedButton;
-    FrameEdit: TEdit;
-    Label46: TLabel;
-    UpDown6: TUpDown;
     Label9: TLabel;
     Edit9: TEdit;
     Label10: TLabel;
@@ -273,6 +270,10 @@ type
     Label57: TLabel;
     PositionBtn: TSpeedButton;
     RotationBtn: TSpeedButton;
+    Panel7: TPanel;
+    Label46: TLabel;
+    FrameEdit: TEdit;
+    FrameUpDown: TUpDown;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -389,6 +390,8 @@ type
     procedure MapSequencesBtnClick(Sender: TObject);
     procedure PositionBtnClick(Sender: TObject);
     procedure RotationBtnClick(Sender: TObject);
+    procedure FrameUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure FrameEditExit(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
   //    const Rect: TRect; Active: Boolean);
@@ -498,6 +501,7 @@ type
     procedure UpdateAndScaleImageFull(NewScale: Integer);
     procedure RefreshNavigator(const Enabled: Boolean);
     function IsCalculating: Boolean;
+    procedure PropagateCurrFrameNumber;
   end;
 procedure TriggerRepaint;
 function AniFileAlreadyExists(var s: String): LongBool;
@@ -533,7 +537,7 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
      uMapCalcWindow, FormulaCompiler, MutaGenGUI, VisualThemesGUI, Vcl.Themes,
-     MapSequencesGUI;
+     MapSequencesGUI, MapSequences;
 
 {$R *.dfm}
 
@@ -633,6 +637,27 @@ begin
     if (Button = btPrev) and (i > -2) then Dec(i);
     if i > 0 then Label61.Caption := '+' + IntToStr(i)
              else Label61.Caption := IntToStr(i);
+end;
+
+procedure TMand3DForm.FrameEditExit(Sender: TObject);
+begin
+  PropagateCurrFrameNumber;
+  LightAdjustForm.SpinEdit1Change(Sender);
+end;
+
+procedure TMand3DForm.FrameUpDownClick(Sender: TObject; Button: TUDBtnType);
+var
+  Frame: Integer;
+begin
+  if FrameEdit.Text<>'' then begin
+    Frame := StrToInt( FrameEdit.Text );
+    if (Button = btNext) then
+      FrameEdit.Text := IntToStr( Frame + 1 )
+    else
+      FrameEdit.Text := IntToStr( Max(1, Frame - 1) );
+  end;
+  PropagateCurrFrameNumber;
+  LightAdjustForm.SpinEdit1Change(Sender);
 end;
 
 procedure TMand3DForm.VisualThemesBtnClick(Sender: TObject);
@@ -1683,6 +1708,7 @@ end;
 
 procedure TMand3DForm.Button2Click(Sender: TObject);   //main Calc3D button
 begin
+    PropagateCurrFrameNumber;
     TilingForm.SaveThisTile := False;
     if Button2.Caption = 'Stop' then
     begin
@@ -3678,6 +3704,7 @@ end;
 procedure TMand3DForm.Button11Click(Sender: TObject);    //calculate a rough 8x8blocky image
 var TileSize: TPoint;
 begin
+    PropagateCurrFrameNumber;
     TilingForm.SaveThisTile := False;
     MakeHeader;
     if (MHeader.Width < 1) or (MHeader.Height < 1) then Exit;
@@ -4005,6 +4032,11 @@ end;
 function TMand3DForm.IsCalculating: Boolean;
 begin
   Result := Button2.Caption = 'Stop';
+end;
+
+procedure TMand3DForm.PropagateCurrFrameNumber;
+begin
+  TMapSequenceFrameNumberHolder.SetCurrFrameNumber( StrToInt('0'+Mand3DForm.FrameEdit.Text) );
 end;
 
 Initialization

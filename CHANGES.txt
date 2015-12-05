@@ -1,3 +1,9 @@
+V1.90 BETA 3
+- Global rework of the UI, added theme-support, made "Glossy" the default theme
+- many internal improvements of the MutaGen
+- Navigator-size may now be altered, the last setting is stored to the ini-file
+- Simplified the formula-window, removed the Nava-Refresh-option which was introduced with V1.90 BETA 1
+
 V1.90 BETA 2
 - MutaGen changes:
    - added an internal probing mode, which generates a collection of mutations at each step and selects the msot "interesting" one, leading to much betters results

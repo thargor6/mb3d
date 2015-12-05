@@ -2460,20 +2460,6 @@ object Mand3DForm: TMand3DForm
         ShowHint = True
         OnMouseUp = SpeedButton18MouseUp
       end
-      object Label46: TLabel
-        Left = 502
-        Top = 9
-        Width = 32
-        Height = 13
-        Caption = 'Frame:'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -12
-        Font.Name = 'MS Sans Serif'
-        Font.Style = []
-        ParentFont = False
-        Visible = False
-      end
       object ProgressBar1: TProgressBar
         Left = 288
         Top = 8
@@ -2494,31 +2480,54 @@ object Mand3DForm: TMand3DForm
         TabOrder = 1
         Text = '5'
       end
-      object FrameEdit: TEdit
-        Tag = 1
-        Left = 536
-        Top = 7
-        Width = 49
-        Height = 21
-        Hint = 'Frame number to show '
-        ParentShowHint = False
-        ShowHint = True
+      object Panel7: TPanel
+        Left = 509
+        Top = 1
+        Width = 108
+        Height = 33
+        Align = alRight
+        BevelOuter = bvNone
         TabOrder = 2
-        Text = '1'
-        Visible = False
-      end
-      object UpDown6: TUpDown
-        Left = 587
-        Top = 7
-        Width = 30
-        Height = 21
-        Hint = 'Increase/decrease frame number'
-        Min = -30000
-        Max = 30000
-        ParentShowHint = False
-        ShowHint = True
-        TabOrder = 3
-        Visible = False
+        ExplicitLeft = 505
+        object Label46: TLabel
+          Left = 1
+          Top = 9
+          Width = 32
+          Height = 13
+          Caption = 'Frame:'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -12
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+        end
+        object FrameEdit: TEdit
+          Tag = 1
+          Left = 35
+          Top = 7
+          Width = 49
+          Height = 21
+          Hint = 'Frame number to use for animated maps in the main editor'
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 0
+          Text = '1'
+          OnExit = FrameEditExit
+        end
+        object FrameUpDown: TUpDown
+          Left = 86
+          Top = 7
+          Width = 18
+          Height = 21
+          Hint = 'Increase/decrease frame number'
+          Min = -30000
+          Max = 30000
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 1
+          OnClick = FrameUpDownClick
+        end
       end
     end
     object ScrollBox1: TScrollBox
@@ -3043,7 +3052,7 @@ object Mand3DForm: TMand3DForm
         Top = 4
         Width = 248
         Height = 64
-        ActivePage = TabSheet7
+        ActivePage = TabSheet13
         TabOrder = 1
         object TabSheet7: TTabSheet
           Caption = 'Open'
@@ -3659,7 +3668,6 @@ object Mand3DForm: TMand3DForm
             Caption = 'Map Sequences'
             ParentShowHint = False
             ShowHint = True
-            Visible = False
             OnClick = MapSequencesBtnClick
           end
           object VisualThemesBtn: TSpeedButton

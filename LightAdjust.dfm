@@ -4,7 +4,7 @@ object LightAdjustForm: TLightAdjustForm
   BorderStyle = bsDialog
   Caption = 'Lighting'
   ClientHeight = 625
-  ClientWidth = 225
+  ClientWidth = 233
   Color = clBtnFace
   DragMode = dmAutomatic
   Font.Charset = DEFAULT_CHARSET
@@ -24,7 +24,7 @@ object LightAdjustForm: TLightAdjustForm
   object Panel3: TPanel
     Left = 0
     Top = 521
-    Width = 225
+    Width = 233
     Height = 104
     Align = alBottom
     BevelOuter = bvNone
@@ -493,7 +493,7 @@ object LightAdjustForm: TLightAdjustForm
   object TabControl1: TTabControl
     Left = 0
     Top = 0
-    Width = 225
+    Width = 233
     Height = 180
     Align = alTop
     Font.Charset = DEFAULT_CHARSET
@@ -643,16 +643,12 @@ object LightAdjustForm: TLightAdjustForm
       Top = 72
       Width = 221
       Height = 108
-      ActivePage = TabSheet1
+      ActivePage = TabSheet6
       TabOrder = 3
       OnChange = PageControl1Change
       OnChanging = PageControl1Changing
       object TabSheet1: TTabSheet
         Caption = 'Global light'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label2: TLabel
           Left = 5
           Top = 30
@@ -747,10 +743,6 @@ object LightAdjustForm: TLightAdjustForm
       object TabSheet2: TTabSheet
         Caption = 'Positional light'
         ImageIndex = 1
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label13: TLabel
           Left = 47
           Top = 5
@@ -935,10 +927,6 @@ object LightAdjustForm: TLightAdjustForm
       object TabSheet6: TTabSheet
         Caption = 'Lightmap'
         ImageIndex = 2
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label39: TLabel
           Left = 158
           Top = 31
@@ -1123,7 +1111,7 @@ object LightAdjustForm: TLightAdjustForm
   object Panel4: TPanel
     Left = 0
     Top = 483
-    Width = 225
+    Width = 233
     Height = 38
     Align = alClient
     TabOrder = 2
@@ -1179,17 +1167,13 @@ object LightAdjustForm: TLightAdjustForm
   object PageControl2: TPageControl
     Left = 0
     Top = 180
-    Width = 225
+    Width = 233
     Height = 303
-    ActivePage = TabSheet3
+    ActivePage = Fog
     Align = alTop
     TabOrder = 3
     object TabSheet3: TTabSheet
       Caption = 'Object'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label37: TLabel
         Left = 31
         Top = 38
@@ -1835,10 +1819,6 @@ object LightAdjustForm: TLightAdjustForm
     object TabSheet4: TTabSheet
       Caption = 'Ambient'
       ImageIndex = 1
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label4: TLabel
         Left = 2
         Top = 169
@@ -2380,10 +2360,6 @@ object LightAdjustForm: TLightAdjustForm
     object Fog: TTabSheet
       Caption = 'd.Fog'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label1: TLabel
         Left = 33
         Top = 79
@@ -2394,54 +2370,12 @@ object LightAdjustForm: TLightAdjustForm
       object FogResetButton: TSpeedButton
         Left = 0
         Top = 83
-        Width = 25
+        Width = 35
         Height = 31
         Hint = 'Click to set all dynamic fog sliders to zero.'
         BiDiMode = bdLeftToRight
+        Caption = 'set to 0'
         Flat = True
-        Glyph.Data = {
-          36050000424D360500000000000036040000280000000D000000100000000100
-          08000000000000010000C30E0000C30E00000001000000010000000000000000
-          80000080000000808000800000008000800080800000C0C0C000C0DCC000F0CA
-          A60000000000357C62007C8B1400758B1F006D8D2C00738D25003B917C005B89
-          43004C8755004E895E0053935E0048936D0053966000439478008F8D0500878B
-          0900898B09000177A1000077B200007CC10018809A00358F84000B80AB000384
-          B2000584B8000D87BB000B8BBA001B93BF002AA1BF00018FCA00008BCE00148F
-          C3001493C7001094C700169ACC00189ACA000091D6000094D4000094D6000B96
-          D000219ECC000BA5E60000A5EC0009A7E8000BABEE0012ADEE0000ABF30000B4
-          FF0005B8FF0012BFFF0005C1FF0001C7FF0000ECFF0019E7F90000F1FF0000FF
-          FF0080FFFF00C6C6C6001400140058871B0018000000E401000060EE12004000
-          00000000000000000000A8EE120068EE12000000000000000000000000000000
-          000000000000000000000000000040000000ACEE120020E99100000000000200
-          000001000000E401000060EE1200E401000060149200F8D62200D8D622000000
-          00000000000090EC01008F00000004EC120020E99100C0EC12007C94370011A9
-          000011A90000D4EC12001E9437005044AF0011A9000000000000ECEC1200E294
-          37005044AF003D150F00F057E200B057E2000CED1200824C0F00F057E200A603
-          3700B64C0F00F057E20014ED120000000000B8009200105BCE00E0ED12004100
-          9200A80714005D00920038EE1200000000003CED120000000000B80092005087
-          1B0008EE1200410092004807140058ED120000000000B800920050871B0024EE
-          120041009200480714005D00920068EE12000400000000000000020000000000
-          0000040000003000000000000000185BCE00D98B360000F0FD00300000000400
-          00000000140098EB12005CF69100200000000000000058871B00C4ED12000000
-          0000B800920020210B0090EE120041009200380BE2005D009200806A0A002821
-          0B000300000061F69100EECF9100CEDD910000001400E4ED1200DADD91008CEE
-          120020E9910068F69100FFFF01000400000068ED1200000000008CEE120020E9
-          910060009200FFFFFF005D009200AC04920000001400C800000058871B0048EE
-          12008204920058871B00000000009CEE12000EECDA0020ECDA00C8A662000000
-          E200D4A66200000000000000000000000000000000000000010019000000D4ED
-          120028210B00C8EE120020E9910060009200FFFFFF005D009200DEC2BF000000
-          E20000000000E3C2BF00806A0A0028210B0003000000AA68D30028210B002821
-          0B00D4EE1200A4EE1200FFFFFF0040EF1200945CC0007020BE00FFFFFF00E3C2
-          BF00D595440028210B00A01B6300A01B6300F0FBFF00A4A0A000808080000000
-          FF0000FF000000FFFF00FF000000FF00FF00FFFF0000FFFFFF00430043430000
-          43434343000043FFFFDF00434300434300434300434300FFFFFF004343004343
-          00434300434300FFFFFF00434300434300434300434300FFFFDF000043430000
-          43434300434300FFFFFF00434343434343434300434300FFFFFF434343434343
-          43434343000043FFFFDF43434343434343434343434343FFFFFF434343434343
-          43434343434343FFFFFF43434343434343434343434343FFFFDF430000434343
-          00004343430043FFFFFF00434300430043434343004343FFFFFF434300434300
-          00004343004343FFFFDF43004343430043430043004343FFFFFF004343004343
-          00004343000043FFFFFF43000043434343434343004343FFFFDF}
         ParentShowHint = False
         ParentBiDiMode = False
         ShowHint = True
@@ -2638,10 +2572,6 @@ object LightAdjustForm: TLightAdjustForm
     object TabSheet5: TTabSheet
       Caption = 'Back pic'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object Label6: TLabel
         Left = 49
         Top = 177

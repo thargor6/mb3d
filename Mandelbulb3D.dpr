@@ -25,7 +25,7 @@ uses
   HeaderTrafos in 'HeaderTrafos.pas',
   TypeDefinitions in 'TypeDefinitions.pas',
   AniProcess in 'AniProcess.pas' {AniProcessForm},
-  IniDirsForm in 'IniDirsForm.pas' {IniDirForm},
+  MapSequencesGUI in 'maps\MapSequencesGUI.pas' {MapSequencesFrm},
   FormulaGUI in 'FormulaGUI.pas' {FormulaGUIForm},
   DOF in 'DOF.pas',
   ColorPick in 'ColorPick.pas' {ColorForm},
@@ -51,16 +51,21 @@ uses
   RegisterM3Pgraphic in 'RegisterM3Pgraphic.pas',
   ColorSSAO in 'ColorSSAO.pas',
   ThreadUtils in 'ThreadUtils.pas',
-  Maps in 'Maps.pas',
+  Maps in 'maps\Maps.pas',
   PostProcessForm in 'PostProcessForm.pas' {PostProForm},
   ColorOptionForm in 'ColorOptionForm.pas' {FColorOptions},
   uMapCalcWindow in 'uMapCalcWindow.pas' {MapCalcWindow},
   FormulaCompiler in 'FormulaCompiler.pas',
   PreviewRenderer in 'render\PreviewRenderer.pas',
   MB3DFacade in 'facade\MB3DFacade.pas',
-  MutaGenUI in 'mutagen\MutaGenUI.pas' {MutaGenFrm},
+  MutaGenGUI in 'mutagen\MutaGenGUI.pas' {MutaGenFrm},
   MutaGen in 'mutagen\MutaGen.pas',
-  FormulaNames in 'formula\FormulaNames.pas';
+  FormulaNames in 'formula\FormulaNames.pas',
+  MapSequences in 'maps\MapSequences.pas',
+  Vcl.Themes,
+  Vcl.Styles,
+  IniDirsForm in 'prefs\IniDirsForm.pas' {IniDirForm},
+  VisualThemesGUI in 'prefs\VisualThemesGUI.pas' {VisualThemesFrm};
 
 {$R *.res}
 
@@ -76,7 +81,7 @@ begin
   Application.CreateForm(TAnimationForm, AnimationForm);
   Application.CreateForm(TAniPreviewForm, AniPreviewForm);
   Application.CreateForm(TAniProcessForm, AniProcessForm);
-  Application.CreateForm(TIniDirForm, IniDirForm);
+  Application.CreateForm(TMapSequencesFrm, MapSequencesFrm);
   Application.CreateForm(TFormulaGUIForm, FormulaGUIForm);
   Application.CreateForm(TColorForm, ColorForm);
   Application.CreateForm(TBatchForm1, BatchForm1);
@@ -90,6 +95,8 @@ begin
   Application.CreateForm(TFColorOptions, FColorOptions);
   Application.CreateForm(TMapCalcWindow, MapCalcWindow);
   Application.CreateForm(TMutaGenFrm, MutaGenFrm);
+  Application.CreateForm(TIniDirForm, IniDirForm);
+  Application.CreateForm(TVisualThemesFrm, VisualThemesFrm);
   //SuppressMessageBoxes := True;
   Application.Run;
 end.
