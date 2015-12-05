@@ -274,6 +274,8 @@ type
     Label46: TLabel;
     FrameEdit: TEdit;
     FrameUpDown: TUpDown;
+    TabSheet14: TTabSheet;
+    BugReportBtn: TSpeedButton;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
