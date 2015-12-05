@@ -3359,7 +3359,7 @@ object Mand3DForm: TMand3DForm
             Caption = 'Report a bug'
             ParentShowHint = False
             ShowHint = True
-            OnClick = VisualThemesBtnClick
+            OnClick = BugReportBtnClick
           end
         end
       end

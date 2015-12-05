@@ -394,6 +394,7 @@ type
     procedure RotationBtnClick(Sender: TObject);
     procedure FrameUpDownClick(Sender: TObject; Button: TUDBtnType);
     procedure FrameEditExit(Sender: TObject);
+    procedure BugReportBtnClick(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
   //    const Rect: TRect; Active: Boolean);
@@ -3366,6 +3367,11 @@ procedure TMand3DForm.IniDirsBtnClick(Sender: TObject);
 begin
     LoadIni;
     IniDirForm.Visible := True;
+end;
+
+procedure TMand3DForm.BugReportBtnClick(Sender: TObject);
+begin
+  ShellExecute(0, 'OPEN', PChar('http://bugs.mb3d.org/'), '', '', SW_SHOWNORMAL);
 end;
 
 procedure TMand3DForm.Button10Click(Sender: TObject);
