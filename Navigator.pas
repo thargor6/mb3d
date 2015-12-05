@@ -2390,8 +2390,10 @@ begin
   EnableButtons;
   Height := NaviHeader.Height;
   SetWindowSize(Panel2.Visible);
-  if Height <> NaviHeader.Height then
+  if Height <> NaviHeader.Height then begin
+    if iActiveThreads > 0 then WaitForCalcToStop(2000);
     NewCalc;
+  end;
 end;
 
 procedure TFNavigator.EnableButtons;
