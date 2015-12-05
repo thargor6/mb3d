@@ -1700,6 +1700,8 @@ begin
     MHeader.Light.BGbmp[0] := 0;
     MHeader.TilingOptions := 0;
     DragAcceptFiles(Self.Handle, True);
+
+    PageControl2.ActivePageIndex := 0;
   //  if Testing then Showmessage('M3D load ini now...');
   //  LoadIni;
 //    SetM3Dini;

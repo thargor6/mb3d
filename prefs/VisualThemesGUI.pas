@@ -43,7 +43,14 @@ end;
 
 procedure TVisualThemesFrm.StylesCmbChange(Sender: TObject);
 begin
-  TStyleManager.TrySetStyle(StylesCmb.Items[StylesCmb.ItemIndex]);
+  try
+    TStyleManager.TrySetStyle(StylesCmb.Items[StylesCmb.ItemIndex]);
+  except
+    on E: Exception do begin
+      if Pos('Focus', E.Message) < 1 then
+        raise;
+    end;
+  end;
 end;
 
 procedure TVisualThemesFrm.ThemesOffBtnClick(Sender: TObject);

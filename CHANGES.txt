@@ -1,3 +1,9 @@
+V1.90 BETA 4
+- Support for animated (height)maps! (Use the new "Map Sequences"-window in the Prefs-section to define them and to assign the sequence to a map channel)
+- Indicators (similar as before) to show active effects in the post-process-windows
+- Do not allow to send params from the MutaGen to the main editor while the main editor is rendering
+- Some minor UI-related changes
+
 V1.90 BETA 3
 - Global rework of the UI, added theme-support, made "Glossy" the default theme
 - many internal improvements of the MutaGen

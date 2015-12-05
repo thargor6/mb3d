@@ -29,7 +29,6 @@ object FormulaGUIForm: TFormulaGUIForm
     Align = alBottom
     BevelOuter = bvLowered
     TabOrder = 3
-    ExplicitWidth = 315
     object Label22: TLabel
       Left = 8
       Top = 1
@@ -121,7 +120,6 @@ object FormulaGUIForm: TFormulaGUIForm
     TabIndex = 0
     OnChange = TabControl1Change
     OnMouseDown = TabControl1MouseDown
-    ExplicitWidth = 315
     object Label16: TLabel
       Left = 134
       Top = 411
@@ -873,7 +871,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Width = 293
       Height = 369
       Font.Charset = ANSI_CHARSET
-      Font.Color = clWindowText
+      Font.Color = clActiveCaption
       Font.Height = -11
       Font.Name = 'Courier New'
       Font.Style = []
@@ -1284,7 +1282,6 @@ object FormulaGUIForm: TFormulaGUIForm
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 315
     object Label17: TLabel
       Left = 197
       Top = 4
@@ -1434,7 +1431,6 @@ object FormulaGUIForm: TFormulaGUIForm
     TabIndex = 0
     OnChange = TabControl2Change
     OnChanging = TabControl2Changing
-    ExplicitWidth = 315
     object SpeedButton3: TSpeedButton
       Left = 268
       Top = 0
@@ -1491,7 +1487,6 @@ object FormulaGUIForm: TFormulaGUIForm
     BevelOuter = bvLowered
     TabOrder = 4
     Visible = False
-    ExplicitWidth = 315
     object Label18: TLabel
       Left = 154
       Top = 7
