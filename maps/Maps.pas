@@ -651,6 +651,7 @@ begin
           Result := LoadLightMap(LMap^, s, False, False, False, 0);
           if Result then begin
             LMap.LMnumber := nr;
+            LMap.LMframe := TMapSequenceFrameNumberHolder.GetCurrFrameNumber;
             CalcLMavrgCol(LMap);
             Mand3DForm.OutMessage('OK');
           end;
@@ -690,6 +691,7 @@ begin
           if Result then
           begin
             LMap.LMnumber := nr;
+            LMap.LMframe := 0;
             CalcLMavrgCol(LMap);
           end
           else

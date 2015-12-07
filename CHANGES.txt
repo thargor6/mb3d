@@ -1,3 +1,9 @@
+V1.90 BETA 5
+- improved the refresh behaviour of the Navigator when changing the size
+- changed the captions of some buttons in order to make them more readable, especially when using Themes
+- new Info-Section at the main window, which now has a button to reach the official bug-reporting tool
+- changed the indicator symbols in the post-processing-window
+
 V1.90 BETA 4
 - Support for animated (height)maps! (Use the new "Map Sequences"-window in the Prefs-section to define them and to assign the sequence to a map channel)
 - Indicators (similar as before) to show active effects in the post-process-windows

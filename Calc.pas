@@ -119,7 +119,9 @@ begin
       c := 0;
       while j < Mcount do // delete already loaded maps from list
       begin
-        if (CalcMaps[i].LMnumber = MA[j]) and (TMapSequenceListProvider.GetInstance.GetSequence(MA[j]) = nil) then begin
+        if (CalcMaps[i].LMnumber = MA[j]) and
+          ((TMapSequenceListProvider.GetInstance.GetSequence(MA[j]) = nil) or
+          (CalcMaps[i].LMframe = TMapSequenceFrameNumberHolder.GetCurrFrameNumber)) then begin
           Dec(Mcount);
           for n := j to Mcount - 1 do MA[n] := MA[n + 1];
           Inc(c);

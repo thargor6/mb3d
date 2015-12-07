@@ -4056,6 +4056,7 @@ Initialization
     if not SysUtils.DirectoryExists(AppDataDir) then AppDataDir := AppFolder;
     AppDataDir := IncludeTrailingPathDelimiter(AppDataDir);
     M3DBackGroundPic.LMnumber := 0;
+    M3DBackGroundPic.LMframe := 0;
     M3DBackGroundPic.LMWidth := 0;
 
 end.

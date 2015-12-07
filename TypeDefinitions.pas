@@ -233,6 +233,7 @@ type
 
   TLightMap = packed record   //full geographic representation of ambient light, like background image
     LMnumber:     Integer;    //number of loaded Lightmap, no need to load it again if number is equal. Must be initialized with 0
+    LMframe:      Integer;    //number of loaded frame of animated Lightmaps
     LMWidth:      Integer;    //+3 pixel for interpolation
     LMHeight:     Integer;    //..same
     sLMXfactor:   Single;     //to get the pixel coordinates from arcsin's etc
