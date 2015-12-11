@@ -40,6 +40,7 @@ type
 
 function LoadLightMap(var LM: TLightMap; FileName: String; Smooth, Convert2Spherical, SetHGCursor: LongBool; fitBorder: Integer): LongBool;
 function LoadLightMapNr(nr: Integer; LMap: TPLightMap): LongBool;
+procedure LoadEmptyLightMap(var LM: TLightMap; Smooth, Convert2Spherical, SetHGCursor: LongBool; fitBorder: Integer);
 procedure FreeLightMap(LM: TPLightMap);
 procedure FreeLightMapsInLValsWithRestriction(LVal, LValRestricted: TPLightVals);
 procedure FreeLightMapsInLVals(LVal: TPLightVals);
@@ -645,22 +646,21 @@ begin
       Sequence := TMapSequenceListProvider.GetInstance.GetSequence(nr);
       if Sequence <> nil then begin
         s := Sequence.GetFilename(TMapSequenceFrameNumberHolder.GetCurrFrameNumber);
-        Mand3DForm.OutMessage('Loading map <'+s+'>');
         if (s<>'') and FileExists(s) then begin
           FreeLightMap(LMap);
           Result := LoadLightMap(LMap^, s, False, False, False, 0);
           if Result then begin
-            LMap.LMnumber := nr;
-            LMap.LMframe := TMapSequenceFrameNumberHolder.GetCurrFrameNumber;
-            CalcLMavrgCol(LMap);
-            Mand3DForm.OutMessage('OK');
+            Mand3DForm.OutMessage('Loaded map <'+ExtractFilename(s)+'>');
           end;
         end;
         if not Result then begin
-          FreeLightMap(LMap);
-          BannLM(nr);
-          Mand3DForm.OutMessage('Failed');
+          Mand3DForm.OutMessage('Loading map <'+ExtractFilename(s)+'> failed');
+          LoadEmptyLightMap(LMap^, False, False, False, 0);
+          Result := True;
         end;
+        LMap.LMnumber := nr;
+        LMap.LMframe := TMapSequenceFrameNumberHolder.GetCurrFrameNumber;
+        CalcLMavrgCol(LMap);
       end
       else begin
         if LMap.LMnumber = nr then Result := True else
@@ -1040,6 +1040,50 @@ begin
   end;
   if SetHGCursor then Screen.Cursor := tmpCursor;
 //  if not Result then FreeLightMap(@LM);
+end;
+
+procedure LoadEmptyLightMap(var LM: TLightMap; Smooth, Convert2Spherical, SetHGCursor: LongBool; fitBorder: Integer);
+var BMP: TBitmap;
+    PNG: TPngObject;
+    Pic: TPicture;
+    x, y, xx: Integer;
+    pc, pc2, pca: PCardinal;
+    pw: TP3Word;
+    pb1, pb2: PByte;
+    c: Cardinal;
+    bGrayScale: LongBool;
+begin
+  BMP := TBitmap.Create;
+  try
+    BMP.PixelFormat := pf32Bit;
+    BMP.SetSize(64, 64);
+    LM.LMWidth := BMP.Width;
+    LM.LMHeight := BMP.Height;
+    SetLength(LM.LMa, (LM.LMWidth + 1) * (LM.LMHeight + 1));
+    LM.iMapType := 0;
+    LM.sIntensity := 1;
+    LM.iLMstart := Integer(@LM.LMa[0]);
+    LM.sLMXfactor := LM.LMWidth;
+    LM.sLMYfactor := LM.LMHeight;
+    pca := PCardinal(LM.iLMstart);
+    for y := 0 to LM.LMHeight do begin
+      pc := BMP.ScanLine[y mod LM.LMHeight];
+      c  := pc^;
+      for x := 1 to LM.LMWidth do begin
+        pca^ := pc^;
+        Inc(pca);
+        Inc(pc);
+      end;
+      pca^ := c;
+      Inc(pca);
+    end;
+    LM.sIntensity := 1;
+    if Smooth or Convert2Spherical then SmoothLightMap(LM, Smooth, Convert2Spherical);
+    FitLMborder(LM, fitBorder);
+    PutStringInLightFilename(LM.LMfilename, 'blank');
+  finally
+    BMP.Free;
+  end;
 end;
 
 procedure FreeLightMap(LM: TPLightMap);
