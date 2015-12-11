@@ -1,3 +1,10 @@
+V1.90 BETA 7
+- improved stability when loading maps, especially in the case of missing frames
+- new increment-option when defining animated maps (higher values than 1 will skip frames)
+
+V1.90 BETA 6
+- improved performance of loading animated maps
+
 V1.90 BETA 5
 - improved the refresh behaviour of the Navigator when changing the size
 - changed the captions of some buttons in order to make them more readable, especially when using Themes

@@ -33,6 +33,9 @@ type
     LastImageEdit: TEdit;
     LoopCheckBox: TCheckBox;
     Label3: TLabel;
+    IncrementEdit: TEdit;
+    Label4: TLabel;
+    IncrementUpDown: TUpDown;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -46,6 +49,8 @@ type
     procedure LoopCheckBoxExit(Sender: TObject);
     procedure DeleteBtnClick(Sender: TObject);
     procedure NewBtnClick(Sender: TObject);
+    procedure IncrementEditExit(Sender: TObject);
+    procedure IncrementUpDownClick(Sender: TObject; Button: TUDBtnType);
   private
     { Private-Deklarationen }
     FRefreshing: Boolean;
@@ -150,6 +155,8 @@ begin
       Sequence.FirstImage := GuessFirstImage(Sequence.ImageFilename);
       Sequence.LastImage := GuessLastImage(Sequence.ImageFilename);
       Sequence.DestChannel := GuessDestChannel;
+      Sequence.Increment := 1;
+      Sequence.Loop := True;
       FMapSequenceList.AddSequence(Sequence);
       RefreshMapSequencesList;
       MapSequencesList.ItemIndex := FMapSequenceList.Count - 1;
@@ -206,6 +213,11 @@ begin
   Visible := False;
 end;
 
+procedure TMapSequencesFrm.IncrementUpDownClick(Sender: TObject; Button: TUDBtnType);
+begin
+  IncrementEditExit(Sender);
+end;
+
 procedure TMapSequencesFrm.DeleteBtnClick(Sender: TObject);
 var
   Idx: Integer;
@@ -248,6 +260,8 @@ begin
   LoopCheckBox.Enabled := Editing;
   DestChannelEdit.Enabled := Editing;
   DestChannelUpDown.Enabled := Editing;
+  IncrementEdit.Enabled := Editing;
+  IncrementUpDown.Enabled := Editing;
 end;
 
 procedure TMapSequencesFrm.RefreshDetailView;
@@ -259,12 +273,14 @@ begin
   EnableControls;
   Sequence := GetCurrSequence;
   DestChannelUpDown.Position := 0;
+  IncrementUpDown.Position := 1;
   if Sequence = nil then begin
     ImageFilenameEdit.Text := '';
     FirstImageEdit.Text := '';
     LastImageEdit.Text := '';
     LoopCheckBox.Checked := False;
     DestChannelEdit.Text := '';
+    IncrementEdit.Text := '';
   end
   else begin
     ImageFilenameEdit.Text := Sequence.ImageFilename;
@@ -272,6 +288,7 @@ begin
     LastImageEdit.Text := IntToStr(Sequence.LastImage);
     LoopCheckBox.Checked := Sequence.Loop;
     DestChannelEdit.Text := IntToStr(Sequence.DestChannel);
+    IncrementEdit.Text := IntToStr(Sequence.Increment);
   end;
 end;
 
@@ -284,6 +301,15 @@ begin
     Result := FMapSequenceList.Items[Idx]
   else
     Result := nil;
+end;
+
+procedure TMapSequencesFrm.IncrementEditExit(Sender: TObject);
+var
+  Sequence: TMapSequence;
+begin
+  Sequence := GetCurrSequence;
+  if Sequence <> nil then
+    Sequence.Increment := StrToInt(IncrementEdit.Text);
 end;
 
 procedure TMapSequencesFrm.LastImageEditExit(Sender: TObject);

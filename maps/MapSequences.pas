@@ -12,6 +12,7 @@ type
     FImageFilename: String;
     FFirstImage: Integer;
     FLastImage: Integer;
+    FIncrement: Integer;
     FLoop: Boolean;
   public
     class function FormatFrameFilename(const Filename: String; const Frame: Integer): String;
@@ -21,6 +22,7 @@ type
     property ImageFilename: String read FImageFilename write FImageFilename;
     property FirstImage: Integer read FFirstImage write FFirstImage;
     property LastImage: Integer read FLastImage write FLastImage;
+    property Increment: Integer read FIncrement write FIncrement;
     property Loop: Boolean read FLoop write FLoop;
   end;
 
@@ -69,7 +71,7 @@ uses
 class function TMapSequence.FormatFrameFilename(const Filename: String; const Frame: Integer): String;
 var
   I, NumLen: Integer;
-  PosExtension, PosNumStart, LFrame: Integer;
+  PosExtension, PosNumStart: Integer;
   hs: String;
 begin
   Result := '';
@@ -104,16 +106,17 @@ end;
 
 function TMapSequence.GetFilename(const Frame: Integer): String;
 var
-  LFrame: Integer;
+  LFrame, LLastImage: Integer;
 begin
-  LFrame := Frame + FirstImage - 1;
+  LFrame := (Frame - 1) * Increment + FirstImage;
+  LLastImage := (LastImage div Increment) * Increment;
   if LFrame < FirstImage then
     LFrame := FirstImage
-  else if LFrame > LastImage then begin
+  else if LFrame > LLastImage then begin
     if FLoop then
-      LFrame := Frame mod ( LastImage - FirstImage + 1) + FirstImage
+      LFrame := (LFrame - 1) mod ( LLastImage - FirstImage + 1) + FirstImage
     else
-      LFrame := LastImage;
+      LFrame := LLastImage;
   end;
   Result := FormatFrameFilename(FImageFilename, LFrame);
 end;
@@ -124,6 +127,7 @@ begin
   FImageFilename := Src.FImageFilename;
   FFirstImage := Src.FFirstImage;
   FLastImage := Src.FLastImage;
+  FIncrement := Src.FIncrement;
   FLoop := Src.FLoop;
 end;
 { ---------------------------- TMapSequenceList ------------------------------ }
@@ -215,6 +219,7 @@ const
   PropName_ImageFilename = 'ImageFilename';
   PropName_FirstImage = 'FirstImage';
   PropName_LastImage = 'LastImage';
+  PropName_Increment = 'Increment';
   PropName_Loop = 'Loop';
 
 class function TMapSequenceListPersister.GetInitFilename: String;
@@ -244,6 +249,9 @@ begin
         Sequence.FFirstImage := StrToInt('0'+Lst.Values[PropName_FirstImage+PostFix]);
         Sequence.FLastImage := StrToInt('0'+Lst.Values[PropName_LastImage+PostFix]);
         Sequence.FLoop := Boolean(StrToInt('0'+Lst.Values[PropName_Loop+PostFix]));
+        Sequence.FIncrement := StrToInt('0'+Lst.Values[PropName_Increment+PostFix]);
+        if Sequence.FIncrement < 1 then
+          Sequence.FIncrement := 1;
         Sequences.AddSequence(Sequence);
       end;
     finally
@@ -270,6 +278,7 @@ begin
       Lst.Values[PropName_FirstImage+PostFix] := IntToStr(Sequence.FirstImage);
       Lst.Values[PropName_LastImage+PostFix] := IntToStr(Sequence.LastImage);
       Lst.Values[PropName_Loop+PostFix] := IntToStr(Ord(Sequence.Loop));
+      Lst.Values[PropName_Increment+PostFix] := IntToStr(Ord(Sequence.Increment));
     end;
     Lst.SaveToFile(GetInitFilename);
   finally

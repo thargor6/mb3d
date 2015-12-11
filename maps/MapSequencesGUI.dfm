@@ -28,10 +28,6 @@ object MapSequencesFrm: TMapSequencesFrm
     BevelOuter = bvNone
     BorderWidth = 8
     TabOrder = 0
-    ExplicitLeft = -16
-    ExplicitTop = 65
-    ExplicitWidth = 217
-    ExplicitHeight = 305
     object MapSequencesList: TListBox
       Left = 8
       Top = 8
@@ -41,10 +37,6 @@ object MapSequencesFrm: TMapSequencesFrm
       ItemHeight = 13
       TabOrder = 0
       OnClick = MapSequencesListClick
-      ExplicitLeft = 24
-      ExplicitTop = 56
-      ExplicitWidth = 121
-      ExplicitHeight = 97
     end
   end
   object Panel3: TPanel
@@ -55,8 +47,6 @@ object MapSequencesFrm: TMapSequencesFrm
     Align = alRight
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = 200
-    ExplicitHeight = 356
     object Label1: TLabel
       Left = 6
       Top = 50
@@ -121,6 +111,13 @@ object MapSequencesFrm: TMapSequencesFrm
       Height = 13
       Caption = 'Target Map Slot'
     end
+    object Label4: TLabel
+      Left = 6
+      Top = 105
+      Width = 47
+      Height = 13
+      Caption = 'Increment'
+    end
     object DestChannelEdit: TEdit
       Left = 88
       Top = 178
@@ -136,12 +133,12 @@ object MapSequencesFrm: TMapSequencesFrm
       OnExit = DestChannelEditExit
     end
     object DestChannelUpDown: TUpDown
-      Left = 150
+      Left = 148
       Top = 178
-      Width = 30
+      Width = 16
       Height = 21
       Associate = DestChannelEdit
-      Min = -100000
+      Min = 1
       Max = 100000
       Position = 1
       TabOrder = 1
@@ -156,8 +153,6 @@ object MapSequencesFrm: TMapSequencesFrm
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 2
-      ExplicitTop = 8
-      ExplicitWidth = 833
       object Bevel1: TBevel
         Left = 0
         Top = 31
@@ -222,8 +217,6 @@ object MapSequencesFrm: TMapSequencesFrm
         Align = alLeft
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitLeft = 112
-        ExplicitTop = 1
       end
     end
     object Panel4: TPanel
@@ -235,8 +228,6 @@ object MapSequencesFrm: TMapSequencesFrm
       BevelOuter = bvNone
       BorderWidth = 8
       TabOrder = 3
-      ExplicitTop = 522
-      ExplicitWidth = 833
       object CancelAndExitBtn: TButton
         Left = 8
         Top = 8
@@ -246,8 +237,6 @@ object MapSequencesFrm: TMapSequencesFrm
         Caption = 'Cancel + exit'
         TabOrder = 0
         OnClick = CancelAndExitBtnClick
-        ExplicitLeft = 32
-        ExplicitTop = 16
       end
       object SaveAndExitBtn: TButton
         Left = 350
@@ -258,14 +247,12 @@ object MapSequencesFrm: TMapSequencesFrm
         Caption = 'Save + exit'
         TabOrder = 1
         OnClick = SaveAndExitBtnClick
-        ExplicitLeft = 272
-        ExplicitTop = 16
       end
     end
     object ImageFilenameEdit: TEdit
-      Left = 62
+      Left = 88
       Top = 48
-      Width = 483
+      Width = 457
       Height = 21
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
@@ -280,7 +267,7 @@ object MapSequencesFrm: TMapSequencesFrm
       TabOrder = 4
     end
     object FirstImageEdit: TEdit
-      Left = 62
+      Left = 88
       Top = 75
       Width = 60
       Height = 21
@@ -293,7 +280,7 @@ object MapSequencesFrm: TMapSequencesFrm
       OnExit = FirstImageEditExit
     end
     object LastImageEdit: TEdit
-      Left = 128
+      Left = 154
       Top = 75
       Width = 60
       Height = 21
@@ -306,8 +293,8 @@ object MapSequencesFrm: TMapSequencesFrm
       OnExit = LastImageEditExit
     end
     object LoopCheckBox: TCheckBox
-      Left = 194
-      Top = 79
+      Left = 92
+      Top = 129
       Width = 82
       Height = 15
       Caption = 'Loop'
@@ -317,6 +304,33 @@ object MapSequencesFrm: TMapSequencesFrm
       State = cbChecked
       TabOrder = 7
       OnExit = LoopCheckBoxExit
+    end
+    object IncrementEdit: TEdit
+      Left = 88
+      Top = 102
+      Width = 60
+      Height = 21
+      Hint = 'Increment if the sequence, increase the value to skip images'
+      MaxLength = 5
+      NumbersOnly = True
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 8
+      Text = '1'
+      OnExit = IncrementEditExit
+    end
+    object IncrementUpDown: TUpDown
+      Left = 148
+      Top = 102
+      Width = 16
+      Height = 21
+      Associate = IncrementEdit
+      Min = -100000
+      Max = 100000
+      Position = 1
+      TabOrder = 9
+      Thousands = False
+      OnClick = IncrementUpDownClick
     end
   end
   object OpenPictureDialog: TOpenPictureDialog
