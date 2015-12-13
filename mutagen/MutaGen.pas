@@ -672,10 +672,10 @@ begin
   ModifyIterationCountStrength := 1.0;
 
   FProbing := True;
-  FProbingWidth := 32;
-  FProbingHeight := 24;
-  FProbingMaxCount := 12;
-  FProbingMinCoverage := 0.36;
+  FProbingWidth := 40;
+  FProbingHeight := 32;
+  FProbingMaxCount := 9;
+  FProbingMinCoverage := 0.32;
   FProbingMinDifference := 0.16;
 end;
 { ---------------------------- TMutationCreator ------------------------------ }
@@ -863,7 +863,7 @@ var
 begin
   Result := Params.Clone;
   FCount := GetNonEmptyFormulaCount(Result);
-  if (FCount > 4) or ((FCount > 2) and (RandGen.NextRandomDouble > 0.5)) then begin
+  if (FCount > 4) or ((FCount > 3) and (RandGen.NextRandomDouble > 0.5)) then begin
     for Pass := 0 to 1 do begin
       for I := Low(CategoriesByPriority) to High(CategoriesByPriority) do begin
         IdxList := GetNonEmptyFormulasByCategory( Result, CategoriesByPriority[I]);

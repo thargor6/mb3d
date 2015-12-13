@@ -264,7 +264,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Caption = 'Iterationcount'
     end
     object SpeedButton11: TSpeedButton
-      Left = 266
+      Left = 246
       Top = 48
       Width = 28
       Height = 20
@@ -308,7 +308,7 @@ object FormulaGUIForm: TFormulaGUIForm
       Height = 369
     end
     object SpeedButton4: TSpeedButton
-      Left = 218
+      Left = 208
       Top = 48
       Width = 40
       Height = 20
@@ -559,6 +559,19 @@ object FormulaGUIForm: TFormulaGUIForm
       ParentShowHint = False
       ShowHint = True
       OnClick = ExchangeFormulaLeftBtnClick
+    end
+    object JITFormulaBtn: TSpeedButton
+      Left = 278
+      Top = 48
+      Width = 28
+      Height = 20
+      Hint = 'Create/edit a JIT-compiled formula'
+      Caption = 'JIT'
+      Flat = True
+      ParentShowHint = False
+      PopupMenu = JITPopupMenu
+      ShowHint = True
+      OnClick = JITFormulaBtnClick
     end
     object Edit16: TEdit
       Tag = 14
@@ -1670,5 +1683,18 @@ object FormulaGUIForm: TFormulaGUIForm
     OnTimer = Timer1Timer
     Left = 8
     Top = 144
+  end
+  object JITPopupMenu: TPopupMenu
+    Left = 240
+    Top = 187
+    object EditJITFormulaItm: TMenuItem
+      Caption = 'Edit JIT-compiled Formula'
+      Enabled = False
+      OnClick = EditJITFormulaItmClick
+    end
+    object NewJITFormulaItm: TMenuItem
+      Caption = 'New JIT-compiled Formula'
+      OnClick = NewJITFormulaItmClick
+    end
   end
 end

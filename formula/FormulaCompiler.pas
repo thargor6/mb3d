@@ -276,3 +276,4 @@ finalization
   FreeAndNil(PaxFormulaCompiler);
   {$endif}
 end.
+

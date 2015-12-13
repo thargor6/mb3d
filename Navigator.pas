@@ -1419,30 +1419,37 @@ end;
 procedure TFNavigator.SpeedButton18Click(Sender: TObject);   // "f" insert paras to animation keyframe
 var tmpHeader: TMandHeader11;
     i: Integer;
+    CurrNaviFrame: Integer;
 begin
-    if AnimationForm.SpeedButton1.Enabled then
-    begin
-      tmpHeader := Mand3DForm.MHeader;
-      tmpHeader.PCFAddon := @NaviHAddon;
-      FastMove(NaviHeader.dZstart, tmpHeader.dZstart, 96);  // dZstart up to dFOVy
-      FastMove(NaviHeader.hVGrads, tmpHeader.hVGrads, 72);  // hVGrads only
-      FastMove(NaviHeader.dXWrot, tmpHeader.dXWrot, 24);
-      FastMove(NaviHeader.dJX, tmpHeader.dJX, 24);
-      tmpHeader.bDFogIt := NaviHeader.bDFogIt;
-      tmpHeader.RStop := NaviHeader.RStop;
-      tmpHeader.sDEcombS := NaviHeader.sDEcombS;
-      tmpHeader.sNaviMinDist := StrToFloatK(Edit6.Text);
-      tmpHeader.bPlanarOptic := NaviHeader.bPlanarOptic;
-      tmpHeader.Iterations := NaviHeader.Iterations;
-      if DEstopChanged then tmpHeader.sDEstop := NaviHeader.sDEstop;
-      ModRotPoint(tmpHeader);
-      tmpHeader.Light.TBpos[6] := UpDown1.Position;
-      for i := 0 to MAX_FORMULA_COUNT - 1 do tmpHeader.PHCustomF[i] := @HybridCustoms[i];
-      AnimationForm.Visible := True;
-      AnimationForm.InsertFromHeader(@tmpHeader);  //Assigned, HAddon pointer must be set
+    if AnimationForm.SpeedButton1.Enabled then begin
+      if iActiveThreads > 0 then WaitForCalcToStop(2000);
+      CurrNaviFrame := TMapSequenceFrameNumberHolder.GetCurrFrameNumber;
+      try
+        tmpHeader := Mand3DForm.MHeader;
+        tmpHeader.PCFAddon := @NaviHAddon;
+        FastMove(NaviHeader.dZstart, tmpHeader.dZstart, 96);  // dZstart up to dFOVy
+        FastMove(NaviHeader.hVGrads, tmpHeader.hVGrads, 72);  // hVGrads only
+        FastMove(NaviHeader.dXWrot, tmpHeader.dXWrot, 24);
+        FastMove(NaviHeader.dJX, tmpHeader.dJX, 24);
+        tmpHeader.bDFogIt := NaviHeader.bDFogIt;
+        tmpHeader.RStop := NaviHeader.RStop;
+        tmpHeader.sDEcombS := NaviHeader.sDEcombS;
+        tmpHeader.sNaviMinDist := StrToFloatK(Edit6.Text);
+        tmpHeader.bPlanarOptic := NaviHeader.bPlanarOptic;
+        tmpHeader.Iterations := NaviHeader.Iterations;
+        if DEstopChanged then tmpHeader.sDEstop := NaviHeader.sDEstop;
+        ModRotPoint(tmpHeader);
+        tmpHeader.Light.TBpos[6] := UpDown1.Position;
+        for i := 0 to MAX_FORMULA_COUNT - 1 do tmpHeader.PHCustomF[i] := @HybridCustoms[i];
+        AnimationForm.Visible := True;
+        AnimationForm.InsertFromHeader(@tmpHeader);  //Assigned, HAddon pointer must be set
 
-      SetFocus;
-    end;  
+        SetFocus;
+      finally
+        Sleep(250);
+        TMapSequenceFrameNumberHolder.SetCurrFrameNumber(CurrNaviFrame);
+      end;
+    end;
 end;
 
 procedure TFNavigator.CheckBox2Click(Sender: TObject);

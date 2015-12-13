@@ -641,8 +641,6 @@ begin
     Result := False;
     if LMbanned(nr) then
       Exit;
-    MapCriticalSection.Enter;
-    try
       Sequence := TMapSequenceListProvider.GetInstance.GetSequence(nr);
       if Sequence <> nil then begin
         s := Sequence.GetFilename(TMapSequenceFrameNumberHolder.GetCurrFrameNumber);
@@ -663,46 +661,48 @@ begin
         CalcLMavrgCol(LMap);
       end
       else begin
-        if LMap.LMnumber = nr then Result := True else
-        begin
-          bFound := False;
-          s := IncludeTrailingPathDelimiter(IniDirs[9]) + IntToStr(nr);
-          if FindFirst(s + '.*', faAnyFile, SR) = 0 then
-          repeat
-            bFound := Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG') > 0;
-            if bFound then
-              s := IncludeTrailingPathDelimiter(IniDirs[9]) + SR.Name;
-          until bFound or (FindNext(SR) <> 0);
-          FindClose(SR);
-          if not bFound then
-          begin
-            if FindFirst(s + '*.*', faAnyFile, SR) = 0 then
+        if LMap.LMnumber = nr then Result := True
+        else begin
+          MapCriticalSection.Enter;
+          try
+            bFound := False;
+            s := IncludeTrailingPathDelimiter(IniDirs[9]) + IntToStr(nr);
+            if FindFirst(s + '.*', faAnyFile, SR) = 0 then
             repeat
-              bFound := (Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG') > 0) and
-                        (Length(SR.Name) > Length(IntToStr(nr))) and
-                         not (SR.Name[Length(IntToStr(nr)) + 1] in ['0'..'9']);
+              bFound := Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG') > 0;
               if bFound then
                 s := IncludeTrailingPathDelimiter(IniDirs[9]) + SR.Name;
             until bFound or (FindNext(SR) <> 0);
             FindClose(SR);
+            if not bFound then
+            begin
+              if FindFirst(s + '*.*', faAnyFile, SR) = 0 then
+              repeat
+                bFound := (Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG') > 0) and
+                          (Length(SR.Name) > Length(IntToStr(nr))) and
+                           not (SR.Name[Length(IntToStr(nr)) + 1] in ['0'..'9']);
+                if bFound then
+                  s := IncludeTrailingPathDelimiter(IniDirs[9]) + SR.Name;
+              until bFound or (FindNext(SR) <> 0);
+              FindClose(SR);
+            end;
+            if not bFound then Result := False else
+              Result := LoadLightMap(LMap^, s, False, False, False, 0);
+            if Result then
+            begin
+              LMap.LMnumber := nr;
+              LMap.LMframe := 0;
+              CalcLMavrgCol(LMap);
+            end
+            else
+            begin
+              FreeLightMap(LMap);
+              BannLM(nr);
+            end;
+          finally
+            MapCriticalSection.Leave;
           end;
-          if not bFound then Result := False else
-            Result := LoadLightMap(LMap^, s, False, False, False, 0);
-          if Result then
-          begin
-            LMap.LMnumber := nr;
-            LMap.LMframe := 0;
-            CalcLMavrgCol(LMap);
-          end
-          else
-          begin
-            FreeLightMap(LMap);
-            BannLM(nr);
-          end;
-        end;
-      end;
-    finally
-      MapCriticalSection.Leave;
+       end;
     end;
 end;
 

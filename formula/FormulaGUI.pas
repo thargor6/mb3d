@@ -134,6 +134,10 @@ type
     Edit25: TEdit;
     ExchangeFormulaRightBtn: TSpeedButton;
     ExchangeFormulaLeftBtn: TSpeedButton;
+    JITFormulaBtn: TSpeedButton;
+    JITPopupMenu: TPopupMenu;
+    EditJITFormulaItm: TMenuItem;
+    NewJITFormulaItm: TMenuItem;
     procedure TabControl1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure SpeedButton11Click(Sender: TObject);
@@ -187,6 +191,9 @@ type
     procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
     procedure ExchangeFormulaLeftBtnClick(Sender: TObject);
     procedure ExchangeFormulaRightBtnClick(Sender: TObject);
+    procedure JITFormulaBtnClick(Sender: TObject);
+    procedure NewJITFormulaItmClick(Sender: TObject);
+    procedure EditJITFormulaItmClick(Sender: TObject);
   private
     { Private-Deklarationen }
     OldTab2index: Integer;
@@ -226,7 +233,7 @@ var
 implementation
 
 uses Mand, CustomFormulas, DivUtils, Math, HeaderTrafos, FileHandling, formulas,
-  PostProcessForm, Math3D, FormulaNames;
+  PostProcessForm, Math3D, FormulaNames, JITFormulaEditGUI;
 
 {$R *.dfm}
 
@@ -287,6 +294,19 @@ begin
             ListBoxEx11.Items.Add(LB.Items[i]);
       end;
     end;
+end;
+
+procedure TFormulaGUIForm.NewJITFormulaItmClick(Sender: TObject);
+var
+  JITFormulaEditorForm: TJITFormulaEditorForm;
+begin
+  JITFormulaEditorForm := TJITFormulaEditorForm.Create(Self);
+  try
+    JITFormulaEditorForm.EditMode := emNew;
+    JITFormulaEditorForm.ShowModal;
+  finally
+    JITFormulaEditorForm.Free;
+  end;
 end;
 
 procedure TFormulaGUIForm.AdjustTC1height;
@@ -503,6 +523,7 @@ var i, t: Integer;
     E: TEdit;
     L: TLabel;
     bAltHybrid: LongBool;
+    Formulaname: String;
 begin
     SetTabNames;
     bAltHybrid := LabelItCount.Caption = 'Iterationcount';
@@ -518,7 +539,9 @@ begin
         EditItCount.Text := IntToStr(iItCount);
       end
       else EditItCount.Text := FloatToStrSingle(PSingle(@iItCount)^);
-      SetFormulaCBs(Trim(CustomFtoStr(CustomFname)));
+      Formulaname := Trim(CustomFtoStr(CustomFname));
+      SetFormulaCBs(Formulaname);
+      EditJITFormulaItm.Enabled := Pos('JIT', Formulaname) = 1;
       for i := 0 to 15 do
       begin
         E := (FindComponent('Edit' + IntToStr(i + 1)) as TEdit);
@@ -595,6 +618,14 @@ begin
       end;
 end;
 
+procedure TFormulaGUIForm.JITFormulaBtnClick(Sender: TObject);
+var
+  Position: TPoint;
+begin
+  if GetCursorPos(Position) then
+    JITPopupMenu.Popup(Position.X, Position.Y);
+end;
+
 procedure TFormulaGUIForm.EditItCountChange(Sender: TObject);
 begin
     if bUserChange then
@@ -605,6 +636,20 @@ begin
         TryStrToFloat(Trim(EditItCount.Text), PSingle(@Mand3DForm.HAddon.Formulas[TabControl1.TabIndex].iItCount)^);
       CalcRstop;
     end; 
+end;
+
+procedure TFormulaGUIForm.EditJITFormulaItmClick(Sender: TObject);
+var
+  JITFormulaEditorForm: TJITFormulaEditorForm;
+begin
+  JITFormulaEditorForm := TJITFormulaEditorForm.Create(Self);
+  try
+    JITFormulaEditorForm.EditMode := emEdit;
+    JITFormulaEditorForm.Formulaname := ComboEdit1.Text;
+    JITFormulaEditorForm.ShowModal;
+  finally
+    JITFormulaEditorForm.Free;
+  end;
 end;
 
 procedure TFormulaGUIForm.Edit1Change(Sender: TObject);
