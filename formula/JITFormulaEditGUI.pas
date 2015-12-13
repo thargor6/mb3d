@@ -17,7 +17,7 @@ type
     Panel6: TPanel;
     CancelAndExitBtn: TButton;
     SaveAndExitBtn: TButton;
-    PageControl1: TPageControl;
+    MainPageControl: TPageControl;
     CodeSheet: TTabSheet;
     DescriptionSheet: TTabSheet;
     CodePnl: TPanel;
@@ -44,7 +44,7 @@ type
     Panel14: TPanel;
     Panel15: TPanel;
     ConstantDeleteBtn: TSpeedButton;
-    ConstantsAddBtn: TSpeedButton;
+    ConstantAddBtn: TSpeedButton;
     ConstantEditBtn: TSpeedButton;
     Panel16: TPanel;
     ConstantsList: TListBox;
@@ -69,7 +69,7 @@ type
     procedure ParamDeleteBtnClick(Sender: TObject);
     procedure ConstantDeleteBtnClick(Sender: TObject);
     procedure OptionDeleteBtnClick(Sender: TObject);
-    procedure ConstantsAddBtnClick(Sender: TObject);
+    procedure ConstantAddBtnClick(Sender: TObject);
     procedure ConstantEditBtnClick(Sender: TObject);
     procedure OptionAddBtnClick(Sender: TObject);
     procedure ParamAddBtnClick(Sender: TObject);
@@ -85,11 +85,11 @@ type
     procedure ShowError(const Msg: String);
     procedure ParseFormula(const Filename: String);
     procedure NewFormula;
-    procedure SaveFormula;
     procedure EnableControls;
     procedure PopulateParamsList;
     procedure PopulateConstantsList;
     procedure PopulateOptionsList;
+    procedure Validate;
   public
     { Public declarations }
     property EditMode: TEditMode read FEditMode write FEditMode;
@@ -103,7 +103,8 @@ implementation
 
 {$R *.dfm}
 uses
-  FileHandling, ConstantValueEditGUI, ParamValueEditGUI;
+  CustomFormulas, FileHandling, ConstantValueEditGUI, ParamValueEditGUI,
+  DivUtils, TypeDefinitions;
 
 procedure TJITFormulaEditorForm.CancelAndExitBtnClick(Sender: TObject);
 begin
@@ -123,8 +124,9 @@ end;
 
 procedure TJITFormulaEditorForm.FormShow(Sender: TObject);
 begin
+  MainPageControl.ActivePage := CodeSheet;
   try
-   Init;
+    Init;
   except
     on E:Exception do begin
       FEditMode := emError;
@@ -205,9 +207,20 @@ begin
 end;
 
 procedure TJITFormulaEditorForm.SaveAndExitBtnClick(Sender: TObject);
+var
+  FormulaDir: String;
+  FormulaFilename: String;
 begin
-  SaveFormula;
-  ModalResult := mrOK;
+  Validate;
+  FJITFormula.Formulaname := FormulanameEdit.Text;
+  FJITFormula.Code := CodeEdit.Text;
+  FJITFormula.Description := DescriptionEdit.Text;
+  FormulaDir := IncludeTrailingPathDelimiter(IniDirs[3]);
+  FormulaFilename := FormulaDir + FJITFormula.Formulaname + '.m3f';
+  if (not FileExists(FormulaFilename)) or (MessageDlg('The file <'+FJITFormula.Formulaname + '.m3f'+'> already exists. Do you want to overwrite it?',mtConfirmation, [mbYes, mbNo], 0)=mrYes) then begin
+    TJITFormulaWriter.SaveFormula(FJITFormula, FormulaFilename );
+    ModalResult := mrOK;
+  end;
 end;
 
 procedure TJITFormulaEditorForm.NewFormula;
@@ -353,7 +366,7 @@ begin
   end;
 end;
 
-procedure TJITFormulaEditorForm.ConstantsAddBtnClick(Sender: TObject);
+procedure TJITFormulaEditorForm.ConstantAddBtnClick(Sender: TObject);
 begin
   ConstantValueEditFrm.Clear;
   ConstantValueEditFrm.WindowTitle := 'Add constant value';
@@ -372,27 +385,40 @@ end;
 
 procedure TJITFormulaEditorForm.EnableControls;
 begin
+  ParamAddBtn.Enabled := ParamsList.Items.Count < 16;
   ParamEditBtn.Enabled := ParamsList.ItemIndex >= 0;
   ParamDeleteBtn.Enabled := ParamEditBtn.Enabled;
+  ConstantAddBtn.Enabled := ConstantsList.Items.Count < 16;
   ConstantEditBtn.Enabled := ConstantsList.ItemIndex >= 0;
   ConstantDeleteBtn.Enabled := ConstantEditBtn.Enabled;
+  OptionAddBtn.Enabled := True;
   OptionEditBtn.Enabled := OptionsList.ItemIndex >= 0;
   OptionDeleteBtn.Enabled := OptionEditBtn.Enabled;
 end;
 
 procedure TJITFormulaEditorForm.ShowError(const Msg: String);
 begin
-  // TODO
+  MessageDlg('Msg', mtInformation, [mbOK], 0);
 end;
 
 procedure TJITFormulaEditorForm.ParseFormula(const Filename: String);
+var
+  dOptionVtmp: array[0..15] of Double;
+  CustomFname: array[0..31] of Byte;
+  Formulaname: String;
+  CustomFormula: TCustomFormula;
 begin
-  // TODO
+  Formulaname := ExtractFilename(Filename);
+  Formulaname := Copy(Formulaname, 1, Length(Formulaname) - Length('.m3f'));
+  PutStringInCustomF(CustomFname, Formulaname);
+  if not LoadCustomFormula(Filename, CustomFormula, CustomFname, dOptionVtmp, False, 0, FJITFormula) then
+    raise Exception.Create('Could not load formula <'+Filename+'>');
 end;
 
-procedure TJITFormulaEditorForm.SaveFormula;
+procedure TJITFormulaEditorForm.Validate;
 begin
-  // TODO
+  if Pos('JIT', FormulanameEdit.Text) <> 1 then
+    raise Exception.Create('The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas');
 end;
 
 end.

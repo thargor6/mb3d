@@ -2,13 +2,13 @@ unit CustomFormulas;
 
 interface
 
-uses DivUtils, SysUtils, FileHandling, TypeDefinitions;
+uses DivUtils, SysUtils, FileHandling, TypeDefinitions, JITFormulas;
 
 function LoadCustomFormulaFromHeader(var CustomFname: array of Byte;
                                      var lCustomFormula: TCustomFormula;
                                      var dOptionVars: array of Double): Boolean;
 function LoadCustomFormula(FileName: String; var lCustomFormula: TCustomFormula;
-  var CustomFname: array of Byte; var dOptionValues: array of Double; bVerbose: LongBool; MinModTime: TDatetime): Boolean;
+  var CustomFname: array of Byte; var dOptionValues: array of Double; bVerbose: LongBool; MinModTime: TDatetime; ParseResult: TJITFormula): Boolean;
 function AssignCustomFormula(CF1, CF2: PTCustomFormula): LongBool;
 procedure FillCustomVBufWithVars(CF1: PTCustomFormula; dOptionValues: array of Double{;isAlt: LongBool});
 procedure IniCustomF(CF: PTCustomFormula);
@@ -685,7 +685,8 @@ end;
 
 function LoadCustomFormula(FileName: String; var lCustomFormula: TCustomFormula;
                            var CustomFname: array of Byte; var dOptionValues: array of Double;
-                           bVerbose: LongBool; MinModTime: TDatetime): Boolean;
+                           bVerbose: LongBool; MinModTime: TDatetime;
+                           ParseResult: TJITFormula): Boolean;
 var n, i, j: Integer;
     f: TextFile;
     s, s2, s3: String;
@@ -694,7 +695,7 @@ var n, i, j: Integer;
     EndOfSection: Boolean;
     Code: TStringList;
     CompiledFormula: TCompiledFormula;
-
+    Formulaname: String;
     p: Pointer;
 
 
@@ -716,9 +717,12 @@ const                                                    //DEoption > 0 if analy
 begin
     Result := False;
     AssignFile(f, FileName);
-    if FileExists(FileName) then
-    with lCustomFormula do
-    try
+    if FileExists(FileName) then with lCustomFormula do try
+      if Assigned(ParseResult) then begin
+        Formulaname := ExtractFilename( FileName );
+        ParseResult.Formulaname := Copy(Formulaname, 1, Length(Formulaname) - Length('.m3f'));
+      end;
+
       SetLength(VarBuffer, 1024);
       pConstPointer16 := Pointer((Integer(@VarBuffer[0]) + 271) and $FFFFFFF0);
       pb              := PByte(pConstPointer16);
@@ -739,16 +743,56 @@ begin
           LoadNextStr;
           n := Pos(UpCaseN(s, 5), cOPtions);
           case n of
-            1:   SIMDlevel := SIMDlevel or 1;
-            6:   dDEscale  := StrToFloatK(StrLastWord(s));
-            11:  dSIpow    := StrToFloatK(StrLastWord(s));
-            16:  dRstop    := StrToFloatK(StrLastWord(s));
-            21:  SIMDlevel := SIMDlevel or 2;
-            26:  SIMDlevel := SIMDlevel or 4;
-            31:  SIMDlevel := SIMDlevel or 8;
-            36:  iVersion  := StrToInt(StrLastWord(s));
-            41:  iDEoption := StrToInt(StrLastWord(s));
-            51:  dADEscale := StrToFloatK(StrLastWord(s));                //-6                                                                 -6
+            1:  begin
+                  SIMDlevel := SIMDlevel or 1;
+                  if Assigned(ParseResult) then
+                    ParseResult.SetOption('SSE2', dtString, '');
+                end;
+            6:   begin
+                   dDEscale  := StrToFloatK(StrLastWord(s));
+                   if Assigned(ParseResult) then
+                     ParseResult.SetOption('DEScale', dtDouble, dDEscale);
+                 end;
+            11:  begin
+                   dSIpow    := StrToFloatK(StrLastWord(s));
+                   if Assigned(ParseResult) then
+                     ParseResult.SetOption('SIPow', dtDouble, dSIpow);
+                 end;
+            16:  begin
+                   dRstop    := StrToFloatK(StrLastWord(s));
+                   if Assigned(ParseResult) then
+                     ParseResult.SetOption('RStop', dtDouble, dRstop);
+                 end;
+            21:  begin
+                   SIMDlevel := SIMDlevel or 2;
+                   if Assigned(ParseResult) then
+                     ParseResult.SetOption('SSE3', dtString, '');
+                 end;
+            26:  begin
+                   SIMDlevel := SIMDlevel or 4;
+                   if Assigned(ParseResult) then
+                     ParseResult.SetOption('SSEE', dtString, '');
+                 end;
+            31:  begin
+                   SIMDlevel := SIMDlevel or 8;
+                   if Assigned(ParseResult) then
+                     ParseResult.SetOption('SSE4', dtString, '');
+                 end;
+            36:  begin
+                   iVersion  := StrToInt(StrLastWord(s));
+                   if Assigned(ParseResult) then
+                     ParseResult.SetOption('Version', dtInteger, iVersion);
+                 end;
+            41:  begin
+                   iDEoption := StrToInt(StrLastWord(s));
+                   if Assigned(ParseResult) then
+                     ParseResult.SetOption('DEoption', dtInteger, iDEoption);
+                 end;
+            51:  begin
+                   dADEscale := StrToFloatK(StrLastWord(s));                //-6                                                                 -6
+                   if Assigned(ParseResult) then
+                     ParseResult.SetOption('ADEscale', dtDouble, dADEscale);
+                 end;
                     //9      16     23      31          43          55            63            87       86      94      102       113         129           137
             else    //1      8      15      23          35          47            61            75       84      92      100       111         121           129      138      148
             begin   //.DOUBLE.SINGLE.INTEGER.DOUBLEANGLE.SINGLEANGLE.3DOUBLEANGLES.3SINGLEANGLES.BOXSCALE.FOLDING.DSQUARE.NOVARIABLE.FOLDING16.6SINGLEANGLES.DRECIPRO.2DOUBLES..DSQRRECI.'
@@ -757,13 +801,14 @@ begin
               if n > 50 then Dec(n, 6);
               if n > 130 then Dec(n, 6);
               if n > 180 then Dec(n, 4);
-              if (n > 0) and (iCFOptionCount < 16) then
-              begin
+              if (n > 0) and (iCFOptionCount < 16) then begin
                 byOptionTypes[iCFOptionCount] := (n + 8) div 10;
                 dOptionValues[iCFOptionCount] := StrToFloatK(StrLastWord(s));
                 s3 := StrSecondWord(s);
                 if byOptionTypes[iCFOptionCount] = 12 then  //6 singleangles
                 begin
+                  if Assigned(ParseResult) then
+                    raise Exception.Create('Complex param type <'+IntToStr(byOptionTypes[iCFOptionCount])+'> not supported');
                   j := iCFOptionCount;
                   for i := 0 to 5 do
                   begin
@@ -777,8 +822,11 @@ begin
                 else
                 begin
                   sOptionStrings[iCFOptionCount] := s3;
-                  if byOptionTypes[iCFOptionCount] in [5, 6] then
-                  begin
+                  if Assigned(ParseResult) then
+                    ParseResult.SetParamValue(s3, dtDouble, dOptionValues[iCFOptionCount]);
+                  if byOptionTypes[iCFOptionCount] in [5, 6] then begin
+                    if Assigned(ParseResult) then
+                      raise Exception.Create('Complex param type <'+IntToStr(byOptionTypes[iCFOptionCount])+'> not supported');
                     d := dOptionValues[iCFOptionCount];
                     sOptionStrings[iCFOptionCount] := s3 + ' X';
                     Inc(iCFOptionCount);
@@ -792,6 +840,8 @@ begin
                   end
                   else if byOptionTypes[iCFOptionCount] = 18 then
                   begin
+                    if Assigned(ParseResult) then
+                      raise Exception.Create('Complex param type <'+IntToStr(byOptionTypes[iCFOptionCount])+'> not supported');
                     for i := 0 to 2 do
                     begin
                       Inc(iCFOptionCount);
@@ -802,6 +852,8 @@ begin
                   end
                   else if byOptionTypes[iCFOptionCount] = 19 then
                   begin
+                    if Assigned(ParseResult) then
+                      raise Exception.Create('Complex param type <'+IntToStr(byOptionTypes[iCFOptionCount])+'> not supported');
                     sOptionStrings[iCFOptionCount] := 'Scale ' + s3;
                     Inc(iCFOptionCount);
                     byOptionTypes[iCFOptionCount] := 6;
@@ -845,10 +897,26 @@ begin
           LoadNextStr;
           n := Pos(UpCaseN(s, 5), cVars);
           case n of
-            1:  PDouble(pb)^  := StrToFloatK(StrLastWord(s));
-            6:  PInteger(pb)^ := StrToInt(StrLastWord(s));
-            9:  PInt64(pb)^   := StrToInt64(StrLastWord(s));
-            14: PSingle(pb)^  := StrToFloatK(StrLastWord(s));
+            1:  begin
+                  PDouble(pb)^  := StrToFloatK(StrLastWord(s));
+                  if Assigned(ParseResult) then
+                    ParseResult.AddConstValue(dtDouble, PDouble(pb)^);
+                end;
+            6:  begin
+                  PInteger(pb)^ := StrToInt(StrLastWord(s));
+                  if Assigned(ParseResult) then
+                    ParseResult.AddConstValue(dtInteger, PInteger(pb)^);
+                end;
+            9:  begin
+                  PInt64(pb)^   := StrToInt64(StrLastWord(s));
+                  if Assigned(ParseResult) then
+                    ParseResult.AddConstValue(dtInt64, PInt64(pb)^);
+                end;
+            14: begin
+                  PSingle(pb)^  := StrToFloatK(StrLastWord(s));
+                  if Assigned(ParseResult) then
+                    ParseResult.AddConstValue(dtSingle, PSingle(pb)^);
+                end;
             else
             begin
                Dec(pb, 8);
@@ -882,6 +950,8 @@ begin
             else
               raise Exception.Create(Code.Text+#13#10+ CompiledFormula.ErrorMessage.Text);
           end;
+          if Assigned(ParseResult) then
+            ParseResult.Code := Code.Text;
         finally
           Code.Free;
         end;
@@ -934,8 +1004,9 @@ begin
           Inc(n);
         end;
         InsertDescription(CustomFtoStr(CustomFname), CFdescription, LastModTime);
+        if Assigned(ParseResult) then
+          ParseResult.Description := CFdescription;
       end;
-
     except
       Result := False;
     end;
@@ -950,7 +1021,7 @@ begin
     CFdescription := '';
     s := CustomFtoStr(CustomFname) + '.m3f';
     Result := LoadCustomFormula(IncludeTrailingPathDelimiter(IniDirs[3]) + s,
-                            lCustomFormula, CustomFname, dOptionVars, False, 0);
+                            lCustomFormula, CustomFname, dOptionVars, False, 0, nil);
     if not Result then
     begin
       Mand3dForm.OutMessage(CustomFtoStr(CustomFname) + ' formula is missing! (Check Ini-dir for formulas)');

@@ -26,7 +26,7 @@ uses
   TypeDefinitions in 'TypeDefinitions.pas',
   AniProcess in 'AniProcess.pas' {AniProcessForm},
   MapSequencesGUI in 'maps\MapSequencesGUI.pas' {MapSequencesFrm},
-  FormulaGUI in 'FormulaGUI.pas' {FormulaGUIForm},
+  FormulaGUI in 'formula\FormulaGUI.pas' {FormulaGUIForm},
   DOF in 'DOF.pas',
   ColorPick in 'ColorPick.pas' {ColorForm},
   Paint in 'Paint.pas',
@@ -55,7 +55,7 @@ uses
   PostProcessForm in 'PostProcessForm.pas' {PostProForm},
   ColorOptionForm in 'ColorOptionForm.pas' {FColorOptions},
   uMapCalcWindow in 'uMapCalcWindow.pas' {MapCalcWindow},
-  FormulaCompiler in 'FormulaCompiler.pas',
+  FormulaCompiler in 'formula\FormulaCompiler.pas',
   PreviewRenderer in 'render\PreviewRenderer.pas',
   MB3DFacade in 'facade\MB3DFacade.pas',
   MutaGenGUI in 'mutagen\MutaGenGUI.pas' {MutaGenFrm},
@@ -65,7 +65,11 @@ uses
   Vcl.Themes,
   Vcl.Styles,
   IniDirsForm in 'prefs\IniDirsForm.pas' {IniDirForm},
-  VisualThemesGUI in 'prefs\VisualThemesGUI.pas' {VisualThemesFrm};
+  VisualThemesGUI in 'prefs\VisualThemesGUI.pas' {VisualThemesFrm},
+  JITFormulaEditGUI in 'formula\JITFormulaEditGUI.pas' {JITFormulaEditorForm},
+  JITFormulas in 'formula\JITFormulas.pas',
+  ParamValueEditGUI in 'formula\ParamValueEditGUI.pas' {ParamValueEditFrm},
+  ConstantValueEditGUI in 'formula\ConstantValueEditGUI.pas' {ConstantValueEditFrm};
 
 {$R *.res}
 
@@ -97,6 +101,9 @@ begin
   Application.CreateForm(TMutaGenFrm, MutaGenFrm);
   Application.CreateForm(TIniDirForm, IniDirForm);
   Application.CreateForm(TVisualThemesFrm, VisualThemesFrm);
+  Application.CreateForm(TJITFormulaEditorForm, JITFormulaEditorForm);
+  Application.CreateForm(TParamValueEditFrm, ParamValueEditFrm);
+  Application.CreateForm(TConstantValueEditFrm, ConstantValueEditFrm);
   //SuppressMessageBoxes := True;
   Application.Run;
 end.

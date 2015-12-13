@@ -11,7 +11,7 @@ type
   TJITFormulaConstValue = class;
   TJITFormulaParamValue = class;
 
-  TJITValueDatatype = (dtINT64, dtDouble);
+  TJITValueDatatype = (dtInteger,  dtInt64, dtSingle, dtDouble, dtString);
 
   TJITFormula = class
   private
@@ -80,6 +80,10 @@ type
     property Datatype: TJITValueDatatype read FDatatype write FDatatype;
   end;
 
+  TJITFormulaWriter = class
+    class procedure SaveFormula(const Formula: TJITFormula; const Filename: String);
+  end;
+
 function StrToJITValueDatatype(const TypeStr: String): TJITValueDatatype;
 function JITValueDatatypeToStr(const Datatype: TJITValueDatatype): String;
 
@@ -94,9 +98,15 @@ var
 begin
   UCTypeStr := AnsiUpperCase(TypeStr);
   if UCTypeStr = 'INT64' then
-    Result := dtINT64
+    Result := dtInt64
+  else if UCTypeStr = 'INTEGER' then
+    Result := dtInteger
   else if UCTypeStr = 'DOUBLE' then
     Result := dtDouble
+  else if UCTypeStr = 'SINGLE' then
+    Result := dtSingle
+  else if UCTypeStr = 'STRING' then
+    Result := dtString
   else
     raise Exception.Create('StrToJITValueDatatype: Unknown datatype <'+TypeStr+'>');
 end;
@@ -104,8 +114,11 @@ end;
 function JITValueDatatypeToStr(const Datatype: TJITValueDatatype): String;
 begin
   case Datatype of
-    dtINT64: Result := 'Int64';
+    dtInt64: Result := 'Int64';
+    dtInteger: Result := 'Integer';
     dtDouble: Result := 'Double';
+    dtSingle: Result := 'Single';
+    dtString: Result := 'String';
   else
     raise Exception.Create('JITValueDatatypeStr: Unknown datatype <'+IntToStr(Ord(Datatype))+'>');
   end
@@ -118,6 +131,8 @@ begin
       Result := IntToStr(Value);
     varDouble, varCurrency :
       Result := FloatToStr(Value);
+    varString, varUString:
+      Result := Value;
   else
     raise Exception.Create('Unsupported variant type <'+IntToStr(VarType(Value))+'>');
   end;
@@ -334,6 +349,53 @@ begin
     Result := FParamValues.Objects[Idx] as TJITFormulaParamValue
   else
     Result := nil;
+end;
+{ ---------------------------- TJITFormulaWriter ----------------------------- }
+class procedure TJITFormulaWriter.SaveFormula(const Formula: TJITFormula; const Filename: String);
+var
+  I: Integer;
+  Writer: TStringList;
+  ValueStr: String;
+  Option: TJITFormulaOption;
+  ParamValue: TJITFormulaParamValue;
+  ConstValue: TJITFormulaConstValue;
+begin
+  Writer := TStringList.Create;
+  try
+    if (Formula.OptionCount > 0) or (Formula.ParamValueCount > 0) then begin
+      Writer.Add('[OPTIONS]');
+
+      for I := 0 to Formula.OptionCount - 1 do begin
+        Option := Formula.GetOption(I);
+        ValueStr := Trim(Option.ValueToString);
+        if ValueStr <> '' then
+          Writer.Add('.'+Option.Name+' = '+ValueStr)
+        else
+          Writer.Add('.'+Option.Name);
+      end;
+
+      for I := 0 to Formula.ParamValueCount - 1 do begin
+        ParamValue := Formula.GetParamValue(I);
+        Writer.Add('.'+JITValueDatatypeToStr(ParamValue.Datatype) + ' ' + ParamValue.Name+' = '+ParamValue.ValueToString);
+      end;
+    end;
+
+    if Formula.ConstValueCount > 0 then begin
+      Writer.Add('[CONSTANTS]');
+      for I := 0 to Formula.ConstValueCount - 1  do begin
+        ConstValue := Formula.GetConstValue(I);
+        Writer.Add(JITValueDatatypeToStr(ConstValue.Datatype) + ' = ' + ConstValue.ValueToString );
+      end;
+    end;
+
+    Writer.Add('[SOURCE]');
+    Writer.Add( Formula.Code );
+    Writer.Add('[END]');
+    Writer.Add( Formula.Description );
+    Writer.SaveToFile( Filename );
+  finally
+    Writer.Free;
+  end;
 end;
 
 end.

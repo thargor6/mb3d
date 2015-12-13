@@ -4,26 +4,30 @@ object ConstantValueEditFrm: TConstantValueEditFrm
   BorderStyle = bsDialog
   Caption = 'Enter constant value'
   ClientHeight = 112
-  ClientWidth = 279
+  ClientWidth = 357
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
     Top = 71
-    Width = 279
+    Width = 357
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     BorderWidth = 8
-    TabOrder = 0
+    TabOrder = 1
+    ExplicitWidth = 279
     object CancelAndExitBtn: TButton
       Left = 8
       Top = 8
@@ -35,7 +39,7 @@ object ConstantValueEditFrm: TConstantValueEditFrm
       OnClick = CancelAndExitBtnClick
     end
     object SaveAndExitBtn: TButton
-      Left = 190
+      Left = 268
       Top = 8
       Width = 81
       Height = 25
@@ -44,16 +48,18 @@ object ConstantValueEditFrm: TConstantValueEditFrm
       Default = True
       TabOrder = 1
       OnClick = SaveAndExitBtnClick
+      ExplicitLeft = 190
     end
   end
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 279
+    Width = 357
     Height = 71
     Align = alClient
     BevelOuter = bvNone
-    TabOrder = 1
+    TabOrder = 0
+    ExplicitWidth = 279
     object Label27: TLabel
       Left = 52
       Top = 47
@@ -77,7 +83,7 @@ object ConstantValueEditFrm: TConstantValueEditFrm
       Height = 21
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 0
+      TabOrder = 1
     end
     object TypeCmb: TComboBox
       Left = 88
@@ -86,7 +92,7 @@ object ConstantValueEditFrm: TConstantValueEditFrm
       Height = 21
       Style = csDropDownList
       DropDownCount = 32
-      TabOrder = 1
+      TabOrder = 0
       Items.Strings = (
         'Double'
         'Int64')

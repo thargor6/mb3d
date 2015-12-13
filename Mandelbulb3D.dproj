@@ -156,7 +156,7 @@
         <DCCReference Include="maps\MapSequencesGUI.pas">
             <Form>MapSequencesFrm</Form>
         </DCCReference>
-        <DCCReference Include="FormulaGUI.pas">
+        <DCCReference Include="formula\FormulaGUI.pas">
             <Form>FormulaGUIForm</Form>
         </DCCReference>
         <DCCReference Include="DOF.pas"/>
@@ -210,7 +210,7 @@
         <DCCReference Include="uMapCalcWindow.pas">
             <Form>MapCalcWindow</Form>
         </DCCReference>
-        <DCCReference Include="FormulaCompiler.pas"/>
+        <DCCReference Include="formula\FormulaCompiler.pas"/>
         <DCCReference Include="render\PreviewRenderer.pas"/>
         <DCCReference Include="facade\MB3DFacade.pas"/>
         <DCCReference Include="mutagen\MutaGenGUI.pas">
@@ -226,6 +226,19 @@
         </DCCReference>
         <DCCReference Include="prefs\VisualThemesGUI.pas">
             <Form>VisualThemesFrm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="formula\JITFormulaEditGUI.pas">
+            <Form>JITFormulaEditorForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="formula\JITFormulas.pas"/>
+        <DCCReference Include="formula\ParamValueEditGUI.pas">
+            <Form>ParamValueEditFrm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="formula\ConstantValueEditGUI.pas">
+            <Form>ConstantValueEditFrm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <None Include="CHANGES.txt"/>

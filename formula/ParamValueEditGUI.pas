@@ -22,6 +22,8 @@ type
     Label2: TLabel;
     procedure SaveAndExitBtnClick(Sender: TObject);
     procedure CancelAndExitBtnClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
     procedure Validate;
@@ -113,6 +115,18 @@ begin
   ParamnameEdit.Text := '';
   TypeCmb.ItemIndex := TypeCmb.Items.IndexOf('Double');
   ValueEdit.Text := '0';
+end;
+
+procedure TParamValueEditFrm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = 27 then
+    ModalResult := mrCancel;
+end;
+
+procedure TParamValueEditFrm.FormShow(Sender: TObject);
+begin
+  SaveAndExitBtn.SetFocus;
 end;
 
 procedure TParamValueEditFrm.SetWindowTitle(const WindowTitle: String);

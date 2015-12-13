@@ -600,7 +600,7 @@ begin
       if LoadCustomFormula(OpenDialog3.FileName,
         PTCustomFormula(Mand3DForm.MHeader.PHCustomF[TabControl1.TabIndex])^,
         Mand3DForm.HAddon.Formulas[TabControl1.TabIndex].CustomFname,
-        Mand3DForm.HAddon.Formulas[TabControl1.TabIndex].dOptionValue, True, 0) then
+        Mand3DForm.HAddon.Formulas[TabControl1.TabIndex].dOptionValue, True, 0, nil) then
       begin
         if not AnsiSameText(IncludeTrailingPathDelimiter(IniDirs[3]),
            IncludeTrailingPathDelimiter(ExtractFileDir(OpenDialog3.FileName))) then
@@ -1259,6 +1259,7 @@ procedure TFormulaGUIForm.ListBoxEx9DrawItem(Control: TWinControl;
     sv: TSVec;
 *)
 begin
+  inherited;
     //paint background on formula status, +vote: green, -vote: red
     with (Control as TListBox).Canvas do  { draw on control canvas, not on the form }
     begin

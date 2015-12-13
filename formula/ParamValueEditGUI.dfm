@@ -4,26 +4,30 @@ object ParamValueEditFrm: TParamValueEditFrm
   BorderStyle = bsDialog
   Caption = 'Enter named parameter'
   ClientHeight = 144
-  ClientWidth = 279
+  ClientWidth = 356
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
+  OnKeyDown = FormKeyDown
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
     Top = 103
-    Width = 279
+    Width = 356
     Height = 41
     Align = alBottom
     BevelOuter = bvNone
     BorderWidth = 8
-    TabOrder = 0
+    TabOrder = 1
+    ExplicitWidth = 279
     object CancelAndExitBtn: TButton
       Left = 8
       Top = 8
@@ -35,7 +39,7 @@ object ParamValueEditFrm: TParamValueEditFrm
       OnClick = CancelAndExitBtnClick
     end
     object SaveAndExitBtn: TButton
-      Left = 190
+      Left = 267
       Top = 8
       Width = 81
       Height = 25
@@ -44,16 +48,18 @@ object ParamValueEditFrm: TParamValueEditFrm
       Default = True
       TabOrder = 1
       OnClick = SaveAndExitBtnClick
+      ExplicitLeft = 190
     end
   end
   object Panel2: TPanel
     Left = 0
     Top = 0
-    Width = 279
+    Width = 356
     Height = 103
     Align = alClient
     BevelOuter = bvNone
-    TabOrder = 1
+    TabOrder = 0
+    ExplicitWidth = 279
     object Label27: TLabel
       Left = 52
       Top = 75
@@ -85,7 +91,7 @@ object ParamValueEditFrm: TParamValueEditFrm
       Height = 21
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 0
+      TabOrder = 2
     end
     object TypeCmb: TComboBox
       Left = 88
@@ -104,9 +110,10 @@ object ParamValueEditFrm: TParamValueEditFrm
       Top = 16
       Width = 183
       Height = 21
+      MaxLength = 32
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 2
+      TabOrder = 0
     end
   end
 end
