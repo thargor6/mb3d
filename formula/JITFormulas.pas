@@ -389,9 +389,9 @@ begin
     end;
 
     Writer.Add('[SOURCE]');
-    Writer.Add( Formula.Code );
+    Writer.Add( Copy(Formula.Code, 1, Length(Formula.Code) -2 ));
     Writer.Add('[END]');
-    Writer.Add( Formula.Description );
+    Writer.Add( Copy(Formula.Description, 1, Length(Formula.Description) - 2 ));
     Writer.SaveToFile( Filename );
   finally
     Writer.Free;

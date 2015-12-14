@@ -58,6 +58,11 @@ type
     ParamEditBtn: TSpeedButton;
     Panel20: TPanel;
     ParamsList: TListBox;
+    Panel8: TPanel;
+    CompileBtn: TSpeedButton;
+    Panel21: TPanel;
+    SaveBtn: TSpeedButton;
+    InfoMemo: TMemo;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -75,6 +80,9 @@ type
     procedure ParamAddBtnClick(Sender: TObject);
     procedure OptionEditBtnClick(Sender: TObject);
     procedure ParamEditBtnClick(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure SaveBtnClick(Sender: TObject);
+    procedure CompileBtnClick(Sender: TObject);
   private
     { Private declarations }
     FEditMode: TEditMode;
@@ -90,6 +98,9 @@ type
     procedure PopulateConstantsList;
     procedure PopulateOptionsList;
     procedure Validate;
+    function SaveCode: Boolean;
+    function Compile: Boolean;
+    procedure ShowInfoMsg(const Msg: String);
   public
     { Public declarations }
     property EditMode: TEditMode read FEditMode write FEditMode;
@@ -104,7 +115,7 @@ implementation
 {$R *.dfm}
 uses
   CustomFormulas, FileHandling, ConstantValueEditGUI, ParamValueEditGUI,
-  DivUtils, TypeDefinitions;
+  DivUtils, TypeDefinitions, FormulaCompiler;
 
 procedure TJITFormulaEditorForm.CancelAndExitBtnClick(Sender: TObject);
 begin
@@ -206,11 +217,12 @@ begin
   end;
 end;
 
-procedure TJITFormulaEditorForm.SaveAndExitBtnClick(Sender: TObject);
+function TJITFormulaEditorForm.SaveCode: Boolean;
 var
   FormulaDir: String;
   FormulaFilename: String;
 begin
+  Result := False;
   Validate;
   FJITFormula.Formulaname := FormulanameEdit.Text;
   FJITFormula.Code := CodeEdit.Text;
@@ -219,8 +231,20 @@ begin
   FormulaFilename := FormulaDir + FJITFormula.Formulaname + '.m3f';
   if (not FileExists(FormulaFilename)) or (MessageDlg('The file <'+FJITFormula.Formulaname + '.m3f'+'> already exists. Do you want to overwrite it?',mtConfirmation, [mbYes, mbNo], 0)=mrYes) then begin
     TJITFormulaWriter.SaveFormula(FJITFormula, FormulaFilename );
-    ModalResult := mrOK;
+    Result := True;
+    ShowInfoMsg('Saving succeeded');
   end;
+end;
+
+procedure TJITFormulaEditorForm.SaveAndExitBtnClick(Sender: TObject);
+begin
+  if Compile and SaveCode then
+    ModalResult := mrOK;
+end;
+
+procedure TJITFormulaEditorForm.SaveBtnClick(Sender: TObject);
+begin
+  SaveCode;
 end;
 
 procedure TJITFormulaEditorForm.NewFormula;
@@ -398,7 +422,7 @@ end;
 
 procedure TJITFormulaEditorForm.ShowError(const Msg: String);
 begin
-  MessageDlg('Msg', mtInformation, [mbOK], 0);
+  MessageDlg(Msg, mtInformation, [mbOK], 0);
 end;
 
 procedure TJITFormulaEditorForm.ParseFormula(const Filename: String);
@@ -419,6 +443,71 @@ procedure TJITFormulaEditorForm.Validate;
 begin
   if Pos('JIT', FormulanameEdit.Text) <> 1 then
     raise Exception.Create('The formula name should start with "JIT" in order to distinguish those formulas from the ASM-based formulas');
+end;
+
+procedure TJITFormulaEditorForm.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = 120 then // F9
+    CompileBtnClick(Sender)
+  else if Key = 116 then // F5
+    SaveBtnClick(Sender);
+end;
+
+function TJITFormulaEditorForm.Compile: Boolean;
+var
+  CompiledFormula: TCompiledFormula;
+  pCodePointer: ThybridIteration2;
+  Iteration: TIteration3D;
+  CodeLines: TStringList;
+  X, Y, Z, W: Double;
+  Vars: Pointer;
+begin
+  Result := False;
+  try
+    CodeLines := TStringList.Create;
+    try
+      CodeLines.Text := CodeEdit.Text;
+      CompiledFormula := TFormulaCompilerRegistry.GetCompilerInstance(langDELPHI).CompileFormula(CodeLines);
+    finally
+      CodeLines.Free;
+    end;
+    try
+      if CompiledFormula.IsValid then begin
+        ThybridIteration2(pCodePointer) := CompiledFormula.CodePointer;
+        X := 0.0;
+        Y := 0.0;
+        Z := 0.0;
+        W := 0.0;
+        GetMem(Vars, 128 * SizeOf(Double));
+        try
+          Iteration.PVar := Pointer( Integer(Vars) - 64 * SizeOf(Double) );
+          pCodePointer(X, Y, Z, W, @Iteration);
+        finally
+          FreeMem(Vars);
+        end;
+        Result := True;
+        ShowInfoMsg('Compiling succeeded');
+      end
+      else
+        ShowError(CompiledFormula.ErrorMessage.Text);
+    finally
+      CompiledFormula.Free;
+    end;
+  except
+    on E: Exception do
+      ShowError(E.Message);
+  end;
+end;
+
+procedure TJITFormulaEditorForm.CompileBtnClick(Sender: TObject);
+begin
+  Compile;
+end;
+
+procedure TJITFormulaEditorForm.ShowInfoMsg(const Msg: String);
+begin
+  InfoMemo.Lines.Append(Msg);
 end;
 
 end.

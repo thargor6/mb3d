@@ -11,10 +11,12 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
+  KeyPreview = True
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -395,9 +397,8 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
               ParentShowHint = False
               ShowHint = True
               OnClick = ParamAddBtnClick
-              ExplicitLeft = 0
-              ExplicitTop = 16
-              ExplicitWidth = 27
+              ExplicitLeft = 10
+              ExplicitTop = 6
             end
             object ParamEditBtn: TSpeedButton
               Left = 8
@@ -442,37 +443,115 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
       end
     end
     object Panel6: TPanel
-      Left = 928
+      Left = 904
       Top = 0
-      Width = 47
+      Width = 71
       Height = 543
       Align = alRight
       BevelOuter = bvNone
+      BorderWidth = 8
       TabOrder = 2
+      ExplicitLeft = 906
+      ExplicitTop = 2
+      object Panel8: TPanel
+        Left = 8
+        Top = 161
+        Width = 55
+        Height = 64
+        Align = alTop
+        BevelOuter = bvNone
+        TabOrder = 0
+        object CompileBtn: TSpeedButton
+          Left = 0
+          Top = 0
+          Width = 55
+          Height = 20
+          Hint = 'Compile the code <F9>'
+          Align = alTop
+          Caption = 'Compile'
+          Flat = True
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = CompileBtnClick
+          ExplicitLeft = -2
+          ExplicitTop = -19
+        end
+        object SaveBtn: TSpeedButton
+          Left = 0
+          Top = 44
+          Width = 55
+          Height = 20
+          Hint = 'Save the code <F5>'
+          Align = alBottom
+          Caption = 'Save'
+          Flat = True
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = SaveBtnClick
+          ExplicitTop = 16
+        end
+      end
+      object Panel21: TPanel
+        Left = 8
+        Top = 8
+        Width = 55
+        Height = 153
+        Align = alTop
+        BevelOuter = bvNone
+        TabOrder = 1
+        ExplicitLeft = 16
+        ExplicitTop = 40
+        ExplicitWidth = 49
+      end
+      object InfoMemo: TMemo
+        Left = 8
+        Top = 347
+        Width = 55
+        Height = 188
+        Hint = 'Shows messages'
+        Align = alBottom
+        BorderStyle = bsNone
+        Color = clSilver
+        Ctl3D = False
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clTeal
+        Font.Height = -12
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentCtl3D = False
+        ParentFont = False
+        ParentShowHint = False
+        ReadOnly = True
+        ShowHint = True
+        TabOrder = 2
+      end
     end
     object MainPageControl: TPageControl
       Left = 185
       Top = 0
-      Width = 743
+      Width = 719
       Height = 543
       ActivePage = CodeSheet
       Align = alClient
       TabOrder = 0
+      ExplicitWidth = 743
       object CodeSheet: TTabSheet
         Caption = 'Code'
+        ExplicitWidth = 735
         object CodePnl: TPanel
           Left = 0
           Top = 0
-          Width = 735
+          Width = 711
           Height = 515
           Align = alClient
           BevelOuter = bvNone
           BorderWidth = 8
           TabOrder = 0
+          ExplicitWidth = 735
           object CodeEdit: TRichEdit
             Left = 8
             Top = 8
-            Width = 719
+            Width = 695
             Height = 499
             Align = alClient
             Font.Charset = ANSI_CHARSET
@@ -484,25 +563,28 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             ScrollBars = ssVertical
             TabOrder = 0
             Zoom = 100
+            ExplicitWidth = 719
           end
         end
       end
       object DescriptionSheet: TTabSheet
         Caption = 'Description'
         ImageIndex = 1
+        ExplicitWidth = 735
         object Panel7: TPanel
           Left = 0
           Top = 0
-          Width = 735
+          Width = 711
           Height = 515
           Align = alClient
           BevelOuter = bvNone
           BorderWidth = 8
           TabOrder = 0
+          ExplicitWidth = 735
           object DescriptionEdit: TRichEdit
             Left = 8
             Top = 8
-            Width = 719
+            Width = 695
             Height = 499
             Align = alClient
             Font.Charset = ANSI_CHARSET
@@ -514,6 +596,7 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             ScrollBars = ssVertical
             TabOrder = 0
             Zoom = 100
+            ExplicitWidth = 719
           end
         end
       end

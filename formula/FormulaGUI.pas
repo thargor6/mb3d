@@ -303,7 +303,9 @@ begin
   JITFormulaEditorForm := TJITFormulaEditorForm.Create(Self);
   try
     JITFormulaEditorForm.EditMode := emNew;
-    JITFormulaEditorForm.ShowModal;
+    if JITFormulaEditorForm.ShowModal = mrOK then begin
+      LoadFormulaNames;
+    end;
   finally
     JITFormulaEditorForm.Free;
   end;
@@ -640,13 +642,18 @@ end;
 
 procedure TFormulaGUIForm.EditJITFormulaItmClick(Sender: TObject);
 var
+  Formulaname: String;
   JITFormulaEditorForm: TJITFormulaEditorForm;
 begin
   JITFormulaEditorForm := TJITFormulaEditorForm.Create(Self);
   try
     JITFormulaEditorForm.EditMode := emEdit;
-    JITFormulaEditorForm.Formulaname := ComboEdit1.Text;
-    JITFormulaEditorForm.ShowModal;
+    Formulaname := ComboEdit1.Text;
+    JITFormulaEditorForm.Formulaname := Formulaname;
+    if JITFormulaEditorForm.ShowModal = mrOk then begin
+      LoadFormulaNames;
+      SelectFormula( Formulaname );
+    end;
   finally
     JITFormulaEditorForm.Free;
   end;
