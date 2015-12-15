@@ -37,8 +37,7 @@ type
 implementation
 
 uses
-  Windows, Messages, Graphics, Controls, Forms,
-  Dialogs, StdCtrls,
+  Windows, Messages, Graphics, Controls, Forms, Dialogs, StdCtrls,
 {$ifdef USE_PAX_COMPILER}
   PaxCompiler, PaxProgram, PaxRegister,
 {$endif}
@@ -191,6 +190,7 @@ var
   CodeLine: String;
   I, P1, P2:Integer;
   H_ProcName: Integer;
+  // MemStream: TMemoryStream;
 begin
   Result := TPaxCompiledFormula.Create;
   try
@@ -222,8 +222,20 @@ begin
     FPaxCompiler.AddCode(DfltModule, 'begin');
     FPaxCompiler.AddCode(DfltModule, 'end.');
 
-    if FPaxCompiler.Compile(TPaxCompiledFormula(Result).FPaxProgram) then begin
+    FPaxCompiler.DebugMode := False;
+    if FPaxCompiler.Compile(TPaxCompiledFormula(Result).FPaxProgram, False, False) then begin
       H_ProcName := FPaxCompiler.GetHandle(0, ProcName, true);
+(*
+      MemStream := TMemoryStream.Create;
+      try
+        TPaxCompiledFormula(Result).FPaxProgram.SaveToStream(MemStream);
+        OutputDebugString(PChar('Saved: '+IntToStr(MemStream.Size)+' '+IntToStr( TPaxCompiledFormula(Result).FPaxProgram.ImageSize)));
+        MemStream.Seek(0, soBeginning);
+        TPaxCompiledFormula(Result).FPaxProgram.LoadFromStream(MemStream);
+      finally
+        MemStream.Free;
+      end;
+*)
       Result.FCodePointer := TPaxCompiledFormula(Result).FPaxProgram.GetAddress(H_ProcName);
       Result.FCodeSize := TPaxCompiledFormula(Result).FPaxProgram.ProgramSize;
     end

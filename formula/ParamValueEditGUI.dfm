@@ -27,7 +27,6 @@ object ParamValueEditFrm: TParamValueEditFrm
     BevelOuter = bvNone
     BorderWidth = 8
     TabOrder = 1
-    ExplicitWidth = 279
     object CancelAndExitBtn: TButton
       Left = 8
       Top = 8
@@ -48,7 +47,6 @@ object ParamValueEditFrm: TParamValueEditFrm
       Default = True
       TabOrder = 1
       OnClick = SaveAndExitBtnClick
-      ExplicitLeft = 190
     end
   end
   object Panel2: TPanel
@@ -59,7 +57,6 @@ object ParamValueEditFrm: TParamValueEditFrm
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitWidth = 279
     object Label27: TLabel
       Left = 52
       Top = 75
@@ -103,6 +100,7 @@ object ParamValueEditFrm: TParamValueEditFrm
       TabOrder = 1
       Items.Strings = (
         'Double'
+        'Integer'
         'Int64')
     end
     object ParamnameEdit: TEdit
