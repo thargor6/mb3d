@@ -68,8 +68,7 @@ uses
   VisualThemesGUI in 'prefs\VisualThemesGUI.pas' {VisualThemesFrm},
   JITFormulaEditGUI in 'formula\JITFormulaEditGUI.pas' {JITFormulaEditorForm},
   JITFormulas in 'formula\JITFormulas.pas',
-  ParamValueEditGUI in 'formula\ParamValueEditGUI.pas' {ParamValueEditFrm},
-  ConstantValueEditGUI in 'formula\ConstantValueEditGUI.pas' {ConstantValueEditFrm};
+  ParamValueEditGUI in 'formula\ParamValueEditGUI.pas' {ParamValueEditFrm};
 
 {$R *.res}
 
@@ -103,7 +102,6 @@ begin
   Application.CreateForm(TVisualThemesFrm, VisualThemesFrm);
   Application.CreateForm(TJITFormulaEditorForm, JITFormulaEditorForm);
   Application.CreateForm(TParamValueEditFrm, ParamValueEditFrm);
-  Application.CreateForm(TConstantValueEditFrm, ConstantValueEditFrm);
   //SuppressMessageBoxes := True;
   Application.Run;
 end.

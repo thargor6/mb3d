@@ -188,81 +188,119 @@ end;
 {$ifdef JIT_FORMULA_PREPROCESSING}
 function TPaxFormulaCompiler.PreprocessCode(const Code: String; const Formula: TJITFormula): String;
 var
-  LCCode, LBreak: String;
-  ProcPos, BeginPos, VarPos, CRPos, LFPos: Integer;
-  VarCode, MainCode: String;
-(*
-  procedure CreateSegments(var VarCode, MainCode: String);
+  CodeLines: TStringList;
+  VarSegment, CodeSegment: TStringList;
+  I: Integer;
+  ProcStartLine, VarStartLine, BeginStartLine: Integer;
+
+  procedure CreateSegments(VarSegment, CodeSegment: TStringList);
   var
     I, COffSet, VOffset: Integer;
-    VarSegment: TStringList;
-    CodeSegment: TStringList;
-    ConstValue: TJITFormulaConstValue;
-    ParamValue: TJITFormulaParamValue;
+    Pair: TNameValuePair;
     CName: String;
   begin
-    VarSegment := TStringList.Create;
-    try
-      CodeSegment := TStringList.Create;
-      try
-        VarSegment.Add('  // begin preprocessor');
-        CodeSegment.Add('  // begin preprocessor');
-        COffset := 0;
-        VOffset := -16;
-        for I := 0 to Formula.ConstValueCount - 1 do begin
-          ConstValue := Formula.GetConstValue(I);
-          CName := 'C'+IntToStr(I+1);
-          VarSegment.Add('  ' + CName + ': '+JITValueDatatypeToStr(ConstValue.Datatype)+';');
-          CodeSegment.Add('  ' + CName + ' := PDouble(Integer(PIteration3D^.PVar) + '+IntToStr(COffset)+')^;');
-          Inc(COffset, JITValueDatatypeSize(ConstValue.Datatype));
+    VarSegment.Add('  // begin preprocessor');
+    CodeSegment.Add('  // begin preprocessor');
+    COffset := 0;
+    VOffset := 16;
+    for I := 0 to Formula.GetValueCount(vtConst) - 1 do begin
+      Pair := Formula.GetValue(vtConst, I);
+      VarSegment.Add('  ' + Pair.Name + ': '+JITValueDatatypeToStr(Pair.Datatype)+';');
+      CodeSegment.Add('  ' + Pair.Name + ' := PDouble(Integer(PIteration3D^.PVar) + '+IntToStr(COffset)+')^;');
+      Inc(COffset, JITValueDatatypeSize(Pair.Datatype));
+    end;
+
+    for I := 0 to Formula.GetValueCount(vtParam) - 1 do begin
+      Pair := Formula.GetValue(vtParam, I);
+      VarSegment.Add('  ' + Pair.Name + ': '+JITValueDatatypeToStr(Pair.Datatype)+';');
+      CodeSegment.Add('  ' + Pair.Name + ' := PDouble(Integer(PIteration3D^.PVar) - '+IntToStr(VOffset)+')^;');
+      Inc(VOffset, JITValueDatatypeSize(Pair.Datatype));
+    end;
+
+    VarSegment.Add('  // end preprocessor');
+    CodeSegment.Add('  // end preprocessor');
+  end;
+
+  function IsWhiteSpace(const C: Char): Boolean;
+  begin
+    Result := (C=' ') or (C=#13) or (C=#10) or (C=#9);
+  end;
+
+  function FindLineWithTerm(const SearchTerm: String; const LineOffset: Integer): Integer;
+  var
+    I, P: Integer;
+    LCLine, LCSearchTerm: String;
+    CharBefore, CharAfter: Char;
+  begin
+    Result := -1;
+    LCSearchTerm := AnsiLowerCase(SearchTerm);
+    for I := LineOffset to CodeLines.Count - 1 do begin
+      LCLine := AnsiLowerCase(CodeLines[I]);
+      P := Pos(LCSearchTerm, LCLine);
+      if P > 0 then begin
+        if P > 1 then
+          CharBefore := Copy(LCLine, P - 1, 1)[1]
+        else
+          CharBefore := ' ';
+        if P + Length(LCSearchTerm) < Length(LCLine) then
+          CharAfter := Copy(LCLine, P + Length(LCSearchTerm))[1]
+        else
+          CharAfter := ' ';
+        if IsWhiteSpace(CharBefore) and IsWhiteSpace(CharAfter) then begin
+          Result := I;
+          break;
         end;
-
-        for I := 0 to Formula.ParamValueCount - 1 do begin
-          ParamValue := Formula.GetParamValue(I);
-          VarSegment.Add('  ' + ParamValue.Name + ': '+JITValueDatatypeToStr(ParamValue.Datatype)+';');
-          CodeSegment.Add('  ' + ParamValue.Name + ' := PDouble(Integer(PIteration3D^.PVar) - '+IntToStr(VOffset)+')^;');
-          Dec(VOffset, JITValueDatatypeSize(ParamValue.Datatype));
-        end;
-
-
-        VarSegment.Add('  // end preprocessor');
-        CodeSegment.Add('  // end preprocessor');
-
-        VarCode := VarSegment.Text;
-        MainCode := CodeSegment.Text;
-      finally
-        CodeSegment.Free;
       end;
-    finally
-      VarSegment.Free;
     end;
   end;
-*)
+
 begin
-(*
-  if (Formula.ConstValueCount > 0) or (Formula.ParamValueCount > 0) then begin
+  Result := Code;
+  if (Formula.GetValueCount(vtConst) > 0) or (Formula.GetValueCount(vtParam) > 0) then begin
+    CodeLines := TStringList.Create;
+    try
+      CodeLines.Text := Code;
+      ProcStartLine := FindLineWithTerm('procedure', 0);
+      if ProcStartLine >= 0 then begin
+        BeginStartLine := FindLineWithTerm('begin', ProcStartLine + 1);
+        if BeginStartLine < 0 then
+          raise Exception.Create('Preprocessing error: <procedure> found, but no <begin>');
+        VarStartLine := FindLineWithTerm('var', ProcStartLine + 1);
+        if VarStartLine > BeginStartLine then
+          VarStartLine := -1;
 
-    LCCode := AnsiLowerCase( Code );
-    CRPos := Pos(#13, LCCode);
-    LFPos := Pos(#10, LCCode);
-    if CRPos < LFPos then
-      LBreak := #13
-    else
-      LBreak := #10;
-    ProcPos := pos('procedure ', LCCode);
-    if ProcPos < 1 then
-      raise Exception.Create('No code found');
-    BeginPos := Pos('begin'+LBreak, LCCode, ProcPos + 1);
-    VarPos := Pos('var'+LBreak, LCCode, ProcPos + 1);
-    if (BeginPos<1) and (VarPos<1) then
-      raise Exception.Create('Start of code not found');
 
-    CreateSegments(VarCode, MainCode);
-    // TODO
-    Result := Code;
+        VarSegment := TStringList.Create;
+        try
+          CodeSegment := TStringList.Create;
+          try
+            CreateSegments(VarSegment, CodeSegment);
+            if VarStartLine >= 0 then begin
+              for I := 0 to VarSegment.Count-1 do
+                CodeLines.Insert(VarStartLine + 1 + I, VarSegment[I]);
+              for I := 0 to CodeSegment.Count-1 do
+                CodeLines.Insert(BeginStartLine + VarSegment.Count + 1 + I, CodeSegment[I]);
+            end
+            else begin
+              CodeLines.Insert(BeginStartLine, 'var');
+              for I := 0 to VarSegment.Count-1 do
+                CodeLines.Insert(BeginStartLine + 1 + I, VarSegment[I]);
+              for I := 0 to CodeSegment.Count-1 do
+                CodeLines.Insert(BeginStartLine + VarSegment.Count + 2 + I, CodeSegment[I]);
+            end;
+          finally
+            CodeSegment.Free;
+          end;
+        finally
+          VarSegment.Free;
+        end;
+        Result := CodeLines.Text;
+      end;
+    finally
+      CodeLines.Free;
+    end;
   end
-  else *)
-    Result := Code;
+  else
 end;
 {$endif}
 

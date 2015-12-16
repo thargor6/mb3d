@@ -249,6 +249,10 @@ begin
     SetValue(vtOption, 'Version', dtINT64, 9);
     SetValue(vtOption, 'DEscale', dtDouble, 1.0);
     SetValue(vtOption, 'SIpower' , dtDouble, 2.0);
+    Code := 'procedure MyFormula(var x, y, z, w: Double; PIteration3D: TPIteration3D);' + #13#10 +
+            'begin'+#13#10 +
+            #13#10 +
+            'end;'+#13#10;
   end;
 end;
 

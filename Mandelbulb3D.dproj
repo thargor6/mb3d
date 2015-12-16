@@ -86,7 +86,7 @@
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
         <DCC_UnitSearchPath>C:\DEV\PaxCompiler\mb3d\Sources;C:\DEV\PaxCompiler\mb3d\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_DcpOutput>C:\DEV\Delphi_Workspace\Mandel3D\</DCC_DcpOutput>
-        <DCC_Define>ENABLE_EXTENSIONS2;USE_PAX_COMPILER;PARAMS_PER_THREAD;$(DCC_Define)</DCC_Define>
+        <DCC_Define>ENABLE_EXTENSIONS2;USE_PAX_COMPILER;PARAMS_PER_THREAD;JIT_FORMULA_PREPROCESSING;$(DCC_Define)</DCC_Define>
         <VerInfo_MinorVer>8</VerInfo_MinorVer>
         <DCC_Inlining>off</DCC_Inlining>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
@@ -235,10 +235,6 @@
         <DCCReference Include="formula\JITFormulas.pas"/>
         <DCCReference Include="formula\ParamValueEditGUI.pas">
             <Form>ParamValueEditFrm</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="formula\ConstantValueEditGUI.pas">
-            <Form>ConstantValueEditFrm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <None Include="CHANGES.txt"/>
