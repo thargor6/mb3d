@@ -8,7 +8,8 @@ function LoadCustomFormulaFromHeader(var CustomFname: array of Byte;
                                      var lCustomFormula: TCustomFormula;
                                      var dOptionVars: array of Double): Boolean;
 function LoadCustomFormula(FileName: String; var lCustomFormula: TCustomFormula;
-  var CustomFname: array of Byte; var dOptionValues: array of Double; bVerbose: LongBool; MinModTime: TDatetime; ParseResult: TJITFormula): Boolean;
+  var CustomFname: array of Byte; var dOptionValues: array of Double; bVerbose: LongBool;
+  MinModTime: TDatetime; ParseResult: TJITFormula; const IgnoreCodeError: Boolean): Boolean;
 function AssignCustomFormula(CF1, CF2: PTCustomFormula): LongBool;
 procedure FillCustomVBufWithVars(CF1: PTCustomFormula; dOptionValues: array of Double{;isAlt: LongBool});
 procedure IniCustomF(CF: PTCustomFormula);
@@ -80,7 +81,7 @@ var CFdescription: String;
   FdescrModTime: array of TDateTime;
   FdescCount: Integer = 0;
 const
-  actFormulaId: Integer = 8;
+  actFormulaId: Integer = 9;
 
 implementation
 
@@ -686,7 +687,7 @@ end;
 function LoadCustomFormula(FileName: String; var lCustomFormula: TCustomFormula;
                            var CustomFname: array of Byte; var dOptionValues: array of Double;
                            bVerbose: LongBool; MinModTime: TDatetime;
-                           ParseResult: TJITFormula): Boolean;
+                           ParseResult: TJITFormula; const IgnoreCodeError: Boolean): Boolean;
 var n, i, j: Integer;
     f: TextFile;
     s, s2, s3: String;
@@ -697,8 +698,7 @@ var n, i, j: Integer;
     CompiledFormula: TCompiledFormula;
     Formulaname: String;
     p: Pointer;
-
-
+    FreeParseResult: Boolean;
 const                                                    //DEoption > 0 if analytic on X4
     cOptions: String = '.SSE2.DESC.SIPO.RSTO.SSE3.SSSE.SSE4.VERS.DEOP.DIFS.ADES.';
     cOptions2: String = '.DOUBLE.SINGLE.INTEGER.DOUBLEANGLE.SINGLEANGLE.3DOUBLEANGLES.3SINGLEANGLES.BOXSCALE.FOLDING.DSQUARE.'+
@@ -717,300 +717,323 @@ const                                                    //DEoption > 0 if analy
 begin
     Result := False;
     AssignFile(f, FileName);
-    if FileExists(FileName) then with lCustomFormula do try
-      if Assigned(ParseResult) then begin
+    if Assigned(ParseResult) then begin
+      FreeParseResult := False;
+    end
+    else begin
+      ParseResult := TJITFormula.Create;
+      FreeParseResult := True;
+    end;
+    try
+      if FileExists(FileName) then with lCustomFormula do try
         Formulaname := ExtractFilename( FileName );
         ParseResult.Formulaname := Copy(Formulaname, 1, Length(Formulaname) - Length('.m3f'));
-      end;
 
-      SetLength(VarBuffer, 1024);
-      pConstPointer16 := Pointer((Integer(@VarBuffer[0]) + 271) and $FFFFFFF0);
-      pb              := PByte(pConstPointer16);
-      SIMDlevel       := 0;
-      iCFOptionCount  := 0;
-      iConstCount := 0;
-      iDEoption   := 0;
-      iVersion    := 0;
-      dSIpow      := 0;
-      dDEscale    := 1;
-      dADEscale   := 1;
-      dRstop      := 16;
-      Reset(f);
-      LoadNextStr;
-      if s = '[OPTIONS]' then
-      begin
-        repeat
-          LoadNextStr;
-          n := Pos(UpCaseN(s, 5), cOPtions);
-          case n of
-            1:  begin
-                  SIMDlevel := SIMDlevel or 1;
-                  if Assigned(ParseResult) then
-                    ParseResult.SetOption('SSE2', dtString, '');
-                end;
-            6:   begin
-                   dDEscale  := StrToFloatK(StrLastWord(s));
-                   if Assigned(ParseResult) then
-                     ParseResult.SetOption('DEScale', dtDouble, dDEscale);
-                 end;
-            11:  begin
-                   dSIpow    := StrToFloatK(StrLastWord(s));
-                   if Assigned(ParseResult) then
-                     ParseResult.SetOption('SIPow', dtDouble, dSIpow);
-                 end;
-            16:  begin
-                   dRstop    := StrToFloatK(StrLastWord(s));
-                   if Assigned(ParseResult) then
-                     ParseResult.SetOption('RStop', dtDouble, dRstop);
-                 end;
-            21:  begin
-                   SIMDlevel := SIMDlevel or 2;
-                   if Assigned(ParseResult) then
-                     ParseResult.SetOption('SSE3', dtString, '');
-                 end;
-            26:  begin
-                   SIMDlevel := SIMDlevel or 4;
-                   if Assigned(ParseResult) then
-                     ParseResult.SetOption('SSEE', dtString, '');
-                 end;
-            31:  begin
-                   SIMDlevel := SIMDlevel or 8;
-                   if Assigned(ParseResult) then
-                     ParseResult.SetOption('SSE4', dtString, '');
-                 end;
-            36:  begin
-                   iVersion  := StrToInt(StrLastWord(s));
-                   if Assigned(ParseResult) then
-                     ParseResult.SetOption('Version', dtInteger, iVersion);
-                 end;
-            41:  begin
-                   iDEoption := StrToInt(StrLastWord(s));
-                   if Assigned(ParseResult) then
-                     ParseResult.SetOption('DEoption', dtInteger, iDEoption);
-                 end;
-            51:  begin
-                   dADEscale := StrToFloatK(StrLastWord(s));                //-6                                                                 -6
-                   if Assigned(ParseResult) then
-                     ParseResult.SetOption('ADEscale', dtDouble, dADEscale);
-                 end;
-                    //9      16     23      31          43          55            63            87       86      94      102       113         129           137
-            else    //1      8      15      23          35          47            61            75       84      92      100       111         121           129      138      148
-            begin   //.DOUBLE.SINGLE.INTEGER.DOUBLEANGLE.SINGLEANGLE.3DOUBLEANGLES.3SINGLEANGLES.BOXSCALE.FOLDING.DSQUARE.NOVARIABLE.FOLDING16.6SINGLEANGLES.DRECIPRO.2DOUBLES..DSQRRECI.'
-              s2 := StrFirstWord(s);                                            //.2SINGLES..4SINGLES..3SCALESANGLES.SCALESROT.
-              n := Pos(UpperCase(s2), cOPtions2);                               //158       168        178           192-4
-              if n > 50 then Dec(n, 6);
-              if n > 130 then Dec(n, 6);
-              if n > 180 then Dec(n, 4);
-              if (n > 0) and (iCFOptionCount < 16) then begin
-                byOptionTypes[iCFOptionCount] := (n + 8) div 10;
-                dOptionValues[iCFOptionCount] := StrToFloatK(StrLastWord(s));
-                s3 := StrSecondWord(s);
-                if byOptionTypes[iCFOptionCount] = 12 then  //6 singleangles
-                begin
-                  if Assigned(ParseResult) then
-                    raise Exception.Create('Complex param type <'+IntToStr(byOptionTypes[iCFOptionCount])+'> not supported');
-                  j := iCFOptionCount;
-                  for i := 0 to 5 do
-                  begin
-                    byOptionTypes[iCFOptionCount] := 12;
-                    dOptionValues[iCFOptionCount] := dOptionValues[j];
-                    sOptionStrings[iCFOptionCount] := s3 + sra[i];
-                    Inc(iCFOptionCount);
+        SetLength(VarBuffer, 1024);
+        pConstPointer16 := Pointer((Integer(@VarBuffer[0]) + 271) and $FFFFFFF0);
+        pb              := PByte(pConstPointer16);
+        SIMDlevel       := 0;
+        iCFOptionCount  := 0;
+        iConstCount := 0;
+        iDEoption   := 0;
+        iVersion    := 0;
+        dSIpow      := 0;
+        dDEscale    := 1;
+        dADEscale   := 1;
+        dRstop      := 16;
+        Reset(f);
+        LoadNextStr;
+        if s = '[OPTIONS]' then
+        begin
+          repeat
+            LoadNextStr;
+            n := Pos(UpCaseN(s, 5), cOPtions);
+            case n of
+              1:  begin
+                    SIMDlevel := SIMDlevel or 1;
+                    ParseResult.SetValue(vtOption, 'SSE2', dtString, '');
                   end;
-                  Dec(iCFOptionCount);
-                end
-                else
-                begin
-                  sOptionStrings[iCFOptionCount] := s3;
-                  if Assigned(ParseResult) then
-                    ParseResult.SetParamValue(s3, dtDouble, dOptionValues[iCFOptionCount]);
-                  if byOptionTypes[iCFOptionCount] in [5, 6] then begin
-                    if Assigned(ParseResult) then
-                      raise Exception.Create('Complex param type <'+IntToStr(byOptionTypes[iCFOptionCount])+'> not supported');
-                    d := dOptionValues[iCFOptionCount];
-                    sOptionStrings[iCFOptionCount] := s3 + ' X';
-                    Inc(iCFOptionCount);
-                    byOptionTypes[iCFOptionCount] := byOptionTypes[iCFOptionCount - 1];
-                    dOptionValues[iCFOptionCount] := d;
-                    sOptionStrings[iCFOptionCount] := s3 + ' Y';
-                    Inc(iCFOptionCount);
-                    byOptionTypes[iCFOptionCount] := byOptionTypes[iCFOptionCount - 1];
-                    dOptionValues[iCFOptionCount] := d;
-                    sOptionStrings[iCFOptionCount] := s3 + ' Z';
-                  end
-                  else if byOptionTypes[iCFOptionCount] = 18 then
+              6:   begin
+                     dDEscale  := StrToFloatK(StrLastWord(s));
+                     ParseResult.SetValue(vtOption, 'DEScale', dtDouble, dDEscale);
+                   end;
+              11:  begin
+                     dSIpow    := StrToFloatK(StrLastWord(s));
+                     ParseResult.SetValue(vtOption, 'SIPow', dtDouble, dSIpow);
+                   end;
+              16:  begin
+                     dRstop    := StrToFloatK(StrLastWord(s));
+                     ParseResult.SetValue(vtOption, 'RStop', dtDouble, dRstop);
+                   end;
+              21:  begin
+                     SIMDlevel := SIMDlevel or 2;
+                     ParseResult.SetValue(vtOption, 'SSE3', dtString, '');
+                   end;
+              26:  begin
+                     SIMDlevel := SIMDlevel or 4;
+                     ParseResult.SetValue(vtOption, 'SSEE', dtString, '');
+                   end;
+              31:  begin
+                     SIMDlevel := SIMDlevel or 8;
+                     ParseResult.SetValue(vtOption, 'SSE4', dtString, '');
+                   end;
+              36:  begin
+                     iVersion  := StrToInt(StrLastWord(s));
+                     ParseResult.SetValue(vtOption, 'Version', dtInteger, iVersion);
+                   end;
+              41:  begin
+                     iDEoption := StrToInt(StrLastWord(s));
+                     ParseResult.SetValue(vtOption, 'DEoption', dtInteger, iDEoption);
+                   end;
+              51:  begin
+                     dADEscale := StrToFloatK(StrLastWord(s));                //-6                                                                 -6
+                     ParseResult.SetValue(vtOption, 'ADEscale', dtDouble, dADEscale);
+                   end;
+                      //9      16     23      31          43          55            63            87       86      94      102       113         129           137
+              else    //1      8      15      23          35          47            61            75       84      92      100       111         121           129      138      148
+              begin   //.DOUBLE.SINGLE.INTEGER.DOUBLEANGLE.SINGLEANGLE.3DOUBLEANGLES.3SINGLEANGLES.BOXSCALE.FOLDING.DSQUARE.NOVARIABLE.FOLDING16.6SINGLEANGLES.DRECIPRO.2DOUBLES..DSQRRECI.'
+                s2 := StrFirstWord(s);                                            //.2SINGLES..4SINGLES..3SCALESANGLES.SCALESROT.
+                n := Pos(UpperCase(s2), cOPtions2);                               //158       168        178           192-4
+                if n > 50 then Dec(n, 6);
+                if n > 130 then Dec(n, 6);
+                if n > 180 then Dec(n, 4);
+                if (n > 0) and (iCFOptionCount < 16) then begin
+                  byOptionTypes[iCFOptionCount] := (n + 8) div 10;
+                  dOptionValues[iCFOptionCount] := StrToFloatK(StrLastWord(s));
+                  s3 := StrSecondWord(s);
+                  if byOptionTypes[iCFOptionCount] = 12 then  //6 singleangles
                   begin
-                    if Assigned(ParseResult) then
-                      raise Exception.Create('Complex param type <'+IntToStr(byOptionTypes[iCFOptionCount])+'> not supported');
-                    for i := 0 to 2 do
+                    ParseResult.CanSave := False;
+                    j := iCFOptionCount;
+                    for i := 0 to 5 do
                     begin
+                      byOptionTypes[iCFOptionCount] := 12;
+                      dOptionValues[iCFOptionCount] := dOptionValues[j];
+                      sOptionStrings[iCFOptionCount] := s3 + sra[i];
+                      Inc(iCFOptionCount);
+                    end;
+                    Dec(iCFOptionCount);
+                  end
+                  else
+                  begin
+                    sOptionStrings[iCFOptionCount] := s3;
+                    ParseResult.SetValue(vtParam, s3, dtDouble, dOptionValues[iCFOptionCount]);
+                    if byOptionTypes[iCFOptionCount] in [5, 6] then begin
+                      ParseResult.CanSave := False;
+                      d := dOptionValues[iCFOptionCount];
+                      sOptionStrings[iCFOptionCount] := s3 + ' X';
+                      Inc(iCFOptionCount);
+                      byOptionTypes[iCFOptionCount] := byOptionTypes[iCFOptionCount - 1];
+                      dOptionValues[iCFOptionCount] := d;
+                      sOptionStrings[iCFOptionCount] := s3 + ' Y';
+                      Inc(iCFOptionCount);
+                      byOptionTypes[iCFOptionCount] := byOptionTypes[iCFOptionCount - 1];
+                      dOptionValues[iCFOptionCount] := d;
+                      sOptionStrings[iCFOptionCount] := s3 + ' Z';
+                    end
+                    else if byOptionTypes[iCFOptionCount] = 18 then
+                    begin
+                      ParseResult.CanSave := False;
+                      for i := 0 to 2 do
+                      begin
+                        Inc(iCFOptionCount);
+                        byOptionTypes[iCFOptionCount] := 6;
+                        sOptionStrings[iCFOptionCount] := 'Rotation ' + Chr(65 + i);
+                        dOptionValues[iCFOptionCount] := 0;
+                      end;
+                    end
+                    else if byOptionTypes[iCFOptionCount] = 19 then
+                    begin
+                      ParseResult.CanSave := False;
+                      sOptionStrings[iCFOptionCount] := 'Scale ' + s3;
                       Inc(iCFOptionCount);
                       byOptionTypes[iCFOptionCount] := 6;
-                      sOptionStrings[iCFOptionCount] := 'Rotation ' + Chr(65 + i);
-                      dOptionValues[iCFOptionCount] := 0;
+                      sOptionStrings[iCFOptionCount] := 'Rotation ' + s3;
+                      dOptionValues[iCFOptionCount] := dOptionValues[iCFOptionCount - 1];
+                      dOptionValues[iCFOptionCount - 1] := StrToFloatK(StrFirstWordAfterEqual(s));
                     end;
-                  end
-                  else if byOptionTypes[iCFOptionCount] = 19 then
-                  begin
-                    if Assigned(ParseResult) then
-                      raise Exception.Create('Complex param type <'+IntToStr(byOptionTypes[iCFOptionCount])+'> not supported');
-                    sOptionStrings[iCFOptionCount] := 'Scale ' + s3;
-                    Inc(iCFOptionCount);
-                    byOptionTypes[iCFOptionCount] := 6;
-                    sOptionStrings[iCFOptionCount] := 'Rotation ' + s3;
-                    dOptionValues[iCFOptionCount] := dOptionValues[iCFOptionCount - 1];
-                    dOptionValues[iCFOptionCount - 1] := StrToFloatK(StrFirstWordAfterEqual(s));
                   end;
+                  Inc(iCFOptionCount);
                 end;
-                Inc(iCFOptionCount);
               end;
             end;
+          until n = 0;
+          if (hasSIMDlevel and SIMDlevel) < SIMDlevel then
+          begin
+            s := '';
+            if bVerbose then ShowMessage('This computer does not support the SIMD level required by this formula.')
+            else Mand3DForm.OutMessage('This computer does not support the SIMD level required by this formula.');
           end;
-        until n = 0;
-        if (hasSIMDlevel and SIMDlevel) < SIMDlevel then
-        begin
-          s := '';
-          if bVerbose then ShowMessage('This computer does not support the SIMD level required by this formula.')
-          else Mand3DForm.OutMessage('This computer does not support the SIMD level required by this formula.');
         end;
-      end;
-      Result := (s > '') and (iVersion in [2..actFormulaId]);
-      if s > '' then
-      begin
-        if iVersion < 2 then
+        Result := (s > '') and (iVersion in [2..actFormulaId]);
+        if s > '' then
         begin
-          if bVerbose then ShowMessage('The formula is an old one, only versions 2 to ' +
-                                       IntToStr(actFormulaId) + #13#10 + ' are allowed in this program version.')
-          else Mand3DForm.OutMessage('The formula is an old one, only versions 2 to ' + IntToStr(actFormulaId) + ' are allowed in this program version.');
-        end
-        else if iVersion > actFormulaId then
-        begin
-          if bVerbose then ShowMessage('This formula was designed for a more actual version of Mandelbulb 3D')
-          else Mand3DForm.OutMessage('This formula was designed for a more actual version of Mandelbulb 3D');
+          if iVersion < 2 then
+          begin
+            if bVerbose then ShowMessage('The formula is an old one, only versions 2 to ' +
+                                         IntToStr(actFormulaId) + #13#10 + ' are allowed in this program version.')
+            else Mand3DForm.OutMessage('The formula is an old one, only versions 2 to ' + IntToStr(actFormulaId) + ' are allowed in this program version.');
+          end
+          else if iVersion > actFormulaId then
+          begin
+            if bVerbose then ShowMessage('This formula was designed for a more actual version of Mandelbulb 3D')
+            else Mand3DForm.OutMessage('This formula was designed for a more actual version of Mandelbulb 3D');
+          end;
         end;
-      end;
-      if not Result then s := '';
+        if not Result then s := '';
 
-      if s = '[CONSTANTS]' then
-      begin
-        repeat
-          LoadNextStr;
-          n := Pos(UpCaseN(s, 5), cVars);
-          case n of
-            1:  begin
-                  PDouble(pb)^  := StrToFloatK(StrLastWord(s));
-                  if Assigned(ParseResult) then
-                    ParseResult.AddConstValue(dtDouble, PDouble(pb)^);
+        if s = '[CONSTANTS]' then
+        begin
+          repeat
+            LoadNextStr;
+            if (Length(s) > 1) and (s[1]='.') then begin
+              // new style constants with names
+              n := Pos(UpCaseN(Copy(s, 2, Length(s)-1), 5), cVars);
+              case n of
+                1:  begin
+                      PDouble(pb)^  := StrToFloatK(StrLastWord(s));
+                      ParseResult.SetValue(vtConst, StrSecondWord(s), dtDouble, PDouble(pb)^ );
+                    end;
+                6:  begin
+                      PInteger(pb)^ := StrToInt(StrLastWord(s));
+                      ParseResult.SetValue(vtConst, StrSecondWord(s), dtInteger, PInteger(pb)^);
+                    end;
+                9:  begin
+                      PInt64(pb)^   := StrToInt64(StrLastWord(s));
+                      ParseResult.SetValue(vtConst, StrSecondWord(s), dtInt64, PInt64(pb)^);
+                    end;
+                14: begin
+                      PSingle(pb)^  := StrToFloatK(StrLastWord(s));
+                      ParseResult.SetValue(vtConst, StrSecondWord(s), dtSingle, PSingle(pb)^);
+                    end;
+                else
+                begin
+                   Dec(pb, 8);
+                   Dec(iConstCount);
                 end;
-            6:  begin
-                  PInteger(pb)^ := StrToInt(StrLastWord(s));
-                  if Assigned(ParseResult) then
-                    ParseResult.AddConstValue(dtInteger, PInteger(pb)^);
+              end;
+            end
+            else begin
+              n := Pos(UpCaseN(s, 5), cVars);
+              case n of
+                1:  begin
+                      PDouble(pb)^  := StrToFloatK(StrLastWord(s));
+                      ParseResult.SetValue(vtConst, ParseResult.NextValueName(vtConst), dtDouble, PDouble(pb)^ );
+                    end;
+                6:  begin
+                      PInteger(pb)^ := StrToInt(StrLastWord(s));
+                      ParseResult.SetValue(vtConst, ParseResult.NextValueName(vtConst), dtInteger, PInteger(pb)^);
+                    end;
+                9:  begin
+                      PInt64(pb)^   := StrToInt64(StrLastWord(s));
+                      ParseResult.SetValue(vtConst, ParseResult.NextValueName(vtConst), dtInt64, PInt64(pb)^);
+                    end;
+                14: begin
+                      PSingle(pb)^  := StrToFloatK(StrLastWord(s));
+                      ParseResult.SetValue(vtConst, ParseResult.NextValueName(vtConst), dtSingle, PSingle(pb)^);
+                    end;
+                else
+                begin
+                   Dec(pb, 8);
+                   Dec(iConstCount);
                 end;
-            9:  begin
-                  PInt64(pb)^   := StrToInt64(StrLastWord(s));
-                  if Assigned(ParseResult) then
-                    ParseResult.AddConstValue(dtInt64, PInt64(pb)^);
-                end;
-            14: begin
-                  PSingle(pb)^  := StrToFloatK(StrLastWord(s));
-                  if Assigned(ParseResult) then
-                    ParseResult.AddConstValue(dtSingle, PSingle(pb)^);
-                end;
-            else
-            begin
-               Dec(pb, 8);
-               Dec(iConstCount);
+              end;
             end;
-          end;
-          Inc(pb, 8);
-          Inc(iConstCount);
-        until (Length(s) > 0) and (s[1] = '[');
-      end;
+            Inc(pb, 8);
+            Inc(iConstCount);
+          until (Length(s) > 0) and (s[1] = '[');
+        end;
 
-      if s = '[SOURCE]' then begin
-        Code := TStringList.Create;
-        try
+        if s = '[SOURCE]' then begin
+          Code := TStringList.Create;
+          try
+            repeat
+              Readln(f, s);
+              s2 := Trim(s);
+              EndOfSection := (Length(s2) > 0) and (s2[1] = '[') and (s2[Length(s2)]=']');
+              if not EndOfSection then
+                Code.Add(s);
+            until EOF(f) or EndOfSection;
+            if Code.Count > 0 then begin
+              ParseResult.Code := Code.Text;
+              CompiledFormula := TFormulaCompilerRegistry.GetCompilerInstance(langDELPHI).CompileFormula( ParseResult );
+              if CompiledFormula.IsValid then begin
+
+                ThybridIteration(pCodePointer) := CompiledFormula.CodePointer;
+                bCPmemReserved := False;
+
+                Result := True;
+              end
+              else begin
+                if IgnoreCodeError then
+                  Result := True
+                else
+                  raise Exception.Create(Code.Text+#13#10+ CompiledFormula.ErrorMessage.Text);
+              end;
+            end;
+            ParseResult.Code := Code.Text;
+          finally
+            Code.Free;
+          end;
+        end;
+
+        if s = '[CODE]' then
+        begin
+          if (not bCPmemReserved) or (pCodePointer = nil) then
+            pCodePointer := VirtualAlloc(nil, 4096, {MEM_RESERVE} MEM_COMMIT, PAGE_EXECUTE_READWRITE);
+          bCPmemReserved := True;
+          n := 0;
+          pb := Pointer(pCodePointer);
+          repeat
+            LoadNextStr;
+            if (Length(s) > 0) and (s[1] <> '[') then
+            begin
+              while (Length(s) > 1) and (n < 4095) do
+              begin
+                pb^ := StrToInt('$' + s[1] + s[2]);
+                Inc(pb);
+                Inc(n);
+                Delete(s, 1, 2);
+              end;
+            end;
+          until EOF(f) or (s = '[END]');
+          Result := (n > 10);
+        end;
+
+        if Result and (s='[END]') then
+        begin
+          CFdescription := '';
+          n := 0;     //load formula description
           repeat
             Readln(f, s);
-            s2 := Trim(s);
-            EndOfSection := (Length(s2) > 0) and (s2[1] = '[') and (s2[Length(s2)]=']');
-            if not EndOfSection then
-              Code.Add(s);
-          until EOF(f) or EndOfSection;
-          if Code.Count > 0 then begin
-            CompiledFormula := TFormulaCompilerRegistry.GetCompilerInstance(langDELPHI).CompileFormula(Code);
-            if CompiledFormula.IsValid then begin
-
-              ThybridIteration(pCodePointer) := CompiledFormula.CodePointer;
-              bCPmemReserved := False;
-
-              Result := True;
-            end
-            else
-              raise Exception.Create(Code.Text+#13#10+ CompiledFormula.ErrorMessage.Text);
-          end;
-          if Assigned(ParseResult) then
-            ParseResult.Code := Code.Text;
-        finally
-          Code.Free;
-        end;
-      end;
-
-      if s = '[CODE]' then
-      begin
-        if (not bCPmemReserved) or (pCodePointer = nil) then
-          pCodePointer := VirtualAlloc(nil, 4096, {MEM_RESERVE} MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-        bCPmemReserved := True;
-        n := 0;
-        pb := Pointer(pCodePointer);
-        repeat
-          LoadNextStr;
-          if (Length(s) > 0) and (s[1] <> '[') then
+            s := Trim(s);
+          until (Length(s) > 0) or EOF(f);
+          if Length(s) > 0 then
+          repeat
+            CFdescription := CFdescription + s + #13 + #10;
+            if EOF(f) then n := 100 else Readln(f, s);
+            Inc(n);
+          until n > 100;
+          LastModTime := GetFileModDate(FileName);
+          s3 := ExtractFileName(FileName);
+          n := 1;
+          while (n < 32) and (s3[n] <> '.') do
           begin
-            while (Length(s) > 1) and (n < 4095) do
-            begin
-              pb^ := StrToInt('$' + s[1] + s[2]);
-              Inc(pb);
-              Inc(n);
-              Delete(s, 1, 2);
-            end;
+            CustomFname[n - 1] := Ord(s3[n]);
+            CustomFname[n] := 0;
+            Inc(n);
           end;
-        until EOF(f) or (s = '[END]');
-        Result := (n > 10);
-      end;
-
-      if Result and (s='[END]') then
-      begin
-        CFdescription := '';
-        n := 0;     //load formula description
-        repeat
-          Readln(f, s);
-          s := Trim(s);
-        until (Length(s) > 0) or EOF(f);
-        if Length(s) > 0 then
-        repeat
-          CFdescription := CFdescription + s + #13 + #10;
-          if EOF(f) then n := 100 else Readln(f, s);
-          Inc(n);
-        until n > 100;
-        LastModTime := GetFileModDate(FileName);
-        s3 := ExtractFileName(FileName);
-        n := 1;
-        while (n < 32) and (s3[n] <> '.') do
-        begin
-          CustomFname[n - 1] := Ord(s3[n]);
-          CustomFname[n] := 0;
-          Inc(n);
-        end;
-        InsertDescription(CustomFtoStr(CustomFname), CFdescription, LastModTime);
-        if Assigned(ParseResult) then
+          InsertDescription(CustomFtoStr(CustomFname), CFdescription, LastModTime);
           ParseResult.Description := CFdescription;
+        end;
+      except
+        Result := False;
       end;
-    except
-      Result := False;
-    end;
-    CloseFile(f);
+      CloseFile(f);
+  finally
+    if FreeParseResult then
+      ParseResult.Free;
+  end;
 end;
 
 function LoadCustomFormulaFromHeader(var CustomFname: array of Byte;
@@ -1021,7 +1044,7 @@ begin
     CFdescription := '';
     s := CustomFtoStr(CustomFname) + '.m3f';
     Result := LoadCustomFormula(IncludeTrailingPathDelimiter(IniDirs[3]) + s,
-                            lCustomFormula, CustomFname, dOptionVars, False, 0, nil);
+                            lCustomFormula, CustomFname, dOptionVars, False, 0, nil, False);
     if not Result then
     begin
       Mand3dForm.OutMessage(CustomFtoStr(CustomFname) + ' formula is missing! (Check Ini-dir for formulas)');

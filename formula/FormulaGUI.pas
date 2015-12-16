@@ -602,7 +602,7 @@ begin
       if LoadCustomFormula(OpenDialog3.FileName,
         PTCustomFormula(Mand3DForm.MHeader.PHCustomF[TabControl1.TabIndex])^,
         Mand3DForm.HAddon.Formulas[TabControl1.TabIndex].CustomFname,
-        Mand3DForm.HAddon.Formulas[TabControl1.TabIndex].dOptionValue, True, 0, nil) then
+        Mand3DForm.HAddon.Formulas[TabControl1.TabIndex].dOptionValue, True, 0, nil, False) then
       begin
         if not AnsiSameText(IncludeTrailingPathDelimiter(IniDirs[3]),
            IncludeTrailingPathDelimiter(ExtractFileDir(OpenDialog3.FileName))) then

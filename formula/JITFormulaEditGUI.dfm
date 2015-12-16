@@ -102,12 +102,13 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
       end
       object OptionsPnl: TPanel
         Left = 0
-        Top = 445
+        Top = 393
         Width = 185
-        Height = 98
+        Height = 150
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 3
+        ExplicitTop = 445
         object Panel9: TPanel
           Left = 0
           Top = 0
@@ -129,19 +130,21 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           Left = 0
           Top = 14
           Width = 185
-          Height = 84
+          Height = 136
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 1
+          ExplicitHeight = 84
           object Panel11: TPanel
             Left = 144
             Top = 0
             Width = 41
-            Height = 84
+            Height = 136
             Align = alRight
             BevelOuter = bvNone
             BorderWidth = 8
             TabOrder = 1
+            ExplicitHeight = 84
             object OptionDeleteBtn: TSpeedButton
               Left = 8
               Top = 48
@@ -194,34 +197,38 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             Left = 0
             Top = 0
             Width = 144
-            Height = 84
+            Height = 136
             Align = alClient
             BevelOuter = bvNone
             Padding.Left = 8
             Padding.Top = 8
             Padding.Bottom = 8
             TabOrder = 0
+            ExplicitHeight = 84
             object OptionsList: TListBox
               Left = 8
               Top = 8
               Width = 136
-              Height = 68
+              Height = 120
               Align = alClient
               ItemHeight = 13
               TabOrder = 0
               OnClick = OptionsListClick
+              OnDblClick = OptionsListDblClick
+              ExplicitHeight = 68
             end
           end
         end
       end
       object ConstantsPnl: TPanel
         Left = 0
-        Top = 347
+        Top = 243
         Width = 185
-        Height = 98
+        Height = 150
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
+        ExplicitTop = 347
         object Panel13: TPanel
           Left = 0
           Top = 0
@@ -243,19 +250,21 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           Left = 0
           Top = 14
           Width = 185
-          Height = 84
+          Height = 136
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 1
+          ExplicitHeight = 84
           object Panel15: TPanel
             Left = 144
             Top = 0
             Width = 41
-            Height = 84
+            Height = 136
             Align = alRight
             BevelOuter = bvNone
             BorderWidth = 8
             TabOrder = 1
+            ExplicitHeight = 84
             object ConstantDeleteBtn: TSpeedButton
               Left = 8
               Top = 48
@@ -308,22 +317,25 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             Left = 0
             Top = 0
             Width = 144
-            Height = 84
+            Height = 136
             Align = alClient
             BevelOuter = bvNone
             Padding.Left = 8
             Padding.Top = 8
             Padding.Bottom = 8
             TabOrder = 0
+            ExplicitHeight = 84
             object ConstantsList: TListBox
               Left = 8
               Top = 8
               Width = 136
-              Height = 68
+              Height = 120
               Align = alClient
               ItemHeight = 13
               TabOrder = 0
               OnClick = ConstantsListClick
+              OnDblClick = ConstantsListDblClick
+              ExplicitHeight = 68
             end
           end
         end
@@ -332,10 +344,11 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
         Left = 0
         Top = 80
         Width = 185
-        Height = 267
+        Height = 163
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
+        ExplicitHeight = 267
         object Panel17: TPanel
           Left = 0
           Top = 0
@@ -357,19 +370,21 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           Left = 0
           Top = 14
           Width = 185
-          Height = 253
+          Height = 149
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 1
+          ExplicitHeight = 253
           object Panel19: TPanel
             Left = 144
             Top = 0
             Width = 41
-            Height = 253
+            Height = 149
             Align = alRight
             BevelOuter = bvNone
             BorderWidth = 8
             TabOrder = 1
+            ExplicitHeight = 253
             object ParamDeleteBtn: TSpeedButton
               Left = 8
               Top = 48
@@ -421,22 +436,25 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             Left = 0
             Top = 0
             Width = 144
-            Height = 253
+            Height = 149
             Align = alClient
             BevelOuter = bvNone
             Padding.Left = 8
             Padding.Top = 8
             Padding.Bottom = 8
             TabOrder = 0
+            ExplicitHeight = 253
             object ParamsList: TListBox
               Left = 8
               Top = 8
               Width = 136
-              Height = 237
+              Height = 133
               Align = alClient
               ItemHeight = 13
               TabOrder = 0
               OnClick = ParamsListClick
+              OnDblClick = ParamsListDblClick
+              ExplicitHeight = 237
             end
           end
         end
@@ -451,8 +469,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
       BevelOuter = bvNone
       BorderWidth = 8
       TabOrder = 2
-      ExplicitLeft = 906
-      ExplicitTop = 2
       object Panel8: TPanel
         Left = 8
         Top = 161
@@ -499,9 +515,22 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 1
-        ExplicitLeft = 16
-        ExplicitTop = 40
-        ExplicitWidth = 49
+        object LoadFormulaBtn: TSpeedButton
+          Left = 0
+          Top = 0
+          Width = 55
+          Height = 20
+          Hint = 
+            'Load code from another formula, for example a formula which coul' +
+            'd not be compiled'
+          Align = alTop
+          Caption = 'Load'
+          Flat = True
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = LoadFormulaBtnClick
+          ExplicitTop = 16
+        end
       end
       object InfoMemo: TMemo
         Left = 8
@@ -534,10 +563,8 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
       ActivePage = CodeSheet
       Align = alClient
       TabOrder = 0
-      ExplicitWidth = 743
       object CodeSheet: TTabSheet
         Caption = 'Code'
-        ExplicitWidth = 735
         object CodePnl: TPanel
           Left = 0
           Top = 0
@@ -547,7 +574,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           BevelOuter = bvNone
           BorderWidth = 8
           TabOrder = 0
-          ExplicitWidth = 735
           object CodeEdit: TRichEdit
             Left = 8
             Top = 8
@@ -563,14 +589,12 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             ScrollBars = ssVertical
             TabOrder = 0
             Zoom = 100
-            ExplicitWidth = 719
           end
         end
       end
       object DescriptionSheet: TTabSheet
         Caption = 'Description'
         ImageIndex = 1
-        ExplicitWidth = 735
         object Panel7: TPanel
           Left = 0
           Top = 0
@@ -580,7 +604,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           BevelOuter = bvNone
           BorderWidth = 8
           TabOrder = 0
-          ExplicitWidth = 735
           object DescriptionEdit: TRichEdit
             Left = 8
             Top = 8
@@ -596,7 +619,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             ScrollBars = ssVertical
             TabOrder = 0
             Zoom = 100
-            ExplicitWidth = 719
           end
         end
       end
@@ -610,5 +632,11 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 2
+  end
+  object OpenDialog: TOpenDialog
+    DefaultExt = 'm3f'
+    Filter = 'Mandel3D Formula (*.m3f)|*.m3f'
+    Left = 824
+    Top = 80
   end
 end

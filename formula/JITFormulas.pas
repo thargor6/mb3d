@@ -7,48 +7,35 @@ uses
 
 type
 
-  TJITFormulaOption = class;
-  TJITFormulaConstValue = class;
-  TJITFormulaParamValue = class;
-
   TJITValueDatatype = (dtInteger,  dtInt64, dtSingle, dtDouble, dtString);
+
+  TNameValuePair = class;
+
+  TJITFormulaValueType = (vtOption, vtParam, vtConst);
 
   TJITFormula = class
   private
     FFormulaname: String;
     FCode: String;
     FDescription: String;
-    FOptions: TStringList;
-    FConstValues: TList;
-    FParamValues: TStringList;
-    procedure ClearOptions;
-    function GetOptionCount: Integer;
-    procedure ClearConstValues;
-    function GetConstValueCount: Integer;
-    procedure ClearParamValues;
-    function GetParamValueCount: Integer;
+    FValues: TList;
+    FCanSave: Boolean;
+    function GetValueList(const ValueType: TJITFormulaValueType): TStringList;
   public
     constructor Create;
     destructor Destroy;override;
-    procedure SetOption(const Name: String; const Datatype: TJITValueDatatype; const Value: Variant);
-    procedure RemoveOption(const Name: String);overload;
-    procedure RemoveOption(const Idx: Integer);overload;
-    function GetOption(const Idx: Integer): TJITFormulaOption;overload;
-    function GetOption(const Name: String): TJITFormulaOption;overload;
-    procedure AddConstValue(const Datatype: TJITValueDatatype; const Value: Variant);
-    procedure RemoveConstValue(const Idx: Integer);
-    function GetConstValue(const Idx: Integer): TJITFormulaConstValue;
-    procedure SetParamValue(const Name: String; const Datatype: TJITValueDatatype; const Value: Variant);
-    procedure RemoveParamValue(const Name: String);overload;
-    procedure RemoveParamValue(const Idx: Integer);overload;
-    function GetParamValue(const Idx: Integer): TJITFormulaParamValue;overload;
-    function GetParamValue(const Name: String): TJITFormulaParamValue;overload;
+    procedure SetValue(const ValueType: TJITFormulaValueType; const Name: String; const Datatype: TJITValueDatatype; const Value: Variant);
+    procedure RemoveValue(const ValueType: TJITFormulaValueType; const Name: String);overload;
+    procedure RemoveValue(const ValueType: TJITFormulaValueType; const Idx: Integer);overload;
+    function GetValue(const ValueType: TJITFormulaValueType; const Idx: Integer): TNameValuePair;overload;
+    function GetValue(const ValueType: TJITFormulaValueType; const Name: String): TNameValuePair;overload;
+    function GetValueCount(const ValueType: TJITFormulaValueType): Integer;
+    procedure ClearValues(const ValueType: TJITFormulaValueType);
+    function NextValueName(const ValueType: TJITFormulaValueType): String;
     property Formulaname: String read FFormulaname write FFormulaname;
     property Code: String read FCode write FCode;
     property Description: String read FDescription write FDescription;
-    property OptionCount: Integer read GetOptionCount;
-    property ConstValueCount: Integer read GetConstValueCount;
-    property ParamValueCount: Integer read GetParamValueCount;
+    property CanSave: Boolean read FCanSave write FCanSave;
   end;
 
   TNameValuePair = class
@@ -65,27 +52,13 @@ type
     property Datatype: TJITValueDatatype read FDatatype write FDatatype;
   end;
 
-  TJITFormulaOption = class(TNameValuePair);
-  TJITFormulaParamValue = class(TNameValuePair);
-
-  TJITFormulaConstValue = class
-  private
-    FValue: Variant;
-    FDatatype: TJITValueDatatype;
-  public
-    constructor Create;overload;
-    constructor Create(const Datatype: TJITValueDatatype; const Value: Variant);overload;
-    function ValueToString: String;
-    property Value: Variant read FValue write FValue;
-    property Datatype: TJITValueDatatype read FDatatype write FDatatype;
-  end;
-
   TJITFormulaWriter = class
     class procedure SaveFormula(const Formula: TJITFormula; const Filename: String);
   end;
 
 function StrToJITValueDatatype(const TypeStr: String): TJITValueDatatype;
 function JITValueDatatypeToStr(const Datatype: TJITValueDatatype): String;
+function JITValueDatatypeSize(const Datatype: TJITValueDatatype): Integer;
 
 implementation
 
@@ -123,6 +96,18 @@ begin
     raise Exception.Create('JITValueDatatypeStr: Unknown datatype <'+IntToStr(Ord(Datatype))+'>');
   end
 end;
+
+function JITValueDatatypeSize(const Datatype: TJITValueDatatype): Integer;
+begin
+  case Datatype of
+    dtInt64: Result := SizeOf(Int64);
+    dtInteger: Result := SizeOf(Integer);
+    dtDouble: Result := Sizeof(Double);
+    dtSingle: Result := Sizeof(Single);
+  else
+    raise Exception.Create('JITValueDatatypeSize: Unknown datatype <'+IntToStr(Ord(Datatype))+'>');
+  end
+end;
 { ---------------------------- TNameValuePair -------------------------------- }
 function VariantToString(Value: Variant): String;
 begin
@@ -155,200 +140,140 @@ function TNameValuePair.ValueToString: String;
 begin
   Result := VariantToString(Value);
 end;
-{ -------------------------- TJITFormulaConstValue --------------------------- }
-constructor TJITFormulaConstValue.Create;
-begin
-  inherited Create;
-end;
-
-constructor TJITFormulaConstValue.Create(const Datatype: TJITValueDatatype; const Value: Variant);
-begin
-  inherited Create;
-  Self.Value := Value;
-  Self.Datatype := Datatype;
-end;
-
-function TJITFormulaConstValue.ValueToString: String;
-begin
-  Result := VariantToString(Value);
-end;
 { ------------------------------- TJITFormula -------------------------------- }
 constructor TJITFormula.Create;
+var
+  Options, Params, Constants: TStringList;
 begin
   inherited Create;
-  FOptions := TStringList.Create;
-  FOptions.Duplicates := dupError;
-  FOptions.Sorted := True;
+  FCanSave := True;
+  FValues := TObjectList.Create;
 
-  FConstValues := TObjectList.Create;
+  Options := TStringList.Create;
+  Options.Duplicates := dupError;
+  Options.Sorted := True;
+  FValues.Add(Options);
 
-  FParamValues := TStringList.Create;
-  FParamValues.Duplicates := dupError;
-  FParamValues.Sorted := True;
+  Params := TStringList.Create;
+  Params.Duplicates := dupError;
+  Params.Sorted := True;
+  FValues.Add(Params);
+
+  Constants := TStringList.Create;
+  Constants.Duplicates := dupError;
+  Constants.Sorted := True;
+  FValues.Add(Constants);
+end;
+
+function TJITFormula.NextValueName(const ValueType: TJITFormulaValueType): String;
+var
+  Prefix: String;
+  Counter: Integer;
+  ValueList: TStringList;
+begin
+  case ValueType of
+    vtOption: Prefix := 'Option';
+    vtParam: Prefix := 'Param';
+    vtConst: Prefix := 'Const';
+  end;
+  ValueList := GetValueList(ValueType);
+  Counter := 0;
+  while(True) do begin
+    Result := Prefix + IntToStr(Counter);
+    if ValueList.IndexOf(Result) < 0 then
+      break;
+    Inc(Counter);
+  end;
+end;
+
+function TJITFormula.GetValueList(const ValueType: TJITFormulaValueType): TStringList;
+begin
+  Result := TStringList(FValues.Items[Ord(ValueType)]);
 end;
 
 destructor TJITFormula.Destroy;
+var
+  I: TJITFormulaValueType;
 begin
-  ClearOptions;
-  FOptions.Free;
-  ClearConstValues;
-  FConstValues.Free;
-  ClearParamValues;
-  FParamValues.Free;
+  for I := Low(TJITFormulaValueType) to High(TJITFormulaValueType) do
+    ClearValues(I);
+  FValues.Free;
   inherited Destroy;
 end;
 
-procedure TJITFormula.ClearOptions;
-var
-  I: Integer;
-begin
-  for I := 0 to FOptions.Count -1 do
-    FOptions.Objects[I].Free;
-  FOptions.Clear;
-end;
-
-procedure TJITFormula.SetOption(const Name: String; const Datatype: TJITValueDatatype; const Value: Variant);
+procedure TJITFormula.SetValue(const ValueType: TJITFormulaValueType; const Name: String; const Datatype: TJITValueDatatype; const Value: Variant);
 var
   Idx: Integer;
-  Option: TJITFormulaOption;
+  Pair: TNameValuePair;
+  ValueList: TStringList;
 begin
-  Idx := FOptions.IndexOf(Name);
+  ValueList := GetValueList(ValueType);
+  Idx := ValueList.IndexOf(Name);
   if Idx >= 0 then begin
-    Option := GetOption(Idx);
-    Option.Datatype := Datatype;
-    Option.Value := Value;
+    Pair := GetValue(ValueType, Idx);
+    Pair.Datatype := Datatype;
+    Pair.Value := Value;
   end
   else begin
-    Option := TJITFormulaOption.Create(Name, Datatype, Value);
-    FOptions.AddObject(Name, Option);
+    Pair := TNameValuePair.Create(Name, Datatype, Value);
+    ValueList.AddObject(Name, Pair);
   end;
 end;
 
-function TJITFormula.GetOptionCount: Integer;
+function TJITFormula.GetValueCount(const ValueType: TJITFormulaValueType): Integer;
 begin
-  Result := FOptions.Count;
+  Result := GetValueList(ValueType).Count;
 end;
 
-procedure TJITFormula.RemoveOption(const Name: String);
+procedure TJITFormula.RemoveValue(const ValueType: TJITFormulaValueType; const Name: String);
 var
   Idx: Integer;
+  ValueList: TStringList;
 begin
-  Idx := FOptions.IndexOf(Name);
+  ValueList := GetValueList(ValueType);
+  Idx := ValueList.IndexOf(Name);
   if Idx >= 0 then begin
-    FOptions.Objects[Idx].Free;
-    FOptions.Delete(Idx);
+    ValueList.Objects[Idx].Free;
+    ValueList.Delete(Idx);
   end;
 end;
 
-procedure TJITFormula.RemoveOption(const Idx: Integer);
+procedure TJITFormula.RemoveValue(const ValueType: TJITFormulaValueType; const Idx: Integer);
+var
+  ValueList: TStringList;
 begin
-  FOptions.Objects[Idx].Free;
-  FOptions.Delete(Idx);
+  ValueList := GetValueList(ValueType);
+  ValueList.Objects[Idx].Free;
+  ValueList.Delete(Idx);
 end;
 
-function TJITFormula.GetOption(const Idx: Integer): TJITFormulaOption;
+function TJITFormula.GetValue(const ValueType: TJITFormulaValueType; const Idx: Integer): TNameValuePair;
 begin
-  Result := FOptions.Objects[Idx] as TJITFormulaOption;
+  Result := GetValueList(ValueType).Objects[Idx] as TNameValuePair;
 end;
 
-function TJITFormula.GetOption(const Name: String): TJITFormulaOption;
+function TJITFormula.GetValue(const ValueType: TJITFormulaValueType; const Name: String): TNameValuePair;
 var
   Idx: Integer;
+  ValueList: TStringList;
 begin
-  Idx := FOptions.IndexOf(Name);
+  ValueList := GetValueList(ValueType);
+  Idx := ValueList.IndexOf(Name);
   if Idx >= 0 then
-    Result := FOptions.Objects[Idx] as TJITFormulaOption
+    Result := ValueList.Objects[Idx] as TNameValuePair
   else
     Result := nil;
 end;
 
-procedure TJITFormula.ClearConstValues;
-begin
-  FConstValues.Clear;
-end;
-
-function TJITFormula.GetConstValueCount: Integer;
-begin
-  Result := FConstValues.Count;
-end;
-
-procedure TJITFormula.AddConstValue(const Datatype: TJITValueDatatype; const Value: Variant);
-begin
-  FConstValues.Add( TJITFormulaConstValue.Create( Datatype, Value) );
-end;
-
-procedure TJITFormula.RemoveConstValue(const Idx: Integer);
-begin
-  FConstValues.Delete(Idx);
-end;
-
-function TJITFormula.GetConstValue(const Idx: Integer): TJITFormulaConstValue;
-begin
-  Result := TJITFormulaConstValue(FConstValues[Idx]);
-end;
-
-procedure TJITFormula.ClearParamValues;
+procedure TJITFormula.ClearValues(const ValueType: TJITFormulaValueType);
 var
   I: Integer;
+  ValueList: TStringList;
 begin
-  for I := 0 to FParamValues.Count -1 do
-    FParamValues.Objects[I].Free;
-  FParamValues.Clear;
-end;
-
-function TJITFormula.GetParamValueCount: Integer;
-begin
-  Result := FParamValues.Count;
-end;
-
-procedure TJITFormula.SetParamValue(const Name: String; const Datatype: TJITValueDatatype; const Value: Variant);
-var
-  Idx: Integer;
-  ParamValue: TJITFormulaParamValue;
-begin
-  Idx := FParamValues.IndexOf(Name);
-  if Idx >= 0 then begin
-    ParamValue := GetParamValue(Idx);
-    ParamValue.Datatype := Datatype;
-    ParamValue.Value := Value;
-  end
-  else begin
-    ParamValue := TJITFormulaParamValue.Create(Name, Datatype, Value);
-    FParamValues.AddObject(Name, ParamValue);
-  end;
-end;
-
-procedure TJITFormula.RemoveParamValue(const Name: String);
-var
-  Idx: Integer;
-begin
-  Idx := FParamValues.IndexOf(Name);
-  if Idx >= 0 then begin
-    FParamValues.Objects[Idx].Free;
-    FParamValues.Delete(Idx);
-  end;
-end;
-
-procedure TJITFormula.RemoveParamValue(const Idx: Integer);
-begin
-  FParamValues.Objects[Idx].Free;
-  FParamValues.Delete(Idx);
-end;
-
-function TJITFormula.GetParamValue(const Idx: Integer): TJITFormulaParamValue;
-begin
-  Result := FParamValues.Objects[Idx] as TJITFormulaParamValue;
-end;
-
-function TJITFormula.GetParamValue(const Name: String): TJITFormulaParamValue;
-var
-  Idx: Integer;
-begin
-  Idx := FParamValues.IndexOf(Name);
-  if Idx >= 0 then
-    Result := FParamValues.Objects[Idx] as TJITFormulaParamValue
-  else
-    Result := nil;
+  ValueList := GetValueList(ValueType);
+  for I := 0 to ValueList.Count -1 do
+    ValueList.Objects[I].Free;
+  ValueList.Clear;
 end;
 { ---------------------------- TJITFormulaWriter ----------------------------- }
 class procedure TJITFormulaWriter.SaveFormula(const Formula: TJITFormula; const Filename: String);
@@ -356,35 +281,33 @@ var
   I: Integer;
   Writer: TStringList;
   ValueStr: String;
-  Option: TJITFormulaOption;
-  ParamValue: TJITFormulaParamValue;
-  ConstValue: TJITFormulaConstValue;
+  Pair: TNameValuePair;
 begin
   Writer := TStringList.Create;
   try
-    if (Formula.OptionCount > 0) or (Formula.ParamValueCount > 0) then begin
+    if (Formula.GetValueCount(vtOption) > 0) or (Formula.GetValueCount(vtParam) > 0) then begin
       Writer.Add('[OPTIONS]');
 
-      for I := 0 to Formula.OptionCount - 1 do begin
-        Option := Formula.GetOption(I);
-        ValueStr := Trim(Option.ValueToString);
+      for I := 0 to Formula.GetValueCount(vtOption) - 1 do begin
+        Pair := Formula.GetValue(vtOption, I);
+        ValueStr := Trim(Pair.ValueToString);
         if ValueStr <> '' then
-          Writer.Add('.'+Option.Name+' = '+ValueStr)
+          Writer.Add('.'+Pair.Name+' = '+ValueStr)
         else
-          Writer.Add('.'+Option.Name);
+          Writer.Add('.'+Pair.Name);
       end;
 
-      for I := 0 to Formula.ParamValueCount - 1 do begin
-        ParamValue := Formula.GetParamValue(I);
-        Writer.Add('.'+JITValueDatatypeToStr(ParamValue.Datatype) + ' ' + ParamValue.Name+' = '+ParamValue.ValueToString);
+      for I := 0 to Formula.GetValueCount(vtParam) - 1 do begin
+        Pair := Formula.GetValue(vtParam, I);
+        Writer.Add('.'+JITValueDatatypeToStr(Pair.Datatype) + ' ' + Pair.Name+' = '+Pair.ValueToString);
       end;
     end;
 
-    if Formula.ConstValueCount > 0 then begin
+    if Formula.GetValueCount(vtConst) > 0 then begin
       Writer.Add('[CONSTANTS]');
-      for I := 0 to Formula.ConstValueCount - 1  do begin
-        ConstValue := Formula.GetConstValue(I);
-        Writer.Add(JITValueDatatypeToStr(ConstValue.Datatype) + ' = ' + ConstValue.ValueToString );
+      for I := 0 to Formula.GetValueCount(vtConst) - 1  do begin
+        Pair := Formula.GetValue(vtConst, I);
+        Writer.Add('.'+JITValueDatatypeToStr(Pair.Datatype) + ' ' + Pair.Name+' = '+Pair.ValueToString);
       end;
     end;
 

@@ -3,7 +3,7 @@ unit FormulaCompiler;
 interface
 
 uses
-  SysUtils, Classes, TypeDefinitions;
+  SysUtils, Classes, TypeDefinitions, JITFormulas;
 
 type
   TFormulaLanguage = (langDELPHI);
@@ -26,7 +26,7 @@ type
 
   TFormulaCompiler = class
   public
-    function CompileFormula(const Formula: TStrings): TCompiledFormula;virtual;abstract;
+    function CompileFormula(const Formula: TJITFormula): TCompiledFormula;virtual;abstract;
   end;
 
   TFormulaCompilerRegistry = class
@@ -59,10 +59,13 @@ type
     procedure Initialize;
     procedure Register_TypeTIteration3D;
     procedure Register_MathFunctions;
+    {$ifdef JIT_FORMULA_PREPROCESSING}
+    function PreprocessCode(const Code: String; const Formula: TJITFormula): String;
+    {$endif}
   public
     constructor Create;
     destructor Destroy; override;
-    function CompileFormula(const Formula: TStrings): TCompiledFormula;override;
+    function CompileFormula(const Formula: TJITFormula): TCompiledFormula;override;
   end;
 {$endif}
 { ----------------------------- TCompiledFormula ----------------------------- }
@@ -182,7 +185,88 @@ begin
   Register_MathFunctions;
 end;
 
-function TPaxFormulaCompiler.CompileFormula(const Formula: TStrings): TCompiledFormula;
+{$ifdef JIT_FORMULA_PREPROCESSING}
+function TPaxFormulaCompiler.PreprocessCode(const Code: String; const Formula: TJITFormula): String;
+var
+  LCCode, LBreak: String;
+  ProcPos, BeginPos, VarPos, CRPos, LFPos: Integer;
+  VarCode, MainCode: String;
+(*
+  procedure CreateSegments(var VarCode, MainCode: String);
+  var
+    I, COffSet, VOffset: Integer;
+    VarSegment: TStringList;
+    CodeSegment: TStringList;
+    ConstValue: TJITFormulaConstValue;
+    ParamValue: TJITFormulaParamValue;
+    CName: String;
+  begin
+    VarSegment := TStringList.Create;
+    try
+      CodeSegment := TStringList.Create;
+      try
+        VarSegment.Add('  // begin preprocessor');
+        CodeSegment.Add('  // begin preprocessor');
+        COffset := 0;
+        VOffset := -16;
+        for I := 0 to Formula.ConstValueCount - 1 do begin
+          ConstValue := Formula.GetConstValue(I);
+          CName := 'C'+IntToStr(I+1);
+          VarSegment.Add('  ' + CName + ': '+JITValueDatatypeToStr(ConstValue.Datatype)+';');
+          CodeSegment.Add('  ' + CName + ' := PDouble(Integer(PIteration3D^.PVar) + '+IntToStr(COffset)+')^;');
+          Inc(COffset, JITValueDatatypeSize(ConstValue.Datatype));
+        end;
+
+        for I := 0 to Formula.ParamValueCount - 1 do begin
+          ParamValue := Formula.GetParamValue(I);
+          VarSegment.Add('  ' + ParamValue.Name + ': '+JITValueDatatypeToStr(ParamValue.Datatype)+';');
+          CodeSegment.Add('  ' + ParamValue.Name + ' := PDouble(Integer(PIteration3D^.PVar) - '+IntToStr(VOffset)+')^;');
+          Dec(VOffset, JITValueDatatypeSize(ParamValue.Datatype));
+        end;
+
+
+        VarSegment.Add('  // end preprocessor');
+        CodeSegment.Add('  // end preprocessor');
+
+        VarCode := VarSegment.Text;
+        MainCode := CodeSegment.Text;
+      finally
+        CodeSegment.Free;
+      end;
+    finally
+      VarSegment.Free;
+    end;
+  end;
+*)
+begin
+(*
+  if (Formula.ConstValueCount > 0) or (Formula.ParamValueCount > 0) then begin
+
+    LCCode := AnsiLowerCase( Code );
+    CRPos := Pos(#13, LCCode);
+    LFPos := Pos(#10, LCCode);
+    if CRPos < LFPos then
+      LBreak := #13
+    else
+      LBreak := #10;
+    ProcPos := pos('procedure ', LCCode);
+    if ProcPos < 1 then
+      raise Exception.Create('No code found');
+    BeginPos := Pos('begin'+LBreak, LCCode, ProcPos + 1);
+    VarPos := Pos('var'+LBreak, LCCode, ProcPos + 1);
+    if (BeginPos<1) and (VarPos<1) then
+      raise Exception.Create('Start of code not found');
+
+    CreateSegments(VarCode, MainCode);
+    // TODO
+    Result := Code;
+  end
+  else *)
+    Result := Code;
+end;
+{$endif}
+
+function TPaxFormulaCompiler.CompileFormula(const Formula: TJITFormula): TCompiledFormula;
 const
   DfltModule = '1';
 var
@@ -190,6 +274,8 @@ var
   CodeLine: String;
   I, P1, P2:Integer;
   H_ProcName: Integer;
+  CodeLines: TStringList;
+  Code: String;
   // MemStream: TMemoryStream;
 begin
   Result := TPaxCompiledFormula.Create;
@@ -199,18 +285,29 @@ begin
     FPaxCompiler.AddModule(DfltModule, FPaxPascalLanguage.LanguageName);
     // add formula-code (Delphi procedure) here
     ProcName := '';
-    if Formula<>nil then begin
-      for I := 0 to Formula.Count-1 do begin
-        CodeLine := Formula[I];
-        FPaxCompiler.AddCode(DfltModule, CodeLine);
-        if ProcName = '' then begin
-          P1 := Pos('procedure ', CodeLine);
-          if P1 > 0 then begin
-            P2 := Pos('(', CodeLine, P1 + 1);
-            if P2 > P1 then
-              ProcName := Trim(Copy(CodeLine, P1 + 10, P2 - P1 - 10));
+    if (Formula <> nil) and (Trim(Formula.Code) <> '') then begin
+      {$ifdef JIT_FORMULA_PREPROCESSING}
+      Code := PreprocessCode(Formula.Code, Formula);
+      {$else}
+      Code := Formula.Code;
+      {$endif}
+      CodeLines := TStringList.Create;
+      try
+        CodeLines.Text := Code;
+        for I := 0 to CodeLines.Count - 1 do begin
+          CodeLine := CodeLines[I];
+          FPaxCompiler.AddCode(DfltModule, CodeLine);
+          if ProcName = '' then begin
+            P1 := Pos('procedure ', CodeLine);
+            if P1 > 0 then begin
+              P2 := Pos('(', CodeLine, P1 + 1);
+              if P2 > P1 then
+                ProcName := Trim(Copy(CodeLine, P1 + 10, P2 - P1 - 10));
+            end;
           end;
         end;
+      finally
+        CodeLines.Free;
       end;
     end;
     if ProcName = '' then begin

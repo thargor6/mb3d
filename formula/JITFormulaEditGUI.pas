@@ -63,6 +63,8 @@ type
     Panel21: TPanel;
     SaveBtn: TSpeedButton;
     InfoMemo: TMemo;
+    LoadFormulaBtn: TSpeedButton;
+    OpenDialog: TOpenDialog;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -83,6 +85,10 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure SaveBtnClick(Sender: TObject);
     procedure CompileBtnClick(Sender: TObject);
+    procedure LoadFormulaBtnClick(Sender: TObject);
+    procedure ParamsListDblClick(Sender: TObject);
+    procedure ConstantsListDblClick(Sender: TObject);
+    procedure OptionsListDblClick(Sender: TObject);
   private
     { Private declarations }
     FEditMode: TEditMode;
@@ -94,9 +100,7 @@ type
     procedure ParseFormula(const Filename: String);
     procedure NewFormula;
     procedure EnableControls;
-    procedure PopulateParamsList;
-    procedure PopulateConstantsList;
-    procedure PopulateOptionsList;
+    procedure PopulateList(List: TListBox; const ValueType: TJITFormulaValueType);
     procedure Validate;
     function SaveCode: Boolean;
     function Compile: Boolean;
@@ -114,8 +118,8 @@ implementation
 
 {$R *.dfm}
 uses
-  CustomFormulas, FileHandling, ConstantValueEditGUI, ParamValueEditGUI,
-  DivUtils, TypeDefinitions, FormulaCompiler;
+  CustomFormulas, FileHandling, ParamValueEditGUI, DivUtils, TypeDefinitions,
+  FormulaCompiler;
 
 procedure TJITFormulaEditorForm.CancelAndExitBtnClick(Sender: TObject);
 begin
@@ -165,55 +169,46 @@ begin
   end;
 end;
 
+procedure TJITFormulaEditorForm.LoadFormulaBtnClick(Sender: TObject);
+begin
+  try
+    OpenDialog.InitialDir := IncludeTrailingPathDelimiter(IniDirs[3]);
+  except
+    // Hide error
+  end;
+  if OpenDialog.Execute then begin
+    FEditMode := emEdit;
+    FEditFormulaname := ExtractFilename(OpenDialog.FileName);
+    FEditFormulaname := Copy(FEditFormulaname, 1, Length(FEditFormulaname) - Length('.m3f'));
+    FormShow(Sender);
+  end;
+end;
+
 procedure TJITFormulaEditorForm.PopulateFields;
 begin
   CodeEdit.Text := FJITFormula.Code;
   DescriptionEdit.Text := FJITFormula.Description;
   FormulanameEdit.Text := FJITFormula.Formulaname;
-  PopulateParamsList;
+  PopulateList(ParamsList, vtParam);
   if ParamsList.Items.Count > 0 then
     ParamsList.ItemIndex := 0;
-  PopulateConstantsList;
+  PopulateList(ConstantsList, vtConst);
   if ConstantsList.Items.Count > 0 then
     ConstantsList.ItemIndex := 0;
-  PopulateOptionsList;
+  PopulateList(OptionsList, vtOption);
   if OptionsList.Items.Count > 0 then
     OptionsList.ItemIndex := 0;
 end;
 
-procedure TJITFormulaEditorForm.PopulateParamsList;
+procedure TJITFormulaEditorForm.PopulateList(List: TListBox; const ValueType: TJITFormulaValueType);
 var
   I: Integer;
-  Param: TJITFormulaParamValue;
+  Pair: TNameValuePair;
 begin
-  ParamsList.Items.Clear;
-  for I := 0 to FJITFormula.ParamValueCount - 1 do begin
-    Param := FJITFormula.GetParamValue(I);
-    ParamsList.Items.Add(Param.Name+' = '+Param.ValueToString);
-  end;
-end;
-
-procedure TJITFormulaEditorForm.PopulateConstantsList;
-var
-  I: Integer;
-  CParam: TJITFormulaConstValue;
-begin
-  ConstantsList.Items.Clear;
-  for I := 0 to FJITFormula.ConstValueCount - 1 do begin
-    CParam := FJITFormula.GetConstValue(I);
-    ConstantsList.Items.Add(CParam.ValueToString);
-  end;
-end;
-
-procedure TJITFormulaEditorForm.PopulateOptionsList;
-var
-  I: Integer;
-  Option: TJITFormulaOption;
-begin
-  OptionsList.Items.Clear;
-  for I := 0 to FJITFormula.OptionCount - 1 do begin
-    Option := FJITFormula.GetOption(I);
-    OptionsList.Items.Add(Option.Name+' = '+Option.ValueToString);
+  List.Items.Clear;
+  for I := 0 to FJITFormula.GetValueCount(ValueType) - 1 do begin
+    Pair := FJITFormula.GetValue(ValueType, I);
+    List.Items.Add(Pair.Name+' = '+Pair.ValueToString);
   end;
 end;
 
@@ -251,9 +246,9 @@ procedure TJITFormulaEditorForm.NewFormula;
 begin
   with FJITFormula do begin
     Formulaname := 'JITMyNewFormula';
-    SetOption('Version', dtINT64, 2);
-    SetOption('DEscale', dtDouble, 1.0);
-    SetOption('SIpower' , dtDouble, 2.0);
+    SetValue(vtOption, 'Version', dtINT64, 9);
+    SetValue(vtOption, 'DEscale', dtDouble, 1.0);
+    SetValue(vtOption, 'SIpower' , dtDouble, 2.0);
   end;
 end;
 
@@ -262,10 +257,10 @@ begin
   ParamValueEditFrm.Clear(mdNew);
   ParamValueEditFrm.WindowTitle := 'Add option value';
   if ParamValueEditFrm.ShowModal = mrOK then begin
-    if FJITFormula.GetOption(ParamValueEditFrm.Paramname) <> nil then
+    if FJITFormula.GetValue(vtOption, ParamValueEditFrm.Paramname) <> nil then
       raise Exception.Create('Option <'+ParamValueEditFrm.Paramname+'> already exists');
-    FJITFormula.SetOption( ParamValueEditFrm.Paramname, StrToJITValueDatatype(ParamValueEditFrm.TypeStr), ParamValueEditFrm.Value);
-    PopulateOptionsList;
+    FJITFormula.SetValue(vtOption, ParamValueEditFrm.Paramname, StrToJITValueDatatype(ParamValueEditFrm.TypeStr), ParamValueEditFrm.Value);
+    PopulateList(OptionsList, vtOption);
     OptionsList.ItemIndex := OptionsList.Items.Count - 1;
     EnableControls;
   end;
@@ -273,8 +268,8 @@ end;
 
 procedure TJITFormulaEditorForm.OptionDeleteBtnClick(Sender: TObject);
 begin
-  FJITFormula.RemoveOption(OptionsList.ItemIndex);
-  PopulateOptionsList;
+  FJITFormula.RemoveValue(vtOption, OptionsList.ItemIndex);
+  PopulateList(OptionsList, vtOption);
   if OptionsList.Items.Count > 0 then
     OptionsList.ItemIndex := 0;
   EnableControls;
@@ -283,20 +278,20 @@ end;
 procedure TJITFormulaEditorForm.OptionEditBtnClick(Sender: TObject);
 var
   Idx: Integer;
-  OptionValue: TJITFormulaOption;
+  Pair: TNameValuePair;
 begin
   ParamValueEditFrm.Clear(mdEdit);
   Idx := OptionsList.ItemIndex;
   if (Idx >= 0) then begin
-    OptionValue := FJITFormula.GetOption(Idx);
-    ParamValueEditFrm.Paramname := OptionValue.Name;
-    ParamValueEditFrm.TypeStr := JITValueDatatypeToStr( OptionValue.Datatype );
-    ParamValueEditFrm.Value := OptionValue.Value;
+    Pair := FJITFormula.GetValue(vtOption, Idx);
+    ParamValueEditFrm.Paramname := Pair.Name;
+    ParamValueEditFrm.TypeStr := JITValueDatatypeToStr( Pair.Datatype );
+    ParamValueEditFrm.Value := Pair.Value;
     ParamValueEditFrm.WindowTitle := 'Edit option value';
     if (ParamValueEditFrm.ShowModal = mrOK) then begin
-      OptionValue.Datatype := StrToJITValueDatatype(ParamValueEditFrm.TypeStr);
-      OptionValue.Value := ParamValueEditFrm.Value;
-      PopulateOptionsList;
+      Pair.Datatype := StrToJITValueDatatype(ParamValueEditFrm.TypeStr);
+      Pair.Value := ParamValueEditFrm.Value;
+      PopulateList(OptionsList, vtOption);
       OptionsList.ItemIndex := Idx;
       EnableControls;
     end;
@@ -308,15 +303,21 @@ begin
   EnableControls;
 end;
 
+procedure TJITFormulaEditorForm.OptionsListDblClick(Sender: TObject);
+begin
+  if OptionEditBtn.Enabled then
+    OptionEditBtnClick(Sender);
+end;
+
 procedure TJITFormulaEditorForm.ParamAddBtnClick(Sender: TObject);
 begin
   ParamValueEditFrm.Clear(mdNew);
   ParamValueEditFrm.WindowTitle := 'Add named param';
   if ParamValueEditFrm.ShowModal = mrOK then begin
-    if FJITFormula.GetParamValue(ParamValueEditFrm.Paramname) <> nil then
+    if FJITFormula.GetValue(vtParam, ParamValueEditFrm.Paramname) <> nil then
       raise Exception.Create('Param <'+ParamValueEditFrm.Paramname+'> already exists');
-    FJITFormula.SetParamValue( ParamValueEditFrm.Paramname, StrToJITValueDatatype(ParamValueEditFrm.TypeStr), ParamValueEditFrm.Value);
-    PopulateParamsList;
+    FJITFormula.SetValue(vtParam, ParamValueEditFrm.Paramname, StrToJITValueDatatype(ParamValueEditFrm.TypeStr), ParamValueEditFrm.Value);
+    PopulateList(ParamsList, vtParam);
     ParamsList.ItemIndex := ParamsList.Items.Count - 1;
     EnableControls;
   end;
@@ -324,8 +325,8 @@ end;
 
 procedure TJITFormulaEditorForm.ParamDeleteBtnClick(Sender: TObject);
 begin
-  FJITFormula.RemoveParamValue(ParamsList.ItemIndex);
-  PopulateParamsList;
+  FJITFormula.RemoveValue(vtParam, ParamsList.ItemIndex);
+  PopulateList(ParamsList, vtParam);
   if ParamsList.Items.Count > 0 then
     ParamsList.ItemIndex := 0;
   EnableControls;
@@ -334,20 +335,20 @@ end;
 procedure TJITFormulaEditorForm.ParamEditBtnClick(Sender: TObject);
 var
   Idx: Integer;
-  ParamValue: TJITFormulaParamValue;
+  Pair: TNameValuePair;
 begin
   ParamValueEditFrm.Clear(mdEdit);
   Idx := ParamsList.ItemIndex;
   if (Idx >= 0) then begin
-    ParamValue := FJITFormula.GetParamValue(Idx);
-    ParamValueEditFrm.Paramname := ParamValue.Name;
-    ParamValueEditFrm.TypeStr := JITValueDatatypeToStr( ParamValue.Datatype );
-    ParamValueEditFrm.Value := ParamValue.Value;
+    Pair := FJITFormula.GetValue(vtParam, Idx);
+    ParamValueEditFrm.Paramname := Pair.Name;
+    ParamValueEditFrm.TypeStr := JITValueDatatypeToStr( Pair.Datatype );
+    ParamValueEditFrm.Value := Pair.Value;
     ParamValueEditFrm.WindowTitle := 'Edit named param';
     if (ParamValueEditFrm.ShowModal = mrOK) then begin
-      ParamValue.Datatype := StrToJITValueDatatype(ParamValueEditFrm.TypeStr);
-      ParamValue.Value := ParamValueEditFrm.Value;
-      PopulateParamsList;
+      Pair.Datatype := StrToJITValueDatatype(ParamValueEditFrm.TypeStr);
+      Pair.Value := ParamValueEditFrm.Value;
+      PopulateList(ParamsList, vtParam);
       ParamsList.ItemIndex := Idx;
       EnableControls;
     end;
@@ -359,10 +360,16 @@ begin
   EnableControls;
 end;
 
+procedure TJITFormulaEditorForm.ParamsListDblClick(Sender: TObject);
+begin
+  if ParamEditBtn.Enabled then
+    ParamEditBtnClick(Sender);
+end;
+
 procedure TJITFormulaEditorForm.ConstantDeleteBtnClick(Sender: TObject);
 begin
-  FJITFormula.RemoveConstValue(ConstantsList.ItemIndex);
-  PopulateConstantsList;
+  FJITFormula.RemoveValue(vtConst, ConstantsList.ItemIndex);
+  PopulateList(ConstantsList, vtConst);
   if ConstantsList.Items.Count > 0 then
     ConstantsList.ItemIndex := 0;
   EnableControls;
@@ -371,19 +378,20 @@ end;
 procedure TJITFormulaEditorForm.ConstantEditBtnClick(Sender: TObject);
 var
   Idx: Integer;
-  ConstValue: TJITFormulaConstValue;
+  Pair: TNameValuePair;
 begin
-  ConstantValueEditFrm.Clear;
+  ParamValueEditFrm.Clear(mdEdit);
   Idx := ConstantsList.ItemIndex;
   if (Idx >= 0) then begin
-    ConstValue := FJITFormula.GetConstValue(Idx);
-    ConstantValueEditFrm.TypeStr := JITValueDatatypeToStr( ConstValue.Datatype );
-    ConstantValueEditFrm.Value := ConstValue.Value;
-    ConstantValueEditFrm.WindowTitle := 'Edit constant value';
-    if (ConstantValueEditFrm.ShowModal = mrOK) then begin
-      ConstValue.Datatype := StrToJITValueDatatype(ConstantValueEditFrm.TypeStr);
-      ConstValue.Value := ConstantValueEditFrm.Value;
-      PopulateConstantsList;
+    Pair := FJITFormula.GetValue(vtConst, Idx);
+    ParamValueEditFrm.Paramname := Pair.Name;
+    ParamValueEditFrm.TypeStr := JITValueDatatypeToStr( Pair.Datatype );
+    ParamValueEditFrm.Value := Pair.Value;
+    ParamValueEditFrm.WindowTitle := 'Edit named constant value';
+    if (ParamValueEditFrm.ShowModal = mrOK) then begin
+      Pair.Datatype := StrToJITValueDatatype(ParamValueEditFrm.TypeStr);
+      Pair.Value := ParamValueEditFrm.Value;
+      PopulateList(ConstantsList, vtConst);
       ConstantsList.ItemIndex := Idx;
       EnableControls;
     end;
@@ -392,11 +400,13 @@ end;
 
 procedure TJITFormulaEditorForm.ConstantAddBtnClick(Sender: TObject);
 begin
-  ConstantValueEditFrm.Clear;
-  ConstantValueEditFrm.WindowTitle := 'Add constant value';
-  if ConstantValueEditFrm.ShowModal = mrOK then begin
-    FJITFormula.AddConstValue(StrToJITValueDatatype(ConstantValueEditFrm.TypeStr), ConstantValueEditFrm.Value);
-    PopulateConstantsList;
+  ParamValueEditFrm.Clear(mdNew);
+  ParamValueEditFrm.WindowTitle := 'Add named constant value';
+  if ParamValueEditFrm.ShowModal = mrOK then begin
+    if FJITFormula.GetValue(vtConst, ParamValueEditFrm.Paramname) <> nil then
+      raise Exception.Create('Constant <'+ParamValueEditFrm.Paramname+'> already exists');
+    FJITFormula.SetValue(vtConst, ParamValueEditFrm.Paramname, StrToJITValueDatatype(ParamValueEditFrm.TypeStr), ParamValueEditFrm.Value);
+    PopulateList(ConstantsList, vtConst);
     ConstantsList.ItemIndex := ConstantsList.Items.Count - 1;
     EnableControls;
   end;
@@ -405,6 +415,12 @@ end;
 procedure TJITFormulaEditorForm.ConstantsListClick(Sender: TObject);
 begin
   EnableControls;
+end;
+
+procedure TJITFormulaEditorForm.ConstantsListDblClick(Sender: TObject);
+begin
+  if ConstantEditBtn.Enabled then
+    ConstantEditBtnClick(Sender);
 end;
 
 procedure TJITFormulaEditorForm.EnableControls;
@@ -435,7 +451,7 @@ begin
   Formulaname := ExtractFilename(Filename);
   Formulaname := Copy(Formulaname, 1, Length(Formulaname) - Length('.m3f'));
   PutStringInCustomF(CustomFname, Formulaname);
-  if not LoadCustomFormula(Filename, CustomFormula, CustomFname, dOptionVtmp, False, 0, FJITFormula) then
+  if not LoadCustomFormula(Filename, CustomFormula, CustomFname, dOptionVtmp, False, 0, FJITFormula, True) then
     raise Exception.Create('Could not load formula <'+Filename+'>');
 end;
 
@@ -459,19 +475,13 @@ var
   CompiledFormula: TCompiledFormula;
   pCodePointer: ThybridIteration2;
   Iteration: TIteration3D;
-  CodeLines: TStringList;
   X, Y, Z, W: Double;
   Vars: Pointer;
 begin
   Result := False;
   try
-    CodeLines := TStringList.Create;
-    try
-      CodeLines.Text := CodeEdit.Text;
-      CompiledFormula := TFormulaCompilerRegistry.GetCompilerInstance(langDELPHI).CompileFormula(CodeLines);
-    finally
-      CodeLines.Free;
-    end;
+    FJITFormula.Code := CodeEdit.Text;
+    CompiledFormula := TFormulaCompilerRegistry.GetCompilerInstance(langDELPHI).CompileFormula( FJITFormula );
     try
       if CompiledFormula.IsValid then begin
         ThybridIteration2(pCodePointer) := CompiledFormula.CodePointer;
