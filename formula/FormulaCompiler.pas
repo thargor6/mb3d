@@ -26,6 +26,9 @@ type
 
   TFormulaCompiler = class
   public
+    {$ifdef JIT_FORMULA_PREPROCESSING}
+    function PreprocessCode(const Code: String; const Formula: TJITFormula): String; virtual;abstract;
+    {$endif}
     function CompileFormula(const Formula: TJITFormula): TCompiledFormula;virtual;abstract;
   end;
 
@@ -41,7 +44,7 @@ uses
 {$ifdef USE_PAX_COMPILER}
   PaxCompiler, PaxProgram, PaxRegister,
 {$endif}
-  TypInfo;
+  TypInfo, Math;
 
 {$ifdef USE_PAX_COMPILER}
 type
@@ -59,13 +62,13 @@ type
     procedure Initialize;
     procedure Register_TypeTIteration3D;
     procedure Register_MathFunctions;
-    {$ifdef JIT_FORMULA_PREPROCESSING}
-    function PreprocessCode(const Code: String; const Formula: TJITFormula): String;
-    {$endif}
   public
     constructor Create;
     destructor Destroy; override;
-    function CompileFormula(const Formula: TJITFormula): TCompiledFormula;override;
+    {$ifdef JIT_FORMULA_PREPROCESSING}
+    function PreprocessCode(const Code: String; const Formula: TJITFormula): String; override;
+    {$endif}
+    function CompileFormula(const Formula: TJITFormula): TCompiledFormula; override;
   end;
 {$endif}
 { ----------------------------- TCompiledFormula ----------------------------- }
@@ -171,12 +174,8 @@ begin
 end;
 
 procedure TPaxFormulaCompiler.Register_MathFunctions;
-var
-  H_ArcTan2: Integer;
 begin
-  H_ArcTan2 := FPaxCompiler.RegisterRoutine(0, 'ArcTan2', _typeDOUBLE, _ccREGISTER);
-  FPaxCompiler.RegisterParameter(H_ArcTan2, _typeDOUBLE, _Unassigned);
-  FPaxCompiler.RegisterParameter(H_ArcTan2, _typeDOUBLE, _Unassigned);
+  FPaxCompiler.RegisterHeader(0, 'function ArcTan2(const Y, X: Extended): Extended;', @ArcTan2);
 end;
 
 procedure TPaxFormulaCompiler.Initialize;
@@ -197,7 +196,6 @@ var
   var
     I, COffSet, VOffset: Integer;
     Pair: TNameValuePair;
-    CName: String;
   begin
     VarSegment.Add('  // begin preprocessor');
     CodeSegment.Add('  // begin preprocessor');

@@ -65,6 +65,9 @@ type
     InfoMemo: TMemo;
     LoadFormulaBtn: TSpeedButton;
     OpenDialog: TOpenDialog;
+    PreprocessedCodeSheet: TTabSheet;
+    Panel22: TPanel;
+    PreprocessedCodeEdit: TRichEdit;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -89,6 +92,7 @@ type
     procedure ParamsListDblClick(Sender: TObject);
     procedure ConstantsListDblClick(Sender: TObject);
     procedure OptionsListDblClick(Sender: TObject);
+    procedure PreprocessedCodeSheetShow(Sender: TObject);
   private
     { Private declarations }
     FEditMode: TEditMode;
@@ -105,6 +109,9 @@ type
     function SaveCode: Boolean;
     function Compile: Boolean;
     procedure ShowInfoMsg(const Msg: String);
+  protected
+    procedure WMEnterSizeMove(var Message: TMessage); message WM_ENTERSIZEMOVE;
+    procedure WMExitSizeMove(var Message: TMessage); message WM_EXITSIZEMOVE;
   public
     { Public declarations }
     property EditMode: TEditMode read FEditMode write FEditMode;
@@ -140,6 +147,9 @@ end;
 procedure TJITFormulaEditorForm.FormShow(Sender: TObject);
 begin
   MainPageControl.ActivePage := CodeSheet;
+  {$ifndef JIT_FORMULA_PREPROCESSING}
+  PreprocessedCodeSheet.TabVisible := False;
+  {$endif}
   try
     Init;
   except
@@ -210,6 +220,19 @@ begin
     Pair := FJITFormula.GetValue(ValueType, I);
     List.Items.Add(Pair.Name+' = '+Pair.ValueToString);
   end;
+end;
+
+procedure TJITFormulaEditorForm.PreprocessedCodeSheetShow(Sender: TObject);
+begin
+  {$ifdef JIT_FORMULA_PREPROCESSING}
+  try
+    PreprocessedCodeEdit.Text := TFormulaCompilerRegistry.GetCompilerInstance(langDELPHI).PreprocessCode(CodeEdit.Text, FJITFormula);
+  except
+    on E: Exception do begin
+      PreprocessedCodeEdit.Text := 'Error:'#13#10+E.Message;
+    end;
+  end;
+  {$endif}
 end;
 
 function TJITFormulaEditorForm.SaveCode: Boolean;
@@ -489,10 +512,10 @@ begin
     try
       if CompiledFormula.IsValid then begin
         ThybridIteration2(pCodePointer) := CompiledFormula.CodePointer;
-        X := 0.0;
-        Y := 0.0;
-        Z := 0.0;
-        W := 0.0;
+        X := 0.1;
+        Y := 0.1;
+        Z := 0.1;
+        W := 0.1;
         GetMem(Vars, 128 * SizeOf(Double));
         try
           Iteration.PVar := Pointer( Integer(Vars) - 64 * SizeOf(Double) );
@@ -522,6 +545,16 @@ end;
 procedure TJITFormulaEditorForm.ShowInfoMsg(const Msg: String);
 begin
   InfoMemo.Lines.Append(Msg);
+end;
+
+procedure TJITFormulaEditorForm.WMEnterSizeMove(var Message: TMessage);
+begin
+  Self.DisableAlign;
+end;
+
+procedure TJITFormulaEditorForm.WMExitSizeMove(var Message: TMessage);
+begin
+  Self.EnableAlign;
 end;
 
 end.

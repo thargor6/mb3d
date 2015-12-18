@@ -74,7 +74,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 185
         object Label1: TLabel
           Left = 8
           Top = 11
@@ -109,7 +108,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 3
-        ExplicitWidth = 185
         object Panel9: TPanel
           Left = 0
           Top = 0
@@ -118,7 +116,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           Align = alTop
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitWidth = 185
           object Label2: TLabel
             Left = 8
             Top = 0
@@ -136,7 +133,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 1
-          ExplicitWidth = 185
           object Panel11: TPanel
             Left = 159
             Top = 0
@@ -146,7 +142,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             BevelOuter = bvNone
             BorderWidth = 8
             TabOrder = 1
-            ExplicitLeft = 144
             object OptionDeleteBtn: TSpeedButton
               Left = 8
               Top = 48
@@ -206,18 +201,18 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             Padding.Top = 8
             Padding.Bottom = 8
             TabOrder = 0
-            ExplicitWidth = 144
             object OptionsList: TListBox
               Left = 8
               Top = 8
               Width = 151
               Height = 120
               Align = alClient
+              DoubleBuffered = False
               ItemHeight = 13
+              ParentDoubleBuffered = False
               TabOrder = 0
               OnClick = OptionsListClick
               OnDblClick = OptionsListDblClick
-              ExplicitWidth = 136
             end
           end
         end
@@ -230,7 +225,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
-        ExplicitWidth = 185
         object Panel13: TPanel
           Left = 0
           Top = 0
@@ -239,7 +233,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           Align = alTop
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitWidth = 185
           object Label3: TLabel
             Left = 8
             Top = 0
@@ -257,7 +250,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 1
-          ExplicitWidth = 185
           object Panel15: TPanel
             Left = 159
             Top = 0
@@ -267,7 +259,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             BevelOuter = bvNone
             BorderWidth = 8
             TabOrder = 1
-            ExplicitLeft = 144
             object ConstantDeleteBtn: TSpeedButton
               Left = 8
               Top = 48
@@ -327,18 +318,18 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             Padding.Top = 8
             Padding.Bottom = 8
             TabOrder = 0
-            ExplicitWidth = 144
             object ConstantsList: TListBox
               Left = 8
               Top = 8
               Width = 151
               Height = 120
               Align = alClient
+              DoubleBuffered = False
               ItemHeight = 13
+              ParentDoubleBuffered = False
               TabOrder = 0
               OnClick = ConstantsListClick
               OnDblClick = ConstantsListDblClick
-              ExplicitWidth = 136
             end
           end
         end
@@ -351,7 +342,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
-        ExplicitWidth = 185
         object Panel17: TPanel
           Left = 0
           Top = 0
@@ -360,7 +350,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           Align = alTop
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitWidth = 185
           object Label4: TLabel
             Left = 8
             Top = 0
@@ -378,7 +367,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 1
-          ExplicitWidth = 185
           object Panel19: TPanel
             Left = 159
             Top = 0
@@ -388,7 +376,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             BevelOuter = bvNone
             BorderWidth = 8
             TabOrder = 1
-            ExplicitLeft = 144
             object ParamDeleteBtn: TSpeedButton
               Left = 8
               Top = 48
@@ -447,18 +434,18 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             Padding.Top = 8
             Padding.Bottom = 8
             TabOrder = 0
-            ExplicitWidth = 144
             object ParamsList: TListBox
               Left = 8
               Top = 8
               Width = 151
               Height = 133
               Align = alClient
+              DoubleBuffered = False
               ItemHeight = 13
+              ParentDoubleBuffered = False
               TabOrder = 0
               OnClick = ParamsListClick
               OnDblClick = ParamsListDblClick
-              ExplicitWidth = 136
             end
           end
         end
@@ -564,14 +551,11 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
       Top = 0
       Width = 704
       Height = 543
-      ActivePage = CodeSheet
+      ActivePage = PreprocessedCodeSheet
       Align = alClient
       TabOrder = 0
-      ExplicitLeft = 185
-      ExplicitWidth = 719
       object CodeSheet: TTabSheet
         Caption = 'Code'
-        ExplicitWidth = 711
         object CodePnl: TPanel
           Left = 0
           Top = 0
@@ -581,7 +565,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           BevelOuter = bvNone
           BorderWidth = 8
           TabOrder = 0
-          ExplicitWidth = 711
           object CodeEdit: TRichEdit
             Left = 8
             Top = 8
@@ -596,15 +579,14 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             ParentFont = False
             ScrollBars = ssVertical
             TabOrder = 0
+            WantTabs = True
             Zoom = 100
-            ExplicitWidth = 695
           end
         end
       end
       object DescriptionSheet: TTabSheet
         Caption = 'Description'
         ImageIndex = 1
-        ExplicitWidth = 711
         object Panel7: TPanel
           Left = 0
           Top = 0
@@ -614,7 +596,6 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
           BevelOuter = bvNone
           BorderWidth = 8
           TabOrder = 0
-          ExplicitWidth = 711
           object DescriptionEdit: TRichEdit
             Left = 8
             Top = 8
@@ -629,8 +610,41 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
             ParentFont = False
             ScrollBars = ssVertical
             TabOrder = 0
+            WantTabs = True
             Zoom = 100
-            ExplicitWidth = 695
+          end
+        end
+      end
+      object PreprocessedCodeSheet: TTabSheet
+        Caption = 'Preprocessed code'
+        ImageIndex = 2
+        OnShow = PreprocessedCodeSheetShow
+        object Panel22: TPanel
+          Left = 0
+          Top = 0
+          Width = 696
+          Height = 515
+          Align = alClient
+          BevelOuter = bvNone
+          BorderWidth = 8
+          TabOrder = 0
+          object PreprocessedCodeEdit: TRichEdit
+            Left = 8
+            Top = 8
+            Width = 680
+            Height = 499
+            Align = alClient
+            Font.Charset = ANSI_CHARSET
+            Font.Color = clActiveCaption
+            Font.Height = -11
+            Font.Name = 'Courier New'
+            Font.Style = []
+            ParentFont = False
+            ReadOnly = True
+            ScrollBars = ssVertical
+            TabOrder = 0
+            WantTabs = True
+            Zoom = 100
           end
         end
       end
