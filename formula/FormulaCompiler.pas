@@ -204,14 +204,14 @@ var
     for I := 0 to Formula.GetValueCount(vtConst) - 1 do begin
       Pair := Formula.GetValue(vtConst, I);
       VarSegment.Add('  ' + Pair.Name + ': '+JITValueDatatypeToStr(Pair.Datatype)+';');
-      CodeSegment.Add('  ' + Pair.Name + ' := PDouble(Integer(PIteration3D^.PVar) + '+IntToStr(COffset)+')^;');
+      CodeSegment.Add('  ' + Pair.Name + ' := P'+JITValueDatatypeToStr(Pair.Datatype)+'(Integer(PIteration3D^.PVar) + '+IntToStr(COffset)+')^;');
       Inc(COffset, JITValueDatatypeSize(Pair.Datatype));
     end;
 
     for I := 0 to Formula.GetValueCount(vtParam) - 1 do begin
       Pair := Formula.GetValue(vtParam, I);
       VarSegment.Add('  ' + Pair.Name + ': '+JITValueDatatypeToStr(Pair.Datatype)+';');
-      CodeSegment.Add('  ' + Pair.Name + ' := PDouble(Integer(PIteration3D^.PVar) - '+IntToStr(VOffset)+')^;');
+      CodeSegment.Add('  ' + Pair.Name + ' := P'+JITValueDatatypeToStr(Pair.Datatype)+'(Integer(PIteration3D^.PVar) - '+IntToStr(VOffset)+')^;');
       Inc(VOffset, JITValueDatatypeSize(Pair.Datatype));
     end;
 

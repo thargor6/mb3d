@@ -100,6 +100,7 @@ object ParamValueEditFrm: TParamValueEditFrm
       TabOrder = 1
       Items.Strings = (
         'Double'
+        'Single'
         'Integer'
         'Int64')
     end
