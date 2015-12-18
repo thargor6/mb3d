@@ -68,6 +68,9 @@ type
     PreprocessedCodeSheet: TTabSheet;
     Panel22: TPanel;
     PreprocessedCodeEdit: TRichEdit;
+    SupportedFunctionsSheet: TTabSheet;
+    Panel23: TPanel;
+    SupportedFunctionsEdit: TRichEdit;
     procedure FormShow(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
