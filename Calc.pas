@@ -162,6 +162,7 @@ var x, ThreadCount: Integer;
     MCTparas: TMCTparameter;
     MandCalcThread: array of TMandCalcThread;
     MandCalcThread2D: array of T2DcalcThread;
+    OldVerbose: Boolean;
 begin
   ThreadCount := Min(Mand3DForm.UpDown3.Position, Header.Height);
   try
@@ -208,14 +209,20 @@ begin
           MandCalcThread[x - 1] := TMandCalcThread.Create(True);
           MandCalcThread[x - 1].FreeOnTerminate := True;
           {$ifdef PARAMS_PER_THREAD}
-          MCTparas := getMCTparasFromHeader(Header^, True);
-          MCTparas.pSiLight  := PsiLight5;
-          MCTparas.SLoffset  := hSLoffset;
-          MCTparas.FSIstart  := FSIstart;
-          MCTparas.FSIoffset := FSIoffset;
-          MCTparas.PLVals    := PLightVals;
-          MCTparas.PCalcThreadStats := PCTS;
-          MCTparas.CalcRect := hRect;
+          OldVerbose := bGetMCTPverbose;
+          try
+            bGetMCTPverbose := False;
+            MCTparas := getMCTparasFromHeader(Header^, True);
+            MCTparas.pSiLight  := PsiLight5;
+            MCTparas.SLoffset  := hSLoffset;
+            MCTparas.FSIstart  := FSIstart;
+            MCTparas.FSIoffset := FSIoffset;
+            MCTparas.PLVals    := PLightVals;
+            MCTparas.PCalcThreadStats := PCTS;
+            MCTparas.CalcRect := hRect;
+          finally
+            bGetMCTPverbose := OldVerbose;
+          end;
           {$endif PARAMS_PER_THREAD}
           MandCalcThread[x - 1].MCTparas        := MCTparas;
           MandCalcThread[x - 1].Priority        := cTPrio[Mand3DForm.ComboBox2.ItemIndex];
@@ -231,14 +238,20 @@ begin
           MandCalcThread2D[x - 1] := T2DcalcThread.Create(True);
           MandCalcThread2D[x - 1].FreeOnTerminate := True;
           {$ifdef PARAMS_PER_THREAD}
-          MCTparas := getMCTparasFromHeader(Header^, True);
-          MCTparas.pSiLight  := PsiLight5;
-          MCTparas.SLoffset  := hSLoffset;
-          MCTparas.FSIstart  := FSIstart;
-          MCTparas.FSIoffset := FSIoffset;
-          MCTparas.PLVals    := PLightVals;
-          MCTparas.PCalcThreadStats := PCTS;
-          MCTparas.CalcRect := hRect;
+          OldVerbose := bGetMCTPverbose;
+          try
+            bGetMCTPverbose := False;
+            MCTparas := getMCTparasFromHeader(Header^, True);
+            MCTparas.pSiLight  := PsiLight5;
+            MCTparas.SLoffset  := hSLoffset;
+            MCTparas.FSIstart  := FSIstart;
+            MCTparas.FSIoffset := FSIoffset;
+            MCTparas.PLVals    := PLightVals;
+            MCTparas.PCalcThreadStats := PCTS;
+            MCTparas.CalcRect := hRect;
+          finally
+            bGetMCTPverbose := OldVerbose;
+          end;
           {$endif PARAMS_PER_THREAD}
           MandCalcThread2D[x - 1].MCTparas        := MCTparas;
           MandCalcThread2D[x - 1].Priority        := cTPrio[Mand3DForm.ComboBox2.ItemIndex];

@@ -1,3 +1,61 @@
+V1.90 FINAL BETA
+
+Final changes which will make it into the release:
+
+- Support for animated (height)maps! (Use the new "Map Sequences"-window in the Prefs-section to define them
+  and to assign the sequence to a map channel)
+
+- new MutaGen-module to easily explore new combinations of formulas and settings
+   - four types of mutations:
+       - add, remove, exchange formulas
+       - modify params of formulas
+       - modify Julia-mode
+       - modify iteration count
+   - in the UI you may turn on/off those types individually, by specifying a weight, and you may specify an additional
+     strength-parameter
+   - you may browse through the already generated generations of mutations and restart on interesting results
+   - you may resize the window to alter the size of the generated thumbnail images
+   - you may cancel/restart the mutation-process at any time (sometimes there occur combinations of parameters
+     which may lead to "endless" calculations, in such cases it is helpful to be able to just restart)
+   - WARNING: some formula-combinations may crash the program, so save often!
+   - This is just the first version, e.g. interpolated functions are not supported yet!
+   - Please note that it is intented that this module does not create ready-to-use artworks from scratch.
+     It can only happen, when you put in well made parameters (whith everything what makes a great artwork),
+     that the mutation will keep many of those properties, making it a nice artwork.
+     Or in short: the better your input, the better the output.
+
+- Navigator-size may now be altered (you must expand the right toolbar to see the "Navigator size" control), 
+  the last setting is stored to the ini-file
+
+- Global rework of the UI, added theme-support, made "Glossy" the default theme
+
+- Formula-Window:
+    - exchanging of formulas now works in two directions
+
+- integrated formula-editor for creating/editing JIT-compiled formulas (see the new buttons in the formula window)
+   - support for MB3D's parameters and constants
+   - preprocessor to deal with the parameter-handling code
+   - backed by the commercial PaxCompiler
+   - included support for about 50 mathematical functions
+   - watch out for formulas with the prefix "JIT" for examples!
+
+- Many new formulas from the community at fractalforums.com
+
+- New Info-Section at the main window, which now has a button to reach the official bug-reporting tool
+
+################################################################################
+V1.90 BETA 10
+- flickering when resizing the JIT-formula-window removed
+- JIT-editor now supports to enter <tab>-characters
+
+V1.90 BETA 9
+- integrated editor for creating/editing JIT-compiled formulas (see the new buttons in the formula window)
+- new version for params (*.m3f) with named constants (which are used for JIT-compiled formulas)
+- JIT-formula-preprocessor which deals with the nasty param-handling
+
+V1.90 BETA 8
+- improved stability when loading maps from within Navigator and Animator in parallel
+
 V1.90 BETA 7
 - improved stability when loading maps, especially in the case of missing frames
 - new increment-option when defining animated maps (higher values than 1 will skip frames)
@@ -30,15 +88,15 @@ V1.90 BETA 2
 
 V1.90 BETA 1 
 - new MutaGen-module to easily explore new combinations of formulas and settings
-   - four types of mutation: 
+   - four types of mutation:
        - add, remove, exchange formulas
        - modify params of formulas
        - modify Julia-mode
-       - modify iteration count    
+       - modify iteration count
    - in the UI you may turn on/off those types individually, by specifying a weight, and you may specify an additional strength-parameter
    - you may browse through the already generated generations of mutations and restart on interesting results
    - you may resize the window to alter the size (and render-speed) of the generated thumbnail images
-   - you may cancel/restart the mutation-process at any time (sometimes there occur combinations of parameters 
+   - you may cancel/restart the mutation-process at any time (sometimes there occur combinations of parameters
      which may lead to "endless" calculations, in such cases it is helpful to be able to just restart)
 
 - some enhancements of the Formula-window

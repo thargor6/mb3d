@@ -263,7 +263,7 @@ type
     DEstopChanged: LongBool;
  //   ColOnItsChanged: LongBool;
     CalcThreadStatusID: Integer;
-    MCTparas: TMCTparameter;
+    MCTparas: Array [0..64] of TMCTparameter;
     procedure Calc(Nstep: Integer);
     procedure TransformNHeader;
     function GetLocalAbsoluteDE(var NotValid: LongBool): Double;
@@ -746,7 +746,7 @@ begin
 end;
 
 procedure TFNavigator.Calc(Nstep: Integer);
-var x, nThreadCount: Integer;
+var I, x, nThreadCount: Integer;
     bAllOK: LongBool;
     CalcThread: array of TNaviCalcThread;
 begin
@@ -769,34 +769,38 @@ begin
       NaviHeader.dFOVy      := StrToFloatK(Edit3.Text);
       NaviHeader.bPlanarOptic := RadioGroup2.ItemIndex;
       bGetMCTPverbose       := False;
-      MCTparas              := getMCTparasFromHeader(NaviHeader, True);
-      bGetMCTPverbose       := True;
-      if MCTparas.DEoption = 20 then MCTparas.iDEAddSteps := 7 else MCTparas.iDEAddSteps := 4;
-      MakeLightValsFromHeaderLightNavi(@NaviHeader, @NaviLightVals, 1);
-      MCTparas.ZcMul        := MCTparas.ZcMul * 0.00390625;   //because navi uses old light paras
-      MCTparas.PLValsNavi   := @NaviLightVals;
-      MCTparas.msDEsub      := 0;
-      if (NaviHeader.Light.TBoptions and $20000) = 0 then MCTparas.ColorOption := 9; //smoothits, else 2nd choice functions
+      for I := 0 to nThreadCount - 1 do begin
+        MCTparas[I]              := getMCTparasFromHeader(NaviHeader, True);
+        bGetMCTPverbose       := I = 0;
+        if MCTparas[I].DEoption = 20 then MCTparas[I].iDEAddSteps := 7 else MCTparas[I].iDEAddSteps := 4;
+        MakeLightValsFromHeaderLightNavi(@NaviHeader, @NaviLightVals, 1);
+        MCTparas[I].ZcMul        := MCTparas[I].ZcMul * 0.00390625;   //because navi uses old light paras
+        MCTparas[I].PLValsNavi   := @NaviLightVals;
+        MCTparas[I].msDEsub      := 0;
+        if (NaviHeader.Light.TBoptions and $20000) = 0 then MCTparas[I].ColorOption := 9; //smoothits, else 2nd choice functions
+      end;
       //tests:
      // Label18.Caption := 'Correction: ' + FloatToStr(NDEmultiplier);
     end;
-    MCTparas.FSIstart      := Integer(Image1.Picture.Bitmap.ScanLine[0]);
-    MCTparas.FSIoffset     := Integer(Image1.Picture.Bitmap.ScanLine[1]) - MCTparas.FSIstart;
-    MCTparas.NaviStep      := Nstep;
-    MCTparas.SLwidMNpix    := MCTparas.FSIoffset div 4 - Nstep;
-    SetLength(CalcThread, nThreadCount);
-    for x := 0 to MAX_FORMULA_COUNT - 1 do if MCTparas.nHybrid[x] > 0 then bAllOK := True;
+    for I := 0 to nThreadCount - 1 do begin
+      MCTparas[I].FSIstart      := Integer(Image1.Picture.Bitmap.ScanLine[0]);
+      MCTparas[I].FSIoffset     := Integer(Image1.Picture.Bitmap.ScanLine[1]) - MCTparas[I].FSIstart;
+      MCTparas[I].NaviStep      := Nstep;
+      MCTparas[I].SLwidMNpix    := MCTparas[I].FSIoffset div 4 - Nstep;
+      SetLength(CalcThread, nThreadCount);
+      for x := 0 to MAX_FORMULA_COUNT - 1 do if MCTparas[I].nHybrid[x] > 0 then bAllOK := True;
+    end;
   finally
   end;
   if bAllOK then
   begin
     for x := 0 to nThreadCount - 1 do
     begin
-      MCTparas.iThreadId := x + 1;
+      MCTparas[x].iThreadId := x + 1;
       try
         CalcThread[x] := TNaviCalcThread.Create(True);
         CalcThread[x].FreeOnTerminate := True;
-        CalcThread[x].MCTparas        := MCTparas;
+        CalcThread[x].MCTparas        := MCTparas[x];
         CalcThread[x].NaviLightVals   := NaviLightVals;
         CalcThread[x].NaviLightVals.PLValignedNavi :=
           TPLValignedNavi((Integer(@CalcThread[x].NaviLightVals.LColSbuf[0]) + 15) and $FFFFFFF0);
@@ -808,9 +812,9 @@ begin
       end;
     end;
     iActiveThreads := nThreadCount;
-    MCTparas.PCalcThreadStats := GetNewThreadStatRecord(CalcThreadStatusID, nThreadCount, 0, Self.Handle);
+    MCTparas[0].PCalcThreadStats := GetNewThreadStatRecord(CalcThreadStatusID, nThreadCount, 0, Self.Handle);
     NglobalCounter := CalcThreadStatusID;
-    if (CalcThreadStatusID = 0) or (MCTparas.PCalcThreadStats = nil) then
+    if (CalcThreadStatusID = 0) or (MCTparas[0].PCalcThreadStats = nil) then
     begin
       Mand3DForm.OutMessage('Failed to create ThreadStats');
       for x := 0 to nThreadCount - 1 do CalcThread[x].Free;
@@ -819,7 +823,7 @@ begin
     for x := 1 to nThreadCount do
     begin
       CalcThread[x - 1].MCTparas.iThreadCount := nThreadCount;
-      CalcThread[x - 1].MCTparas.PCalcThreadStats := MCTparas.PCalcThreadStats;
+      CalcThread[x - 1].MCTparas.PCalcThreadStats := MCTparas[0].PCalcThreadStats;
     end;
     for x := 0 to nThreadCount - 1 do CalcThread[x].Start;
   end;
@@ -948,7 +952,7 @@ end;
 
 procedure TFNavigator.Timer1Timer(Sender: TObject);  
 begin
-    Timer1.Interval := 100;
+    Timer1.Interval := 75;
     Image1.Repaint;
     if not isCalculating then
     begin
