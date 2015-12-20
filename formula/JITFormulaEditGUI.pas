@@ -501,12 +501,106 @@ begin
 end;
 
 function TJITFormulaEditorForm.Compile: Boolean;
+const
+  MaxVars = 32;
+  MaxConsts = 32;
 var
   CompiledFormula: TCompiledFormula;
   pCodePointer: ThybridIteration2;
-  Iteration: TIteration3D;
+  IterationExt: TPIteration3Dext;
   X, Y, Z, W: Double;
   Vars: Pointer;
+
+  procedure FillIterationExt(const VarPointer: Pointer);
+  begin
+    // Assign different values to each properties for easier testing if all values are
+    // transfered correctly and all sizes are set correct
+    IterationExt^.J4 := 0.1;
+    IterationExt^.Rold := 0.2;
+    IterationExt^.RStopD := 0.3;
+    IterationExt^.x := 0.4;
+    IterationExt^.y := 0.5;
+    IterationExt^.z := 0.6;
+    IterationExt^.w := 0.7;
+    IterationExt^.C1 := 08;
+    IterationExt^.C2 := 0.9;
+    IterationExt^.C3 := 1.0;
+    IterationExt^.J1 := 1.1;
+    IterationExt^.J2 := 1.2;
+    IterationExt^.J3 := 1.3;
+    IterationExt^.PVar := Pointer( Integer(Vars) - MaxVars * SizeOf(Double) );
+    IterationExt^.SmoothItD := 1.4;
+    IterationExt^.Rout := 1.5;
+    IterationExt^.ItResultI := 1600;
+    IterationExt^.maxIt := 1700;
+    IterationExt^.RStop := 1.8;
+    IterationExt^.nHybrid[0] := 1900;
+    IterationExt^.nHybrid[1] := 2000;
+    IterationExt^.nHybrid[2] := 2100;
+    IterationExt^.nHybrid[3] := 2200;
+    IterationExt^.nHybrid[4] := 2300;
+    IterationExt^.nHybrid[5] := 2400;
+    IterationExt^.fHPVar[0] := Pointer(2500);
+    IterationExt^.fHPVar[1] := Pointer(2600);
+    IterationExt^.fHPVar[2] := Pointer(2700);
+    IterationExt^.fHPVar[3] := Pointer(2800);
+    IterationExt^.fHPVar[4] := Pointer(2900);
+    IterationExt^.fHPVar[5] := Pointer(3000);
+    IterationExt^.fHybrid[0] := Pointer(3100);
+    IterationExt^.fHybrid[1] := Pointer(3200);
+    IterationExt^.fHybrid[2] := Pointer(3300);
+    IterationExt^.fHybrid[3] := Pointer(3400);
+    IterationExt^.fHybrid[4] := Pointer(3500);
+    IterationExt^.fHybrid[5] := Pointer(3600);
+    IterationExt^.CalcSIT := True;
+    IterationExt^.bFree := 1;
+    IterationExt^.EndTo := 3700;
+    IterationExt^.DoJulia := True;
+    IterationExt^.LNRStop := 3.8;
+    IterationExt^.DEoption := 3900;
+    IterationExt^.fHln[0] := 4.0;
+    IterationExt^.fHln[1] := 4.1;
+    IterationExt^.fHln[2] := 4.2;
+    IterationExt^.fHln[3] := 4.3;
+    IterationExt^.fHln[4] := 4.4;
+    IterationExt^.fHln[5] := 4.5;
+    IterationExt^.iRepeatFrom := 4600;
+    IterationExt^.iStartFrom := 4700;
+    IterationExt^.OTrap := 4.8;
+    IterationExt^.VaryScale := 4.9;
+    IterationExt^.bFirstIt := 5000;
+    IterationExt^.bTmp := 5100;
+    IterationExt^.Dfree1 := 5.2;
+    IterationExt^.Dfree2 := 5.3;
+    IterationExt^.Deriv1 := 5.4;
+    IterationExt^.Deriv2 := 5.5;
+    IterationExt^.Deriv3 := 5.6;
+    IterationExt^.SMatrix4[0][0] := 5.7;
+    IterationExt^.SMatrix4[0][1] := 5.8;
+    IterationExt^.SMatrix4[0][2] := 5.9;
+    IterationExt^.SMatrix4[1][0] := 6.0;
+    IterationExt^.SMatrix4[1][1] := 6.1;
+    IterationExt^.SMatrix4[1][2] := 6.2;
+    IterationExt^.SMatrix4[2][0] := 6.3;
+    IterationExt^.SMatrix4[2][1] := 6.4;
+    IterationExt^.SMatrix4[2][2] := 6.5;
+    IterationExt^.Ju1 := 6.6;
+    IterationExt^.Ju2 := 6.7;
+    IterationExt^.Ju3 := 6.8;
+    IterationExt^.Ju4 := 6.9;
+    IterationExt^.PMapFunc := Pointer(7000);
+    IterationExt^.PMapFunc2 := Pointer(7100);
+    IterationExt^.pInitialization[0] := Pointer(7200);
+    IterationExt^.pInitialization[1] := Pointer(7300);
+    IterationExt^.pInitialization[2] := Pointer(7400);
+    IterationExt^.pInitialization[3] := Pointer(7500);
+    IterationExt^.pInitialization[4] := Pointer(7600);
+    IterationExt^.pInitialization[5] := Pointer(7700);
+    IterationExt^.bIsInsideRender := True;
+    IterationExt^.OTrapMode := 7800;
+    IterationExt^.OTrapDE := 7.9;
+  end;
+
 begin
   Result := False;
   try
@@ -515,16 +609,21 @@ begin
     try
       if CompiledFormula.IsValid then begin
         ThybridIteration2(pCodePointer) := CompiledFormula.CodePointer;
-        X := 0.1;
-        Y := 0.1;
-        Z := 0.1;
-        W := 0.1;
-        GetMem(Vars, 128 * SizeOf(Double));
+        X := 0.0;
+        Y := 0.0;
+        Z := 0.0;
+        W := 0.0;
+        GetMem(IterationExt, SizeOf(TIteration3Dext));
         try
-          Iteration.PVar := Pointer( Integer(Vars) - 64 * SizeOf(Double) );
-          pCodePointer(X, Y, Z, W, @Iteration);
+          GetMem(Vars, (MaxVars + MaxConsts) * SizeOf(Double));
+          try
+            FillIterationExt(Vars);
+            pCodePointer(X, Y, Z, W, TPIteration3D(Integer(IterationExt) + 56));
+          finally
+            FreeMem(Vars);
+          end;
         finally
-          FreeMem(Vars);
+          FreeMem(IterationExt);
         end;
         Result := True;
         ShowInfoMsg('Compiling succeeded');

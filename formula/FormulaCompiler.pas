@@ -44,7 +44,7 @@ uses
 {$ifdef USE_PAX_COMPILER}
   PaxCompiler, PaxProgram, PaxRegister,
 {$endif}
-  TypInfo, Math;
+  TypInfo, Math, Math3D;
 
 {$ifdef USE_PAX_COMPILER}
 type
@@ -61,7 +61,9 @@ type
     FPaxPascalLanguage: TPaxPascalLanguage;
     procedure Initialize;
     procedure Register_TypeTIteration3D;
+    procedure Register_TypeTIteration3Dext;
     procedure Register_MathFunctions;
+    procedure Register_MiscFunctions;
   public
     constructor Create;
     destructor Destroy; override;
@@ -117,9 +119,19 @@ var
   { H_TPIteration3D: Integer; }
   {$ifdef ENABLE_EXTENSIONS}
   H_Range_0_35: Integer;
+  H_FormulaRangeExt: Integer;
   {$endif}
+
+  procedure RegisterArray(const ElemName: String; const ElemType, RangeType: Integer);
+  var
+    H_Type: Integer;
+  begin
+    H_Type := FPaxCompiler.RegisterArrayType(H_TIteration3D, 'H_T'+ElemName, RangeType, ElemType, true);
+    FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, ElemName, H_Type);
+  end;
+
 begin
-  H_FormulaRange := FPaxCompiler.RegisterSubrangeType(0, 'FormulaRange', _typeCHAR, 0, V18_FORMULA_COUNT - 1);
+  H_FormulaRange := FPaxCompiler.RegisterSubrangeType(0, 'FormulaRange', _typeBYTE, 0, V18_FORMULA_COUNT - 1);
 
   H_TIteration3D := FPaxCompiler.RegisterRecordType(0, 'TIteration3D', true);
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'C1', _typeDOUBLE);
@@ -134,23 +146,24 @@ begin
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'ItResultI', _typeINTEGER);
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'maxIt', _typeINTEGER);
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'RStop', _typeSINGLE);
+
   {$ifdef ENABLE_EXTENSIONS}
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'unused_nHybrid', H_FormulaRange, _typeINTEGER, true);
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'unused_fHPVar', H_FormulaRange, _typePOINTER, true);
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'unused_fHybrid', H_FormulaRange, _typePOINTER, true);
+  RegisterArray('unused_nHybrid', _typeINTEGER, H_FormulaRange);
+  RegisterArray('unused_fHPVar', _typePOINTER, H_FormulaRange);
+  RegisterArray('unused_fHybrid', _typePOINTER, H_FormulaRange);
   {$else}
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'nHybrid', H_FormulaRange, _typeINTEGER, true);
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'fHPVar', H_FormulaRange, _typePOINTER, true);
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'fHybrid', H_FormulaRange, _typePOINTER, true);
+  RegisterArray('nHybrid', _typeINTEGER, H_FormulaRange);
+  RegisterArray('fHPVar', _typePOINTER, H_FormulaRange);
+  RegisterArray('fHybrid', _typePOINTER, H_FormulaRange);
   {$endif}
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'CalcSIT', _typeLONGBOOL);
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'DoJulia', _typeLONGBOOL);
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'LNRStop', _typeSINGLE);
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'DEoption', _typeINTEGER);
   {$ifdef ENABLE_EXTENSIONS}
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'unused_fHln', H_FormulaRange, _typeSINGLE, true);
+  RegisterArray('unused_fHln', _typeSINGLE, H_FormulaRange);
   {$else}
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'fHln', H_FormulaRange, _typeSINGLE, true);
+  RegisterArray('fHln', _typeSINGLE, H_FormulaRange);
   {$endif}
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'iRepeatFrom', _typeINTEGER);
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'OTrap', _typeDOUBLE);
@@ -163,14 +176,133 @@ begin
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'Deriv2', _typeDOUBLE);
   FPaxCompiler.RegisterRecordTypeField(H_TIteration3D, 'Deriv3', _typeDOUBLE);
   {$ifdef ENABLE_EXTENSIONS}
-  H_Range_0_35 := PaxCompiler1.RegisterSubrangeType(0, 'Range_0_35', _typeCHAR, 0, 35);
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'dummy', H_Range_0_35, _typeINTEGER, true);
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'nHybrid', H_FormulaRange, _typeINTEGER, true);
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'fHPVar', H_FormulaRange, _typePOINTER, true);
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'fHybrid', H_FormulaRange, _typePOINTER, true);
-  FPaxCompiler.RegisterArrayType(H_TIteration3D, 'fHln', H_FormulaRange, _typeSINGLE, true);
+  H_Range_0_35 := PaxCompiler1.RegisterSubrangeType(0, 'Range_0_35', _typeBYTE, 0, 35);
+  H_FormulaRangeExt := FPaxCompiler.RegisterSubrangeType(0, 'FormulaRangeExt', _typeCHAR, 0, MAX_FORMULA_COUNT - 1);
+  RegisterArray('dummy', _typeINTEGER, H_Range_0_35);
+  RegisterArray('nHybrid', _typeINTEGER, H_FormulaRangeExt);
+  RegisterArray('fHPVar', _typePOINTER, H_FormulaRangeExt);
+  RegisterArray('fHybrid', _typePOINTER, H_FormulaRangeExt);
+  RegisterArray('fHln', _typeSINGLE, H_FormulaRangeExt);
   {$endif}
   {H_TPIteration3D :=} FPaxCompiler.RegisterPointerType(0, 'TPIteration3D', H_TIteration3D);
+end;
+
+procedure TPaxFormulaCompiler.Register_TypeTIteration3Dext;
+var
+  H_FormulaRange: Integer;
+  H_TIteration3Dext: Integer;
+  { H_TPIteration3D: Integer; }
+  {$ifdef ENABLE_EXTENSIONS}
+  H_Range_0_35: Integer;
+  H_FormulaRangeExt: Integer;
+  {$endif}
+  H_FormulaInitialization, H_TFormulaInitialization: Integer;
+  H_Range_0_63, H_Range_0_2: Integer;
+  H_TVec3D, H_TPVec3D: Integer;
+  H_LMSfunction, H_TLMSfunction: Integer;
+
+  procedure RegisterArray(const ElemName: String; const ElemType, RangeType: Integer);
+  var
+    H_Type: Integer;
+  begin
+    H_Type := FPaxCompiler.RegisterArrayType(H_TIteration3Dext, 'H_T'+ElemName, RangeType, ElemType, true);
+    FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, ElemName, H_Type);
+  end;
+
+begin
+  H_FormulaRange := FPaxCompiler.RegisterSubrangeType(0, 'FormulaRange', _typeBYTE, 0, V18_FORMULA_COUNT - 1);
+
+  // TFormulaInitialization
+  H_FormulaInitialization := FPaxCompiler.RegisterRoutine(0, 'FormulaInitialization', _typeVOID, _ccREGISTER);
+  FPaxCompiler.RegisterParameter(H_FormulaInitialization, _typePOINTER, _Unassigned);
+  H_TFormulaInitialization := FPaxCompiler.RegisterProceduralType(0, 'TFormulaInitialization', H_FormulaInitialization);
+
+  // TLMSfunction
+  H_Range_0_2 := FPaxCompiler.RegisterSubrangeType(0, 'Range_0_2', _typeBYTE, 0, 2);
+  H_TVec3D := FPaxCompiler.RegisterArrayType(0, 'TVec3D', H_Range_0_2, _typeDOUBLE);
+  H_TPVec3D := FPaxCompiler.RegisterPointerType(0, 'TPVec3D', H_TVec3D);
+  H_LMSfunction := FPaxCompiler.RegisterRoutine(0, 'LMSfunction', H_TVec3D, _ccREGISTER);
+  FPaxCompiler.RegisterParameter(H_LMSfunction, H_TPVec3D, _Unassigned);
+  FPaxCompiler.RegisterParameter(H_LMSfunction, _typeINTEGER, _Unassigned);
+  H_TLMSfunction := FPaxCompiler.RegisterProceduralType(0, 'TLMSfunction', H_LMSfunction);
+
+  H_TIteration3Dext := FPaxCompiler.RegisterRecordType(0, 'TIteration3Dext', true);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'J4', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Rold', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'RStopD', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'x', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'y', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'z', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'w', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'C1', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'C2', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'C3', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'J1', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'J2', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'J3', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'PVar', _typePOINTER);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'SmoothItD', _typeSINGLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Rout', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'ItResultI', _typeINTEGER);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'maxIt', _typeINTEGER);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'RStop', _typeSINGLE);
+  {$ifdef ENABLE_EXTENSIONS}
+  RegisterArray('unused_nHybrid', _typeINTEGER, H_FormulaRange);
+  RegisterArray('unused_fHPVar', _typePOINTER, H_FormulaRange);
+  RegisterArray('unused_fHybrid', _typePOINTER, H_FormulaRange);
+  {$else}
+  RegisterArray('nHybrid', _typeINTEGER, H_FormulaRange);
+  RegisterArray('fHPVar', _typePOINTER, H_FormulaRange);
+  RegisterArray('fHybrid', _typePOINTER, H_FormulaRange);
+  {$endif}
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'CalcSIT', _typeBYTEBOOL);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'bFree', _typeBYTE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'EndTo', _typeWORD);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'DoJulia', _typeLONGBOOL);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'LNRStop', _typeSINGLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'DEoption', _typeINTEGER);
+  {$ifdef ENABLE_EXTENSIONS}
+  RegisterArray('unused_fHln', _typeSINGLE, H_FormulaRange);
+  {$else}
+  RegisterArray('fHln', _typeSINGLE, H_FormulaRange);
+  {$endif}
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'iRepeatFrom', _typeWORD);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'iStartFrom', _typeWORD);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'OTrap', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'VaryScale', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'bFirstIt', _typeINTEGER);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'bTmp', _typeINTEGER);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Dfree1', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Dfree2', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Deriv1', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Deriv2', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Deriv3', _typeDOUBLE);
+  // TSMatrix4 = array[0..3, 0..3] of Single - no idea how to register multi-dimensional arrays -> now lets us just reserve the space
+  H_Range_0_63 := FPaxCompiler.RegisterSubrangeType(0, 'Range_0_63', _typeCHAR, 0, 63);
+  RegisterArray('SMatrix4', _typeBYTE, H_Range_0_63);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Ju1', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Ju2', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Ju3', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'Ju4', _typeDOUBLE);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'PMapFunc', H_TLMSfunction);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'PMapFunc2', H_TLMSfunction);
+  {$ifdef ENABLE_EXTENSIONS}
+  RegisterArray('unused_pInitialization', H_TFormulaInitialization, H_FormulaRange);
+  {$else}
+  RegisterArray('pInitialization', H_TFormulaInitialization, H_FormulaRange);
+  {$endif}
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'bIsInsideRender', _typeLONGBOOL);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'OTrapMode', _typeINTEGER);
+  FPaxCompiler.RegisterRecordTypeField(H_TIteration3Dext, 'OTrapDE', _typeDOUBLE);
+  {$ifdef ENABLE_EXTENSIONS}
+  H_FormulaRangeExt := FPaxCompiler.RegisterSubrangeType(0, 'FormulaRangeExt', _typeCHAR, 0, MAX_FORMULA_COUNT - 1);
+  RegisterArray('nHybrid', _typeINTEGER, H_FormulaRangeExt);
+  RegisterArray('fHPVar', _typePOINTER, H_FormulaRangeExt);
+  RegisterArray('fHybrid', _typePOINTER, H_FormulaRangeExt);
+  RegisterArray('fHln', _typeSINGLE, H_FormulaRangeExt);
+  RegisterArray('pInitialization', H_TFormulaInitialization, H_FormulaRangeExt);
+  {$endif}
+  {H_TPIteration3Dext :=} FPaxCompiler.RegisterPointerType(0, 'TPIteration3Dext', H_TIteration3Dext);
 end;
 
 type
@@ -378,10 +510,34 @@ begin
   FPaxCompiler.RegisterHeader(0, 'function IsInfinite(const AValue: Double): Boolean;', @DoubleBooleanMonadicFunc);
 end;
 
+function LocalIntToStr(Value: Integer): String;
+begin
+  Result := IntToStr(Value);
+end;
+
+function LocalFloatToStr(Value: Double): String;
+begin
+  Result := FloatToStr(Value);
+end;
+
+procedure LocalOutputDebugString(const Msg: String);
+begin
+  Windows.OutputDebugString(PWideChar(Msg));
+end;
+
+procedure TPaxFormulaCompiler.Register_MiscFunctions;
+begin
+  FPaxCompiler.RegisterHeader(0, 'function IntToStr(Value: Integer): String;', @LocalIntToStr);
+  FPaxCompiler.RegisterHeader(0, 'function FloatToStr(Value: Double): String;', @LocalFloatToStr);
+  FPaxCompiler.RegisterHeader(0, 'procedure OutputDebugString(const Msg: String)', @LocalOutputDebugString);
+end;
+
 procedure TPaxFormulaCompiler.Initialize;
 begin
   Register_TypeTIteration3D;
+  Register_TypeTIteration3Dext;
   Register_MathFunctions;
+  Register_MiscFunctions;
 end;
 
 {$ifdef JIT_FORMULA_PREPROCESSING}
@@ -391,6 +547,17 @@ var
   VarSegment, CodeSegment: TStringList;
   I: Integer;
   ProcStartLine, VarStartLine, BeginStartLine: Integer;
+
+  function NameToPascalName(const Name: String): String;
+  var
+    I: Integer;
+  begin
+    Result := Name;
+    for I := 1 to Length(Result) do begin
+      if (Result[I]=' ') or (Result[I]='-') or (Result[I]='+') or (Result[I]='/') or (Result[I]='*') or (Result[I]='') then
+        Result[I] := '_';
+    end;
+  end;
 
   procedure CreateSegments(VarSegment, CodeSegment: TStringList);
   var
@@ -403,15 +570,15 @@ var
     VOffset := 16;
     for I := 0 to Formula.GetValueCount(vtConst) - 1 do begin
       Pair := Formula.GetValue(vtConst, I);
-      VarSegment.Add('  ' + Pair.Name + ': '+JITValueDatatypeToStr(Pair.Datatype)+';');
-      CodeSegment.Add('  ' + Pair.Name + ' := P'+JITValueDatatypeToStr(Pair.Datatype)+'(Integer(PIteration3D^.PVar) + '+IntToStr(COffset)+')^;');
+      VarSegment.Add('  ' + NameToPascalName(Pair.Name) + ': '+JITValueDatatypeToStr(Pair.Datatype)+';');
+      CodeSegment.Add('  ' + NameToPascalName(Pair.Name) + ' := P'+JITValueDatatypeToStr(Pair.Datatype)+'(Integer(PIteration3D^.PVar) + '+IntToStr(COffset)+')^;');
       Inc(COffset, JITValueDatatypeSize(Pair.Datatype));
     end;
 
     for I := 0 to Formula.GetValueCount(vtParam) - 1 do begin
       Pair := Formula.GetValue(vtParam, I);
-      VarSegment.Add('  ' + Pair.Name + ': '+JITValueDatatypeToStr(Pair.Datatype)+';');
-      CodeSegment.Add('  ' + Pair.Name + ' := P'+JITValueDatatypeToStr(Pair.Datatype)+'(Integer(PIteration3D^.PVar) - '+IntToStr(VOffset)+')^;');
+      VarSegment.Add('  ' + NameToPascalName(Pair.Name) + ': '+JITValueDatatypeToStr(Pair.Datatype)+';');
+      CodeSegment.Add('  ' + NameToPascalName(Pair.Name) + ' := P'+JITValueDatatypeToStr(Pair.Datatype)+'(Integer(PIteration3D^.PVar) - '+IntToStr(VOffset)+')^;');
       Inc(VOffset, JITValueDatatypeSize(Pair.Datatype));
     end;
 
