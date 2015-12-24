@@ -743,6 +743,7 @@ begin
     end
     else Image1.Top := (Panel1.Top - NaviHeader.Height) div 2;
     Image6.Top := Image1.Top + NaviHeader.Height div 2 - 60;  //onclick disabled when visible!
+    Image6.Left := Image1.Left + NaviHeader.Width div 2 - 60;
 end;
 
 procedure TFNavigator.Calc(Nstep: Integer);
@@ -952,7 +953,7 @@ end;
 
 procedure TFNavigator.Timer1Timer(Sender: TObject);  
 begin
-    Timer1.Interval := 75;
+    Timer1.Interval := 50;
     Image1.Repaint;
     if not isCalculating then
     begin

@@ -123,7 +123,9 @@ object MapSequencesFrm: TMapSequencesFrm
       Top = 178
       Width = 60
       Height = 21
-      Hint = 'Map number'
+      Hint = 
+        'Target Map Slot. Use this number as map in your fractal, e. g. a' +
+        's heightmap, in order to have an animated map'
       MaxLength = 5
       NumbersOnly = True
       ParentShowHint = False
@@ -325,7 +327,7 @@ object MapSequencesFrm: TMapSequencesFrm
       Width = 16
       Height = 21
       Associate = IncrementEdit
-      Min = -100000
+      Min = 1
       Max = 100000
       Position = 1
       TabOrder = 9

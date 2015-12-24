@@ -305,11 +305,16 @@ end;
 
 procedure TMapSequencesFrm.IncrementEditExit(Sender: TObject);
 var
+  Increment: Integer;
   Sequence: TMapSequence;
 begin
   Sequence := GetCurrSequence;
-  if Sequence <> nil then
-    Sequence.Increment := StrToInt(IncrementEdit.Text);
+  if Sequence <> nil then begin
+    Increment := StrToInt(IncrementEdit.Text);
+    if Increment < 1 then
+      IncrementEdit.Text := IntToStr(Sequence.Increment);
+    Sequence.Increment := Increment;
+  end;
 end;
 
 procedure TMapSequencesFrm.LastImageEditExit(Sender: TObject);
