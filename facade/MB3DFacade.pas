@@ -282,22 +282,23 @@ begin
 end;
 { ----------------------------- TMB3DCoreFacade ------------------------------ }
 constructor TMB3DCoreFacade.Create(const Header: TMandHeader10;const HAddOn: THeaderCustomAddon);
+var
+  I: Integer;
 begin
   inherited Create;
-//  AssignHeader(@FHeader, @Header);
   FastMove(Header, FHeader, SizeOf(TMandHeader10));
   FHeader.PCFAddon := @FHAddOn;
   FastMove(HAddOn, FHeader.PCFAddon^, SizeOf(THeaderCustomAddon));
-//  for i := 0 to MAX_FORMULA_COUNT - 1 do
-//    FHeader.PHCustomF[i] := @FHybridCustoms[i];
-//  IniCFsFromHAddon(FHeader.PCFAddon, Header.PHCustomF);
+  for i := 0 to 5 - 1 do
+    FHeader.PHCustomF[i] := @FHybridCustoms[i];
+  IniCFsFromHAddon(FHeader.PCFAddon, Header.PHCustomF);
 end;
 
 destructor TMB3DCoreFacade.Destroy;
 var
   i: Integer;
 begin
-  for i := 0 to FORMULA_PARAM_COUNT - 1 do
+  for i := 0 to 5 do
     FreeCF(@FHybridCustoms[i]);
   inherited Destroy;
 end;

@@ -953,7 +953,7 @@ end;
 
 procedure TFNavigator.Timer1Timer(Sender: TObject);  
 begin
-    Timer1.Interval := 50;
+    Timer1.Interval := 150;
     Image1.Repaint;
     if not isCalculating then
     begin
@@ -1210,6 +1210,7 @@ end;
 procedure TFNavigator.FormCreate(Sender: TObject);
 var i: Integer;
 begin
+    Image1.Parent.ControlStyle := [csOpaque];
     FirstStart := True;
     bUserChange := False;
     NglobalCounter := 0;
