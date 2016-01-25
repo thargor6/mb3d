@@ -25,7 +25,7 @@ type
     MinIts: Integer;
     PlaceForFuturePars: array[0..23] of Integer;
     OutputFolderC: array[0..1023] of Byte;             //+$CC
-    VHeader: TMandHeader11;                            //+$4CC
+    VHeader: TMandHeader10;                            //+$4CC
     VHAddon: THeaderCustomAddon;
   end;
   TFVoxelExportCalcPreviewThread = class(TThread)
@@ -167,7 +167,7 @@ type
     bUserChange, bFirstShow, Benabled: LongBool;
     OutputFolder, VProjectName: String;
     FileNumber: Integer;
-    HybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
+    HybridCustoms: array[0..5] of TCustomFormula;
   end;
 
 var
@@ -686,7 +686,7 @@ begin
       Label12.Caption := IntToStr(VHeader.Width) + ' x ' + IntToStr(VHeader.Height);
       bUserChange := b;
       VHeader.PCFAddon := @VHAddon;
-      for i := 0 to MAX_FORMULA_COUNT - 1 do VHeader.PHCustomF[i] := @HybridCustoms[i];
+      for i := 0 to 5 do VHeader.PHCustomF[i] := @HybridCustoms[i];
     end;
 end;
 
@@ -743,7 +743,7 @@ begin
     with M3Vfile do       
     begin
       VHeader.PCFAddon := @VHAddon;
-      for i := 0 to MAX_FORMULA_COUNT - 1 do VHeader.PHCustomF[i] := @HybridCustoms[i];
+      for i := 0 to 5 do VHeader.PHCustomF[i] := @HybridCustoms[i];
       Mand3DForm.MakeHeader;
       AssignHeader(@VHeader, @Mand3DForm.MHeader);
       DisableTiling(@VHeader);
@@ -814,7 +814,7 @@ var i: Integer;
 begin
     bFirstShow := True;
     Benabled := False;
-    for i := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@HybridCustoms[i]);
+    for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
     bVoxelFormCreated := True;
     Panel4.DoubleBuffered := True;
 end;

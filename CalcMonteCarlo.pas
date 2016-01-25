@@ -89,7 +89,7 @@ type
     procedure Execute; override;
   end;
 function CalcBokeh(const xx, yy: Single; BokehNr: Integer): Single;
-function CalcMCT(Header: TPMandHeader11; PLightVals: TPLightVals;
+function CalcMCT(Header: TPMandHeader10; PLightVals: TPLightVals;
                  PsiLight5: TPsiLight5; PCTS: TPCalcThreadStats;
                  AvrgSqrNoise: Double; sAvrgRCount: Single;
                  bSkipNonZeroCounts: LongBool): Boolean;
@@ -145,7 +145,7 @@ begin
     end;
 end;
 
-function CalcMCT(Header: TPMandHeader11; PLightVals: TPLightVals;
+function CalcMCT(Header: TPMandHeader10; PLightVals: TPLightVals;
                  PsiLight5: TPsiLight5; PCTS: TPCalcThreadStats;
                  AvrgSqrNoise: Double; sAvrgRCount: Single;
                  bSkipNonZeroCounts: LongBool): Boolean;

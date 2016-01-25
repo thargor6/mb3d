@@ -38,7 +38,7 @@ uses
   Undo in 'Undo.pas',
   CalcSR in 'CalcSR.pas',
   CalcPart in 'CalcPart.pas',
-  VoxelExport in 'VoxelExport.pas' {FVoxelExport},
+  MeshExportUI in 'export\MeshExportUI.pas' {MeshExportFrm},
   CalcVoxelSliceThread in 'CalcVoxelSliceThread.pas',
   calcBlocky in 'calcBlocky.pas',
   FormulaParser in 'FormulaParser.pas' {FormulaEditor},
@@ -68,7 +68,9 @@ uses
   VisualThemesGUI in 'prefs\VisualThemesGUI.pas' {VisualThemesFrm},
   JITFormulaEditGUI in 'formula\JITFormulaEditGUI.pas' {JITFormulaEditorForm},
   JITFormulas in 'formula\JITFormulas.pas',
-  ParamValueEditGUI in 'formula\ParamValueEditGUI.pas' {ParamValueEditFrm};
+  ParamValueEditGUI in 'formula\ParamValueEditGUI.pas' {ParamValueEditFrm},
+  PointCloudExport in 'export\PointCloudExport.pas',
+  VoxelExport in 'VoxelExport.pas' {FVoxelExport};
 
 {$R *.res}
 
@@ -88,7 +90,7 @@ begin
   Application.CreateForm(TFormulaGUIForm, FormulaGUIForm);
   Application.CreateForm(TColorForm, ColorForm);
   Application.CreateForm(TBatchForm1, BatchForm1);
-  Application.CreateForm(TFVoxelExport, FVoxelExport);
+  Application.CreateForm(TMeshExportFrm, MeshExportFrm);
   Application.CreateForm(TFormulaEditor, FormulaEditor);
   Application.CreateForm(TTilingForm, TilingForm);
   Application.CreateForm(TMCForm, MCForm);
@@ -102,6 +104,7 @@ begin
   Application.CreateForm(TVisualThemesFrm, VisualThemesFrm);
   Application.CreateForm(TJITFormulaEditorForm, JITFormulaEditorForm);
   Application.CreateForm(TParamValueEditFrm, ParamValueEditFrm);
+  Application.CreateForm(TFVoxelExport, FVoxelExport);
   //SuppressMessageBoxes := True;
   Application.Run;
 end.

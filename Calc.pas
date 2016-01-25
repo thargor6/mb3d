@@ -4,7 +4,7 @@ interface
 
 uses Windows, TypeDefinitions, Math3D, FormulaClass;
 
-function CalcMandT(Header: TPMandHeader11; PLightVals: TPLightVals; PCTS: TPCalcThreadStats;
+function CalcMandT(Header: TPMandHeader10; PLightVals: TPLightVals; PCTS: TPCalcThreadStats;
                    PsiLight5: TPsiLight5; hSLoffset, FSIstart, FSIoffset: Integer; hRect: TRect): Boolean;
 function CalcDEfull(It3Dex: TPIteration3Dext; mctp: Pointer{PMCTparameter}): Double;
 function CalcDEanalytic(It3Dex: TPIteration3Dext; mctp: Pointer{PMCTparameter}): Double;
@@ -15,7 +15,7 @@ procedure IniIt3D(PMCT: PMCTparameter; It3Dex: TPIteration3Dext);
 procedure CalcZposAndRough(siLight: TPsiLight5; mct: PMCTparameter; const ZZ: Double);
 procedure DelayCalcPart(ThreadCount: Integer; PCTS: TPCalcThreadStats);
 //procedure FreeCalcMaps;
-procedure IniCalcMaps({MCTparas: PMCTparameter;} Header: TPMandHeader11);
+procedure IniCalcMaps({MCTparas: PMCTparameter;} Header: TPMandHeader10);
 procedure CopyFormulas(const OldFormulas: array of TCustomFormula;
                     MCTparas: PMCTparameter; var CFormulas: array of TFormulaClass);
 procedure RayMarch(RMrec: TPRaymarchRec);
@@ -88,14 +88,14 @@ begin
     Result := i or (i2 shl 7);
 end;  }
 
-procedure IniCalcMaps(Header: TPMandHeader11); //todo: scan Formulas for 'MAP' + integer and get value from varpointer
+procedure IniCalcMaps(Header: TPMandHeader10); //todo: scan Formulas for 'MAP' + integer and get value from varpointer
 var i, i2, j, n, c, Mcount: Integer;
     bIsIpol: LongBool;
     MA: array[0..2] of Integer;
 begin
     Mcount := 0;
     bIsIpol := (PTHeaderCustomAddon(Header.PCFAddon).bOptions1 and 3) = 1;
-    if bIsIpol then i2 := 2 else i2 := MAX_FORMULA_COUNT - 1;
+    if bIsIpol then i2 := 2 else i2 := 5;
     for i := 0 to i2 do if bIsIpol or (PTHeaderCustomAddon(Header.PCFAddon).Formulas[i].iItCount <> 0) then
       for j := 0 to Min(16, PTHeaderCustomAddon(Header.PCFAddon).Formulas[i].iOptionCount) - 1 do
       begin
@@ -147,7 +147,7 @@ procedure CopyFormulas(const OldFormulas: array of TCustomFormula;
                 MCTparas: PMCTparameter; var CFormulas: array of TFormulaClass);
 var i: Integer;
 begin
-    for i := 0 to MAX_FORMULA_COUNT - 1 do
+    for i := 0 to 5 do
     begin
       CFormulas[i] := TFormulaClass.Create;
       CFormulas[i].AssignOld(@OldFormulas[i]);
@@ -156,7 +156,7 @@ begin
     end;
 end;
 
-function CalcMandT(Header: TPMandHeader11; PLightVals: TPLightVals; PCTS: TPCalcThreadStats;
+function CalcMandT(Header: TPMandHeader10; PLightVals: TPLightVals; PCTS: TPCalcThreadStats;
                    PsiLight5: TPsiLight5; hSLoffset, FSIstart, FSIoffset: Integer; hRect: TRect): Boolean;
 var x, ThreadCount: Integer;
     MCTparas: TMCTparameter;
@@ -2722,28 +2722,10 @@ begin
     begin
       It3Dex.J4 := dJUw;
       It3Dex.Ju4 := dJUw;
-      // UGLY
-      FastMove(dJUx, It3Dex.J1, 168 {+ SizeOf(Integer) * (MAX_FORMULA_COUNT- 6)
-                                    + SizeOf(Integer) * (MAX_FORMULA_COUNT-6)
-                                    + SizeOf(ThybridIteration2) * (MAX_FORMULA_COUNT - 6)
-                                    + SizeOf(Single) * (MAX_FORMULA_COUNT - 6)});
-
-     It3Dex.CalcSIT := bCalcSIT;
-     It3Dex.bFree := bFree;
-     It3Dex.EndTo := wEndTo;
-     It3Dex.DoJulia := bDoJulia;
-     It3Dex.LNRStop :=dLNRStop;
-     It3Dex.DEoption := DEoption;
-     It3Dex.iRepeatFrom := RepeatFrom1;
-     It3Dex.iStartFrom := StartFrom1;
-
+      FastMove(dJUx, It3Dex.J1, 168);
       FastMove(dJUx, It3Dex.Ju1, 24);
       FastMove(Smatrix4d, It3Dex.Smatrix4, 64);
-      FastMove(nHybrid, It3Dex.nHybrid, SizeOf(Integer) * MAX_FORMULA_COUNT);
-      FastMove(fHPVar, It3Dex.fHPVar, SizeOf(Pointer) * MAX_FORMULA_COUNT);
-      FastMove(fHybrid, It3Dex.fHybrid, SizeOf(ThybridIteration2) * MAX_FORMULA_COUNT);
-      FastMove(fHln, It3Dex.fHln, SizeOf(Single) * MAX_FORMULA_COUNT);
-      FastMove(pInitialization, It3Dex.pInitialization, SizeOf(TFormulaInitialization) * MAX_FORMULA_COUNT);
+      FastMove(pInitialization, It3Dex.pInitialization, 24); 
       if DEoption = 20 then It3Dex.RStopD := -1e10;
       It3Dex.PMapFunc := GetMapPixelSphereSpline;
       It3Dex.PMapFunc2 := GetMapPixelDirectXYspline;

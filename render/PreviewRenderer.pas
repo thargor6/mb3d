@@ -52,7 +52,7 @@ var
   w, h, i, x, n, c: Integer;
   R: TRect;
   DoFrec: TDoFrec;
-  PHeader: TPMandHeader11;
+  PHeader: TPMandHeader10;
 
   procedure WaitForThreads(maxDeciSeconds: Integer);
   var

@@ -5,15 +5,15 @@ interface
 uses Windows, LightAdjust, SysUtils, Graphics, jpeg, TypeDefinitions, pngimage,
      SyncObjs, Classes, Controls, Dialogs, vcl.ExtDlgs;
 
-procedure LoadFullM3I(var Header: TMandHeader11; Filename: String);
-function LoadParameter(var Para11: TMandHeader11; FileName: String; Verbose: LongBool): Boolean;
+procedure LoadFullM3I(var Header: TMandHeader10; Filename: String);
+function LoadParameter(var Para10: TMandHeader10; FileName: String; Verbose: LongBool): Boolean;
 //function LoadParsFromStream(var Para10: TMandHeader10; var Stream: TStream): Boolean;
 procedure ConvertFromOldLightParas(var Light8: TLightingParas8; fSize: Integer);
 procedure SaveJPEGfromBMP(FileName: String; bmp: TBitmap; Quality: Integer);
 procedure SaveBMP(FileName: String; bmp: TBitmap; pf: TPixelFormat);
 procedure SavePNG(FileName: String; bmp: TBitmap; SaveTXTparas: Boolean);
-procedure CopyHeaderAsTextToClipBoard(para: TPMandHeader11; Titel: String);
-function GetHeaderFromText(Text: AnsiString; var para: TMandHeader11; var Titel: String): LongBool;
+procedure CopyHeaderAsTextToClipBoard(para: TPMandHeader10; Titel: String);
+function GetHeaderFromText(Text: AnsiString; var para: TMandHeader10; var Titel: String): LongBool;
 procedure LoadAccPreset(nr: Integer);
 procedure SaveAccPreset(nr: Integer);
 function LoadColPreset(nr: Integer): Boolean;
@@ -31,7 +31,7 @@ procedure UpdateFormulaOptionTo20(PCFAddon: PTHeaderCustomAddon);
 //function LoadBackgroundPic(FileName: String; Smooth, Convert2Spherical: LongBool): LongBool;
 procedure Make8bitGreyscalePalette(var ABmp: TBitmap);
 function GetLightParaFile(FileName: String; var LightParas: TLightingParas9; bKeepLights: LongBool): LongBool;
-procedure UpdateFormulaOptionAbove20(var para: TMandHeader11);
+procedure UpdateFormulaOptionAbove20(var para: TMandHeader10);
 procedure ParseExternFormulas(PCFAddon: PTHeaderCustomAddon);
 function GetFileModDate(filename: string): TDatetime;
 function LoadBackgroundPicT(Light: TPLightingParas9): Boolean;
@@ -46,7 +46,7 @@ function FileIsBigger1(Fname: String): LongBool;
 procedure SaveBMP2FStream(FileName: String; bmp: TBitmap; pf: TPixelFormat; FS: TFileStream);
 procedure SavePNG2FStream(FileName: String; bmp: TBitmap; FS: TFileStream);
 procedure SaveJPEGfromBMP2FStream(FileName: String; bmp: TBitmap; Quality: Integer; FS: TFileStream);
-procedure StoreHistoryPars(var pars: TMandHeader11);
+procedure StoreHistoryPars(var pars: TMandHeader10);
 procedure UpdatePresetFrom20(var p20: TLpreset20);
 procedure ChangeFName(SaveDialog: TSaveDialog; FName: String);
 procedure SetDialogName(SaveDialog: TSaveDialog; Name: String);  overload;
@@ -80,11 +80,7 @@ const
     AccPresetItemNames: array[0..7] of String = ('SmoothNormals', 'DEstop',
       'DEaccuracy', 'BinSearch', 'ImageWidth', 'ImageScale', 'RayStepFactor', 'RayLimiter');
 
-  {$ifdef ENABLE_EXTENSIONS}
-  actMandId: Integer = 45;
-  {$else}
   actMandId: Integer = 44;
-  {$endif}
   actLightId: Integer = 7;    //0..7 only!
   actLightIdEx: Integer = 8;  //Byte 0..255 new Lightversion
   actPresetVersion: Integer = 5;
@@ -135,7 +131,7 @@ begin
     end;
 end;
 
-procedure UpdateFormulaOptionAbove20(var para: TMandHeader11); //+header update
+procedure UpdateFormulaOptionAbove20(var para: TMandHeader10); //+header update
 var i, j: Integer;
     d: Double;
     Q: TQuaternion;
@@ -144,7 +140,7 @@ const M3dBeta1796: Single = 1.796;
 begin
     with PTHeaderCustomAddon(para.PCFAddon)^ do
     begin
-      for i := 0 to MAX_FORMULA_COUNT - 1 do
+      for i := 0 to 5 do
       begin
         j := Formulas[i].iFnr;
         if (j = 5) and (Formulas[i].iOptionCount < 6) then //bulbox, added second r parameter
@@ -536,7 +532,7 @@ begin
     FindClose(F);
 end;
 
-procedure StoreHistoryPars(var pars: TMandHeader11);
+procedure StoreHistoryPars(var pars: TMandHeader10);
 var tmpHF: String;
     dt: TDateTime;
     f: file;
@@ -929,7 +925,7 @@ begin
     end;  
 end;
 
-function MakeTextparas(para: TPMandHeader11; Titel: String): AnsiString;
+function MakeTextparas(para: TPMandHeader10; Titel: String): AnsiString;
 var PB: PByte;
     i, n: Integer;
     p: TP6;
@@ -966,7 +962,7 @@ begin
     Result := Result + '}' + #13#10 + '{Titel: ' + Titel + '}' + #13#10;
 end;
 
-procedure CopyHeaderAsTextToClipBoard(para: TPMandHeader11; Titel: String);
+procedure CopyHeaderAsTextToClipBoard(para: TPMandHeader10; Titel: String);
 begin
     Clipboard.SetTextBuf(PWideChar(String(MakeTextparas(para, Titel))));
 end;
@@ -982,13 +978,13 @@ begin
     for l := 0 to Count - 1 do Result := Result + Text[Offset + l];
 end;
 
-function GetHeaderFromText(Text: AnsiString; var para: TMandHeader11; var Titel: String): LongBool;
+function GetHeaderFromText(Text: AnsiString; var para: TMandHeader10; var Titel: String): LongBool;
 var i, c, j, n, nup, l: Integer;
     ver: Single;
     PB: PByte;
     s: AnsiString;
     tmpHeader8: TMandHeader8;
-    tmpHeader10: TMandHeader11;
+    tmpHeader10: TMandHeader10;
 begin
     Result := False;
     Titel := '';
@@ -1812,28 +1808,6 @@ begin
   end;
 end;
 
-procedure LoadHAddon10(var f: file; HA: PTHeaderCustomAddon10);
-var i, t: Integer;
-    HAold: THeaderCustomAddonOld;
-begin
-    t := FilePos(f);
-    BlockRead(f, i, 4);
-    Seek(f, t);
-    if not ((i and $FF) in [16..99]) then
-    begin
-      BlockRead(f, HAold, SizeOf(THeaderCustomAddonOld));
-      for i := 0 to 5 do
-      with HA.Formulas[i] do
-      begin
-        iItCount := HAold.iItCounts[i];
-        iFnr := HAold.iFormula[i];
-        FastMove(HAold.CustomFname[i], CustomFname, 32);
-        for t := 0 to 15 do dOptionValue[t] := HAold.dOptionValues[i][t];
-      end;
-    end
-    else BlockRead(f, HA^, SizeOf(THeaderCustomAddon10));   //read beyond eof
-end;
-
 procedure LoadHAddon(var f: file; HA: PTHeaderCustomAddon);
 var i, t: Integer;
     HAold: THeaderCustomAddonOld;
@@ -1879,35 +1853,12 @@ begin
     else Stream.Read(HA^, SizeOf(THeaderCustomAddon));
 end;
 
-procedure LoadHAddon10FromStream(Stream: TStream; HA: PTHeaderCustomAddon10);
-var i, j: Integer;
-    t: Int64;
-    HAold: THeaderCustomAddonOld;
-begin
-    t := Stream.Position;
-    Stream.Read(i, 4);
-    Stream.Seek(t, soBeginning);
-    if not ((i and $FF) in [16..99]) then
-    begin
-      Stream.Read(HAold, SizeOf(THeaderCustomAddonOld));
-      for i := 0 to 5 do
-      with HA.Formulas[i] do
-      begin
-        iItCount := HAold.iItCounts[i];
-        iFnr := HAold.iFormula[i];
-        FastMove(HAold.CustomFname[i], CustomFname, 32);
-        for j := 0 to 15 do dOptionValue[j] := HAold.dOptionValues[i][j];
-      end;
-    end
-    else Stream.Read(HA^, SizeOf(THeaderCustomAddon10));
-end;
-
 procedure ParseExternFormulas(PCFAddon: PTHeaderCustomAddon);
 var i, j: Integer;
     s: AnsiString;
 begin
     with PCFAddon^ do
-      for i := 0 to MAX_FORMULA_COUNT -1 do if Formulas[i].iFnr > 19 then
+      for i := 0 to 5 do if Formulas[i].iFnr > 19 then
       begin
         s := UpperCase(CustomFtoStr(Formulas[i].CustomFname));
         if s = '_AMAZINGBOXFSSE2' then
@@ -2006,140 +1957,16 @@ begin
     if Result then M3DBackGroundPic.LMnumber := 66000 else FreeLightMap(@M3DBackGroundPic);
 end;
 
-function LoadParameter(var Para11: TMandHeader11; FileName: String; Verbose: LongBool): Boolean;
+function LoadParameter(var Para10: TMandHeader10; FileName: String; Verbose: LongBool): Boolean;
 var f: file;
     d: Double;
     MId, i: Integer;
     p: TP6;
     MandHeader4: TMandHeader4;
     para9: TMandHeader9;
-    para10: TMandHeader10;
     TileSize: TPoint;
-
-   procedure FillV11AddonFromV10(const Src: TMandHeader10; var Dst: TMandHeader11);
-   var
-     I: Integer;
-     SrcAddOn: PTHeaderCustomAddon10;
-     DstAddon: PTHeaderCustomAddon;
-   begin
-     SrcAddOn := PTHeaderCustomAddon10(Src.PCFAddon);
-     DstAddon := PTHeaderCustomAddon(Dst.PCFAddon);
-     DstAddOn^.bHCAversion := SrcAddOn^.bHCAversion;
-     DstAddOn^.bOptions1 := SrcAddOn^.bOptions1;
-     DstAddOn^.bOptions2 := SrcAddOn^.bOptions2;
-     DstAddOn^.bOptions3 := SrcAddOn^.bOptions3;
-     DstAddOn^.iFCount := SrcAddOn^.iFCount;
-     DstAddOn^.bHybOpt1 := SrcAddOn^.bHybOpt1;
-     DstAddOn^.bHybOpt2 := SrcAddOn^.bHybOpt2;
-     for I := 0 to V18_FORMULA_COUNT - 1  do
-       DstAddOn^.Formulas[I] := SrcAddOn^.Formulas[I];
-   end;
-
-   procedure FillV11HeaderFromV10(const Src: TMandHeader10; var Dst: TMandHeader11);
-   var
-     I: Integer;
-   begin
-     Dst.MandId := Src.MandId;
-     Dst.Width := Src.Width;
-     Dst.Height := Src.Height;
-     Dst.Iterations := Src.Iterations;
-     Dst.iOptions := Src.iOptions;
-     Dst.bNewOptions := Src.bNewOptions;
-     Dst.bColorOnIt := Src.bColorOnIt;
-     Dst.dZstart := Src.dZstart;
-     Dst.dZend := Src.dZend;
-     Dst.dXmid := Src.dXmid;
-     Dst.dYmid := Src.dYmid;
-     Dst.dZmid := Src.dZmid;
-     Dst.dXWrot := Src.dXWrot;
-     Dst.dYWrot := Src.dYWrot;
-     Dst.dZWrot := Src.dZWrot;
-     Dst.dZoom := Src.dZoom;
-     Dst.RStop := Src.RStop;
-     Dst.iReflectsCalcTime := Src.iReflectsCalcTime;
-     Dst.sFmixPow := Src.sFmixPow;
-     Dst.dFOVy := Src.dFOVy;
-     Dst.sTRIndex := Src.sTRIndex;
-     Dst.sTRscattering := Src.sTRscattering;
-     Dst.MCoptions := Src.MCoptions;
-     Dst.MCdiffReflects := Src.MCdiffReflects;
-     Dst.bStereoMode := Src.bStereoMode;
-     Dst.bSSAO24BorderMirrorSize := Src.bSSAO24BorderMirrorSize;
-     Dst.iAmbCalcTime := Src.iAmbCalcTime;
-     Dst.bNormalsOnDE := Src.bNormalsOnDE;
-     Dst.bCalculateHardShadow := Src.bCalculateHardShadow;
-     Dst.bStepsafterDEStop := Src.bStepsafterDEStop;
-     Dst.MinimumIterations := Src.MinimumIterations;
-     Dst.MClastY := Src.MClastY;
-     Dst.bCalc1HSsoft := Src.bCalc1HSsoft;
-     Dst.iAvrgDEsteps := Src.iAvrgDEsteps;
-     Dst.iAvrgIts := Src.iAvrgIts;
-     Dst.bPlanarOptic := Src.bPlanarOptic;
-     Dst.bCalcAmbShadowAutomatic := Src.bCalcAmbShadowAutomatic;
-     Dst.sNaviMinDist := Src.sNaviMinDist;
-     Dst.dStepWidth := Src.dStepWidth;
-     Dst.bVaryDEstopOnFOV := Src.bVaryDEstopOnFOV;
-     Dst.bHScalculated := Src.bHScalculated;
-     Dst.sDOFZsharp := Src.sDOFZsharp;
-     Dst.sDOFclipR := Src.sDOFclipR;
-     Dst.sDOFaperture := Src.sDOFaperture;
-     Dst.bCutOption := Src.bCutOption;
-     Dst.sDEstop := Src.sDEstop;
-     Dst.bCalcDOFtype := Src.bCalcDOFtype;
-     Dst.mZstepDiv := Src.mZstepDiv;
-     Dst.MCDepth := Src.MCDepth;
-     Dst.SSAORcount := Src.SSAORcount;
-     Dst.AODEdithering := Src.AODEdithering;
-     Dst.bImageScale := Src.bImageScale;
-     Dst.bIsJulia := Src.bIsJulia;
-     Dst.dJx := Src.dJx;
-     Dst.dJy := Src.dJy;
-     Dst.dJz := Src.dJz;
-     Dst.dJw := Src.dJw;
-     Dst.bDFogIt := Src.bDFogIt;
-     Dst.MCSoftShadowRadius := Src.MCSoftShadowRadius;
-     Dst.HSmaxLengthMultiplier := Src.HSmaxLengthMultiplier;
-     Dst.StereoScreenWidth := Src.StereoScreenWidth;
-     Dst.StereoScreenDistance := Src.StereoScreenDistance;
-     Dst.StereoMinDistance := Src.StereoMinDistance;
-     Dst.sRaystepLimiter := Src.sRaystepLimiter;
-     Dst.hVGrads := Src.hVGrads;
-     Dst.bMCSaturation := Src.bMCSaturation;
-     Dst.sAmbShadowThreshold := Src.sAmbShadowThreshold;
-     Dst.iCalcTime := Src.iCalcTime;
-     Dst.iCalcHStime := Src.iCalcHStime;
-     Dst.byCalcNsOnZBufAuto := Src.byCalcNsOnZBufAuto;
-     Dst.SRamount := Src.SRamount;
-     Dst.bCalcSRautomatic := Src.bCalcSRautomatic;
-     Dst.SRreflectioncount := Src.SRreflectioncount;
-     Dst.sColorMul := Src.sColorMul;
-     Dst.byColor2Option := Src.byColor2Option;
-     Dst.bVolLightNr := Src.bVolLightNr;
-     Dst.bCalc3D := Src.bCalc3D;
-     Dst.bSliceCalc := Src.bSliceCalc;
-     Dst.dCutX := Src.dCutX;
-     Dst.dCutY := Src.dCutY;
-     Dst.dCutZ := Src.dCutZ;
-     Dst.sTransmissionAbsorption := Src.sTransmissionAbsorption;
-     Dst.sDEAOmaxL := Src.sDEAOmaxL;
-     Dst.sDEcombS := Src.sDEcombS;
-     for I := Low(Dst.PHCustomF) to High(Dst.PHCustomF) do
-       Dst.PHCustomF[I] := nil;
-     for I := Low(Src.PHCustomF) to High(Src.PHCustomF) do
-       Dst.PHCustomF[I] := Src.PHCustomF[I];
-     Dst.PCFAddon := Src.PCFAddon;
-     Dst.sDOFZsharp2 := Src.sDOFZsharp2;
-     Dst.iMaxIts := Src.iMaxIts;
-     Dst.iMaxItsF2 := Src.iMaxItsF2;
-     Dst.DEmixColorOption := Src.DEmixColorOption;
-     Dst.MCcontrast := Src.MCcontrast;
-     Dst.sM3dVersion := Src.sM3dVersion;
-     Dst.TilingOptions := Src.TilingOptions;
-     Dst.Light := Src.Light;
-   end;
-
 begin
-    SaveHeaderPointers(@Para11, p);
+    SaveHeaderPointers(@para10, p);
     Result := False;
     LastHisParSaveTime := Now;
     if FileExists(FileName) then
@@ -2161,14 +1988,7 @@ begin
         BlockRead(f, Para9, SizeOf(TMandHeader9) - 124)
       else if MId < 20 then
         BlockRead(f, Para9, SizeOf(TMandHeader9))
-      {$ifdef ENABLE_EXTENSIONS}
-      else if MId < 45 then begin
-        BlockRead(f, Para10, SizeOf(TMandHeader10));
-        FillV11HeaderFromV10(Para10, Para11);
-      end
-      {$endif}
-      else
-        BlockRead(f, Para11, SizeOf(TMandHeader11));
+      else BlockRead(f, Para10, SizeOf(TMandHeader10));
       if (MId < 5) and (MandHeader4.dZstart > MandHeader4.dZend) then
       begin
         MandHeader4.dZstart := - MandHeader4.dZstart;
@@ -2197,20 +2017,22 @@ begin
       else if MId < 8 then
         ConvertFromOldLightParas(Para9.Light, 148);
 
-      Para11.MandId := MId;
-      Mand3DForm.Authors := ExtractAuthorsFromPara(@Para11);   //if MId > 40
-      InsertHeaderPointers(@Para11, p);
+      para10.MandId := MId;
+      Mand3DForm.Authors := ExtractAuthorsFromPara(@para10);   //if MId > 40
+      InsertHeaderPointers(@para10, p);
 
-      if MId < 20 then begin
+      if MId < 20 then
+      begin
         for i := 0 to 5 do para9.PHCustomF[i] := p[i];
         Para9.PCFAddon := p[6];
         Result := ConvertHeaderFromOldParas(TMandHeader8(Para9), True);
-        FastMove(Para9, Para11, SizeOf(TMandHeader9));
-        ConvertLight8to9(Para9.Light, Para11.Light);
+        FastMove(Para9, Para10, SizeOf(TMandHeader9));
+        ConvertLight8to9(Para9.Light, Para10.Light);
       end
-      else begin
+      else
+      begin
         Result := True;
-        if Verbose then LoadBackgroundPicT(@Para11.Light);
+        if Verbose then LoadBackgroundPicT(@Para10.Light);
       end;
       if Result and Verbose then  //not verbose only for canload test
       begin
@@ -2220,47 +2042,34 @@ begin
           begin
             if MId > 18 then
             begin
-              if MId < 35 then Para11.TilingOptions := 0;
-              TileSize := GetTileSize(@Para11);
+              if MId < 35 then para10.TilingOptions := 0;
+              TileSize := GetTileSize(@para10);
               i := TileSize.X * TileSize.Y * SizeOf(TsiLight5);
             end
             else
-              i := Para11.Width * Para11.Height * SizeOf(TsiLight4);
+              i := Para10.Width * Para10.Height * SizeOf(TsiLight4);
           end
-          else i := Para11.Width * Para11.Height * SizeOf(TsiLight3);
+          else i := Para10.Width * Para10.Height * SizeOf(TsiLight3);
           if FileSize(f) >= FilePos(f) + i + SizeOf(THeaderCustomAddonOld) then
             Seek(f, FilePos(f) + i);
-
-          {$ifdef ENABLE_EXTENSIONS}
-          if MId<45 then begin
-            GetMem(Para10.PCFAddon, SizeOf(THeaderCustomAddon10));
-            LoadHAddon10(f, PTHeaderCustomAddon10(Para10.PCFAddon));
-            FillV11AddonFromV10(Para10, Para11);
-          end
-          else begin
-            LoadHAddon(f, PTHeaderCustomAddon(Para11.PCFAddon));
-          end;
-          {$else}
-          LoadHAddon(f, PTHeaderCustomAddon(Para11.PCFAddon));
-          {$endif}
-
+          LoadHAddon(f, PTHeaderCustomAddon(Para10.PCFAddon));
         end;
-        if MId < 20 then UpdateFormulaOptionTo20(PTHeaderCustomAddon(Para11.PCFAddon));
-        UpdateFormulaOptionAbove20(Para11);
-        UpdateLightParasAbove3(Para11.Light);
-        IniCFsFromHAddon(PTHeaderCustomAddon(Para11.PCFAddon), Para11.PHCustomF);
+        if MId < 20 then UpdateFormulaOptionTo20(PTHeaderCustomAddon(Para10.PCFAddon));
+        UpdateFormulaOptionAbove20(para10);
+        UpdateLightParasAbove3(para10.Light);
+        IniCFsFromHAddon(PTHeaderCustomAddon(Para10.PCFAddon), Para10.PHCustomF);
       //  Mand3DForm.HAddOn.bHCAversion := 16;//test
         bSRVolLightMapCalculated := False;
         Mand3DForm.SetEditsFromHeader;
         Mand3DForm.allPreSetsUp;
         Mand3DForm.MButtonsUp;
-        Mand3DForm.InternAspect := Para11.Width / Max(1, Para11.Height);
+        Mand3DForm.InternAspect := para10.Width / Max(1, para10.Height);
         FastMove(Mand3DForm.MHeader.Light, LHPSLight, SizeOf(TLightingParas9));
         LightAdjustForm.bUserChange := False;
         LightAdjustForm.CheckBox21.Checked := False;
-        LightAdjustForm.SetLightFromHeader(Para11);
+        LightAdjustForm.SetLightFromHeader(Para10);
         StoreUndoLight;
-        if Para11.Light.BGbmp[0] = 0 then LightAdjustForm.Image5.Visible := False else
+        if Para10.Light.BGbmp[0] = 0 then LightAdjustForm.Image5.Visible := False else
           MakeLMPreviewImage(LightAdjustForm.Image5, @M3DBackGroundPic);
         SetSaveDialogNames(FileName);
   //      Mand3DForm.Caption := ExtractFileName(FileName);
@@ -2386,7 +2195,7 @@ end;
     AmbShadow:   Word;
     SIgradient:  Word;    // Smoothed Iteration gradient for coloring
 }
-procedure LoadFullM3I(var Header: TMandHeader11; Filename: String);
+procedure LoadFullM3I(var Header: TMandHeader10; Filename: String);
 var f: file;
     MID, i, j: Integer;
     SI3: array of TSiLight3;
@@ -2413,7 +2222,7 @@ begin
         if MID <  4 then Seek(f, 200) else
         if MID <  7 then Seek(f, 272) else
         if MID <  8 then Seek(f, 580) else
-        if MID < 20 then Seek(f, SizeOf(TMandHeader9)) else Seek(f, SizeOf(TMandHeader11)); // 840
+        if MID < 20 then Seek(f, SizeOf(TMandHeader9)) else Seek(f, SizeOf(TMandHeader10)); // 840
         if MID < 19 then SetLength(SI4, j);
         if MID < 18 then
         begin

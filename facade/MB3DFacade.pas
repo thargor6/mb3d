@@ -50,16 +50,16 @@ type
 
   TMB3DCoreFacade = class
   private
-    FHybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
-    FHeader: TMandHeader11;
+    FHybridCustoms: array[0..5] of TCustomFormula;
+    FHeader: TMandHeader10;
     FHAddOn: THeaderCustomAddon;
-    function GetHeaderPointer: TPMandHeader11;
+    function GetHeaderPointer: TPMandHeader10;
     function GetHAddonPointer: PTHeaderCustomAddon;
   public
-    constructor Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
+    constructor Create(const Header: TMandHeader10;const HAddOn: THeaderCustomAddon);
     destructor Destroy;override;
-    procedure ApplyToCore(DestHeader: TMandHeader11;DestHAddOn: THeaderCustomAddon);
-    property PHeader: TPMandHeader11 read GetHeaderPointer;
+    procedure ApplyToCore(DestHeader: TMandHeader10;DestHAddOn: THeaderCustomAddon);
+    property PHeader: TPMandHeader10 read GetHeaderPointer;
     property PHAddOn: PTHeaderCustomAddon read GetHAddOnPointer;
   end;
 
@@ -114,7 +114,7 @@ type
     function GetFormula(Index: Integer): TMB3DFormulaFacade;
     function GetFormulaCount: Integer;
   public
-    constructor Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
+    constructor Create(const Header: TMandHeader10;const HAddOn: THeaderCustomAddon);
     destructor Destroy;override;
     function Clone: TMB3DParamsFacade;
     property Core: TMB3DCoreFacade read FCore;
@@ -129,6 +129,9 @@ implementation
 
 uses
   DivUtils, CustomFormulas, HeaderTrafos, Contnrs, SysUtils, Windows;
+
+const
+  FORMULA_PARAM_COUNT = 16;
 
 { ---------------------------- TMB3DParamFacade ------------------------------ }
 constructor TMB3DParamFacade.Create(const ParamIndex: Integer;const Owner: TMB3DFormulaFacade);
@@ -180,7 +183,7 @@ begin
   FFormulaIndex := FormulaIndex;
   FOwner := Owner;
   FParams:=TObjectList.Create;
-  for I := 0 to V18_FORMULA_PARAM_COUNT -1  do
+  for I := 0 to FORMULA_PARAM_COUNT - 1  do
     FParams.Add(TMB3DParamFacade.Create(I, Self));
 end;
 
@@ -278,11 +281,11 @@ begin
   Result := FOwner.Core.PHAddOn^.Formulas[FFormulaIndex].iItCount;
 end;
 { ----------------------------- TMB3DCoreFacade ------------------------------ }
-constructor TMB3DCoreFacade.Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
+constructor TMB3DCoreFacade.Create(const Header: TMandHeader10;const HAddOn: THeaderCustomAddon);
 begin
   inherited Create;
 //  AssignHeader(@FHeader, @Header);
-  FastMove(Header, FHeader, SizeOf(TMandHeader11));
+  FastMove(Header, FHeader, SizeOf(TMandHeader10));
   FHeader.PCFAddon := @FHAddOn;
   FastMove(HAddOn, FHeader.PCFAddon^, SizeOf(THeaderCustomAddon));
 //  for i := 0 to MAX_FORMULA_COUNT - 1 do
@@ -294,22 +297,22 @@ destructor TMB3DCoreFacade.Destroy;
 var
   i: Integer;
 begin
-  for i := 0 to MAX_FORMULA_COUNT - 1 do
+  for i := 0 to FORMULA_PARAM_COUNT - 1 do
     FreeCF(@FHybridCustoms[i]);
   inherited Destroy;
 end;
 
-procedure TMB3DCoreFacade.ApplyToCore(DestHeader: TMandHeader11;DestHAddOn: THeaderCustomAddon);
+procedure TMB3DCoreFacade.ApplyToCore(DestHeader: TMandHeader10;DestHAddOn: THeaderCustomAddon);
 var
   AddOn: Pointer;
 begin
   AddOn := DestHeader.PCFAddon;
-  FastMove(FHeader, DestHeader, SizeOf(TMandHeader11));
+  FastMove(FHeader, DestHeader, SizeOf(TMandHeader10));
   DestHeader.PCFAddon := AddOn;
   FastMove(FHAddOn, DestHeader.PCFAddon^, SizeOf(THeaderCustomAddon));
 end;
 
-function TMB3DCoreFacade.GetHeaderPointer: TPMandHeader11;
+function TMB3DCoreFacade.GetHeaderPointer: TPMandHeader10;
 begin
   Result := @FHeader;
 end;
@@ -320,7 +323,7 @@ begin
 end;
 
 { ---------------------------- TMB3DParamsFacade ----------------------------- }
-constructor TMB3DParamsFacade.Create(const Header: TMandHeader11;const HAddOn: THeaderCustomAddon);
+constructor TMB3DParamsFacade.Create(const Header: TMandHeader10;const HAddOn: THeaderCustomAddon);
 var
   I: Integer;
   NewGUID: TGUID;
@@ -336,7 +339,7 @@ begin
   inherited Create;
   FCore := TMB3DCoreFacade.Create(Header, HAddOn);
   FFormulas:=TObjectList.Create;
-  for I := 0 to MAX_FORMULA_COUNT-1 do
+  for I := 0 to 5 do
     FFormulas.Add(TMB3DFormulaFacade.Create(I, Self));
   FIterations := TMB3DIterationsFacade.Create(Self);
   FJuliaMode := TMB3DJuliaModeFacade.Create(Self);

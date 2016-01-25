@@ -16,12 +16,12 @@ procedure IniCustomF(CF: PTCustomFormula);
 procedure FreeCF(CF: PTCustomFormula);
 procedure ParseCFfromOld(iFormula: Integer; CF: PTCustomFormula;
                          dOptionValues: array of Double);
-procedure MakeCustomFsFromHeader(Header: TMandHeader11{; isAlt: LongBool});
+procedure MakeCustomFsFromHeader(Header: TMandHeader10{; isAlt: LongBool});
 procedure SetCFoptionsFromOldF(f: Integer; CF: PTCustomFormula);
 procedure CopyTypeAndOptionFromCFtoHAddon(CF: PTCustomFormula; HA: PTHeaderCustomAddon; fnr: Integer{; bLoadedPars: LongBool});
 function CanLoadCustomFormula(FileName: String; var DEfunction: Integer): Boolean;
 function CanLoadF(FormulaName: String): Boolean;
-function Is4Dtype(Header: TPMandHeader11): LongBool;
+function Is4Dtype(Header: TPMandHeader10): LongBool;
 function isInternFormula(FName: String; var i: Integer): LongBool;
 function DescrOfFName(FName: String): String;
 function SameFName(Fn1, Fn2: String): LongBool;
@@ -95,12 +95,12 @@ begin
       end1 := 0;
       repeat1 := 0;
       start2 := 1;
-      end2 := MAX_FORMULA_COUNT - 1;
+      end2 := 5;
       repeat2 := 1;
     end
     else
     begin
-      x := MAX_FORMULA_COUNT - 1;
+      x := 5;
       while (x > 0) and (pHCA.Formulas[x].iItCount = 0) do Dec(x);
       start2 := Max(1, Min(x, pHCA.bHybOpt2 and 7));
       if (pHCA.bOptions1 and 3) = 0 then end1 := x else end1 := start2 - 1;
@@ -111,7 +111,7 @@ begin
       repeat1 := Min(x, pHCA.bHybOpt1 shr 4);
       if (pHCA.bOptions1 and 3) = 2 then
       begin
-        x := MAX_FORMULA_COUNT - 1;
+        x := 5;
         while (x > start2) and (pHCA.Formulas[x].iItCount <= 0) do Dec(x);
         repeat2 := Min(x, repeat2);
       end;
@@ -174,7 +174,7 @@ end;
 procedure ResetFormulas(HAddon: PTHeaderCustomAddon);
 var n: Integer;
 begin       
-    for n := 0 to MAX_FORMULA_COUNT - 1 do
+    for n := 0 to 5 do
     with HAddon.Formulas[n] do
     begin
       iItCount := 0;
@@ -567,12 +567,12 @@ begin
    end;
 end;
 
-procedure MakeCustomFsFromHeader(Header: TMandHeader11);
+procedure MakeCustomFsFromHeader(Header: TMandHeader10);
 var i, n: Integer;
     CF: PTCustomFormula;
     dOptionVtmp: array[0..15] of Double;
 begin
-    if (PTHeaderCustomAddon(Header.PCFAddon).bOptions1 and 3) = 1 then n := 1 else n := MAX_FORMULA_COUNT - 1;
+    if (PTHeaderCustomAddon(Header.PCFAddon).bOptions1 and 3) = 1 then n := 1 else n := 5;
     for i := 0 to n do
     with PTHeaderCustomAddon(Header.PCFAddon).Formulas[i] do
     if (n = 1) or (iItCount > 0) then
@@ -1052,7 +1052,7 @@ begin
     end;
 end;
 
-function Is4Dtype(Header: TPMandHeader11): LongBool;
+function Is4Dtype(Header: TPMandHeader10): LongBool;
 var n, DEopt: Integer;
     PCFA: PTHeaderCustomAddon;
 begin

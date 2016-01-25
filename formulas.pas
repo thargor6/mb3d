@@ -2660,7 +2660,7 @@ asm
   add   eax, 35
   and   eax, $FFFFFFF0
   mov   [esp], eax            // aligned 16 Ybuf    aligned16: esp,  X1 = a16.. = Y1 =  (aligned)
-  cvtps2pd xmm7, [edi + OFF_nHybrid]   //nHybrid[0] +76  weights in double for s1,s2 (lo,hi part)
+  cvtps2pd xmm7, [edi + 76]   //nHybrid[0] +76  weights in double for s1,s2 (lo,hi part)
   movupd  xmm0, [edi]
   movsd   xmm1, [edi + 16]
   movupd  [edi - 32], xmm0    //xyz=C
@@ -2691,7 +2691,7 @@ asm
 
 @Repeat:
   movsd   xmm2, [edi + 56]
-  mov   ebx, [edi + OFF_fHPVar]      //fHPVar[0] +100
+  mov   ebx, [edi + 100]      //fHPVar[0] +100
   mov   eax, [esp]
   mov   [edi + 48], ebx       //PVars:    +48
   movsd   [edi - 48], xmm2    //Rold := Rout
@@ -2707,7 +2707,7 @@ asm
   lea   ebx, edi - 8          // w
   push  ebx
   push  edi
-  call  [edi + OFF_fHybrid]           //fHybrid[0] of ThybridIteration2
+  call  [edi + 124]           //fHybrid[0] of ThybridIteration2
 
   mov   eax, [esp]
   movupd  xmm0, [edi - 32]        //    mCopyVec4(@x1, @x);
@@ -2876,7 +2876,7 @@ asm
   add   eax, 35              
   and   eax, $FFFFFFF0
   mov   [esp], eax            // aligned 16 Ybuf    aligned16: esp,  X1 = a16.. = Y1 =  (aligned)
-  cvtps2pd xmm7, [edi + OFF_nHybrid]   //nHybrid[0] +76  weights in double for s1,s2 (lo,hi part)
+  cvtps2pd xmm7, [edi + 76]   //nHybrid[0] +76  weights in double for s1,s2 (lo,hi part)
   movupd  xmm0, [edi]
   movsd   xmm1, [edi + 16]
   movupd  [edi - 32], xmm0    //xyz=C
@@ -2918,7 +2918,7 @@ asm
 
 @Repeat:
   movsd   xmm2, [edi + 56]
-  mov   ebx, [edi + OFF_fHPVar]      //fHPVar[0] +100
+  mov   ebx, [edi + 100]      //fHPVar[0] +100
   mov   eax, [esp]
   mov   [edi + 48], ebx       //PVars:    +48
   movsd   [edi - 48], xmm2    //Rold := Rout
@@ -2934,7 +2934,7 @@ asm
   lea   ebx, edi - 8          // w
   push  ebx
   push  edi
-  call  [edi + OFF_fHybrid]           //fHybrid[0] of ThybridIteration2
+  call  [edi + 124]           //fHybrid[0] of ThybridIteration2
 
   mov   eax, [esp]
   movupd  xmm0, [edi - 32]        //    mCopyVec4(@x1, @x);
@@ -3241,9 +3241,9 @@ asm
     fstp  qword [esi + 112]     //VaryScale: //+200  absScale, must be changed in formulas
     fstp  qword [esi + TIteration3Dext.OTrap - 144]    // 104 OTrap: Double;  //+192  min of AbsScale
     fstp  qword [edx + TIteration3Dext.Dfree1 - 144 - 128]  //+248 +56
-    mov   edi, [esi + ebx * 4 + (OFF_fHPVar - 88)]       //fHPVar[0] +100
-    mov   ecx, [esi + ebx * 4 + (OFF_nHybrid - 88)]       //i:=nHybrid[0] +76
-    and   ecx, $7FFFFFFF
+    mov   edi, [esi + ebx * 4 + 12]       //fHPVar[0] +100
+    mov   ecx, [esi + ebx * 4 - 12]       //i:=nHybrid[0] +76
+    and   ecx, $7FFFFFFF      
 @Repeat:
     cmp   ecx, 0
     jnle  @up2
@@ -3253,14 +3253,14 @@ asm
     jle   @up3
     movzx ebx, word [esi + 100]       //n := iRepeatFrom //+188
 @up3:
-    mov   ecx, [esi + ebx * 4 + (OFF_nHybrid - 88)]   //i := nHybrid[n];  +76
+    mov   ecx, [esi + ebx * 4 - 12]   //i := nHybrid[n];  +76
     and   ecx, $7FFFFFFF
     jle   @While
-    mov   edi, [esi + ebx * 4 + (OFF_fHPVar - 88)]  //fHPVar:array[0..5] of Pointer; //+100
+    mov   edi, [esi + ebx * 4 + 12]  //fHPVar:array[0..5] of Pointer; //+100
 @up2:
-    call  [esi + ebx * 4 + (OFF_fHybrid - 88)]  //fHybrid[0..5] of ThybridIteration2; //+124
+    call  [esi + ebx * 4 + 36]  //fHybrid[0..5] of ThybridIteration2; //+124
     dec   ecx                   //Dec(i)
-    cmp   [esi + ebx * 4 + (OFF_nHybrid - 88)], 0
+    cmp   [esi + ebx * 4 - 12], 0
     jl    @Repeat
     movsd xmm0, [esi - 32]      //DEout relative; Rout: Double;     //+56
     inc   dword [esi - 24]      //Inc(ItResultI)  //+64
@@ -3320,8 +3320,8 @@ asm
     fstp  qword [esi + TIteration3Dext.OTrap - 144]    // 104 OTrap: Double;  //+192  min of AbsScale
     fstp   qword [esi + TIteration3Dext.Dfree1 - 144]   //+248 +56
   //  fstp  qword [esi + TIteration3Dext.Dfree2 - 144]   //+248 +56
-    mov   edi, [esi + ebx * 4 + (OFF_fHPVar - 88)]       //fHPVar[0] +100
-    mov   ecx, [esi + ebx * 4 + (OFF_nHybrid - 88)]       //i:=nHybrid[n] +76
+    mov   edi, [esi + ebx * 4 + 12]       //fHPVar[0] +100
+    mov   ecx, [esi + ebx * 4 - 12]       //i:=nHybrid[n] +76
     and   ecx, $7FFFFFFF
 @Repeat:
     cmp   ecx, 0
@@ -3332,14 +3332,14 @@ asm
     jle   @up3
     movzx ebx, word [esi + 100]       //n := iRepeatFrom //+188
 @up3:
-    mov   ecx, [esi + ebx * 4 + (OFF_nHybrid - 88)]   //i := nHybrid[n];  +76
+    mov   ecx, [esi + ebx * 4 - 12]   //i := nHybrid[n];  +76
     and   ecx, $7FFFFFFF
     jle   @While
-    mov   edi, [esi + ebx * 4 + (OFF_fHPVar - 88)]  //fHPVar:array[0..5] of Pointer; //+100
+    mov   edi, [esi + ebx * 4 + 12]  //fHPVar:array[0..5] of Pointer; //+100
 @up2:
-    call  [esi + ebx * 4 + (OFF_fHybrid - 88)]  //fHybrid[0..5] of ThybridIteration2; //+124
+    call  [esi + ebx * 4 + 36]  //fHybrid[0..5] of ThybridIteration2; //+124
     dec   ecx                   //Dec(i)
-    cmp   [esi + ebx * 4 + (OFF_nHybrid - 88)], 0
+    cmp   [esi + ebx * 4 - 12], 0
     jl    @Repeat
     movsd xmm0, [esi - 32]      //DEout relative; Rout: Double;     //+56
     inc   dword [esi - 24]      //Inc(ItResultI)  //+64
@@ -3374,9 +3374,8 @@ asm
     pop   ecx
     pop   ebx
     pop   eax
-end;
+end;     
 
-// DONE
 procedure CalcSmoothIterations(PIt3D: TPIteration3D; n: Integer);
 {var d: Double;
 begin
@@ -3621,9 +3620,9 @@ asm
   mov   [esi - 48], ebx       //bFirstIt  := 0; +208
   mov   [edi + 64], ebx       //ItresultI:=0   +64
   movzx ebx, word [esi - 66]  //n:=iStartFrom
-  mov   eax, [edi + ebx * 4 + OFF_fHPVar]      //fHPVar[0] +100
+  mov   eax, [edi + ebx * 4 + 100]      //fHPVar[0] +100
   mov   [edi + 48], eax       //PVars:    +48
-  mov   eax, [edi + ebx * 4 + OFF_nHybrid]       //i:=nHybrid[0] +76
+  mov   eax, [edi + ebx * 4 + 76]       //i:=nHybrid[0] +76
   and   eax, $7FFFFFFF
   mov   [esi - 44], eax       //i(=It3D.btmp)
 
@@ -3637,11 +3636,11 @@ asm
   jle   @up3
   movzx ebx, word [esi - 68]       //n := iRepeatFrom
 @up3:
-  mov   eax, [edi + ebx * 4 + OFF_nHybrid]   //i := nHybrid[n];  +76
+  mov   eax, [edi + ebx * 4 + 76]   //i := nHybrid[n];  +76
   and   eax, $7FFFFFFF
   jle   @While
   mov   [esi - 44], eax
-  mov   eax, [edi + ebx * 4 + OFF_fHPVar]  //fHPVar:array[0..5] of Pointer;
+  mov   eax, [edi + ebx * 4 + 100]  //fHPVar:array[0..5] of Pointer;
   mov   [edi + 48], eax       //PVars: +48
 @up2:
   lea   eax, edi - 8          //was: esp + 24   w
@@ -3650,9 +3649,9 @@ asm
   lea   edx, edi - 24         //was: esp + 16   y
   lea   ecx, edi - 16         //was: esp + 24   z
   add   eax, -24              // x
-  call  [edi + ebx * 4 + OFF_fHybrid] //fHybrid[0..5] of ThybridIteration2; //+124
+  call  [edi + ebx * 4 + 124] //fHybrid[0..5] of ThybridIteration2; //+124
   dec   [esi - 44]            //Dec(i)   write at addr... false dIFS??
-  cmp   [edi + ebx * 4 + OFF_nHybrid], 0   //nHybrid[fnr]
+  cmp   [edi + ebx * 4 + 76], 0   //nHybrid[fnr]
   jl    @Repeat  //SkipMaxItTest
   movupd  xmm6, [edi - 32]
   movupd  xmm7, [edi - 16]
@@ -3741,8 +3740,6 @@ begin
 end;
 
 procedure doHybridSSE2(PIteration3D: TPIteration3D);  //new ext version
-const
-  ESI_OFFSET = 256;
 asm
   push  eax
   push  ebx
@@ -3751,7 +3748,7 @@ asm
   push  esi
   push  edi                   //x = edi-32  y = edi-24 ..  Rold = edi - 48, Rstop = edi - 40, (i = edi + 212 = btmp = esi - 44)
   mov   edi, eax              //  = [edi - 32]
-  lea   esi, eax + ESI_OFFSET
+  lea   esi, eax + 256
   movupd  xmm6, [edi]         //Iteration3D by calcMissed not aligned16?!
   movsd   xmm7, [edi + 16]
   movupd  [edi - 32], xmm6         //X=C
@@ -3780,9 +3777,9 @@ asm
   mov   [esi - 48], ebx       //bFirstIt := 0; +208
   mov   [edi + 64], ebx       //ItresultI:=0   +64
   movzx ebx, word [esi - 66]  //n := iStartFrom
-  mov   eax, [edi + ebx * 4 + OFF_fHPVar]      //fHPVar[0] +100
+  mov   eax, [edi + ebx * 4 + 100]      //fHPVar[0] +100
   mov   [edi + 48], eax       //PVars:    +48
-  mov   eax, [edi + ebx * 4 + OFF_nHybrid]       //i:=nHybrid[0] +76
+  mov   eax, [edi + ebx * 4 + 76]       //i:=nHybrid[0] +76
   and   eax, $7FFFFFFF
   mov   [esi - 44], eax       //btmp
 
@@ -3796,11 +3793,11 @@ asm
   jle   @up3
   movzx ebx, word [esi - 68]       //n := iRepeatFrom
 @up3:
-  mov   eax, [edi + ebx * 4 + OFF_nHybrid]   //i := nHybrid[n];  +76
+  mov   eax, [edi + ebx * 4 + 76]   //i := nHybrid[n];  +76
   and   eax, $7FFFFFFF
   jle   @While
   mov   [esi - 44], eax       //was btmp, now own var
-  mov   eax, [edi + ebx * 4 + OFF_fHPVar]  //fHPVar:array[0..5] of Pointer;
+  mov   eax, [edi + ebx * 4 + 100]  //fHPVar:array[0..5] of Pointer;
   mov   [edi + 48], eax       //PVars: +48
 @up2:
   lea   eax, edi - 8          // w
@@ -3809,9 +3806,9 @@ asm
   lea   edx, edi - 24
   lea   ecx, edi - 16
   add   eax, -24
-  call  [edi + ebx * 4 + OFF_fHybrid] //fHybrid[0..5] of ThybridIteration2; //+124   fp overflow: it3dex.z > 1eXXX !
+  call  [edi + ebx * 4 + 124] //fHybrid[0..5] of ThybridIteration2; //+124   fp overflow: it3dex.z > 1eXXX !
   dec   [esi - 44]            //Dec(i)
-  cmp   [edi + ebx * 4 + OFF_nHybrid], 0
+  cmp   [edi + ebx * 4 + 76], 0
   jl    @Repeat  //SkipMaxItTest
   movupd  xmm6, [edi - 32]
   movupd  xmm7, [edi - 16]
@@ -3886,9 +3883,9 @@ asm
   mov   [edi + 208], ebx      //mov   [esi - 48], ebx       //bFirstIt  := 0; +208
   mov   [edi + 64], ebx       //ItresultI:=0   +64
   movzx ebx, word [esi - 66]  //n := iStartFrom
-  mov   eax, [edi + ebx * 4 + OFF_fHPVar]      //fHPVar[n] +100
+  mov   eax, [edi + ebx * 4 + 100]      //fHPVar[n] +100
   mov   [edi + 48], eax       //PVars:    +48
-  mov   eax, [edi + ebx * 4 + OFF_nHybrid]       //i:=nHybrid[n] +76
+  mov   eax, [edi + ebx * 4 + 76]       //i:=nHybrid[n] +76
   and   eax, $7FFFFFFF
   mov   [esi - 44], eax
   mov   eax, [esi - 96]       //DEoption +160
@@ -3922,11 +3919,11 @@ asm
   jle   @up3
   movzx ebx, word [esi - 68]       //n := iRepeatFrom
 @up3:
-  mov   eax, [edi + ebx * 4 + OFF_nHybrid]   //i := nHybrid[n];  +76
+  mov   eax, [edi + ebx * 4 + 76]   //i := nHybrid[n];  +76
   and   eax, $7FFFFFFF
   jle   @While
   mov   [esi - 44], eax
-  mov   eax, [edi + ebx * 4 + OFF_fHPVar]  //fHPVar:array[0..5] of Pointer;
+  mov   eax, [edi + ebx * 4 + 100]  //fHPVar:array[0..5] of Pointer;
   mov   [edi + 48], eax       //PVars: +48
 @up2:
   lea   eax, edi - 8          //was: esp + 24   w
@@ -3935,9 +3932,9 @@ asm
   lea   edx, edi - 24         //was: esp + 16   y
   lea   ecx, edi - 16         //was: esp + 24   z
   add   eax, -24              // x
-  call  [edi + ebx * 4 + OFF_fHybrid] //fHybrid[0..5] of ThybridIteration2; //+124   error in called function sometimes!!!
+  call  [edi + ebx * 4 + 124] //fHybrid[0..5] of ThybridIteration2; //+124   error in called function sometimes!!!
   dec   [esi - 44]            //Dec(i)    //Write off...??? bug in call... of mandbox or menger??!  abox as testhybrid! esi has changed?
-  cmp   [edi + ebx * 4 + OFF_nHybrid], 0
+  cmp   [edi + ebx * 4 + 76], 0
   jl    @Repeat  //SkipMaxItTest
   movupd  xmm6, [edi - 32]
   movupd  xmm7, [edi - 16]
@@ -4708,8 +4705,7 @@ asm
   pop   esi
 end;
 
-//x:eax,y:edx,z:ecx,w:esp->ebp+12, PIt:ebp+8
-// DONE
+                       //x:eax,y:edx,z:ecx,w:esp->ebp+12, PIt:ebp+8
 procedure HybridIntP8(var x, y, z, w: Double; PIteration3D: TPIteration3D);   //P8 white's formula
 asm
   push  esi

@@ -1517,7 +1517,7 @@ var t, i: Integer;
     dOptionValues: array[0..15] of Double;
 begin
   t := TabControl1.TabIndex;
-  if t < MAX_FORMULA_COUNT -1  then begin
+  if t < 5  then begin
     HAF := Mand3DForm.HAddon.Formulas[t];
     Mand3DForm.HAddon.Formulas[t] := Mand3DForm.HAddon.Formulas[t + 1];
     Mand3DForm.HAddon.Formulas[t + 1] := HAF;

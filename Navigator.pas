@@ -302,7 +302,7 @@ type
     procedure WmThreadStat(var Msg: TMessage); message WM_ThreadStat;
   public
     { Public-Deklarationen }
-    HybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
+    HybridCustoms: array[0..5] of TCustomFormula;
     bUserChange: LongBool;
     bDoubleClick: LongBool;
     NaviLightness: Single;
@@ -310,7 +310,7 @@ type
     NLPavailable: array[0..2] of LongBool;
     NMouseStartPos: TPoint;
     NaviLightPresets: array[0..2] of TLightingParas9;
-    NaviHeader: TMandHeader11;
+    NaviHeader: TMandHeader10;
     NaviHAddon: THeaderCustomAddon;
     NaviLightVals: TLightValsNavi;
     Authors: AuthorStrings;
@@ -348,7 +348,7 @@ begin
     Label31.Visible := not Label18.Visible;
 end;
 
-procedure ModRotPoint(var Header: TMandHeader11);
+procedure ModRotPoint(var Header: TMandHeader10);
 var l, ds, de: Double;
 begin
     with Header do
@@ -789,7 +789,7 @@ begin
       MCTparas[I].NaviStep      := Nstep;
       MCTparas[I].SLwidMNpix    := MCTparas[I].FSIoffset div 4 - Nstep;
       SetLength(CalcThread, nThreadCount);
-      for x := 0 to MAX_FORMULA_COUNT - 1 do if MCTparas[I].nHybrid[x] > 0 then bAllOK := True;
+      for x := 0 to 5 do if MCTparas[I].nHybrid[x] > 0 then bAllOK := True;
     end;
   finally
   end;
@@ -1217,8 +1217,8 @@ begin
     NaviLightness := 1;
     DoubleBuffered := True;
     NaviHeader.PCFAddon := @NaviHAddon;
-    for i := 0 to MAX_FORMULA_COUNT - 1 do NaviHeader.PHCustomF[i] := @HybridCustoms[i];
-    for i := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@HybridCustoms[i]);
+    for i := 0 to 5 do NaviHeader.PHCustomF[i] := @HybridCustoms[i];
+    for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
     for i := 0 to 2 do NLPavailable[i] := False;
     tmpBMP := TBitmap.Create;
     tmpBMP.PixelFormat := pf32Bit;
@@ -1422,7 +1422,7 @@ begin    //expand/shrink panel2
 end;
 
 procedure TFNavigator.SpeedButton18Click(Sender: TObject);   // "f" insert paras to animation keyframe
-var tmpHeader: TMandHeader11;
+var tmpHeader: TMandHeader10;
     i: Integer;
     CurrNaviFrame: Integer;
 begin
@@ -1445,7 +1445,7 @@ begin
         if DEstopChanged then tmpHeader.sDEstop := NaviHeader.sDEstop;
         ModRotPoint(tmpHeader);
         tmpHeader.Light.TBpos[6] := UpDown1.Position;
-        for i := 0 to MAX_FORMULA_COUNT - 1 do tmpHeader.PHCustomF[i] := @HybridCustoms[i];
+        for i := 0 to 5 do tmpHeader.PHCustomF[i] := @HybridCustoms[i];
         AnimationForm.Visible := True;
         AnimationForm.InsertFromHeader(@tmpHeader);  //Assigned, HAddon pointer must be set
 

@@ -124,8 +124,8 @@ object PostProForm: TPostProForm
     object Label3: TLabel
       Left = 0
       Top = 0
-      Width = 255
-      Height = 45
+      Width = 246
+      Height = 39
       Margins.Left = 2
       Margins.Top = 1
       Margins.Right = 0
@@ -134,8 +134,6 @@ object PostProForm: TPostProForm
       Caption = 
         'Caution:  The processings below must be calculated'#13#10'from top to ' +
         'bottom and light changes will reset'#13#10'these calculations!'
-      ExplicitWidth = 246
-      ExplicitHeight = 39
     end
     object Button16: TButton
       Left = 180
@@ -1520,7 +1518,7 @@ object PostProForm: TPostProForm
     Left = 8
     Top = 40
     Bitmap = {
-      494C010101002400300010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010101002400340010001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000400000001000000001002000000000000010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

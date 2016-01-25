@@ -83,9 +83,9 @@ type
     procedure CheckBox4Click(Sender: TObject);
   private
     { Private-Deklarationen }
-    OrigHeader: TMandHeader11;
+    OrigHeader: TMandHeader10;
     OrigHAddOn: THeaderCustomAddon;
-    HybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
+    HybridCustoms: array[0..5] of TCustomFormula;
     TilesAlreadyRendered: array of array of Byte;
     SelectedTile: TPoint;
     AOm3iFile: String;
@@ -297,7 +297,7 @@ procedure TTilingForm.SetHeader;
 var i: Integer;
 begin
     OrigHeader.PCFAddon := @OrigHAddon;
-    for i := 0 to MAX_FORMULA_COUNT - 1 do OrigHeader.PHCustomF[i] := @HybridCustoms[i];
+    for i := 0 to 5 do OrigHeader.PHCustomF[i] := @HybridCustoms[i];
 end;
 
 procedure TTilingForm.PaintImageTiling;
@@ -447,12 +447,12 @@ var f, f2: file;
     POutBuf: TPAObuf;
     siL5: array of TsiLight5;
     PS5: TPsiLight5;
-    tmpHeader: TMandHeader11;
+    tmpHeader: TMandHeader10;
 begin
     AssignFile(f, FileName);
     Reset(f, 1);
     try
-      BlockRead(f, tmpHeader, SizeOf(TMandHeader11));
+      BlockRead(f, tmpHeader, SizeOf(TMandHeader10));
       if tmpHeader.MandId < 20 then
       begin
         ShowMessage('The M3I file is to old, please render it again!');

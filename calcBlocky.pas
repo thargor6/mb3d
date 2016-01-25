@@ -22,7 +22,7 @@ implementation
 
 uses Math, Mand, HeaderTrafos, LightAdjust, DivUtils, PaintThread, Calc;
 
-function CalcBlockyT(Header: TPMandHeader11; PLightVals: TPLightVals; PCTS: TPCalcThreadStats;
+function CalcBlockyT(Header: TPMandHeader10; PLightVals: TPLightVals; PCTS: TPCalcThreadStats;
                      PsiLight5: TPsiLight5; hSLoffset, FSIstart, FSIoffset: Integer; hRect: TRect): Boolean;
 var x, ThreadCount: Integer;
     MCTparas: TMCTparameter;

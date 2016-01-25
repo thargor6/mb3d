@@ -8,9 +8,9 @@ type
   TRegisters = record
     RegEAX, RegEBX, RegECX, RegEDX: Integer;
   end;
-  TP6 = array[0..MAX_FORMULA_COUNT] of Pointer;
-procedure SaveHeaderPointers(Header: TPMandHeader11; var p6: TP6);
-procedure InsertHeaderPointers(Header: TPMandHeader11; const p6: TP6);
+  TP6 = array[0..6] of Pointer;
+procedure SaveHeaderPointers(Header: TPMandHeader10; var p6: TP6);
+procedure InsertHeaderPointers(Header: TPMandHeader10; const p6: TP6);
 procedure CPU_Supported;
 function StrToIntTrim(s: String): Integer;
 function ThreeBytesTo4Chars(PB: PByte): AnsiString;
@@ -35,21 +35,21 @@ function CustomFtoStr(cf: array of Byte): AnsiString;
 procedure PutStringInCustomF(var cf: array of Byte; s: AnsiString);
 function NumberOfCPUs: Integer;
 function StrOnlyNumbers(S: String): String;
-function GetZPos(x, y: Integer; Header: TPMandHeader11; SL: TPSiLight5): Double;
-function AllAutoProcessings(Header: TPMandHeader11): Integer;
+function GetZPos(x, y: Integer; Header: TPMandHeader10; SL: TPSiLight5): Double;
+function AllAutoProcessings(Header: TPMandHeader10): Integer;
 function cIpol2colFlip(Col1, Col2: Cardinal; w1: Single): Cardinal;
-procedure CalcStepWidth(Header: TPMandHeader11);
-procedure CalcRealPosOffsetsFromImagePos(x, y: Integer; Header: TPMandHeader11; SL: TPSiLight5; Pos3: TPPos3D);
-procedure CalcPPZvals(var Header: TMandHeader11; var Zcorr, ZcMul, ZZstmitDif: Double);
+procedure CalcStepWidth(Header: TPMandHeader10);
+procedure CalcRealPosOffsetsFromImagePos(x, y: Integer; Header: TPMandHeader10; SL: TPSiLight5; Pos3: TPPos3D);
+procedure CalcPPZvals(var Header: TMandHeader10; var Zcorr, ZcMul, ZZstmitDif: Double);
 procedure PutStringInLightFilename(var fn: array of Byte; s: AnsiString);
 function GetStringFromLightFilename(var fn: array of Byte): AnsiString;
-function StepWidthFOV(zz: Double; Header: TPMandHeader11): Double;
-function Zdistance(LiPos: TPVec3D; Header: TPMandHeader11): Double;
-procedure CalcXYposOfPosLight(pos3: TPVec3D; Header: TPMandHeader11; var X, Y: Double);
+function StepWidthFOV(zz: Double; Header: TPMandHeader10): Double;
+function Zdistance(LiPos: TPVec3D; Header: TPMandHeader10): Double;
+procedure CalcXYposOfPosLight(pos3: TPVec3D; Header: TPMandHeader10; var X, Y: Double);
 function SameCustomFNames(PA1, PA2: PTHeaderCustomAddon; AltNr: Integer): Boolean;
 function StrToIntTry(s: String; default: Integer): Integer;
 function EditToInt(var E: TEdit; var i: Integer): Boolean;
-procedure FastMove(const Source; const Dest; count: Integer);
+procedure FastMove(const Source; var Dest; count: Integer);
 //function MakeViewVecFromHeader(const x, y: Double; Header: TPMandHeader10): TVec3D;
 procedure MinMaxClip15bit(var s: Single; var w: Word);
 function CardinalToRGB(c: Cardinal): TRGB;
@@ -88,11 +88,11 @@ function THreadPrioToByte(TP: TTHreadPriority): Byte;
 function dDateTimeToStr(ms: TDateTime): String;
 function ByteToThreadPrio(b: Byte): TTHreadPriority;
 procedure BringToFront2(h1: HWND);
-procedure GetTilingInfosFromHeader(Header: TPMandHeader11; var TileRect: TRect; var Crop: Integer);
-procedure SetTilingInfosInHeader(Header: TPMandHeader11; var BigRenderData: TBigRenderData; TilePos: TPoint);
-function GetTileSize(Header: TPMandHeader11): TPoint;
-procedure DisableTiling(Header: TPMandHeader11);
-procedure GetPaintTileSizes(Header: TPMandHeader11; var wid, hei, Xplus, Yplus: Integer);
+procedure GetTilingInfosFromHeader(Header: TPMandHeader10; var TileRect: TRect; var Crop: Integer);
+procedure SetTilingInfosInHeader(Header: TPMandHeader10; var BigRenderData: TBigRenderData; TilePos: TPoint);
+function GetTileSize(Header: TPMandHeader10): TPoint;
+procedure DisableTiling(Header: TPMandHeader10);
+procedure GetPaintTileSizes(Header: TPMandHeader10; var wid, hei, Xplus, Yplus: Integer);
 function SetThreadExecutionState(esFlags: EXECUTION_STATE): EXECUTION_STATE;
 function ProgramVersionStr(sver: Single): String;
 function D2ByteToStr(b: Byte): String; //0.00 to 2.50
@@ -104,8 +104,8 @@ function MaxOfColor(c: Cardinal): Cardinal;
 function TransparencyToColor(I: Cardinal): Cardinal;
 function ColToSVecFlipRB_word(w3: TP3word): TSVec;
 function CPchangeToDPI(i: Integer): Integer;
-function ExtractAuthorsFromPara(para10: TPMandHeader11): AuthorStrings;
-procedure InsertAuthorsToPara(Header: TPMandHeader11; var AStr: AuthorStrings);
+function ExtractAuthorsFromPara(para10: TPMandHeader10): AuthorStrings;
+procedure InsertAuthorsToPara(Header: TPMandHeader10; var AStr: AuthorStrings);
 function CheckAuthorValid(const AStr: String): LongBool;
 procedure ConvertNewMCRtoOld(mcrO: TPMCrecord; mcrN: TPMCrecordNew);
 function GetFirstNumberFromFilename(S: String): String;
@@ -129,18 +129,18 @@ uses SysUtils, Math, formulas, Forms, HeaderTrafos, Mand, Graphics, Maps;
 
 {$CODEALIGN 16}
 
-procedure SaveHeaderPointers(Header: TPMandHeader11; var p6: TP6);
+procedure SaveHeaderPointers(Header: TPMandHeader10; var p6: TP6);
 var i: Integer;
 begin
-    for i := 0 to MAX_FORMULA_COUNT - 1 do p6[i] := Header.PHCustomF[i];
-    p6[MAX_FORMULA_COUNT] := Header.PCFAddon;
+    for i := 0 to 5 do p6[i] := Header.PHCustomF[i];
+    p6[6] := Header.PCFAddon;
 end;
 
-procedure InsertHeaderPointers(Header: TPMandHeader11; const p6: TP6);
+procedure InsertHeaderPointers(Header: TPMandHeader10; const p6: TP6);
 var i: Integer;
 begin
-    for i := 0 to MAX_FORMULA_COUNT -1 do Header.PHCustomF[i] := p6[i];
-    Header.PCFAddon := p6[MAX_FORMULA_COUNT];
+    for i := 0 to 5 do Header.PHCustomF[i] := p6[i];
+    Header.PCFAddon := p6[6];
 end;
 
 function CheckAuthorValid(const AStr: String): LongBool;
@@ -159,7 +159,7 @@ begin
     Result := nv > (l div 2);
 end;
 
-function ExtractAuthorsFromPara(para10: TPMandHeader11): AuthorStrings;
+function ExtractAuthorsFromPara(para10: TPMandHeader10): AuthorStrings;
 var i, i2, n, bitoffset, byteoffset, bitrest: Integer;
     p: PByte;
 begin
@@ -188,7 +188,7 @@ begin
     if not CheckAuthorValid(Result[1]) then Result[1] := '';
 end;
 
-procedure InsertAuthorsToPara(Header: TPMandHeader11; var AStr: AuthorStrings);
+procedure InsertAuthorsToPara(Header: TPMandHeader10; var AStr: AuthorStrings);
 var i2, n, byteindex, ASindex, bitsleft, l: Integer;
     p: PByte;
 begin
@@ -278,7 +278,7 @@ begin
   if @_STES <> nil then Result := _STES(esFlags);
 end;
 
-procedure GetTilingInfosFromHeader(Header: TPMandHeader11; var TileRect: TRect; var Crop: Integer);
+procedure GetTilingInfosFromHeader(Header: TPMandHeader10; var TileRect: TRect; var Crop: Integer);
 var i: Integer;
     Tcount, Tpos, Tsize: TPoint;
 begin
@@ -291,7 +291,7 @@ begin
           (Tpos.X + 1) * Tsize.X + Crop - 1, (Tpos.Y + 1) * Tsize.Y + Crop - 1);
 end;
 
-procedure GetPaintTileSizes(Header: TPMandHeader11; var wid, hei, Xplus, Yplus: Integer);
+procedure GetPaintTileSizes(Header: TPMandHeader10; var wid, hei, Xplus, Yplus: Integer);
 var i, Crop: Integer;
     Tcount, Tpos, Tsize: TPoint;
 begin
@@ -314,7 +314,7 @@ begin
     end;
 end;
 
-function GetTileSize(Header: TPMandHeader11): TPoint;
+function GetTileSize(Header: TPMandHeader10): TPoint;
 var Tcount: TPoint;
     Crop: Integer;
 begin
@@ -330,7 +330,7 @@ begin
     Result.Y := Max(1, Min(30000, Result.Y));
 end;
 
-procedure DisableTiling(Header: TPMandHeader11);
+procedure DisableTiling(Header: TPMandHeader10);
 var TileRect: TRect;
     Crop: Integer;
 begin
@@ -343,7 +343,7 @@ begin
     end;
 end;
 
-procedure SetTilingInfosInHeader(Header: TPMandHeader11; var BigRenderData: TBigRenderData; TilePos: TPoint);
+procedure SetTilingInfosInHeader(Header: TPMandHeader10; var BigRenderData: TBigRenderData; TilePos: TPoint);
 begin
     with BigRenderData do
     begin
@@ -905,7 +905,7 @@ end;  }
          // bCalcAmbShadowAutomatic: Byte;    //#149
          // bCalcDOFtype: Byte;               //#181   bit1: calc or not, bit 2+3: passes bit4: function sorted/forward
          // bCalc3D: Byte;                    //#344
-function AllAutoProcessings(Header: TPMandHeader11): Integer;  //fill in for each processingtype the bit if enabled
+function AllAutoProcessings(Header: TPMandHeader10): Integer;  //fill in for each processingtype the bit if enabled
 begin                  //bits:
     with Header^ do    //0: not calculating, 1: main calculation, 2: normals On Z, 3: hard shadow, 4: AO, 5: AO2, 6: SelfReflections, 7: DOF (8: repaint)
     begin              //nums:               1                    2                4               8      16      32                  64
@@ -921,7 +921,7 @@ begin                  //bits:
     end;
 end;
 
-procedure CalcXYposOfPosLight(pos3: TPVec3D; Header: TPMandHeader11; var X, Y: Double);
+procedure CalcXYposOfPosLight(pos3: TPVec3D; Header: TPMandHeader10; var X, Y: Double);
 var dS, dx, dy, dFOV, PlOpticZ: Double;
     n: Integer;
     M: TMatrix3;
@@ -980,7 +980,7 @@ begin
     end;
 end;
                //lightpos, rel. to mid vals!
-function Zdistance(LiPos: TPVec3D; Header: TPMandHeader11): Double; // for poslight moving, returns ZZ
+function Zdistance(LiPos: TPVec3D; Header: TPMandHeader10): Double; // for poslight moving, returns ZZ
 var d: Double;
     i: Integer;
     M: TMatrix3;
@@ -1004,7 +1004,7 @@ begin
     end;
 end;
 
-function StepWidthFOV(ZZ: Double; Header: TPMandHeader11): Double;  //for posLight moving only
+function StepWidthFOV(ZZ: Double; Header: TPMandHeader10): Double;  //for posLight moving only
 begin
     with Header^ do
     begin
@@ -1013,7 +1013,7 @@ begin
     end;
 end;
 
-procedure CalcPPZvals(var Header: TMandHeader11; var Zcorr, ZcMul, ZZstmitDif: Double);
+procedure CalcPPZvals(var Header: TMandHeader10; var Zcorr, ZcMul, ZZstmitDif: Double);
 begin
     with Header do
     begin
@@ -1024,7 +1024,7 @@ begin
     end;
 end;
 
-procedure CalcStepWidth(Header: TPMandHeader11);
+procedure CalcStepWidth(Header: TPMandHeader10);
 begin
     with Header^ do dStepWidth := 2.1345 / (dZoom * Width);
 end;
@@ -1039,7 +1039,7 @@ begin
              (Round((Col1 and $FF0000) * w1 + w2 * (Col2 and $FF0000)) shr 16);
 end;
 
-function GetZPos(x, y: Integer; Header: TPMandHeader11; SL: TPSiLight5): Double;   //rel to zstart
+function GetZPos(x, y: Integer; Header: TPMandHeader10; SL: TPSiLight5): Double;   //rel to zstart
 var Zcorr, ZcMul, ZZstmitDif: Double;
 begin
     CalcPPZvals(Header^, Zcorr, ZcMul, ZZstmitDif);
@@ -1053,7 +1053,7 @@ begin
     end;
 end;
                                      //for setting visposlights in image etc, position relativ to midpos
-procedure CalcRealPosOffsetsFromImagePos(x, y: Integer; Header: TPMandHeader11; SL: TPSiLight5; Pos3: TPPos3D);
+procedure CalcRealPosOffsetsFromImagePos(x, y: Integer; Header: TPMandHeader10; SL: TPSiLight5; Pos3: TPPos3D);
 var Zcorr, ZcMul, ZZstmitDif, ZZ: Double;
     x1, y1, z1: Double;
     v: TVec3D;
@@ -1488,7 +1488,7 @@ begin
   end;
 end;
 
-procedure FastMove(const Source; const Dest; count: Integer);
+procedure FastMove(const Source; var Dest; count: Integer);
 asm
   cmp     eax, edx
   je      @@Exit
@@ -1610,8 +1610,8 @@ Initialization
 
   CPU_Supported;
 
-  // SupportSSE := False; //for testing
-  // SupportSSE2 := False; //for testing
+ // SupportSSE := False; //for testing
+  //SupportSSE2 := False; //for testing
 
   PAligned16 := Pointer((Cardinal(@SIMDbuf[0]) + 127) and $FFFFFFF0);
   PDouble(Cardinal(PAligned16) - 8)^    := 0.5;          //general SmoothIt calculation
@@ -1646,6 +1646,7 @@ Initialization
   {$IFNDEF DEBUG}
     set8087cw($133F);  // mask floating point errors
   {$ENDIF}
+
   if SupportSSE2 then
   begin
     fIsMemberAlternating := doHybridSSE2;
@@ -1659,7 +1660,9 @@ Initialization
     fHybridItIntPow2 := HybridItIntPow2SSE2;
     fHIntFunctions[2] := HybridItIntPow2SSE2;
   end;
+
   QueryPerformanceFrequency(Fi64);
   if Fi64 = 0 then HiQCounterMul := 1e-3 else
   HiQCounterMul := 1000 / Fi64;
+
 end.

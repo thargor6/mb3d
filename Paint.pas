@@ -6,13 +6,13 @@ interface
 
 uses Mand, TypeDefinitions;
 
-procedure PaintM(Header: TPMandHeader11; LightVals: TPLightVals; PsiLight: TPsiLight5; SLstart, SLoffset: Integer);
+procedure PaintM(Header: TPMandHeader10; LightVals: TPLightVals; PsiLight: TPsiLight5; SLstart, SLoffset: Integer);
 
 implementation
 
 uses PaintThread, LightAdjust, Math3D, DivUtils, Math, HeaderTrafos;
 
-procedure PaintM(Header: TPMandHeader11; LightVals: TPLightVals; PsiLight: TPsiLight5; SLstart, SLoffset: Integer);
+procedure PaintM(Header: TPMandHeader10; LightVals: TPLightVals; PsiLight: TPsiLight5; SLstart, SLoffset: Integer);
 var x, y, wid, Dfunc: Integer;
     PC: PCardinal;
     PSL: TPsiLight5;

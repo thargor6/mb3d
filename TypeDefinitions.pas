@@ -4,30 +4,6 @@ interface
 
 uses Windows, Classes, Math3D, Messages;
 
-const
-  V18_FORMULA_COUNT = 6;
-  V18_FORMULA_PARAM_COUNT = 16;
-
-  OFF_nHybrid_V18 = 76; //+76
-  OFF_fHPVar_V18 = OFF_nHybrid_V18 + V18_FORMULA_COUNT * 4; //+100
-  OFF_fHybrid_V18 = OFF_fHPVar_V18 + V18_FORMULA_COUNT * 4; //+124
-  OFF_CalcSIT = OFF_fHybrid_V18 + V18_FORMULA_COUNT * 4; //+148
-  OFF_fHln_V18 = OFF_CalcSIT + V18_FORMULA_COUNT * 4; //+148
-
-  {$ifdef ENABLE_EXTENSIONS}
-  MAX_FORMULA_COUNT = 8;
-  OFF_nHybrid = 400;
-  OFF_fHPVar = OFF_nHybrid + MAX_FORMULA_COUNT * 4;
-  OFF_fHybrid = OFF_fHPVar + MAX_FORMULA_COUNT * 4;
-  OFF_fHln = OFF_fHybrid + MAX_FORMULA_COUNT * 4;
-  {$else}
-  MAX_FORMULA_COUNT = V18_FORMULA_COUNT;
-  OFF_nHybrid = OFF_nHybrid_V18;
-  OFF_fHPVar = OFF_fHPVar_V18;
-  OFF_fHybrid = OFF_fHybrid_V18;
-  OFF_fHln = OFF_fHln_V18;
-  {$endif}
-
 type
   TSingleArray = array[0..$effffff] of Single;
   TPSingleArray = ^TSingleArray;
@@ -124,26 +100,16 @@ type
     ItResultI:  Integer;    //+64   integer iteration count, increased by loop function in m3d
     maxIt:      Integer;    //+68
     RStop:      Single;     //+72   for dIFS: bool for insiderendering -> DEcomb with usual bulb needs RStop!!
-    {$ifdef ENABLE_EXTENSIONS}
-    unused_nHybrid:    array[0..V18_FORMULA_COUNT - 1] of Integer;  //+76 Hybrid counts / weight in interpolhybrid
-    unused_fHPVar:     array[0..V18_FORMULA_COUNT - 1] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
-    unused_fHybrid:    array[0..V18_FORMULA_COUNT - 1] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
-    {$else}
-    nHybrid:    array[0..V18_FORMULA_COUNT - 1] of Integer;  //+76 Hybrid counts / weight in interpolhybrid
-    fHPVar:     array[0..V18_FORMULA_COUNT - 1] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
-    fHybrid:    array[0..V18_FORMULA_COUNT - 1] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
-    {$endif}
+    nHybrid:    array[0..5] of Integer;  //+76 Hybrid counts / weight in interpolhybrid
+    fHPVar:     array[0..5] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
+    fHybrid:    array[0..5] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
     CalcSIT:    ByteBool;   //+148   Bool + more options
     bFree:      Byte;       //+149
     EndTo:      Word;       //+150
     DoJulia:    LongBool;   //+152
     LNRStop:    Single;     //+156
     DEoption:   Integer;    //+160
-    {$ifdef ENABLE_EXTENSIONS}
-    unused_fHln:       array[0..V18_FORMULA_COUNT - 1] of Single;  //+164  for SmoothIts
-    {$else}
-    fHln:       array[0..V18_FORMULA_COUNT - 1] of Single;  //+164  for SmoothIts
-    {$endif}
+    fHln:       array[0..5] of Single;  //+164  for SmoothIts
     iRepeatFrom: Word;      //+188
     iStartFrom: Word;       //+190
     OTrap:      Double;     //+192    calced by m3d, minimum vector length in dIFS
@@ -154,26 +120,15 @@ type
     Dfree2:     Double;     //+224
     Deriv1:     Double;     //+232    for 4D first deriv or as full derivs   in 4D func with DE: parse old 3d DE from w to here and back in each it!
     Deriv2:     Double;     //+240
-    Deriv3:     Double;     //+248
+    Deriv3:     Double;     //+248    
     SMatrix4:   TSMatrix4;  //+256    matrix for 4d rotation, used by m3d
     Ju1,Ju2,Ju3,Ju4: Double; //+320   original Julia values, in case J1 to J4 are changed     eax                edx            ecx
     PMapFunc:   TLMSfunction;//+352   pointer to a map function: function GetMapPixelSphere(PVec3D: TPVec3D; MapNr: Integer): TVec3D;
     PMapFunc2:  TLMSfunction;//+356   pointer to 2nd map function, PVec3D: X,Y double used to get direct pixel in range 0..1
-    {$ifdef ENABLE_EXTENSIONS}
-    unused_pInitialization: array[0..V18_FORMULA_COUNT - 1] of TFormulaInitialization; //+360  pointer to initialization function
-    {$else}
-    pInitialization: array[0..V18_FORMULA_COUNT - 1] of TFormulaInitialization; //+360  pointer to initialization function
-    {$endif}
+    pInitialization: array[0..5] of TFormulaInitialization; //+360  pointer to initialization function
     bIsInsideRender: LongBool; //+384 for dIFS to calc always all iters when inside
-    OTrapMode:  Integer; //+388
-    OTrapDE:    Double;  //+392
-    {$ifdef ENABLE_EXTENSIONS}
-    nHybrid:    array[0..MAX_FORMULA_COUNT - 1] of Integer;  //+400 Hybrid counts / weight in interpolhybrid
-    fHPVar:     array[0..MAX_FORMULA_COUNT - 1] of Pointer;  //+424 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
-    fHybrid:    array[0..MAX_FORMULA_COUNT - 1] of ThybridIteration2; //+448       fcustomIt -> fHybrid[0]!
-    fHln:       array[0..MAX_FORMULA_COUNT - 1] of Single;  //+472  for SmoothIts
-    pInitialization: array[0..MAX_FORMULA_COUNT - 1] of TFormulaInitialization; //+496  pointer to initialization function
-    {$endif}
+    OTrapMode:  Integer;
+    OTrapDE:    Double;
 
  //   maxIt2:     Integer;     //for DEcomb with different Maxits
  //   DEoption2:  Integer;
@@ -189,24 +144,14 @@ type
     ItResultI:  Integer;    //+64
     maxIt:      Integer;    //+68
     RStop:      Single;     //+72    DEstop in IFS
-    {$ifdef ENABLE_EXTENSIONS}
-    unused_nHybrid:    array[0..V18_FORMULA_COUNT - 1] of Integer;  //+76 Hybrid counts / weight in interpolhybrid
-    unused_fHPVar:     array[0..V18_FORMULA_COUNT - 1] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
-    unused_fHybrid:    array[0..V18_FORMULA_COUNT - 1] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
-    {$else}
-    nHybrid:    array[0..V18_FORMULA_COUNT - 1] of Integer;  //+76 Hybrid counts / weight in interpolhybrid
-    fHPVar:     array[0..V18_FORMULA_COUNT - 1] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
-    fHybrid:    array[0..V18_FORMULA_COUNT - 1] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
-    {$endif}
+    nHybrid:    array[0..5] of Integer;  //+76 Hybrid counts / weight in interpolhybrid
+    fHPVar:     array[0..5] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
+    fHybrid:    array[0..5] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
     CalcSIT:    LongBool;   //+148
     DoJulia:    LongBool;   //+152
     LNRStop:    Single;     //+156
     DEoption:   Integer;    //+160     type of used DE function for analytic calculation, (or options for IFS like in/out rendering)
-    {$ifdef ENABLE_EXTENSIONS}
-    unused_fHln:       array[0..V18_FORMULA_COUNT - 1] of Single;  //+164  for SmoothIts
-    {$else}
-    fHln:       array[0..V18_FORMULA_COUNT - 1] of Single;  //+164  for SmoothIts
-    {$endif}
+    fHln:       array[0..5] of Single;  //+164  for SmoothIts
     iRepeatFrom: Integer;   //+188
     OTrap:      Double;     //+192
     VaryScale:  Double;     //+200    to use in vary by its, in IFS: absScale in Single, set to 1 on start.. scale in it
@@ -217,13 +162,6 @@ type
     Deriv1:     Double;     //+232    for 4d DE
     Deriv2:     Double;     //+240
     Deriv3:     Double;     //+248
-    {$ifdef ENABLE_EXTENSIONS}
-    dummy: array[0..35] of Integer; // 256
-    nHybrid:    array[0..MAX_FORMULA_COUNT - 1] of Integer;  //+400 Hybrid counts / weight in interpolhybrid
-    fHPVar:     array[0..MAX_FORMULA_COUNT - 1] of Pointer;  //+424 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
-    fHybrid:    array[0..MAX_FORMULA_COUNT - 1] of ThybridIteration2; //+448       fcustomIt -> fHybrid[0]!
-    fHln:       array[0..MAX_FORMULA_COUNT - 1] of Single;  //+472  for SmoothIts
-    {$endif}
   end;
   TPIteration3D = ^TIteration3D;
   ThybridIteration = procedure(var x, y, z, w: Double; PIteration3D: TPIteration3D);
@@ -749,20 +687,20 @@ type
     iPlaceHolder:     Integer;    //+64
     iMaxIt:           Integer;    //+68
     dRStop:           Single;     //+72
-    nHybrid:          array[0..MAX_FORMULA_COUNT - 1] of Integer;  //+76 Hybrid counts
-    fHPVar:           array[0..MAX_FORMULA_COUNT - 1] of Pointer;  //+100 + 104 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
-    fHybrid:          array[0..MAX_FORMULA_COUNT - 1] of ThybridIteration2; //+124  + 104 + 104     fcustomIt -> fHybrid[0]!
+    nHybrid:          array[0..5] of Integer;  //+76 Hybrid counts
+    fHPVar:           array[0..5] of Pointer;  //+100 pointer to constants+vars, PVars-8=0.5, PVars->fHPVar[0]! dOptions below -8
+    fHybrid:          array[0..5] of ThybridIteration2; //+124       fcustomIt -> fHybrid[0]!
     bCalcSIT:         ByteBool;   //+148   Bool + more options
     bFree:            Byte;       //+149
     wEndTo:           Word;       //+150
     bDoJulia:         LongBool;   //+152
     dLNRStop:         Single;     //+156
     DEoption:         Integer;    //+160    RepeatFrom2, EndTo
-    fHln:             array[0..MAX_FORMULA_COUNT - 1] of Single;  //esi+164
+    fHln:             array[0..5] of Single;  //esi+164
     RepeatFrom1:      Word;       //+188
     StartFrom1:       Word;
     Smatrix4d:        TSmatrix4;
-    pInitialization:  array[0..MAX_FORMULA_COUNT - 1] of TFormulaInitialization;
+    pInitialization:  array[0..5] of TFormulaInitialization;
   //  DEoption2:        Integer;
  //   dWadd4dstep:      Double;
   end;
@@ -780,88 +718,6 @@ type
   end;
   TPRaymarchRec = ^TRaymarchRec;
 
-  TMandHeader11 = packed record       //Main parameters for storing/loading
-    MandId: Integer;                  //or byte + 3 free bytes
-    Width, Height, Iterations: Integer; // MandId, Iterations could be Word?
-    iOptions: Word;                   // iOptions: SmoothNs: (SpinEdit2.Value shl 6) or FirstStepRandom=bit1 or StepSubDEstop=bit3
-    bNewOptions: Byte;                // bit1: Quaternion instead of RotationMatrix! bit2: color on it nr:
-    bColorOnIt: Byte;                 //0: disabled 1: outputvec:=inputvec (1)2..255 iterate n-1 times + docolor
-    dZstart, dZend: Double;           //#20
-    dXmid, dYmid, dZmid: Double;      //#36
-    dXWrot, dYWrot, dZWrot: Double;   //#60     4D rotation
-    dZoom, RStop: Double;             //#84
-    iReflectsCalcTime: Integer;       //#100  in MCmode: OldAvrgRayCount
-    sFmixPow: Single;                 //#104  for formula DE Mix combs
-    dFOVy: Double;                    //#108  in single? (added 4 bytes)
-    sTRIndex: Single;                 //#116  for transmission calculation
-    sTRscattering: Single;            //#120  light scattering amount
-    MCoptions: Byte;                  //#124  bit1: HDR   bit2: bSecantSearch  bit3: autoclipS+D  bit5..7: DoFbokeh  bit8: newMCrecordYUV
-    MCdiffReflects: Byte;             //#125  D2Byte 0.00 .. 2.50  reflects diffusity         bit4: aa box/gauss
-    bStereoMode: Byte;                //#126  0: no  1: very left  3:right  4:left
-    bSSAO24BorderMirrorSize: Byte;    //#127  0 to 0.5
-    iAmbCalcTime: Integer;            //#128
-    bNormalsOnDE: Byte;               //#132
-    bCalculateHardShadow: Byte;       //#133  calc automatic=bit1,  setLdifFuncToCos=bit2   + 6 bits yes/no of light1-6
-    bStepsafterDEStop: Byte;          //#134  = bin search
-    MinimumIterations: Word;          //#135  -> word is enough + 2bytes (no down compatibility)
-    MClastY: Word;                    //#137
-    bCalc1HSsoft: Byte;               //#139  -> bCalc1HSsoft, option to calculate only 1 HS but 6 bit as amount
-    iAvrgDEsteps, iAvrgIts: Integer;  //#140  val * 10
-    bPlanarOptic: Byte;               //#148  camera planar optic:0/1  /2: spherePano  ..3: dome?
-    bCalcAmbShadowAutomatic: Byte;    //#149  bit1: yes/no, bit2: kindof: threshold maxclip/thr. down to 0  bit3+4: type(0:15bit,1:24bit,2:24bit rand,3:DEAO)
-    sNaviMinDist: Single;             //#150  necessary?                                                              bit5+6(+7): DE raycount (3,7,17,33),  bit8: FSR (first step random)
-    dStepWidth: Double;               //#154  related to zoom
-    bVaryDEstopOnFOV: Byte;           //#162
-    bHScalculated: Byte;              //#163     if it was calculated,  6 bits yes/no of light1-6  = bit 3..8
-    sDOFZsharp, sDOFclipR: Single;    //#164
-    sDOFaperture: Single;             //#172
-    bCutOption: Byte;                 //#176
-    sDEstop: Single;                  //#177
-    bCalcDOFtype: Byte;               //#181   0: dont calc, bit 2+3: passes bit4: function sorted/forward
-    mZstepDiv: Single;                //#182
-    MCDepth: Byte;                    //#186
-    SSAORcount: Byte;                 //#187
-    AODEdithering: Byte;              //#188
-    bImageScale: Byte;                //#189
-    bIsJulia: Byte;                   //#190
-    dJx, dJy, dJz, dJw: Double;       //#191  Julia vals
-    bDFogIt: Byte;                    //#223
-    MCSoftShadowRadius: ShortFloat;   //#224
-    HSmaxLengthMultiplier: Single;    //#226
-    StereoScreenWidth: Single;        //#230
-    StereoScreenDistance: Single;     //#234
-    StereoMinDistance: Single;        //#238
-    sRaystepLimiter: Single;          //#242
-    hVGrads: TMatrix3;                //#246   complete 3x3 matrix for navigating, can change to Quaternion if wNewOptions and 1
-    bMCSaturation: Byte;              //#318
-    sAmbShadowThreshold: Single;      //#319   z/r
-    iCalcTime: Integer;               //#323   Seconds * 10
-    iCalcHStime: Integer;             //#327
-    byCalcNsOnZBufAuto: Byte;         //#331
-    SRamount: Single;                 //#332   Amount of reflection light
-    bCalcSRautomatic: Byte;           //#336   bit1 auto,  bit2 trans, bit3 only dIFS
-    SRreflectioncount: Byte;          //#337
-    sColorMul: Single;                //#338   multiplier for color option 'last vectorlength increase'
-    byColor2Option: Byte;             //#342
-    bVolLightNr: Byte;                //#343   was: byRepeatFrom -> in HAddon  lower 3(4)bits: lightnr, upper 4 bits: mapsize +/-7 in 20% steps
-    bCalc3D: Byte;                    //#344
-    bSliceCalc: Byte;                 //#345
-    dCutX, dCutY, dCutZ: Double;      //#346
-    sTransmissionAbsorption: Single;  //#370
-    sDEAOmaxL: Single;                //#374
-    sDEcombS: Single;                 //#378  DEcombAvrg absolute smooth distance;  was: pointer to a custom formula.. obsolete
-    PHCustomF: array[0..MAX_FORMULA_COUNT-1] of Pointer;//#382  must not be here, 24(28) bytes free - just 1 pointer to formulastruct would be enough
-    PCFAddon: Pointer;                //#510  pointer to the Header Addon for the customF's data, must also not be here
-    sDOFZsharp2: Single;              //#514  ->2nd focuspoint                  \.. be used to store username in here! 28Bytes
-    iMaxIts: Integer;                 //#518  in statistics                     \.. 1 original author, 2nd author 14 bytes * 8/7bits
-    iMaxItsF2: Integer;               //#522  DEcomb maxits for formula 2
-    DEmixColorOption: Byte;           //#526
-    MCcontrast: Byte;                 //#527
-    sM3dVersion: Single;              //#528
-    TilingOptions: Integer;           //#532  in MCmode: OldAvrgSqrNoise as Single
-    Light: TLightingParas9;           //#536  +408 = 944 bytes
-  end;
-  TPMandHeader11 = ^TMandHeader11;
   TMandHeader10 = packed record       //Main parameters for storing/loading
     MandId: Integer;                  //or byte + 3 free bytes
     Width, Height, Iterations: Integer; // MandId, Iterations could be Word?
@@ -1118,20 +974,9 @@ type
     iFCount:     Byte;   //for save as txt to spare chars..only if one array[0..5] of TFaddon
     bHybOpt1:    Byte;   //end1, repeat1            2x 4bit
     bHybOpt2:    Word;   //start2, end2, repeat2    3x 4bit
-    Formulas:    array[0..MAX_FORMULA_COUNT - 1] of THAformula;  //=8+188*6=1136bytes
+    Formulas:    array[0..5] of THAformula;  //=8+188*6=1136bytes
   end;
   PTHeaderCustomAddon = ^THeaderCustomAddon;
-  THeaderCustomAddon10 = packed record  //will be obsolete when doing a general formula hybridization
-    bHCAversion: Byte;   //total itcount still in header!
-    bOptions1:   Byte;   //type of hybrid: 0:alt  1:interpolhybrid  2:DEcombinated  3: (K/L?)IFS
-    bOptions2:   Byte;   //bit1: Disable analytical DE bit2+3: 0: outside, 1: inside, 2: in+outside rendering; bit4(+5): map interpolation cos/bicubic
-    bOptions3:   Byte;   //bit1+2+3  type of DEcombination
-    iFCount:     Byte;   //for save as txt to spare chars..only if one array[0..5] of TFaddon
-    bHybOpt1:    Byte;   //end1, repeat1            2x 4bit
-    bHybOpt2:    Word;   //start2, end2, repeat2    3x 4bit
-    Formulas:    array[0..V18_FORMULA_COUNT - 1] of THAformula;  //=8+188*6=1136bytes
-  end;
-  PTHeaderCustomAddon10 = ^THeaderCustomAddon10;
   TBigRenderData = packed record
     brScale: Double;
     brWidth: Integer;

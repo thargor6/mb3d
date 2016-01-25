@@ -32,7 +32,7 @@ type
 
 procedure FirstATlevelCAO(PIA: TPCardinalArray; PsiLight: TPsiLight5; Leng: Integer);
 procedure NextATlevelCAO(PIA: TPCardinalArray; Wid, Hei, Step: Integer);
-function CalcCSSAOT(Header: TPMandHeader11; PsiLight: TPsiLight5;
+function CalcCSSAOT(Header: TPMandHeader10; PsiLight: TPsiLight5;
          PCTS: TPCalcThreadStats; PATlevel: TPATlevel): Boolean;
 
 var ATlevelCAO: array of Cardinal;      //of record Cardinal (Z);  TWordRGB = 10 Bytes total for the whole level!?
@@ -63,7 +63,7 @@ begin
     end;
 end;
 
-function CalcAmbLightT(Header: TPMandHeader11; PsiLight: TPsiLight5;
+function CalcAmbLightT(Header: TPMandHeader10; PsiLight: TPsiLight5;
         PCTS: TPCalcThreadStats; PATlevel: TPATlevel): Boolean;
 var x, y, ymin, MWidth, MHeight, ThreadCount, RowCount: Integer;
     ASCparameter: TASCparameter;
@@ -211,7 +211,7 @@ begin
     end;
 end;
 
-function CalcCSSAOT(Header: TPMandHeader11; PsiLight: TPsiLight5;
+function CalcCSSAOT(Header: TPMandHeader10; PsiLight: TPsiLight5;
         PCTS: TPCalcThreadStats; PATlevel: TPATlevel): Boolean;
 var x, y, MWidth, MHeight, ThreadCount, ymin, RowCount: Integer;
     IsPano: LongBool;

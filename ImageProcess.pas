@@ -20,11 +20,11 @@ function SetImageSize: LongBool;
 procedure UpdateScaledImage(StartYh, EndYh: Integer);
 procedure doAA(StartSLfullBMP, StartSLhalfBMP, OffsetFullBMP, OffsetHalfBMP,
                Hwidth, Hheight, Scale, Sharpen: Integer);
-function CalcAmbShadowT(Header: TPMandHeader11; PsiLight: TPsiLight5; aSLoffset: Integer;
+function CalcAmbShadowT(Header: TPMandHeader10; PsiLight: TPsiLight5; aSLoffset: Integer;
                         PCTS: TPCalcThreadStats; PATlevel: TPATlevel; cRect: TRect): Boolean;
 procedure MakeZbufBMP(var BMP: TBitmap);
 procedure CalcLightStrokes(Seed: Integer);
-procedure NormalsOnZbuf(Header: TPMandHeader11; PLight: TPsiLight5);
+procedure NormalsOnZbuf(Header: TPMandHeader10; PLight: TPsiLight5);
 function GetLightMapPixel(const x, y: Single; LM: TPLightMap; bSqr: LongBool; WrapAround: Integer): TSVec;
 function GetLightMapPixelSphere(const svec: TSVec; SM: TPSMatrix3; LM: TPLightMap; bSqr: LongBool): TSVec;
 function GetLightMapPixelNN(const x, y: Single; LM: TPLightMap; bSqr: LongBool; WrapAround: Integer): TSVec;
@@ -965,7 +965,7 @@ begin
     Result := ThreadCount > 0;
 end; }
 
-function CalcAmbShadowT(Header: TPMandHeader11; PsiLight: TPsiLight5; aSLoffset: Integer;
+function CalcAmbShadowT(Header: TPMandHeader10; PsiLight: TPsiLight5; aSLoffset: Integer;
         PCTS: TPCalcThreadStats; PATlevel: TPATlevel; cRect: TRect): Boolean;
 var x, y, MWidth, MHeight, ThreadCount: Integer;
     ASCparameter: TASCparameter;
@@ -1152,7 +1152,7 @@ begin
     Result[3] := cosA;
 end; }
 
-procedure NormalsOnZbuf(Header: TPMandHeader11; PLight: TPsiLight5);
+procedure NormalsOnZbuf(Header: TPMandHeader10; PLight: TPsiLight5);
 var x, y, w1, w, h: Integer;
     CalcR: TRect;
     s0, sFOV, aspect, DEstopFactor, StepWidth: Single;

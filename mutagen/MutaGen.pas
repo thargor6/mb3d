@@ -800,7 +800,7 @@ var
 begin
   FormulaNames := GetAllFormulaNames;
   Result := Params.Clone;
-  for I := 0 to MAX_FORMULA_COUNT -1 do begin
+  for I := 0 to 5 do begin
     if Result.Formulas[I].IsEmpty then begin
       FormulaNamesForCategory := FormulaNames.GetFormulaNamesByCategory(GuessFormulaCategory(I, Result));
       if FormulaNamesForCategory.Count > 0 then begin
@@ -835,7 +835,7 @@ var
 begin
   Result := Params.Clone;
   FormulaNames := GetAllFormulaNames;
-  for I := 0 to MAX_FORMULA_COUNT - 1 do begin
+  for I := 0 to 5 do begin
     if not Result.Formulas[I].IsEmpty then begin
       Category := FormulaNames.GetCategoryByFormulaName(Result.Formulas[I].FormulaName);
       FormulaNamesOfSameCategory := FormulaNames.GetFormulaNamesByCategory(Category);

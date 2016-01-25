@@ -10,7 +10,7 @@ type
   TKeyFrame = record
     KFcount, KFtime, KFsmooth: Integer;
     PrevBMP: TBitmap;
-    HeaderParas: TMandHeader11;
+    HeaderParas: TMandHeader10;
     HAddOn: THeaderCustomAddon;
   end;
   TAnimationForm = class(TForm)
@@ -190,7 +190,7 @@ type
     AniOutputFolder: String;
     AniProjectName: String;
     AniOutFile: TFileStream;
-    HybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
+    HybridCustoms: array[0..5] of TCustomFormula;
     procedure IniKFHeader(nr: Integer);
     procedure RenderPrevBMP(nr: Integer);
     procedure DisableButtons;
@@ -199,8 +199,8 @@ type
     function LoadAni(FileName: String): Boolean;
     procedure WndProc(var Message: TMessage); override;
     function TotalBMPsToRender(StartKF, stopKF, Step: Integer): Integer;
-    procedure InsertFromHeader(Header: TPMandHeader11);
-    procedure InsertAniWidHei(Header: TPMandHeader11);
+    procedure InsertFromHeader(Header: TPMandHeader10);
+    procedure InsertAniWidHei(Header: TPMandHeader10);
     function SubFramesToKF(KFnr: Integer): Integer;
     function OccupyDFile(Fname: String): LongBool;
     procedure CloseOutPutStream;
@@ -413,7 +413,7 @@ begin
     FirstShow   := True;
     bUserChange := True;
     isCalculating := False;
-    for i := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@HybridCustoms[i]);
+    for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
 end;
 
 procedure TAnimationForm.FormDestroy(Sender: TObject);
@@ -422,7 +422,7 @@ begin
     IniVal[7] := Edit5.Text;
     IniVal[9] := IntToStr(RadioGroup2.ItemIndex);
     for i := 0 to HeaderCount - 1 do FreeAndNil(KeyFrames[i].PrevBMP);
-    for i := 0 to MAX_FORMULA_COUNT - 1 do FreeCF(@HybridCustoms[i]);
+    for i := 0 to 5 do FreeCF(@HybridCustoms[i]);
 end;
 
 procedure TAnimationForm.Button1Click(Sender: TObject);
@@ -465,14 +465,14 @@ begin
     with KeyFrames[nr] do
     begin
       HeaderParas.PCFAddon := @HAddOn;
-      for i := 0 to MAX_FORMULA_COUNT -1 do HeaderParas.PHCustomF[i] := @HybridCustoms[i];
+      for i := 0 to 5 do HeaderParas.PHCustomF[i] := @HybridCustoms[i];
       InsertAniWidHei(@HeaderParas);
       HeaderParas.bHScalculated := 0;
       HeaderParas.bStereoMode := 0;//StereoMode;
     end;
 end;
 
-procedure TAnimationForm.InsertFromHeader(Header: TPMandHeader11);
+procedure TAnimationForm.InsertFromHeader(Header: TPMandHeader10);
 begin
     if CurrentNr = HeaderCount + 1 then
     begin
@@ -655,11 +655,11 @@ begin
           BlockRead(f, KeyFrames[i].KFsmooth, 4);
           if v < 3 then KeyFrames[i].KFsmooth := RadioGroup2.ItemIndex;
           if v < 5 then BlockRead(f, tHeader, SizeOf(TMandHeader9))
-                   else BlockRead(f, KeyFrames[i].HeaderParas, SizeOf(TMandHeader11));
+                   else BlockRead(f, KeyFrames[i].HeaderParas, SizeOf(TMandHeader10));
           if v < 5 then
           begin
             tHeader.PCFAddon := @KeyFrames[i].HAddOn;
-            for y := 0 to MAX_FORMULA_COUNT - 1 do tHeader.PHCustomF[y] := @HybridCustoms[y];
+            for y := 0 to 5 do tHeader.PHCustomF[y] := @HybridCustoms[y];
             if not ConvertHeaderFromOldParas(TMandHeader8(tHeader), True) then Exit;
             FastMove(tHeader, KeyFrames[i].HeaderParas, SizeOf(TMandHeader9) - SizeOf(TLightingParas8));
             ConvertLight8to9(tHeader.Light, KeyFrames[i].HeaderParas.Light);
@@ -1066,7 +1066,7 @@ begin
     if not Timer2.Enabled then EndRendering;
 end;
 
-procedure TAnimationForm.InsertAniWidHei(Header: TPMandHeader11);
+procedure TAnimationForm.InsertAniWidHei(Header: TPMandHeader10);
 begin
     Header.Width := AniWidth * AniScale;
     Header.Height := AniHeight * AniScale;
@@ -1241,8 +1241,8 @@ begin
           BlockWrite(f, KeyFrames[KFposLUT[i]].KFtime, 4);
           BlockWrite(f, KeyFrames[KFposLUT[i]].KFsmooth, 4);
           KeyFrames[KFposLUT[i]].HeaderParas.MandId := actMandId;
-          BlockWrite(f, KeyFrames[KFposLUT[i]].HeaderParas, SizeOf(TMandHeader11));
-          KeyFrames[KFposLUT[i]].HAddOn.bHCAversion := 16; 
+          BlockWrite(f, KeyFrames[KFposLUT[i]].HeaderParas, SizeOf(TMandHeader10));
+          KeyFrames[KFposLUT[i]].HAddOn.bHCAversion := 16;
           BlockWrite(f, KeyFrames[KFposLUT[i]].HAddOn, SizeOf(THeaderCustomAddon));
         end;
         for i := 0 to HeaderCount - 1 do
@@ -1450,7 +1450,7 @@ procedure TAnimationForm.SpeedButton12Click(Sender: TObject);
 var sf, i, j, IHS, HS1, HS2: Integer;
     D1, D2, w1, w2: Double;
     Q1, Q2: TQuaternion;
-    IH, H1, H2: TPMandHeader11;
+    IH, H1, H2: TPMandHeader10;
     s: String;
 begin   //Interpolate keyframe inbetween
     if CurrentNr < 1 then Exit;
@@ -1540,7 +1540,7 @@ begin   //Interpolate keyframe inbetween
     //todo: some other colors
 
     //HAddon
-    if (InterpolHAddon.bOptions1 and 3) = 1 then j := 1 else j := MAX_FORMULA_COUNT - 1;
+    if (InterpolHAddon.bOptions1 and 3) = 1 then j := 1 else j := 5;
     for i := 0 to j do if bInterpolateFormula(PTHeaderCustomAddon(H1.PCFAddon),
                             PTHeaderCustomAddon(H2.PCFAddon), i) then
     begin
@@ -1598,7 +1598,7 @@ begin
 end;
 
 procedure TAnimationForm.SpeedButton14Click(Sender: TObject); //send view only to main
-var pHeader: TPMandHeader11;
+var pHeader: TPMandHeader10;
 begin
     pHeader := @KeyFrames[KFposLUT[CurrentNr - 1]].HeaderParas;
  //   AssignHeader(@Mand3DForm.MHeader, @KeyFrames[KFposLUT[CurrentNr - 1]].HeaderParas);

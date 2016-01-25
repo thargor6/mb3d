@@ -306,8 +306,8 @@ type
 //    procedure WndProc(var Message: TMessage); override;
     procedure RepaintColHisto;
     procedure MakeHisto;
-    procedure PutLightFInHeader(var Header: TMandHeader11);
-    procedure SetLightFromHeader(var Header: TMandHeader11);
+    procedure PutLightFInHeader(var Header: TMandHeader10);
+    procedure SetLightFromHeader(var Header: TMandHeader10);
     procedure SetStartPreset;
     procedure SetSDButtonColors;
     procedure SetLAplusPosToZero;
@@ -888,7 +888,7 @@ begin //new function for tabs[0..127]  62 is midpoint=0 of DotP
     end;
 end;
 
-procedure TLightAdjustForm.SetLightFromHeader(var Header: TMandHeader11);
+procedure TLightAdjustForm.SetLightFromHeader(var Header: TMandHeader10);
 var i: Integer;
 begin
     bUserChange := False;
@@ -986,7 +986,7 @@ begin
     end;
 end;
 
-procedure TLightAdjustForm.PutLightFInHeader(var Header: TMandHeader11);
+procedure TLightAdjustForm.PutLightFInHeader(var Header: TMandHeader10);
 var i: Cardinal;
 begin
     with Header do

@@ -40,7 +40,7 @@ type
     procedure Execute; override;
   end;
 
-function CalcAmbShadowDET(Header: TPMandHeader11; PCTS: TPCalcThreadStats;
+function CalcAmbShadowDET(Header: TPMandHeader10; PCTS: TPCalcThreadStats;
                           PsiLight5: TPsiLight5; aSLoffset: Integer; iRect: TRect): Boolean;
 
 procedure CalcAmbShadowDEfor1pos(PMCT: PMCTparameter; It3Dex: TPIteration3Dext;
@@ -52,7 +52,7 @@ uses Mand, Math, DivUtils, formulas, Forms, ImageProcess, CustomFormulas,
      HeaderTrafos, LightAdjust, Calc;
 
 
-function CalcAmbShadowDET(Header: TPMandHeader11; PCTS: TPCalcThreadStats;
+function CalcAmbShadowDET(Header: TPMandHeader10; PCTS: TPCalcThreadStats;
                           PsiLight5: TPsiLight5; aSLoffset: Integer; iRect: TRect): Boolean;
 var x, ThreadCount, Quali: Integer;
     MCTparas: TMCTparameter;

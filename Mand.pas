@@ -240,7 +240,7 @@ type
     ButtonVolLight: TButton;
     UpDown5: TUpDown;
     Label61: TLabel;
-    ScriptEditorBtn: TSpeedButton;
+    MeshExportBtn: TSpeedButton;
     MutaGenBtn: TSpeedButton;
     MapSequencesBtn: TSpeedButton;
     VisualThemesBtn: TSpeedButton;
@@ -395,6 +395,7 @@ type
     procedure FrameUpDownClick(Sender: TObject; Button: TUDBtnType);
     procedure FrameEditExit(Sender: TObject);
     procedure BugReportBtnClick(Sender: TObject);
+    procedure MeshExportBtnClick(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
   //    const Rect: TRect; Active: Boolean);
@@ -444,7 +445,7 @@ type
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
   public
     { Public-Deklarationen }
-    MHeader: TMandHeader11;
+    MHeader: TMandHeader10;
     MCalcThreadStats: TCalcThreadStats;
     siLight5: array of TsiLight5;
     mSLoffset: Integer;
@@ -458,7 +459,7 @@ type
  //   bAllowUpDownChange: LongBool;
  //   CalcStereoImage: LongBool;
     HeaderLightVals: TLightVals;
-    HybridCustoms: array[0..MAX_FORMULA_COUNT - 1] of TCustomFormula;
+    HybridCustoms: array[0..5] of TCustomFormula;
     HAddOn: THeaderCustomAddon;
     iActiveThreads: Integer;  //for triggering the timer
     iActivePaintThreads: Integer;
@@ -540,7 +541,7 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
      uMapCalcWindow, FormulaCompiler, MutaGenGUI, VisualThemesGUI, Vcl.Themes,
-     MapSequencesGUI, MapSequences;
+     MapSequencesGUI, MapSequences, MeshExportUI;
 
 {$R *.dfm}
 
@@ -1114,6 +1115,20 @@ begin
       FVoxelExport.Panel3.Enabled := True;
       FVoxelExport.Button5.Caption := 'Calculate preview';
     end;
+    if bMeshExportFormCreated then
+    begin
+      MeshExportFrm.Button3.Enabled := True;
+      MeshExportFrm.SpeedButton11.Enabled := True;
+      MeshExportFrm.Button4.Enabled := True;
+      MeshExportFrm.Button5.Enabled := MeshExportFrm.Benabled;  //prev
+      MeshExportFrm.SpeedButton9.Enabled := MeshExportFrm.Benabled;  //save
+      MeshExportFrm.PLYBtn.Enabled := MeshExportFrm.Benabled;  //Start..
+      MeshExportFrm.Panel3.Enabled := True;
+      MeshExportFrm.Button5.Caption := 'Calculate preview';
+    end;
+
+
+
     if MCFormCreated then MCForm.Button4.Enabled := MCForm.Button8.Enabled;
     ColorForm.CheckBox3.Enabled := True;
     SetImageCursor;
@@ -1202,6 +1217,16 @@ begin
       FVoxelExport.SpeedButton9.Enabled := False;  //save
       FVoxelExport.Button2.Enabled := False;  //Start..
       FVoxelExport.Panel3.Enabled := False;
+    end;
+    if bMeshExportFormCreated then
+    begin
+      MeshExportFrm.Button3.Enabled := False;
+      MeshExportFrm.SpeedButton11.Enabled := False;
+      MeshExportFrm.Button4.Enabled := False;
+      MeshExportFrm.Button5.Enabled := False;  //prev
+      MeshExportFrm.SpeedButton9.Enabled := False;  //save
+      MeshExportFrm.PLYBtn.Enabled := False;  //Start..
+      MeshExportFrm.Panel3.Enabled := False;
     end;
     if MCFormCreated then MCForm.Button4.Enabled := False;
     Image1.Cursor := crHourGlass;
@@ -1636,7 +1661,7 @@ begin
       iFCount := 0;
       bHybOpt1 := 0;
       bHybOpt2 := $151;
-      for i := 0 to MAX_FORMULA_COUNT - 1 do
+      for i := 0 to 5 do
       with Formulas[i] do
       begin
         iItCount := 0;
@@ -1653,7 +1678,7 @@ procedure TMand3DForm.IniMHeader;
 var i: Integer;
 begin
     MHeader.PCFAddon := @HAddOn;
-    for i := 0 to MAX_FORMULA_COUNT - 1 do MHeader.PHCustomF[i] := @HybridCustoms[i];
+    for i := 0 to 5 do MHeader.PHCustomF[i] := @HybridCustoms[i];
 end;
 
 procedure TMand3DForm.FormCreate(Sender: TObject);
@@ -1693,8 +1718,8 @@ begin
     iActivePaintThreads := 0;
     UserAspect := Point(0, 0);
     IniMHeader;
-    for i := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@HybridCustoms[i]);
-    for i := 0 to MAX_FORMULA_COUNT - 1 do IniCustomF(@calcHybridCustoms[i]);
+    for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
+    for i := 0 to 5 do IniCustomF(@calcHybridCustoms[i]);
     IniHAddon(@HAddOn);
     GetHAddOnFromInternFormula(@MHeader, 0, 0);
     UpDown3.Position := Min(64, Max(1, NumberOfCPUs));
@@ -2404,6 +2429,12 @@ begin
     SpeedButton2.Down := False;
     SpeedButton4.Down := False;
     notAllButtonsUp   := False;
+end;
+
+procedure TMand3DForm.MeshExportBtnClick(Sender: TObject);
+begin
+  MeshExportFrm.Visible := True;
+  BringToFront2(MeshExportFrm.Handle);
 end;
 
 procedure TMand3DForm.SetImageCursor;
@@ -3358,8 +3389,8 @@ procedure TMand3DForm.FormDestroy(Sender: TObject);
 var i: Integer;
 begin
     SaveIni(False); //only if filedatetime = lastIniFileDatetime
-    for i := 0 to MAX_FORMULA_COUNT - 1 do FreeCF(@HybridCustoms[i]);
-    for i := 0 to MAX_FORMULA_COUNT - 1 do FreeCF(@calcHybridCustoms[i]);
+    for i := 0 to 5 do FreeCF(@HybridCustoms[i]);
+    for i := 0 to 5 do FreeCF(@calcHybridCustoms[i]);
     OPD.Free;
 end;
 
