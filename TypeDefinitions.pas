@@ -1001,6 +1001,29 @@ type
     brSingleFilenumber: LongBool;
     brFreeBuf: array[0..41] of Integer;
   end;
+
+  TM3Vfile = packed record
+    Xoff, Yoff, Zoff: Double;
+    Xscale, Yscale, Zscale: Double;
+    Zslices: Integer;
+    ObjectD: Integer;
+    MaxIts: Integer;
+    iFree: Integer;
+    DE: Double;
+    OrigWidth: Integer;
+    VoxelVersion: Integer;
+    WhiteOutside: LongBool;
+    OutputFormat: Integer; //0: 1bpp  1: 8bpp  2: rgb
+    UseDefaultOrientation: LongBool;
+    LeadingZeros: LongBool;
+    MinDE: Double;
+    MinIts: Integer;
+    PlaceForFuturePars: array[0..23] of Integer;
+    OutputFolderC: array[0..1023] of Byte;             //+$CC
+    VHeader: TMandHeader10;                            //+$4CC
+    VHAddon: THeaderCustomAddon;
+  end;
+
   EXECUTION_STATE = DWORD;   {$EXTERNALSYM EXECUTION_STATE}
 
 //{$ALIGN 8}

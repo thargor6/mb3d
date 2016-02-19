@@ -1140,46 +1140,6 @@ object MutaGenFrm: TMutaGenFrm
         ExplicitHeight = 28
       end
     end
-    object WarningPnl: TPanel
-      Left = 0
-      Top = 0
-      Width = 848
-      Height = 41
-      Align = alTop
-      BevelOuter = bvNone
-      BorderWidth = 4
-      Font.Charset = DEFAULT_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -11
-      Font.Name = 'Tahoma'
-      Font.Style = []
-      ParentFont = False
-      TabOrder = 15
-      object Label13: TLabel
-        Left = 4
-        Top = 4
-        Width = 840
-        Height = 33
-        Align = alClient
-        Alignment = taCenter
-        AutoSize = False
-        Caption = 
-          'WARNING: some rare "evil" formula-combinations may SILENTLY cras' +
-          'h the program, so please save important work before using the Mu' +
-          'taGen-module! Save often! We will work on this to improve it!'
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -13
-        Font.Name = 'Tahoma'
-        Font.Style = [fsBold]
-        ParentFont = False
-        WordWrap = True
-        ExplicitLeft = 12
-        ExplicitTop = 12
-        ExplicitWidth = 664
-        ExplicitHeight = 13
-      end
-    end
   end
   object MainPopupMenu: TPopupMenu
     Left = 496

@@ -69,8 +69,15 @@ uses
   JITFormulaEditGUI in 'formula\JITFormulaEditGUI.pas' {JITFormulaEditorForm},
   JITFormulas in 'formula\JITFormulas.pas',
   ParamValueEditGUI in 'formula\ParamValueEditGUI.pas' {ParamValueEditFrm},
-  PointCloudExport in 'export\PointCloudExport.pas',
-  VoxelExport in 'VoxelExport.pas' {FVoxelExport};
+  VertexList in 'export\VertexList.pas',
+  VoxelExport in 'VoxelExport.pas' {FVoxelExport},
+  VectorMath in 'export\VectorMath.pas',
+  MeshExport in 'export\MeshExport.pas',
+  ObjectScanner in 'ObjectScanner.pas',
+  MeshExportConfig in 'export\MeshExportConfig.pas',
+  MeshPreviewUI in 'opengl\MeshPreviewUI.pas' {MeshPreviewFrm},
+  opengl12 in 'opengl\opengl12.pas',
+  MeshPreview in 'opengl\MeshPreview.pas';
 
 {$R *.res}
 
@@ -105,6 +112,7 @@ begin
   Application.CreateForm(TJITFormulaEditorForm, JITFormulaEditorForm);
   Application.CreateForm(TParamValueEditFrm, ParamValueEditFrm);
   Application.CreateForm(TFVoxelExport, FVoxelExport);
+  Application.CreateForm(TMeshPreviewFrm, MeshPreviewFrm);
   //SuppressMessageBoxes := True;
   Application.Run;
 end.

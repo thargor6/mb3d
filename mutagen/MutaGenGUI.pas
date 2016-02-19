@@ -92,8 +92,6 @@ type
     ModifyIterationCountWeightTBar: TTrackBarEx;
     ModifyIterationCountStrengthTBar: TTrackBarEx;
     GenerationEdit: TEdit;
-    WarningPnl: TPanel;
-    Label13: TLabel;
     procedure MutateBtnClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -392,7 +390,6 @@ var
   end;
 
 begin
-  WarningPnl.Visible := False;
   if FIsRunning then begin
     SignalCancel;
     Exit;

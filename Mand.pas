@@ -476,6 +476,7 @@ type
     OPD: TOpenPictureDialogM3D;
     Authors: AuthorStrings;
     bOutMessageLoud: LongBool;
+    bHideMessages: LongBool;
     DrawColSIndex: Single;
     DrawInOutside: Integer;
     DrawRect: TRect;
@@ -734,11 +735,13 @@ end;
 
 procedure TMand3DForm.OutMessage(s: String);
 begin
+  if not bHideMessages then begin
     if bOutMessageLoud then ShowMessage(s) else
     begin
       while Memo1.Lines.Count > 15 do Memo1.Lines.Delete(0);
       Memo1.Lines.Add(s);
     end;
+  end;
 end;
 
 procedure TMand3DForm.WmThreadReady(var Msg: TMessage);
@@ -1117,11 +1120,11 @@ begin
     end;
     if bMeshExportFormCreated then
     begin
-      MeshExportFrm.Button3.Enabled := True;
-      MeshExportFrm.SpeedButton11.Enabled := True;
+////      MeshExportFrm.Button3.Enabled := True;
+////      MeshExportFrm.SpeedButton11.Enabled := True;
       MeshExportFrm.Button4.Enabled := True;
       MeshExportFrm.Button5.Enabled := MeshExportFrm.Benabled;  //prev
-      MeshExportFrm.SpeedButton9.Enabled := MeshExportFrm.Benabled;  //save
+////      MeshExportFrm.SpeedButton9.Enabled := MeshExportFrm.Benabled;  //save
       MeshExportFrm.PLYBtn.Enabled := MeshExportFrm.Benabled;  //Start..
       MeshExportFrm.Panel3.Enabled := True;
       MeshExportFrm.Button5.Caption := 'Calculate preview';
@@ -1220,11 +1223,11 @@ begin
     end;
     if bMeshExportFormCreated then
     begin
-      MeshExportFrm.Button3.Enabled := False;
-      MeshExportFrm.SpeedButton11.Enabled := False;
+/////      MeshExportFrm.Button3.Enabled := False;
+////      MeshExportFrm.SpeedButton11.Enabled := False;
       MeshExportFrm.Button4.Enabled := False;
       MeshExportFrm.Button5.Enabled := False;  //prev
-      MeshExportFrm.SpeedButton9.Enabled := False;  //save
+////      MeshExportFrm.SpeedButton9.Enabled := False;  //save
       MeshExportFrm.PLYBtn.Enabled := False;  //Start..
       MeshExportFrm.Panel3.Enabled := False;
     end;

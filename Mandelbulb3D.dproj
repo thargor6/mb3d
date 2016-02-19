@@ -237,11 +237,21 @@
             <Form>ParamValueEditFrm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="export\PointCloudExport.pas"/>
+        <DCCReference Include="export\VertexList.pas"/>
         <DCCReference Include="VoxelExport.pas">
             <Form>FVoxelExport</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="export\VectorMath.pas"/>
+        <DCCReference Include="export\MeshExport.pas"/>
+        <DCCReference Include="ObjectScanner.pas"/>
+        <DCCReference Include="export\MeshExportConfig.pas"/>
+        <DCCReference Include="opengl\MeshPreviewUI.pas">
+            <Form>MeshPreviewFrm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="opengl\opengl12.pas"/>
+        <DCCReference Include="opengl\MeshPreview.pas"/>
         <None Include="CHANGES.txt"/>
         <None Include=".gitignore"/>
         <BuildConfiguration Include="Debug">

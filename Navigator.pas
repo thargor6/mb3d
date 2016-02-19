@@ -751,6 +751,7 @@ var I, x, nThreadCount: Integer;
     bAllOK: LongBool;
     CalcThread: array of TNaviCalcThread;
 begin
+  Mand3DForm.bHideMessages := True;
   bAllOK := False;
   try
     nThreadCount := Min(Mand3DForm.UpDown3.Position, NaviHeader.Height);
@@ -792,6 +793,7 @@ begin
       for x := 0 to 5 do if MCTparas[I].nHybrid[x] > 0 then bAllOK := True;
     end;
   finally
+    Mand3DForm.bHideMessages := False;
   end;
   if bAllOK then
   begin
@@ -953,7 +955,7 @@ end;
 
 procedure TFNavigator.Timer1Timer(Sender: TObject);  
 begin
-    Timer1.Interval := 150;
+    Timer1.Interval := 100;
     Image1.Repaint;
     if not isCalculating then
     begin
