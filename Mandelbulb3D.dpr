@@ -38,7 +38,7 @@ uses
   Undo in 'Undo.pas',
   CalcSR in 'CalcSR.pas',
   CalcPart in 'CalcPart.pas',
-  MeshExportUI in 'export\MeshExportUI.pas' {MeshExportFrm},
+  BulbTracerUI in 'bulbtracer\BulbTracerUI.pas' {BulbTracerFrm},
   CalcVoxelSliceThread in 'CalcVoxelSliceThread.pas',
   calcBlocky in 'calcBlocky.pas',
   FormulaParser in 'FormulaParser.pas' {FormulaEditor},
@@ -69,15 +69,19 @@ uses
   JITFormulaEditGUI in 'formula\JITFormulaEditGUI.pas' {JITFormulaEditorForm},
   JITFormulas in 'formula\JITFormulas.pas',
   ParamValueEditGUI in 'formula\ParamValueEditGUI.pas' {ParamValueEditFrm},
-  VertexList in 'export\VertexList.pas',
+  VertexList in 'bulbtracer\VertexList.pas',
   VoxelExport in 'VoxelExport.pas' {FVoxelExport},
-  VectorMath in 'export\VectorMath.pas',
-  MeshExport in 'export\MeshExport.pas',
-  ObjectScanner in 'ObjectScanner.pas',
-  MeshExportConfig in 'export\MeshExportConfig.pas',
+  VectorMath in 'bulbtracer\VectorMath.pas',
+  BulbTracer in 'bulbtracer\BulbTracer.pas',
+  ObjectScanner in 'bulbtracer\ObjectScanner.pas',
+  BulbTracerConfig in 'bulbtracer\BulbTracerConfig.pas',
   MeshPreviewUI in 'opengl\MeshPreviewUI.pas' {MeshPreviewFrm},
   opengl12 in 'opengl\opengl12.pas',
-  MeshPreview in 'opengl\MeshPreview.pas';
+  MeshPreview in 'opengl\MeshPreview.pas',
+  BulbTracerUITools in 'bulbtracer\BulbTracerUITools.pas',
+  MeshWriter in 'bulbtracer\MeshWriter.pas',
+  MeshReader in 'bulbtracer\MeshReader.pas',
+  MeshIOUtil in 'bulbtracer\MeshIOUtil.pas';
 
 {$R *.res}
 
@@ -97,7 +101,7 @@ begin
   Application.CreateForm(TFormulaGUIForm, FormulaGUIForm);
   Application.CreateForm(TColorForm, ColorForm);
   Application.CreateForm(TBatchForm1, BatchForm1);
-  Application.CreateForm(TMeshExportFrm, MeshExportFrm);
+  Application.CreateForm(TBulbTracerFrm, BulbTracerFrm);
   Application.CreateForm(TFormulaEditor, FormulaEditor);
   Application.CreateForm(TTilingForm, TilingForm);
   Application.CreateForm(TMCForm, MCForm);

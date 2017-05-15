@@ -714,7 +714,7 @@ object AnimationForm: TAnimationForm
       Top = 200
       Width = 169
       Height = 25
-      Caption = 'Start rendering animation images'
+      Caption = 'Start rendering animation'
       Enabled = False
       TabOrder = 1
       OnClick = Button2Click
@@ -1057,9 +1057,9 @@ object AnimationForm: TAnimationForm
     end
     object RadioGroup3: TRadioGroup
       Left = 433
-      Top = 64
+      Top = 44
       Width = 84
-      Height = 73
+      Height = 93
       Hint = 
         'JPG uses the actual qualtity settings displayed in the'#13#10'upper pa' +
         'rt of the programs main window.'
@@ -1068,7 +1068,8 @@ object AnimationForm: TAnimationForm
       Items.Strings = (
         'BMP'
         'PNG'
-        'JPG')
+        'JPG'
+        'M3P')
       ParentShowHint = False
       ShowHint = True
       TabOrder = 10

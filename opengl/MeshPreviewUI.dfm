@@ -3,8 +3,8 @@ object MeshPreviewFrm: TMeshPreviewFrm
   Top = 0
   BorderStyle = bsSizeToolWin
   Caption = 'MeshPreviewFrm'
-  ClientHeight = 669
-  ClientWidth = 1126
+  ClientHeight = 464
+  ClientWidth = 683
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -14,240 +14,684 @@ object MeshPreviewFrm: TMeshPreviewFrm
   OldCreateOrder = False
   OnCreate = FormCreate
   OnDestroy = FormDestroy
+  OnMouseDown = FormMouseDown
+  OnMouseMove = FormMouseMove
+  OnMouseUp = FormMouseUp
+  OnMouseWheelDown = FormMouseWheelDown
+  OnMouseWheelUp = FormMouseWheelUp
   OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 957
-    Top = 8
-    Width = 161
-    Height = 105
-    Caption = 'Panel1'
+    Left = 525
+    Top = 0
+    Width = 158
+    Height = 464
+    Align = alRight
     TabOrder = 0
-    object TranslateUpBtn: TSpeedButton
-      Tag = 11
-      Left = 61
-      Top = 40
-      Width = 18
-      Height = 17
-      Hint = 
-        'Leftclick:   Rotate the bulb around the viewers X axis @ Ymid+Zm' +
-        'id values'#13#10'Rightclick: Rotate the bulb around the objects X axis' +
-        ' @ 0'
-      AllowAllUp = True
-      Flat = True
-      Glyph.Data = {
-        3E020000424D3E0200000000000036000000280000000D0000000D0000000100
-        18000000000008020000110B0000110B0000000000000000000084C4C384C4C3
-        84C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4
-        C30084C4C384C4C384C4C384C4C300000000000000000000000000000084C4C3
-        84C4C384C4C384C4C30084C4C384C4C384C4C384C4C30000003E3E3E3E3E3E3E
-        3E3E00000084C4C384C4C384C4C384C4C30084C4C384C4C384C4C384C4C30000
-        0045454545454545454500000084C4C384C4C384C4C384C4C30084C4C384C4C3
-        84C4C384C4C30000004C4C4C4C4C4C4C4C4C00000084C4C384C4C384C4C384C4
-        C30084C4C384C4C384C4C384C4C300000052525252525252525200000084C4C3
-        84C4C384C4C384C4C30084C4C384C4C384C4C384C4C300000059595959595959
-        595900000084C4C384C4C384C4C384C4C30084C4C384C4C30000000000000000
-        0060606060606060606000000000000000000084C4C384C4C30084C4C384C4C3
-        00000029292967676767676767676767676767676724242400000084C4C384C4
-        C30084C4C384C4C384C4C30000002929296E6E6E6E6E6E6E6E6E292929000000
-        84C4C384C4C384C4C30084C4C384C4C384C4C384C4C300000033333380808033
-        333300000084C4C384C4C384C4C384C4C30084C4C384C4C384C4C384C4C384C4
-        C300000033333300000084C4C384C4C384C4C384C4C384C4C30084C4C384C4C3
-        84C4C384C4C384C4C384C4C300000084C4C384C4C384C4C384C4C384C4C384C4
-        C300}
-      Margin = 1
-      ParentShowHint = False
-      ShowHint = True
-      Spacing = 0
-      OnClick = TranslateUpBtnClick
+    object Label15: TLabel
+      Left = 7
+      Top = 425
+      Width = 143
+      Height = 13
+      Caption = 'LMB: move           RMB: rotate'
     end
-    object TranslateDownBtn: TSpeedButton
-      Tag = 12
-      Left = 61
-      Top = 57
-      Width = 18
-      Height = 17
-      Hint = 
-        'Leftclick:   Rotate the bulb around the viewers X axis @ Ymid+Zm' +
-        'id values'#13#10'Rightclick: Rotate the bulb around the objects X axis' +
-        ' @ 0'
-      AllowAllUp = True
-      Flat = True
-      Glyph.Data = {
-        3E020000424D3E0200000000000036000000280000000D0000000D0000000100
-        18000000000008020000110B0000110B0000000000000000000084C4C384C4C3
-        84C4C384C4C384C4C384C4C300000084C4C384C4C384C4C384C4C384C4C384C4
-        C30084C4C384C4C384C4C384C4C384C4C300000033333300000084C4C384C4C3
-        84C4C384C4C384C4C30084C4C384C4C384C4C384C4C300000033333380808033
-        333300000084C4C384C4C384C4C384C4C30084C4C384C4C384C4C30000002929
-        296E6E6E6E6E6E6E6E6E29292900000084C4C384C4C384C4C30084C4C384C4C3
-        00000029292967676767676767676767676767676729292900000084C4C384C4
-        C30084C4C384C4C3000000000000000000606060606060606060000000000000
-        00000084C4C384C4C30084C4C384C4C384C4C384C4C300000059595959595959
-        595900000084C4C384C4C384C4C384C4C30084C4C384C4C384C4C384C4C30000
-        0052525252525252525200000084C4C384C4C384C4C384C4C30084C4C384C4C3
-        84C4C384C4C30000004C4C4C4C4C4C4C4C4C00000084C4C384C4C384C4C384C4
-        C30084C4C384C4C384C4C384C4C300000045454545454545454500000084C4C3
-        84C4C384C4C384C4C30084C4C384C4C384C4C384C4C30000003E3E3E3E3E3E3E
-        3E3E00000084C4C384C4C384C4C384C4C30084C4C384C4C384C4C384C4C30000
-        0000000000000000000000000084C4C384C4C384C4C384C4C30084C4C384C4C3
-        84C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4
-        C300}
-      Margin = 1
-      ParentShowHint = False
-      ShowHint = True
-      Spacing = 0
-      OnClick = TranslateDownBtnClick
+    object Label16: TLabel
+      Left = 7
+      Top = 441
+      Width = 88
+      Height = 13
+      Caption = 'MMB/Wheel: zoom'
     end
-    object TranslateRightBtn: TSpeedButton
-      Tag = 14
-      Left = 80
-      Top = 48
-      Width = 16
-      Height = 19
-      Hint = 
-        'Leftclick:   Rotate the bulb around the viewers Y axis @ Xmid+Zm' +
-        'id values'#13#10'Rightclick: Rotate the bulb around the objects Y axis' +
-        ' @ 0'
-      AllowAllUp = True
-      Flat = True
-      Glyph.Data = {
-        3E020000424D3E0200000000000036000000280000000D0000000D0000000100
-        18000000000008020000110B0000110B0000000000000000000084C4C384C4C3
-        84C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4
-        C30084C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C3
-        84C4C384C4C384C4C30084C4C384C4C384C4C384C4C384C4C384C4C384C4C300
-        000000000084C4C384C4C384C4C384C4C30084C4C384C4C384C4C384C4C384C4
-        C384C4C384C4C300000024242400000084C4C384C4C384C4C30084C4C3000000
-        00000000000000000000000000000000000067676724242400000084C4C384C4
-        C30084C4C30000003E3E3E4545454C4C4C5252525959596060606767676E6E6E
-        24242400000084C4C30084C4C30000003E3E3E4545454C4C4C52525259595960
-        60606767676E6E6E6E6E6E2424240000000084C4C30000003E3E3E4545454C4C
-        4C5252525959596060606767676E6E6E24242400000084C4C30084C4C3000000
-        00000000000000000000000000000000000067676724242400000084C4C384C4
-        C30084C4C384C4C384C4C384C4C384C4C384C4C384C4C3000000242424000000
-        84C4C384C4C384C4C30084C4C384C4C384C4C384C4C384C4C384C4C384C4C300
-        000000000084C4C384C4C384C4C384C4C30084C4C384C4C384C4C384C4C384C4
-        C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C30084C4C384C4C3
-        84C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4
-        C300}
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = TranslateRightBtnClick
+    object DisplayStyleGrp: TRadioGroup
+      Left = 1
+      Top = 1
+      Width = 156
+      Height = 137
+      Align = alTop
+      Caption = 'Display Style'
+      ItemIndex = 5
+      Items.Strings = (
+        'Points'
+        'Wireframe'
+        'Flat Solid'
+        'Flat Solid with Edges'
+        'Smooth Solid'
+        'Smooth Solid with Edges')
+      TabOrder = 0
+      OnClick = DisplayStyleGrpClick
     end
-    object SpeedButton22: TSpeedButton
-      Tag = 15
-      Left = 22
-      Top = 40
-      Width = 20
-      Height = 17
-      Hint = 
-        'Leftclick:   Rotate the bulb around the viewers Z axis @ Xmid+Ym' +
-        'id values'#13#10'Rightclick: Rotate the bulb around the objects Z axis' +
-        ' @ 0'
-      AllowAllUp = True
-      Flat = True
-      Glyph.Data = {
-        9E020000424D9E0200000000000036000000280000000E0000000E0000000100
-        18000000000068020000110B0000110B0000000000000000000084C4C384C4C3
-        84C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4
-        C384C4C3000084C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4
-        C384C4C384C4C384C4C384C4C384C4C300000000000000000000000000000000
-        0000000000000000000084C4C384C4C384C4C384C4C384C4C384C4C300000000
-        007D7D7D7373736E6E6E67676742424200000084C4C384C4C384C4C384C4C384
-        C4C384C4C384C4C300000000007D7D7D7373736E6E6E5F5F5F00000084C4C384
-        C4C384C4C384C4C300000000000084C4C384C4C300000000007D7D7D7373736E
-        6E6E57575700000084C4C384C4C384C4C300000026262614141400000084C4C3
-        00000000007D7D7D6B6B6B6E6E6E6767674C4C4C000000000000000000303030
-        3E3E3E36363620202000000000000000004F4F4F0000004F4F4F676767606060
-        5252524747474848484545453E3E3E3636362C2C2C0000000000000000000000
-        84C4C30000004F4F4F6060605959595252524C4C4C4646463E3E3E3030300000
-        0084C4C3000000000084C4C384C4C384C4C30000000000003E3E3E4E4E4E4545
-        4538383800000000000084C4C384C4C3000084C4C384C4C384C4C384C4C384C4
-        C384C4C300000000000000000000000084C4C384C4C384C4C384C4C3000084C4
-        C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384
-        C4C384C4C384C4C3000084C4C384C4C384C4C384C4C384C4C384C4C384C4C384
-        C4C384C4C384C4C384C4C384C4C384C4C384C4C3000084C4C384C4C384C4C384
-        C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C3
-        0000}
-      ParentShowHint = False
-      ShowHint = True
+    object GroupBox1: TGroupBox
+      Left = 1
+      Top = 138
+      Width = 156
+      Height = 281
+      Align = alTop
+      Caption = 'Appearance'
+      TabOrder = 1
+      object AppearancePageCtrl: TPageControl
+        Left = 2
+        Top = 15
+        Width = 152
+        Height = 264
+        ActivePage = MaterialSheet
+        Align = alClient
+        TabOrder = 0
+        object MaterialSheet: TTabSheet
+          Caption = 'Material'
+          object Label17: TLabel
+            Left = 4
+            Top = 8
+            Width = 63
+            Height = 13
+            Alignment = taCenter
+            Caption = 'Surface color'
+          end
+          object Label1: TLabel
+            Left = 4
+            Top = 32
+            Width = 55
+            Height = 13
+            Caption = 'Edges color'
+          end
+          object Label2: TLabel
+            Left = 4
+            Top = 60
+            Width = 76
+            Height = 13
+            Caption = 'Wireframe color'
+          end
+          object Label3: TLabel
+            Left = 4
+            Top = 80
+            Width = 55
+            Height = 13
+            Caption = 'Points color'
+          end
+          object Label4: TLabel
+            Left = 4
+            Top = 136
+            Width = 39
+            Height = 13
+            Caption = 'Ambient'
+          end
+          object MatDiffuseColorLbl: TLabel
+            Left = 4
+            Top = 160
+            Width = 34
+            Height = 13
+            Caption = 'Diffuse'
+          end
+          object Label6: TLabel
+            Left = 4
+            Top = 184
+            Width = 41
+            Height = 13
+            Caption = 'Specular'
+          end
+          object Label7: TLabel
+            Left = 4
+            Top = 211
+            Width = 44
+            Height = 13
+            Caption = 'Shininess'
+          end
+          object SurfaceColorBtn: TJvOfficeColorButton
+            Left = 88
+            Top = 4
+            Width = 48
+            Height = 22
+            TabOrder = 0
+            SelectedColor = clDefault
+            HotTrackFont.Charset = DEFAULT_CHARSET
+            HotTrackFont.Color = clWindowText
+            HotTrackFont.Height = -11
+            HotTrackFont.Name = 'Tahoma'
+            HotTrackFont.Style = []
+            Properties.NoneColorCaption = 'No Color'
+            Properties.DefaultColorCaption = 'Automatic'
+            Properties.CustomColorCaption = 'Other Colors...'
+            Properties.NoneColorHint = 'No Color'
+            Properties.DefaultColorHint = 'Automatic'
+            Properties.CustomColorHint = 'Other Colors...'
+            Properties.NoneColorFont.Charset = DEFAULT_CHARSET
+            Properties.NoneColorFont.Color = clWindowText
+            Properties.NoneColorFont.Height = -11
+            Properties.NoneColorFont.Name = 'Tahoma'
+            Properties.NoneColorFont.Style = []
+            Properties.DefaultColorFont.Charset = DEFAULT_CHARSET
+            Properties.DefaultColorFont.Color = clWindowText
+            Properties.DefaultColorFont.Height = -11
+            Properties.DefaultColorFont.Name = 'Tahoma'
+            Properties.DefaultColorFont.Style = []
+            Properties.CustomColorFont.Charset = DEFAULT_CHARSET
+            Properties.CustomColorFont.Color = clWindowText
+            Properties.CustomColorFont.Height = -11
+            Properties.CustomColorFont.Name = 'Tahoma'
+            Properties.CustomColorFont.Style = []
+            Properties.FloatWindowCaption = 'Color Window'
+            Properties.DragBarHint = 'Drag to float'
+            OnColorChange = SurfaceColorBtnColorChange
+            OnClick = SurfaceColorBtnClick
+          end
+          object EdgesColorBtn: TJvOfficeColorButton
+            Left = 88
+            Top = 28
+            Width = 48
+            Height = 22
+            TabOrder = 1
+            SelectedColor = clDefault
+            HotTrackFont.Charset = DEFAULT_CHARSET
+            HotTrackFont.Color = clWindowText
+            HotTrackFont.Height = -11
+            HotTrackFont.Name = 'Tahoma'
+            HotTrackFont.Style = []
+            Properties.NoneColorCaption = 'No Color'
+            Properties.DefaultColorCaption = 'Automatic'
+            Properties.CustomColorCaption = 'Other Colors...'
+            Properties.NoneColorHint = 'No Color'
+            Properties.DefaultColorHint = 'Automatic'
+            Properties.CustomColorHint = 'Other Colors...'
+            Properties.NoneColorFont.Charset = DEFAULT_CHARSET
+            Properties.NoneColorFont.Color = clWindowText
+            Properties.NoneColorFont.Height = -11
+            Properties.NoneColorFont.Name = 'Tahoma'
+            Properties.NoneColorFont.Style = []
+            Properties.DefaultColorFont.Charset = DEFAULT_CHARSET
+            Properties.DefaultColorFont.Color = clWindowText
+            Properties.DefaultColorFont.Height = -11
+            Properties.DefaultColorFont.Name = 'Tahoma'
+            Properties.DefaultColorFont.Style = []
+            Properties.CustomColorFont.Charset = DEFAULT_CHARSET
+            Properties.CustomColorFont.Color = clWindowText
+            Properties.CustomColorFont.Height = -11
+            Properties.CustomColorFont.Name = 'Tahoma'
+            Properties.CustomColorFont.Style = []
+            Properties.FloatWindowCaption = 'Color Window'
+            Properties.DragBarHint = 'Drag to float'
+            OnColorChange = SurfaceColorBtnColorChange
+            OnClick = SurfaceColorBtnClick
+          end
+          object WireframeColorBtn: TJvOfficeColorButton
+            Left = 88
+            Top = 56
+            Width = 48
+            Height = 22
+            TabOrder = 2
+            SelectedColor = clDefault
+            HotTrackFont.Charset = DEFAULT_CHARSET
+            HotTrackFont.Color = clWindowText
+            HotTrackFont.Height = -11
+            HotTrackFont.Name = 'Tahoma'
+            HotTrackFont.Style = []
+            Properties.NoneColorCaption = 'No Color'
+            Properties.DefaultColorCaption = 'Automatic'
+            Properties.CustomColorCaption = 'Other Colors...'
+            Properties.NoneColorHint = 'No Color'
+            Properties.DefaultColorHint = 'Automatic'
+            Properties.CustomColorHint = 'Other Colors...'
+            Properties.NoneColorFont.Charset = DEFAULT_CHARSET
+            Properties.NoneColorFont.Color = clWindowText
+            Properties.NoneColorFont.Height = -11
+            Properties.NoneColorFont.Name = 'Tahoma'
+            Properties.NoneColorFont.Style = []
+            Properties.DefaultColorFont.Charset = DEFAULT_CHARSET
+            Properties.DefaultColorFont.Color = clWindowText
+            Properties.DefaultColorFont.Height = -11
+            Properties.DefaultColorFont.Name = 'Tahoma'
+            Properties.DefaultColorFont.Style = []
+            Properties.CustomColorFont.Charset = DEFAULT_CHARSET
+            Properties.CustomColorFont.Color = clWindowText
+            Properties.CustomColorFont.Height = -11
+            Properties.CustomColorFont.Name = 'Tahoma'
+            Properties.CustomColorFont.Style = []
+            Properties.FloatWindowCaption = 'Color Window'
+            Properties.DragBarHint = 'Drag to float'
+            OnColorChange = SurfaceColorBtnColorChange
+            OnClick = SurfaceColorBtnClick
+          end
+          object PointsColorBtn: TJvOfficeColorButton
+            Left = 88
+            Top = 76
+            Width = 48
+            Height = 22
+            TabOrder = 3
+            SelectedColor = clDefault
+            HotTrackFont.Charset = DEFAULT_CHARSET
+            HotTrackFont.Color = clWindowText
+            HotTrackFont.Height = -11
+            HotTrackFont.Name = 'Tahoma'
+            HotTrackFont.Style = []
+            Properties.NoneColorCaption = 'No Color'
+            Properties.DefaultColorCaption = 'Automatic'
+            Properties.CustomColorCaption = 'Other Colors...'
+            Properties.NoneColorHint = 'No Color'
+            Properties.DefaultColorHint = 'Automatic'
+            Properties.CustomColorHint = 'Other Colors...'
+            Properties.NoneColorFont.Charset = DEFAULT_CHARSET
+            Properties.NoneColorFont.Color = clWindowText
+            Properties.NoneColorFont.Height = -11
+            Properties.NoneColorFont.Name = 'Tahoma'
+            Properties.NoneColorFont.Style = []
+            Properties.DefaultColorFont.Charset = DEFAULT_CHARSET
+            Properties.DefaultColorFont.Color = clWindowText
+            Properties.DefaultColorFont.Height = -11
+            Properties.DefaultColorFont.Name = 'Tahoma'
+            Properties.DefaultColorFont.Style = []
+            Properties.CustomColorFont.Charset = DEFAULT_CHARSET
+            Properties.CustomColorFont.Color = clWindowText
+            Properties.CustomColorFont.Height = -11
+            Properties.CustomColorFont.Name = 'Tahoma'
+            Properties.CustomColorFont.Style = []
+            Properties.FloatWindowCaption = 'Color Window'
+            Properties.DragBarHint = 'Drag to float'
+            OnColorChange = SurfaceColorBtnColorChange
+            OnClick = SurfaceColorBtnClick
+          end
+          object MatAmbientColorBtn: TJvOfficeColorButton
+            Left = 88
+            Top = 132
+            Width = 48
+            Height = 22
+            TabOrder = 4
+            SelectedColor = clDefault
+            HotTrackFont.Charset = DEFAULT_CHARSET
+            HotTrackFont.Color = clWindowText
+            HotTrackFont.Height = -11
+            HotTrackFont.Name = 'Tahoma'
+            HotTrackFont.Style = []
+            Properties.NoneColorCaption = 'No Color'
+            Properties.DefaultColorCaption = 'Automatic'
+            Properties.CustomColorCaption = 'Other Colors...'
+            Properties.NoneColorHint = 'No Color'
+            Properties.DefaultColorHint = 'Automatic'
+            Properties.CustomColorHint = 'Other Colors...'
+            Properties.NoneColorFont.Charset = DEFAULT_CHARSET
+            Properties.NoneColorFont.Color = clWindowText
+            Properties.NoneColorFont.Height = -11
+            Properties.NoneColorFont.Name = 'Tahoma'
+            Properties.NoneColorFont.Style = []
+            Properties.DefaultColorFont.Charset = DEFAULT_CHARSET
+            Properties.DefaultColorFont.Color = clWindowText
+            Properties.DefaultColorFont.Height = -11
+            Properties.DefaultColorFont.Name = 'Tahoma'
+            Properties.DefaultColorFont.Style = []
+            Properties.CustomColorFont.Charset = DEFAULT_CHARSET
+            Properties.CustomColorFont.Color = clWindowText
+            Properties.CustomColorFont.Height = -11
+            Properties.CustomColorFont.Name = 'Tahoma'
+            Properties.CustomColorFont.Style = []
+            Properties.FloatWindowCaption = 'Color Window'
+            Properties.DragBarHint = 'Drag to float'
+            OnColorChange = SurfaceColorBtnColorChange
+            OnClick = SurfaceColorBtnClick
+          end
+          object MatDiffuseColorBtn: TJvOfficeColorButton
+            Left = 88
+            Top = 156
+            Width = 48
+            Height = 22
+            TabOrder = 5
+            SelectedColor = clDefault
+            HotTrackFont.Charset = DEFAULT_CHARSET
+            HotTrackFont.Color = clWindowText
+            HotTrackFont.Height = -11
+            HotTrackFont.Name = 'Tahoma'
+            HotTrackFont.Style = []
+            Properties.NoneColorCaption = 'No Color'
+            Properties.DefaultColorCaption = 'Automatic'
+            Properties.CustomColorCaption = 'Other Colors...'
+            Properties.NoneColorHint = 'No Color'
+            Properties.DefaultColorHint = 'Automatic'
+            Properties.CustomColorHint = 'Other Colors...'
+            Properties.NoneColorFont.Charset = DEFAULT_CHARSET
+            Properties.NoneColorFont.Color = clWindowText
+            Properties.NoneColorFont.Height = -11
+            Properties.NoneColorFont.Name = 'Tahoma'
+            Properties.NoneColorFont.Style = []
+            Properties.DefaultColorFont.Charset = DEFAULT_CHARSET
+            Properties.DefaultColorFont.Color = clWindowText
+            Properties.DefaultColorFont.Height = -11
+            Properties.DefaultColorFont.Name = 'Tahoma'
+            Properties.DefaultColorFont.Style = []
+            Properties.CustomColorFont.Charset = DEFAULT_CHARSET
+            Properties.CustomColorFont.Color = clWindowText
+            Properties.CustomColorFont.Height = -11
+            Properties.CustomColorFont.Name = 'Tahoma'
+            Properties.CustomColorFont.Style = []
+            Properties.FloatWindowCaption = 'Color Window'
+            Properties.DragBarHint = 'Drag to float'
+            OnColorChange = SurfaceColorBtnColorChange
+            OnClick = SurfaceColorBtnClick
+          end
+          object MatSpecularColorBtn: TJvOfficeColorButton
+            Left = 88
+            Top = 180
+            Width = 48
+            Height = 22
+            TabOrder = 6
+            SelectedColor = clDefault
+            HotTrackFont.Charset = DEFAULT_CHARSET
+            HotTrackFont.Color = clWindowText
+            HotTrackFont.Height = -11
+            HotTrackFont.Name = 'Tahoma'
+            HotTrackFont.Style = []
+            Properties.NoneColorCaption = 'No Color'
+            Properties.DefaultColorCaption = 'Automatic'
+            Properties.CustomColorCaption = 'Other Colors...'
+            Properties.NoneColorHint = 'No Color'
+            Properties.DefaultColorHint = 'Automatic'
+            Properties.CustomColorHint = 'Other Colors...'
+            Properties.NoneColorFont.Charset = DEFAULT_CHARSET
+            Properties.NoneColorFont.Color = clWindowText
+            Properties.NoneColorFont.Height = -11
+            Properties.NoneColorFont.Name = 'Tahoma'
+            Properties.NoneColorFont.Style = []
+            Properties.DefaultColorFont.Charset = DEFAULT_CHARSET
+            Properties.DefaultColorFont.Color = clWindowText
+            Properties.DefaultColorFont.Height = -11
+            Properties.DefaultColorFont.Name = 'Tahoma'
+            Properties.DefaultColorFont.Style = []
+            Properties.CustomColorFont.Charset = DEFAULT_CHARSET
+            Properties.CustomColorFont.Color = clWindowText
+            Properties.CustomColorFont.Height = -11
+            Properties.CustomColorFont.Name = 'Tahoma'
+            Properties.CustomColorFont.Style = []
+            Properties.FloatWindowCaption = 'Color Window'
+            Properties.DragBarHint = 'Drag to float'
+            OnColorChange = SurfaceColorBtnColorChange
+            OnClick = SurfaceColorBtnClick
+          end
+          object MatShininessEdit: TEdit
+            Left = 70
+            Top = 208
+            Width = 54
+            Height = 21
+            TabOrder = 7
+            Text = '0'
+            OnExit = MatShininessEditExit
+          end
+          object MatShininessBtn: TUpDown
+            Left = 124
+            Top = 208
+            Width = 17
+            Height = 21
+            Min = -32000
+            Max = 32000
+            TabOrder = 8
+            OnClick = MatShininessBtnClick
+          end
+          object LightingEnabledCBx: TCheckBox
+            Left = 4
+            Top = 105
+            Width = 101
+            Height = 17
+            Alignment = taLeftJustify
+            Caption = 'Enable Lighting'
+            Checked = True
+            State = cbChecked
+            TabOrder = 9
+            OnClick = LightingEnabledCBxClick
+          end
+        end
+        object LightSheet: TTabSheet
+          Caption = 'Light'
+          ImageIndex = 1
+          object Label8: TLabel
+            Left = 3
+            Top = 8
+            Width = 39
+            Height = 13
+            Caption = 'Ambient'
+          end
+          object Label9: TLabel
+            Left = 3
+            Top = 32
+            Width = 34
+            Height = 13
+            Caption = 'Diffuse'
+          end
+          object Label5: TLabel
+            Left = 4
+            Top = 76
+            Width = 46
+            Height = 13
+            Caption = 'Position X'
+          end
+          object Label10: TLabel
+            Left = 4
+            Top = 99
+            Width = 46
+            Height = 13
+            Caption = 'Position Y'
+          end
+          object Label11: TLabel
+            Left = 4
+            Top = 122
+            Width = 46
+            Height = 13
+            Caption = 'Position Z'
+          end
+          object Label12: TLabel
+            Left = 4
+            Top = 208
+            Width = 57
+            Height = 26
+            Caption = 'Quadratic Attenuation'
+            WordWrap = True
+          end
+          object Label13: TLabel
+            Left = 4
+            Top = 185
+            Width = 57
+            Height = 26
+            Caption = 'Linear Attenuation'
+            WordWrap = True
+          end
+          object Label14: TLabel
+            Left = 4
+            Top = 162
+            Width = 57
+            Height = 26
+            Caption = 'Const Attenuation'
+            WordWrap = True
+          end
+          object LightAmbientBtn: TJvOfficeColorButton
+            Left = 87
+            Top = 4
+            Width = 48
+            Height = 22
+            TabOrder = 0
+            SelectedColor = clDefault
+            HotTrackFont.Charset = DEFAULT_CHARSET
+            HotTrackFont.Color = clWindowText
+            HotTrackFont.Height = -11
+            HotTrackFont.Name = 'Tahoma'
+            HotTrackFont.Style = []
+            Properties.NoneColorCaption = 'No Color'
+            Properties.DefaultColorCaption = 'Automatic'
+            Properties.CustomColorCaption = 'Other Colors...'
+            Properties.NoneColorHint = 'No Color'
+            Properties.DefaultColorHint = 'Automatic'
+            Properties.CustomColorHint = 'Other Colors...'
+            Properties.NoneColorFont.Charset = DEFAULT_CHARSET
+            Properties.NoneColorFont.Color = clWindowText
+            Properties.NoneColorFont.Height = -11
+            Properties.NoneColorFont.Name = 'Tahoma'
+            Properties.NoneColorFont.Style = []
+            Properties.DefaultColorFont.Charset = DEFAULT_CHARSET
+            Properties.DefaultColorFont.Color = clWindowText
+            Properties.DefaultColorFont.Height = -11
+            Properties.DefaultColorFont.Name = 'Tahoma'
+            Properties.DefaultColorFont.Style = []
+            Properties.CustomColorFont.Charset = DEFAULT_CHARSET
+            Properties.CustomColorFont.Color = clWindowText
+            Properties.CustomColorFont.Height = -11
+            Properties.CustomColorFont.Name = 'Tahoma'
+            Properties.CustomColorFont.Style = []
+            Properties.FloatWindowCaption = 'Color Window'
+            Properties.DragBarHint = 'Drag to float'
+            OnColorChange = SurfaceColorBtnColorChange
+            OnClick = SurfaceColorBtnClick
+          end
+          object LightDiffuseBtn: TJvOfficeColorButton
+            Left = 87
+            Top = 28
+            Width = 48
+            Height = 22
+            TabOrder = 1
+            SelectedColor = clDefault
+            HotTrackFont.Charset = DEFAULT_CHARSET
+            HotTrackFont.Color = clWindowText
+            HotTrackFont.Height = -11
+            HotTrackFont.Name = 'Tahoma'
+            HotTrackFont.Style = []
+            Properties.NoneColorCaption = 'No Color'
+            Properties.DefaultColorCaption = 'Automatic'
+            Properties.CustomColorCaption = 'Other Colors...'
+            Properties.NoneColorHint = 'No Color'
+            Properties.DefaultColorHint = 'Automatic'
+            Properties.CustomColorHint = 'Other Colors...'
+            Properties.NoneColorFont.Charset = DEFAULT_CHARSET
+            Properties.NoneColorFont.Color = clWindowText
+            Properties.NoneColorFont.Height = -11
+            Properties.NoneColorFont.Name = 'Tahoma'
+            Properties.NoneColorFont.Style = []
+            Properties.DefaultColorFont.Charset = DEFAULT_CHARSET
+            Properties.DefaultColorFont.Color = clWindowText
+            Properties.DefaultColorFont.Height = -11
+            Properties.DefaultColorFont.Name = 'Tahoma'
+            Properties.DefaultColorFont.Style = []
+            Properties.CustomColorFont.Charset = DEFAULT_CHARSET
+            Properties.CustomColorFont.Color = clWindowText
+            Properties.CustomColorFont.Height = -11
+            Properties.CustomColorFont.Name = 'Tahoma'
+            Properties.CustomColorFont.Style = []
+            Properties.FloatWindowCaption = 'Color Window'
+            Properties.DragBarHint = 'Drag to float'
+            OnColorChange = SurfaceColorBtnColorChange
+            OnClick = SurfaceColorBtnClick
+          end
+          object LightPositionXEdit: TEdit
+            Left = 70
+            Top = 73
+            Width = 54
+            Height = 21
+            TabOrder = 2
+            Text = '0'
+            OnExit = MatShininessEditExit
+          end
+          object LightPositionXBtn: TUpDown
+            Left = 124
+            Top = 73
+            Width = 17
+            Height = 21
+            Min = -32000
+            Max = 32000
+            TabOrder = 3
+            OnClick = LightPositionXBtnClick
+          end
+          object LightPositionYEdit: TEdit
+            Left = 70
+            Top = 96
+            Width = 54
+            Height = 21
+            TabOrder = 4
+            Text = '0'
+            OnExit = MatShininessEditExit
+          end
+          object LightPositionYBtn: TUpDown
+            Left = 124
+            Top = 96
+            Width = 17
+            Height = 21
+            Min = -32000
+            Max = 32000
+            TabOrder = 5
+            OnClick = LightPositionYBtnClick
+          end
+          object LightPositionZEdit: TEdit
+            Left = 70
+            Top = 119
+            Width = 54
+            Height = 21
+            TabOrder = 6
+            Text = '0'
+            OnExit = MatShininessEditExit
+          end
+          object LightPositionZBtn: TUpDown
+            Left = 124
+            Top = 119
+            Width = 17
+            Height = 21
+            Min = -32000
+            Max = 32000
+            TabOrder = 7
+            OnClick = LightPositionZBtnClick
+          end
+          object ConstAttenuationEdit: TEdit
+            Left = 70
+            Top = 165
+            Width = 54
+            Height = 21
+            TabOrder = 8
+            Text = '0'
+            OnExit = MatShininessEditExit
+          end
+          object QuadraticAttenuationBtn: TUpDown
+            Left = 124
+            Top = 211
+            Width = 17
+            Height = 21
+            Max = -32000
+            TabOrder = 9
+            OnClick = QuadraticAttenuationBtnClick
+          end
+          object QuadraticAttenuationEdit: TEdit
+            Left = 70
+            Top = 211
+            Width = 54
+            Height = 21
+            TabOrder = 10
+            Text = '0'
+            OnExit = MatShininessEditExit
+          end
+          object LinearAttenuationBtn: TUpDown
+            Left = 124
+            Top = 188
+            Width = 17
+            Height = 21
+            Min = -32000
+            Max = 32000
+            TabOrder = 11
+            OnClick = LinearAttenuationBtnClick
+          end
+          object LinearAttenuationEdit: TEdit
+            Left = 70
+            Top = 188
+            Width = 54
+            Height = 21
+            TabOrder = 12
+            Text = '0'
+            OnExit = MatShininessEditExit
+          end
+          object ConstAttenuationBtn: TUpDown
+            Left = 124
+            Top = 165
+            Width = 17
+            Height = 21
+            Min = -32000
+            Max = 32000
+            TabOrder = 13
+            OnClick = ConstAttenuationBtnClick
+          end
+        end
+      end
     end
-    object SpeedButton23: TSpeedButton
-      Tag = 16
-      Left = 22
-      Top = 57
-      Width = 20
-      Height = 17
-      Hint = 
-        'Leftclick:   Rotate the bulb around the viewers Z axis @ Xmid+Ym' +
-        'id values'#13#10'Rightclick: Rotate the bulb around the objects Z axis' +
-        ' @ 0'
-      AllowAllUp = True
-      Flat = True
-      Glyph.Data = {
-        9E020000424D9E0200000000000036000000280000000E0000000E0000000100
-        18000000000068020000110B0000110B0000000000000000000084C4C384C4C3
-        84C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4
-        C384C4C3000084C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4
-        C384C4C384C4C384C4C384C4C384C4C3000084C4C384C4C384C4C384C4C384C4
-        C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C3000084C4
-        C384C4C384C4C384C4C384C4C384C4C300000000000000000000000084C4C384
-        C4C384C4C384C4C3000000000084C4C384C4C384C4C30000000000003A3A3A4E
-        4E4E45454538383800000000000084C4C384C4C3000000000000000084C4C300
-        00002F2F2F4C4C4C5959595252524C4C4C4646463E3E3E30303000000084C4C3
-        00000000004F4F4F0000003333335353536060605A5A5A4B4B4B484848454545
-        3E3E3E3636362C2C2C00000000000000007373734747475656566767675C5C5C
-        0000000000000000003030303E3E3E3636362020200000000000000000737373
-        7373736E6E6E57575700000084C4C384C4C384C4C30000002626261414140000
-        0084C4C300000000007373737373736E6E6E63636300000084C4C384C4C384C4
-        C384C4C300000000000084C4C384C4C300000000007373737373736E6E6E6767
-        674E4E4E00000084C4C384C4C384C4C384C4C384C4C384C4C384C4C300000000
-        0000000000000000000000000000000000000000000084C4C384C4C384C4C384
-        C4C384C4C384C4C3000084C4C384C4C384C4C384C4C384C4C384C4C384C4C384
-        C4C384C4C384C4C384C4C384C4C384C4C384C4C3000084C4C384C4C384C4C384
-        C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C3
-        0000}
-      ParentShowHint = False
-      ShowHint = True
-    end
-    object TranslateLeftBtn: TSpeedButton
-      Tag = 13
-      Left = 44
-      Top = 48
-      Width = 17
-      Height = 19
-      Hint = 
-        'Leftclick:   Rotate the bulb around the viewers Y axis @ Xmid+Zm' +
-        'id values'#13#10'Rightclick: Rotate the bulb around the objects Y axis' +
-        ' @ 0'
-      AllowAllUp = True
-      Flat = True
-      Glyph.Data = {
-        3E020000424D3E0200000000000036000000280000000D0000000D0000000100
-        18000000000008020000110B0000110B0000000000000000000084C4C384C4C3
-        84C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4
-        C30084C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C3
-        84C4C384C4C384C4C30084C4C384C4C384C4C384C4C300000000000084C4C384
-        C4C384C4C384C4C384C4C384C4C384C4C30084C4C384C4C384C4C30000002424
-        2400000084C4C384C4C384C4C384C4C384C4C384C4C384C4C30084C4C384C4C3
-        00000024242467676700000000000000000000000000000000000000000084C4
-        C30084C4C30000002424246E6E6E6767676060605959595252524C4C4C454545
-        3E3E3E00000084C4C3000000002424246E6E6E6E6E6E67676760606059595952
-        52524C4C4C4545453E3E3E00000084C4C30084C4C30000002424246E6E6E6767
-        676060605959595252524C4C4C4545453E3E3E00000084C4C30084C4C384C4C3
-        00000024242467676700000000000000000000000000000000000000000084C4
-        C30084C4C384C4C384C4C300000024242400000084C4C384C4C384C4C384C4C3
-        84C4C384C4C384C4C30084C4C384C4C384C4C384C4C300000000000084C4C384
-        C4C384C4C384C4C384C4C384C4C384C4C30084C4C384C4C384C4C384C4C384C4
-        C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C30084C4C384C4C3
-        84C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4C384C4
-        C300}
-      ParentShowHint = False
-      ShowHint = True
-      OnClick = TranslateLeftBtnClick
-    end
+  end
+  object ColorDialog: TColorDialog
+    Left = 328
+    Top = 136
   end
 end

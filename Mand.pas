@@ -274,8 +274,6 @@ type
     Label46: TLabel;
     FrameEdit: TEdit;
     FrameUpDown: TUpDown;
-    TabSheet14: TTabSheet;
-    BugReportBtn: TSpeedButton;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -394,7 +392,6 @@ type
     procedure RotationBtnClick(Sender: TObject);
     procedure FrameUpDownClick(Sender: TObject; Button: TUDBtnType);
     procedure FrameEditExit(Sender: TObject);
-    procedure BugReportBtnClick(Sender: TObject);
     procedure MeshExportBtnClick(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
@@ -441,6 +438,7 @@ type
     procedure SetShape2Size(NewSize: Integer);
     procedure TriggerRepaintDraw(R: TRect);
     procedure SetEdit16Text;
+    procedure SaveCurrParamAsM3P( const Filename: String );
   protected
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
   public
@@ -514,7 +512,7 @@ procedure SaveFormulaBytes;
 
 var
   Mand3DForm: TMand3DForm;
-  M3dVersion: Single = 1.90;
+  M3dVersion: Single = 1.91;
   Testing: LongBool = False;
   TBoostChanged: LongBool = False;
   MCalcStop: LongBool = False;
@@ -542,7 +540,7 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
      uMapCalcWindow, FormulaCompiler, MutaGenGUI, VisualThemesGUI, Vcl.Themes,
-     MapSequencesGUI, MapSequences, MeshExportUI;
+     MapSequencesGUI, MapSequences, BulbTracerUI;
 
 {$R *.dfm}
 
@@ -1118,16 +1116,8 @@ begin
       FVoxelExport.Panel3.Enabled := True;
       FVoxelExport.Button5.Caption := 'Calculate preview';
     end;
-    if bMeshExportFormCreated then
-    begin
-////      MeshExportFrm.Button3.Enabled := True;
-////      MeshExportFrm.SpeedButton11.Enabled := True;
-      MeshExportFrm.Button4.Enabled := True;
-      MeshExportFrm.Button5.Enabled := MeshExportFrm.Benabled;  //prev
-////      MeshExportFrm.SpeedButton9.Enabled := MeshExportFrm.Benabled;  //save
-      MeshExportFrm.PLYBtn.Enabled := MeshExportFrm.Benabled;  //Start..
-      MeshExportFrm.Panel3.Enabled := True;
-      MeshExportFrm.Button5.Caption := 'Calculate preview';
+    if bBulbTracerFormCreated then begin
+      BulbTracerFrm.EnableControls(True);
     end;
 
 
@@ -1221,15 +1211,8 @@ begin
       FVoxelExport.Button2.Enabled := False;  //Start..
       FVoxelExport.Panel3.Enabled := False;
     end;
-    if bMeshExportFormCreated then
-    begin
-/////      MeshExportFrm.Button3.Enabled := False;
-////      MeshExportFrm.SpeedButton11.Enabled := False;
-      MeshExportFrm.Button4.Enabled := False;
-      MeshExportFrm.Button5.Enabled := False;  //prev
-////      MeshExportFrm.SpeedButton9.Enabled := False;  //save
-      MeshExportFrm.PLYBtn.Enabled := False;  //Start..
-      MeshExportFrm.Panel3.Enabled := False;
+    if bBulbTracerFormCreated then begin
+      BulbTracerFrm.EnableControls(False);
     end;
     if MCFormCreated then MCForm.Button4.Enabled := False;
     Image1.Cursor := crHourGlass;
@@ -1531,6 +1514,7 @@ begin
       0:  s := ChangeFileExt(s, '.bmp');
       1:  s := ChangeFileExt(s, '.png');
       2:  s := ChangeFileExt(s, '.jpg');
+      3:  s := ChangeFileExt(s, '.m3p');
     end;
     Result := FileExists(s);
 end;
@@ -1615,6 +1599,17 @@ begin
     MCalcThreadStats.pMessageHwnd := Self.Handle;
     MCalcThreadStats.iProcessingType := 1;
     MCalcThreadStats.iAllProcessingOptions := AllAutoProcessings(@MHeader);
+
+    if ( AnimationForm.AniOption = 3 ) and ( AnimationForm.AniOutputFormat = 3) then  begin
+      try
+        AnimationForm.CloseOutPutStream;
+      except
+        // hide this error
+      end;
+      SaveCurrParamAsM3P( stmp );
+      AnimationForm.NextSubFrame;
+      Exit;
+    end;
 
     if CalcMandT(@MHeader, @HeaderLightVals, @MCalcThreadStats,
                  @siLight5[0], mSLoffset, mFSIstart, mFSIoffset, GetCalcRect) then
@@ -2376,25 +2371,44 @@ begin
     end;
 end;
 
+// http://docs.embarcadero.com/products/rad_studio/delphiAndcpp2009/HelpUpdate2/EN/html/devcommon/delphiioerrors_xml.html
+procedure TMand3DForm.SaveCurrParamAsM3P( const Filename: String );
+var f: file;
+  procedure CheckIOError(const Part: Integer);
+  var
+    ErrCode: Integer;
+  begin
+    ErrCode := IOResult;
+    if ErrCode <> 0 then
+      raise Exception.Create('IOError<' + IntToStr(Part)+'>: '+IntToStr(ErrCode));
+  end;
+begin
+  MakeHeader;
+  AssignFile(f, ChangeFileExtSave(Filename, '.m3p'));
+  CheckIOError(1);
+  Rewrite(f, 1);
+  CheckIOError(2);
+  InsertAuthorsToPara(@MHeader, Authors);
+  try
+    BlockWrite(f, MHeader, SizeOf(MHeader));
+  finally
+    IniMHeader; //to get pointers back
+  end;
+  HAddon.bHCAversion := 16;
+  BlockWrite(f, HAddon, SizeOf(THeaderCustomAddon));
+  CheckIOError(2);
+  CloseFile(f);
+  CheckIOError(3);
+end;
+
 procedure TMand3DForm.Button4Click(Sender: TObject);  // save parameter
 var f: file;
 begin
-    if SaveDialog2.Execute then
-    begin
-      MakeHeader;
-      AssignFile(f, ChangeFileExtSave(SaveDialog2.FileName, '.m3p'));
-      Rewrite(f, 1);
-      InsertAuthorsToPara(@MHeader, Authors);
-      try
-        BlockWrite(f, MHeader, SizeOf(MHeader));
-      finally
-        IniMHeader; //to get pointers back
-      end;
-      HAddon.bHCAversion := 16;
-      BlockWrite(f, HAddon, SizeOf(THeaderCustomAddon));
-      CloseFile(f);
-      SetSaveDialogNames(SaveDialog2.FileName);
-    end;
+  if SaveDialog2.Execute then
+  begin
+    SaveCurrParamAsM3P( SaveDialog2.FileName );
+    SetSaveDialogNames(SaveDialog2.FileName);
+  end;
 end;
 
 procedure TMand3DForm.Button5Click(Sender: TObject);  // open parameter
@@ -2436,8 +2450,8 @@ end;
 
 procedure TMand3DForm.MeshExportBtnClick(Sender: TObject);
 begin
-  MeshExportFrm.Visible := True;
-  BringToFront2(MeshExportFrm.Handle);
+  BulbTracerFrm.Visible := True;
+  BringToFront2(BulbTracerFrm.Handle);
 end;
 
 procedure TMand3DForm.SetImageCursor;
@@ -3401,11 +3415,6 @@ procedure TMand3DForm.IniDirsBtnClick(Sender: TObject);
 begin
     LoadIni;
     IniDirForm.Visible := True;
-end;
-
-procedure TMand3DForm.BugReportBtnClick(Sender: TObject);
-begin
-  ShellExecute(0, 'OPEN', PChar('http://bugs.mb3d.org/'), '', '', SW_SHOWNORMAL);
 end;
 
 procedure TMand3DForm.Button10Click(Sender: TObject);

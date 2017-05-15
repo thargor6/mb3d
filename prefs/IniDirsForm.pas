@@ -34,6 +34,8 @@ type
     Edit11: TEdit;
     Button13: TButton;
     Edit12: TEdit;
+    Button14: TButton;
+    Edit13: TEdit;
     procedure Button1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure Button3Click(Sender: TObject);
@@ -52,7 +54,7 @@ implementation
 {$R *.dfm}
 
 uses DivUtils, FileHandling, Mand, LightAdjust, Animation, FormulaGUI,
-  Tiling, VoxelExport, MonteCarloForm;
+  Tiling, VoxelExport, MonteCarloForm, BulbTracerUI;
 
 procedure TIniDirForm.Button1Click(Sender: TObject);
 var i: Integer;
@@ -150,6 +152,12 @@ begin
     begin
       SetDialogDirectory(MCForm.OPDmc, IniDirs[11]);
       SetDialogDirectory(MCForm.SaveDialog3, IniDirs[11]);
+  //    MCForm.OPDmc.InitialDir := IniDirs[11];
+   //   MCForm.SaveDialog3.InitialDir := IniDirs[11];
+    end
+    else if t = 12 then
+    begin
+      SetDialogDirectory(BulbTracerFrm.SaveDialog, IniDirs[12]);
   //    MCForm.OPDmc.InitialDir := IniDirs[11];
    //   MCForm.SaveDialog3.InitialDir := IniDirs[11];
     end;

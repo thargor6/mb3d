@@ -84,15 +84,15 @@
         <DCC_Define>RELEASE;$(DCC_Define)</DCC_Define>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_1_Win32)'!=''">
-        <DCC_UnitSearchPath>C:\DEV\PaxCompiler\mb3d\Sources;C:\DEV\PaxCompiler\mb3d\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <DCC_DcpOutput>C:\DEV\Delphi_Workspace\Mandel3D\</DCC_DcpOutput>
-        <DCC_Define>USE_PAX_COMPILER;PARAMS_PER_THREAD;JIT_FORMULA_PREPROCESSING;$(DCC_Define)</DCC_Define>
+        <DCC_UnitSearchPath>D:\DEV\Delphi_Workspace\PaxCompiler\mb3d\Sources;D:\DEV\Delphi_Workspace\PaxCompiler\mb3d\;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_DcpOutput>D:\DEV\Delphi_Workspace\Mandel3D\</DCC_DcpOutput>
+        <DCC_Define>USE_PAX_COMPILER;PARAMS_PER_THREAD;JIT_FORMULA_PREPROCESSING;DEBUG_MESHEXP;$(DCC_Define)</DCC_Define>
         <VerInfo_MinorVer>8</VerInfo_MinorVer>
         <DCC_Inlining>off</DCC_Inlining>
         <DCC_LocalDebugSymbols>true</DCC_LocalDebugSymbols>
         <DCC_DebugInformation>true</DCC_DebugInformation>
         <DCC_MinStackSize>1048576</DCC_MinStackSize>
-        <BRCC_OutputDir>F:\Dokumente und Einstellungen\Jens\Eigene Dateien\Delphi6progs\Mandel3D\</BRCC_OutputDir>
+        <BRCC_OutputDir>D:\DEV\Delphi_Workspace\Mandel3D\</BRCC_OutputDir>
         <VerInfo_Build>0</VerInfo_Build>
         <VerInfo_Keys>CompanyName=;FileDescription=3d fractal rendering;FileVersion=1.8.9.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.8.9;Comments=</VerInfo_Keys>
     </PropertyGroup>
@@ -174,8 +174,8 @@
         <DCCReference Include="Undo.pas"/>
         <DCCReference Include="CalcSR.pas"/>
         <DCCReference Include="CalcPart.pas"/>
-        <DCCReference Include="export\MeshExportUI.pas">
-            <Form>MeshExportFrm</Form>
+        <DCCReference Include="bulbtracer\BulbTracerUI.pas">
+            <Form>BulbTracerFrm</Form>
         </DCCReference>
         <DCCReference Include="CalcVoxelSliceThread.pas"/>
         <DCCReference Include="calcBlocky.pas"/>
@@ -237,21 +237,25 @@
             <Form>ParamValueEditFrm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="export\VertexList.pas"/>
+        <DCCReference Include="bulbtracer\VertexList.pas"/>
         <DCCReference Include="VoxelExport.pas">
             <Form>FVoxelExport</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="export\VectorMath.pas"/>
-        <DCCReference Include="export\MeshExport.pas"/>
-        <DCCReference Include="ObjectScanner.pas"/>
-        <DCCReference Include="export\MeshExportConfig.pas"/>
+        <DCCReference Include="bulbtracer\VectorMath.pas"/>
+        <DCCReference Include="bulbtracer\BulbTracer.pas"/>
+        <DCCReference Include="bulbtracer\ObjectScanner.pas"/>
+        <DCCReference Include="bulbtracer\BulbTracerConfig.pas"/>
         <DCCReference Include="opengl\MeshPreviewUI.pas">
             <Form>MeshPreviewFrm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="opengl\opengl12.pas"/>
         <DCCReference Include="opengl\MeshPreview.pas"/>
+        <DCCReference Include="bulbtracer\BulbTracerUITools.pas"/>
+        <DCCReference Include="bulbtracer\MeshWriter.pas"/>
+        <DCCReference Include="bulbtracer\MeshReader.pas"/>
+        <DCCReference Include="bulbtracer\MeshIOUtil.pas"/>
         <None Include="CHANGES.txt"/>
         <None Include=".gitignore"/>
         <BuildConfiguration Include="Debug">
@@ -302,11 +306,10 @@
                     <VersionInfoKeys Name="Comments">Freeware</VersionInfoKeys>
                 </VersionInfoKeys>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\DataExplorerDBXPlugin200.bpl">DBExpress Data Explorer Integration</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\DataExplorerDBXPluginEnt200.bpl">DBExpress Enterprise Data Explorer Integration</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclfmxstd200.bpl">Embarcadero FMX Standard Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k200.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp200.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\DataExplorerDBXPluginEnt200.bpl">DBExpress Enterprise Daten-Explorer-Integration</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclfmxstd200.bpl">Embarcadero FMX-Standardkomponenten</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k200.bpl">Microsoft Office 2000 Beispiele für gekapselte Komponenten für Automatisierungsserver</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp200.bpl">Microsoft Office XP Beispiele für gekapselte Komponenten für Automation Server</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>

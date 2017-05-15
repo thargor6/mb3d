@@ -3,7 +3,7 @@ object IniDirForm: TIniDirForm
   Top = 170
   BorderStyle = bsDialog
   Caption = 'Loading and saving initial directories'
-  ClientHeight = 425
+  ClientHeight = 457
   ClientWidth = 678
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -19,7 +19,7 @@ object IniDirForm: TIniDirForm
   TextHeight = 13
   object Label1: TLabel
     Left = 11
-    Top = 399
+    Top = 435
     Width = 174
     Height = 13
     Caption = '(Click a button to change a directory)'
@@ -29,15 +29,15 @@ object IniDirForm: TIniDirForm
     Top = 10
     Width = 537
     Height = 21
-    TabOrder = 0
+    TabOrder = 1
   end
   object Button1: TButton
     Left = 571
-    Top = 391
+    Top = 427
     Width = 91
     Height = 25
     Caption = 'Save + exit'
-    TabOrder = 1
+    TabOrder = 26
     OnClick = Button1Click
   end
   object Button2: TButton
@@ -47,7 +47,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'M3A animation files:'
-    TabOrder = 2
+    TabOrder = 10
     OnClick = Button3Click
   end
   object Edit2: TEdit
@@ -63,7 +63,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'Full M3I image files:'
-    TabOrder = 4
+    TabOrder = 0
     OnClick = Button3Click
   end
   object Edit3: TEdit
@@ -80,7 +80,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'M3P parameter files:'
-    TabOrder = 6
+    TabOrder = 2
     OnClick = Button3Click
   end
   object Edit4: TEdit
@@ -97,7 +97,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'BMP,JPG,PNG saving:'
-    TabOrder = 8
+    TabOrder = 4
     OnClick = Button3Click
   end
   object Edit5: TEdit
@@ -105,7 +105,7 @@ object IniDirForm: TIniDirForm
     Top = 170
     Width = 537
     Height = 21
-    TabOrder = 9
+    TabOrder = 11
   end
   object Button6: TButton
     Tag = 3
@@ -114,7 +114,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'M3F formula files load:'
-    TabOrder = 10
+    TabOrder = 6
     OnClick = Button3Click
   end
   object Button7: TButton
@@ -124,7 +124,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'Animation pics output:'
-    TabOrder = 11
+    TabOrder = 12
     OnClick = Button3Click
   end
   object Edit6: TEdit
@@ -132,7 +132,7 @@ object IniDirForm: TIniDirForm
     Top = 202
     Width = 537
     Height = 21
-    TabOrder = 12
+    TabOrder = 13
   end
   object Button8: TButton
     Tag = 6
@@ -141,7 +141,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'Background pictures:'
-    TabOrder = 13
+    TabOrder = 14
     OnClick = Button3Click
   end
   object Edit7: TEdit
@@ -149,14 +149,14 @@ object IniDirForm: TIniDirForm
     Top = 234
     Width = 537
     Height = 21
-    TabOrder = 14
+    TabOrder = 15
   end
   object Edit8: TEdit
     Left = 133
     Top = 138
     Width = 537
     Height = 21
-    TabOrder = 15
+    TabOrder = 9
   end
   object Button9: TButton
     Tag = 7
@@ -165,7 +165,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'M3I light parameter:'
-    TabOrder = 16
+    TabOrder = 8
     OnClick = Button3Click
   end
   object Button10: TButton
@@ -175,7 +175,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'Big render projects:'
-    TabOrder = 17
+    TabOrder = 16
     OnClick = Button3Click
   end
   object Edit9: TEdit
@@ -183,7 +183,7 @@ object IniDirForm: TIniDirForm
     Top = 266
     Width = 537
     Height = 21
-    TabOrder = 18
+    TabOrder = 17
   end
   object Button11: TButton
     Tag = 9
@@ -192,7 +192,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'Images for maps:'
-    TabOrder = 19
+    TabOrder = 18
     OnClick = Button3Click
   end
   object Edit10: TEdit
@@ -200,7 +200,7 @@ object IniDirForm: TIniDirForm
     Top = 298
     Width = 537
     Height = 21
-    TabOrder = 20
+    TabOrder = 19
   end
   object Button12: TButton
     Tag = 10
@@ -209,7 +209,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'M3V, PNG Voxel slices:'
-    TabOrder = 21
+    TabOrder = 20
     OnClick = Button3Click
   end
   object Edit11: TEdit
@@ -217,7 +217,7 @@ object IniDirForm: TIniDirForm
     Top = 330
     Width = 537
     Height = 21
-    TabOrder = 22
+    TabOrder = 21
   end
   object Button13: TButton
     Tag = 11
@@ -226,7 +226,7 @@ object IniDirForm: TIniDirForm
     Width = 121
     Height = 25
     Caption = 'M3C pathtracer files:'
-    TabOrder = 23
+    TabOrder = 22
     OnClick = Button3Click
   end
   object Edit12: TEdit
@@ -234,6 +234,23 @@ object IniDirForm: TIniDirForm
     Top = 362
     Width = 537
     Height = 21
+    TabOrder = 23
+  end
+  object Button14: TButton
+    Tag = 12
+    Left = 8
+    Top = 392
+    Width = 121
+    Height = 25
+    Caption = 'Meshes:'
     TabOrder = 24
+    OnClick = Button3Click
+  end
+  object Edit13: TEdit
+    Left = 133
+    Top = 394
+    Width = 537
+    Height = 21
+    TabOrder = 25
   end
 end

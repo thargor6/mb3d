@@ -56,9 +56,9 @@ procedure SetDialogDirectory(SaveDialog: TSaveDialog; FDir: String);  overload;
 procedure SetDialogDirectory(OpenDialog: TOpenDialog; FDir: String);  overload;
 procedure SetDialogDirectory(OpenPicDialog: TOpenPictureDialog; FDir: String);  overload;
 
-var IniVal: array[0..36] of String = ('81','5','20','5','30','30','60','50','10', '3','0','0:0','','0','1','1','0','','',
-      'No','No','Auto','','No','65 100','779 671','844 100','844 100','844 100','-1','No','Yes','','','0','Glossy', '100%' (*'Windows'*));
-    IniDirs: array[0..11] of String = ('','','','','','','','','','','',''); //M3Idir, M3Pdir, BMPdir, FormulaDir, M3Adir, AniOut, BGpic, Lightparas, BigRenders, LightMaps, voxel, M3C
+var IniVal: array[0..37] of String = ('81','5','20','5','30','30','60','50','10', '3','0','0:0','','0','1','1','0','','',
+      'No','No','Auto','','No','65 100','779 671','844 100','844 100','844 100','-1','No','Yes','','','0','Glossy' (*'Windows'*), '100%' , '');
+    IniDirs: array[0..12] of String = ('','','','','','','','','','','','',''); //M3Idir, M3Pdir, BMPdir, FormulaDir, M3Adir, AniOut, BGpic, Lightparas, BigRenders, LightMaps, voxel, M3C, Meshes
     IniHigherVersion: array of String;
     IniFileDate: TDateTime;
     HistoryFolder: String;
@@ -67,14 +67,15 @@ var IniVal: array[0..36] of String = ('81','5','20','5','30','30','60','50','10'
     LastHisParSaveTime: TDateTime;
     LHPSLight: TLightingParas9;
 const
-    IniMax: Integer = 36;
-    IniItem: array[0..36] of String = ('StickOption','MandRotDeg','NavSlideStep',
+    IniMax: Integer = 37;
+    IniItem: array[0..37] of String = ('StickOption','MandRotDeg','NavSlideStep',
       'NavLookAngle','NavFarPlane','NavFOVy','NavMaxIts','AniFrameCount','AniPrevFPS',  //NavFarPlane not used anymore
       'AniSmoothPar','NaviAZERTY','UserAspect','M3LFolder','ImageSharp','NavFkey',
       'ScaleDEstop','SaveImagePNG','BigRendersFolder','LightMapsFolder','NavHiQ',
       'NavDoubleClickMode','ThreadCount','VoxelFolder','SavePNGtextPars','m3dPos',
       'm3dSize','FormulaPos','LightPos','PostpPos','ThreadPriority','DisableTBoost',
-      'SaveImgInM3I','M3CFolder','Author','NaviPanelShow','VisualTheme','NaviSize');
+      'SaveImgInM3I','M3CFolder','Author','NaviPanelShow','VisualTheme','NaviSize',
+      'MeshesFolder');
     AccPresetFileNames: array[0..3] of String = ('preset_preview.txt',
       'preset_video.txt', 'preset_mid.txt', 'preset_high.txt');
     AccPresetItemNames: array[0..7] of String = ('SmoothNormals', 'DEstop',
@@ -575,6 +576,7 @@ begin
     IniDirs[3] := AppFolder + 'M3Formulas';
     IniDirs[8] := AppFolder + 'BigRenders';
     IniDirs[9] := AppFolder + 'M3Maps';
+    IniDirs[12] := AppFolder + 'Meshes';
     //new: local ini in appdata folder:
     s := AppFolder + 'Mandelbulb3D.ini';
     bCopyFile := False;
@@ -632,6 +634,7 @@ begin
       if IniVal[18] <> '' then IniDirs[9] := IniVal[18];
       if IniVal[22] <> '' then IniDirs[10] := IniVal[22];
       if IniVal[32] <> '' then IniDirs[11] := IniVal[32];
+      if IniVal[37] <> '' then IniDirs[12] := IniVal[37];
       if not CheckAuthorValid(IniVal[33]) then IniVal[33] := '';
     end;
 end;
@@ -650,6 +653,7 @@ begin
       IniVal[18] := IniDirs[9]; //LightMaps folder
       IniVal[22] := IniDirs[10]; //voxel folder
       IniVal[32] := IniDirs[11]; //m3c folder
+      IniVal[37] := IniDirs[12]; //meshes folder
       IniVal[35] := TStyleManager.ActiveStyle.Name;
       Rewrite(f);
       for i := 0 to 6 do Writeln(f, IniDirs[i]);
