@@ -412,6 +412,7 @@ type
     bImageText: LongBool;
     TFSB9E, TFSB9Echecked: LongBool;
     StickIt: Integer;
+    FNoSetFocus: Boolean;
   //  lastCP: TPoint;
     procedure RepaintMand3D(bStartTimer: LongBool);
     procedure CalcStatistic;
@@ -505,6 +506,8 @@ type
     procedure RefreshNavigator(const Enabled: Boolean);
     function IsCalculating: Boolean;
     procedure PropagateCurrFrameNumber;
+    property NoSetFocus: Boolean read FNoSetFocus write FNoSetFocus;
+
   end;
 procedure TriggerRepaint;
 function AniFileAlreadyExists(var s: String): LongBool;
@@ -1272,7 +1275,8 @@ begin
     with MHeader do
     try
       if (Width > 0) and (Height > 0) then InternAspect := Width / Height;
-      Button2.SetFocus;
+      if not NoSetFocus then
+        Button2.SetFocus;
       if MHeader.TilingOptions <> 0 then
       begin
         GetTilingInfosFromHeader(@MHeader, TileRect, Crop);

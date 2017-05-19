@@ -51,7 +51,7 @@ object MeshPreviewFrm: TMeshPreviewFrm
       Height = 137
       Align = alTop
       Caption = 'Display Style'
-      ItemIndex = 5
+      ItemIndex = 4
       Items.Strings = (
         'Points'
         'Wireframe'

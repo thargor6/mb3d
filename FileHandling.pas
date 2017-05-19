@@ -2063,6 +2063,7 @@ begin
         UpdateLightParasAbove3(para10.Light);
         IniCFsFromHAddon(PTHeaderCustomAddon(Para10.PCFAddon), Para10.PHCustomF);
       //  Mand3DForm.HAddOn.bHCAversion := 16;//test
+
         bSRVolLightMapCalculated := False;
         Mand3DForm.SetEditsFromHeader;
         Mand3DForm.allPreSetsUp;
