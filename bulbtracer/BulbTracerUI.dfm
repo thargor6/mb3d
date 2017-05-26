@@ -31,7 +31,7 @@ object BulbTracerFrm: TBulbTracerFrm
     object Label13: TLabel
       Left = 86
       Top = 58
-      Width = 228
+      Width = 217
       Height = 16
       Alignment = taCenter
       AutoSize = False
@@ -43,7 +43,7 @@ object BulbTracerFrm: TBulbTracerFrm
       ParentFont = False
     end
     object Label19: TLabel
-      Left = 487
+      Left = 520
       Top = 60
       Width = 60
       Height = 13
@@ -53,7 +53,7 @@ object BulbTracerFrm: TBulbTracerFrm
     object Button1: TButton
       Left = 7
       Top = 55
-      Width = 75
+      Width = 65
       Height = 25
       Caption = 'Close'
       TabOrder = 0
@@ -62,7 +62,7 @@ object BulbTracerFrm: TBulbTracerFrm
     object CalculateBtn: TButton
       Left = 305
       Top = 55
-      Width = 177
+      Width = 128
       Height = 25
       Caption = 'Generate Mesh'
       TabOrder = 1
@@ -81,16 +81,16 @@ object BulbTracerFrm: TBulbTracerFrm
       TabOrder = 2
     end
     object CancelBtn: TButton
-      Left = 688
+      Left = 721
       Top = 55
-      Width = 94
+      Width = 65
       Height = 25
       Caption = 'Cancel'
       TabOrder = 3
       OnClick = CancelBtnClick
     end
     object CancelTypeCmb: TComboBox
-      Left = 550
+      Left = 583
       Top = 57
       Width = 136
       Height = 21
@@ -156,6 +156,15 @@ object BulbTracerFrm: TBulbTracerFrm
         TickStyle = tsNone
         OnMouseUp = FrameTBarMouseUp
       end
+    end
+    object GenCurrMeshBtn: TButton
+      Left = 433
+      Top = 55
+      Width = 81
+      Height = 25
+      Caption = 'Gen Curr Mesh'
+      TabOrder = 6
+      OnClick = CalculateBtnClick
     end
   end
   object PageControl1: TPageControl
@@ -435,6 +444,73 @@ object BulbTracerFrm: TBulbTracerFrm
                 Max = 32000
                 TabOrder = 4
                 OnClick = MeshISOValueUpDownClick
+              end
+              object MeshReductionGBox: TJvGroupBox
+                Left = 583
+                Top = 9
+                Width = 192
+                Height = 95
+                Caption = 'Quadric Mesh Simplification'
+                TabOrder = 6
+                Checkable = True
+                PropagateEnable = True
+                object Label25: TLabel
+                  Left = 47
+                  Top = 20
+                  Width = 57
+                  Height = 13
+                  Hint = 
+                    'Remaining faces (1.0 = no reduction, 0.0 = max reduction = no re' +
+                    'mainig faces )'
+                  Alignment = taRightJustify
+                  Caption = 'Retain ratio:'
+                  ParentShowHint = False
+                  ShowHint = True
+                end
+                object Label26: TLabel
+                  Left = 33
+                  Top = 43
+                  Width = 71
+                  Height = 13
+                  Alignment = taRightJustify
+                  Caption = 'Agressiveness:'
+                end
+                object MeshReductionRetainRatioEdit: TEdit
+                  Left = 110
+                  Top = 17
+                  Width = 54
+                  Height = 21
+                  TabOrder = 4
+                  Text = '0'
+                end
+                object MeshReductionRetainRatioUpDown: TUpDown
+                  Left = 164
+                  Top = 17
+                  Width = 17
+                  Height = 21
+                  Min = -32000
+                  Max = 32000
+                  TabOrder = 1
+                  OnClick = MeshReductionRetainRatioUpDownClick
+                end
+                object MeshReductionAgressivenessEdit: TEdit
+                  Left = 110
+                  Top = 40
+                  Width = 54
+                  Height = 21
+                  TabOrder = 2
+                  Text = '0'
+                end
+                object MeshReductionAgressivenessUpDown: TUpDown
+                  Left = 164
+                  Top = 40
+                  Width = 17
+                  Height = 21
+                  Min = -32000
+                  Max = 32000
+                  TabOrder = 3
+                  OnClick = MeshReductionAgressivenessUpDownClick
+                end
               end
             end
           end

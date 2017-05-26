@@ -2613,7 +2613,7 @@ object Mand3DForm: TMand3DForm
         Width = 52
         Height = 30
         Hint = 'Create Meshes or Points Clouds'
-        Caption = 'BTracer'
+        Caption = 'MeshGen'
         ParentShowHint = False
         ShowHint = True
         OnClick = MeshExportBtnClick
@@ -2630,8 +2630,19 @@ object Mand3DForm: TMand3DForm
         Spacing = 0
         OnClick = MutaGenBtnClick
       end
+      object ScriptBtn: TSpeedButton
+        Left = 108
+        Top = 5
+        Width = 52
+        Height = 30
+        Hint = 'Script Editor'
+        Caption = 'Script'
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = ScriptBtnClick
+      end
       object GroupBox1: TGroupBox
-        Left = 415
+        Left = 470
         Top = 1
         Width = 205
         Height = 69
@@ -2786,11 +2797,11 @@ object Mand3DForm: TMand3DForm
         end
       end
       object PageControl2: TPageControl
-        Left = 109
+        Left = 164
         Top = 4
         Width = 268
         Height = 64
-        ActivePage = TabSheet7
+        ActivePage = TabSheet13
         TabOrder = 1
         object TabSheet7: TTabSheet
           Caption = 'Open'
@@ -3087,7 +3098,7 @@ object Mand3DForm: TMand3DForm
         end
       end
       object GroupBox2: TGroupBox
-        Left = 370
+        Left = 425
         Top = 1
         Width = 49
         Height = 69

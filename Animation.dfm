@@ -731,6 +731,7 @@ object AnimationForm: TAnimationForm
       Font.Style = []
       ParentFont = False
       TabOrder = 2
+      OnChange = Edit2Change
     end
     object Button3: TButton
       Left = 40

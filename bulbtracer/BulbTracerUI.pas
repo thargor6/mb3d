@@ -144,6 +144,14 @@ type
     FrameUpDown: TUpDown;
     FrameTBar: TTrackBarEx;
     OpenDialog1: TOpenDialog;
+    MeshReductionGBox: TJvGroupBox;
+    Label25: TLabel;
+    Label26: TLabel;
+    MeshReductionRetainRatioEdit: TEdit;
+    MeshReductionRetainRatioUpDown: TUpDown;
+    MeshReductionAgressivenessEdit: TEdit;
+    MeshReductionAgressivenessUpDown: TUpDown;
+    GenCurrMeshBtn: TButton;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -185,6 +193,10 @@ type
     procedure FrameTBarChange(Sender: TObject);
     procedure FrameTBarMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure MeshReductionRetainRatioUpDownClick(Sender: TObject;
+      Button: TUDBtnType);
+    procedure MeshReductionAgressivenessUpDownClick(Sender: TObject;
+      Button: TUDBtnType);
   private
     { Private-Deklarationen }
   //  PreviewVoxel: array of Cardinal;   //buffer to not calc everything again if shifted position
@@ -217,6 +229,7 @@ type
     procedure UpdateVertexGenConfig;
     procedure SavePointCloud;
     procedure SaveMesh;
+    function  MakeMeshSequenceFilename( const BaseFilename: String ): String;
     procedure WndProc(var Message: TMessage); override;
     function  IsPreviewCalculating: Boolean;
     procedure CancelPreview;
@@ -232,6 +245,7 @@ type
   public
     { Public-Deklarationen }
     FParamSource: TParamSource;
+    FSingleFrame: Boolean;
     FParamFilename: String;
     FParamSequenceBaseFilename: String;
     FParamSequenceFileExt: String;
@@ -269,7 +283,8 @@ implementation
 
 uses CalcVoxelSliceThread, FileHandling, Math, Math3D, Calc, DivUtils, Mand,
   HeaderTrafos, CustomFormulas, ImageProcess, VectorMath, ObjectScanner,
-  DateUtils, BulbTracer, MeshPreviewUI, MeshWriter, MeshReader, MeshIOUtil;
+  DateUtils, BulbTracer, MeshPreviewUI, MeshWriter, MeshReader, MeshIOUtil,
+  MeshSimplifier;
 
 {$R *.dfm}
 
@@ -579,7 +594,7 @@ begin
         FCalculating := False;
         EnableControls(True);
 
-        if FParamSource = psFileSequence then begin
+        if ( FParamSource = psFileSequence ) and ( not FSingleFrame ) then begin
           if ( not FForceAbort ) and  ( FParamSequenceCurrFrame < FParamSequenceTo ) then begin
             Inc( FParamSequenceCurrFrame );
             UpdateFrameDisplay( FParamSequenceCurrFrame );
@@ -856,6 +871,10 @@ begin
     TaubinSmoothLambaEdit.Text := FloatToStr(0.42);
     TaubinSmoothMuEdit.Text := FloatToStr(-0.45);
     TaubinSmoothPassesEdit.Text := IntToStr(12);
+
+    MeshReductionRetainRatioEdit.Text := FloatToStr(0.25);
+    MeshReductionAgressivenessEdit.Text := FloatToStr(7.0);
+
   finally
     FRefreshing := False;
   end;
@@ -1293,7 +1312,9 @@ begin
         Exit;
     end;
 
-    if FParamSource = psFileSequence then begin
+    FSingleFrame := Sender = GenCurrMeshBtn;
+
+    if ( FParamSource = psFileSequence ) and ( Sender <> GenCurrMeshBtn ) then begin
       FParamSequenceCurrFrame := FParamSequenceFrom;
       UpdateFrameDisplay( FParamSequenceCurrFrame );
       ImportParams( True );
@@ -1499,17 +1520,34 @@ begin
   end;
 end;
 
+function TBulbTracerFrm.MakeMeshSequenceFilename( const BaseFilename: String ): String;
+var
+  I: Integer;
+begin
+  Result := BaseFilename;
+  if FParamSource = psFileSequence then begin
+    for I := Length( BaseFilename ) downto 1 do begin
+      if BaseFilename[I] = '.' then begin
+        Result := Copy( BaseFilename, 1, I - 1 ) + '_' + Format('%.5d', [ FParamSequenceCurrFrame ] ) + Copy( BaseFilename, I, Length( BaseFilename ) - I + 1) ;
+        break;
+      end;
+    end;
+  end;
+end;
+
 procedure TBulbTracerFrm.SaveMesh;
 var
   FacesList: TFacesList;
   DoPostProcessing: Boolean;
   F2: TFacesList;
+  TargetFaceCount: Integer;
+  Agressiveness: Double;
 begin
   try
     if (not FForceAbort) or (FCancelType = ctCancelAndShowResult) then begin
       if( FSaveType = stUnprocessedMeshData ) then begin
         OutputDebugString(PChar('TOTAL: '+IntToStr(DateUtils.MilliSecondsBetween(Now, 0)-T0)+' ms'));
-        TUnprocessedMeshFileWriter.SaveToFile(FilenameREd.Text, FThreadVertexLists);
+        TUnprocessedMeshFileWriter.SaveToFile( MakeMeshSequenceFilename( FilenameREd.Text ), FThreadVertexLists);
         if not FForceAbort then
           Label13.Caption := 'Elapsed time: ' + IntToStr(Round((DateUtils.MilliSecondsBetween(Now, 0)-T0)/1000.0))+' s';
       end
@@ -1518,14 +1556,26 @@ begin
         try
           DoPostProcessing := SmoothGBox.Checked;
           FacesList.DoCenter(0.1);
-          if SmoothGBox.Checked then begin
+          if ( not FForceAbort ) and SmoothGBox.Checked then begin
             FacesList.TaubinSmooth(StrToFloat(TaubinSmoothLambaEdit.Text), StrToFloat(TaubinSmoothMuEdit.Text), StrToInt(TaubinSmoothPassesEdit.Text));
           end;
+          if ( not FForceAbort ) and MeshReductionGBox.Checked then begin
+            TargetFaceCount := Round( FacesList.Count * StrToFloatSafe( MeshReductionRetainRatioEdit.Text, 1.0 ) );
+            Agressiveness := StrToFloatSafe( MeshReductionAgressivenessEdit.Text, 7.0 );
+            if ( TargetFaceCount > 0 ) and ( TargetFaceCount < FacesList.Count ) and ( Agressiveness >= 2.0 ) then begin
+              with TMeshSimplifier.Create( FacesList ) do try
+                SimplifyMesh(  TargetFaceCount, Agressiveness );
+              finally
+                Free;
+              end;
+            end;
+          end;
+
           if not FForceAbort then begin
             if FSaveType = stMeshAsObj then
-              TObjFileWriter.SaveToFile(FilenameREd.Text, FacesList)
+              TObjFileWriter.SaveToFile(MakeMeshSequenceFilename( FilenameREd.Text ), FacesList)
             else if FSaveType = stMeshAsLWO2 then
-              TLightwaveObjFileWriter.SaveToFile(FilenameREd.Text, FacesList);
+              TLightwaveObjFileWriter.SaveToFile(MakeMeshSequenceFilename( FilenameREd.Text ), FacesList);
           end;
           FThreadVertexLists.Clear;
           OutputDebugString(PChar('TOTAL: '+IntToStr(DateUtils.MilliSecondsBetween(Now, 0)-T0)+' ms'));
@@ -1577,6 +1627,32 @@ procedure TBulbTracerFrm.MeshPreviewBtnClick(Sender: TObject);
 begin
   MeshPreviewFrm.Visible := True;
   BringToFront2(MeshPreviewFrm.Handle);
+end;
+
+procedure TBulbTracerFrm.MeshReductionAgressivenessUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(MeshReductionAgressivenessEdit.Text, 0.0) + UpDownBtnValue(Button, 1.0);
+  if Value < 3.0 then
+    Value := 3.0
+  else if Value > 20.0 then
+    Value := 20.0;
+  MeshReductionAgressivenessEdit.Text := FloatToStr(Value);
+end;
+
+procedure TBulbTracerFrm.MeshReductionRetainRatioUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(MeshReductionRetainRatioEdit.Text, 0.0) + UpDownBtnValue(Button, 0.05);
+  if Value < 0.01 then
+    Value := 0.01
+  else if Value > 0.99 then
+    Value := 0.99;
+  MeshReductionRetainRatioEdit.Text := FloatToStr(Value);
 end;
 
 procedure TBulbTracerFrm.MeshVResolutionEditChange(Sender: TObject);
@@ -1646,7 +1722,7 @@ begin
     FrameTBar.Enabled := True;
 
     CalculateBtn.Caption := 'Generate ' + IntToStr( FParamSequenceTo - FParamSequenceFrom + 1 )+ ' Meshes';
-
+    GenCurrMeshBtn.Visible := True;
   end
   else begin
     FrameUpDown.Min := 1;
@@ -1660,6 +1736,7 @@ begin
     FrameTBar.Enabled := False;
 
     CalculateBtn.Caption := 'Generate Mesh';
+    GenCurrMeshBtn.Visible := False;
   end;
 end;
 

@@ -52,7 +52,7 @@ uses
   ColorSSAO in 'ColorSSAO.pas',
   ThreadUtils in 'ThreadUtils.pas',
   Maps in 'maps\Maps.pas',
-  PostProcessForm in 'PostProcessForm.pas' {PostProForm},
+  ScriptUI in 'script\ScriptUI.pas' {ScriptEditorForm},
   ColorOptionForm in 'ColorOptionForm.pas' {FColorOptions},
   uMapCalcWindow in 'uMapCalcWindow.pas' {MapCalcWindow},
   FormulaCompiler in 'formula\FormulaCompiler.pas',
@@ -81,7 +81,8 @@ uses
   BulbTracerUITools in 'bulbtracer\BulbTracerUITools.pas',
   MeshWriter in 'bulbtracer\MeshWriter.pas',
   MeshReader in 'bulbtracer\MeshReader.pas',
-  MeshIOUtil in 'bulbtracer\MeshIOUtil.pas';
+  MeshIOUtil in 'bulbtracer\MeshIOUtil.pas',
+  MeshSimplifier in 'bulbtracer\MeshSimplifier.pas';
 
 {$R *.res}
 
@@ -107,7 +108,7 @@ begin
   Application.CreateForm(TMCForm, MCForm);
   Application.CreateForm(TFTextBox, FTextBox);
   Application.CreateForm(TBRInfoForm, BRInfoForm);
-  Application.CreateForm(TPostProForm, PostProForm);
+  Application.CreateForm(TScriptEditorForm, ScriptEditorForm);
   Application.CreateForm(TFColorOptions, FColorOptions);
   Application.CreateForm(TMapCalcWindow, MapCalcWindow);
   Application.CreateForm(TMutaGenFrm, MutaGenFrm);

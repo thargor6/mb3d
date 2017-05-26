@@ -200,8 +200,8 @@
         <DCCReference Include="ColorSSAO.pas"/>
         <DCCReference Include="ThreadUtils.pas"/>
         <DCCReference Include="maps\Maps.pas"/>
-        <DCCReference Include="PostProcessForm.pas">
-            <Form>PostProForm</Form>
+        <DCCReference Include="script\ScriptUI.pas">
+            <Form>ScriptEditorForm</Form>
         </DCCReference>
         <DCCReference Include="ColorOptionForm.pas">
             <Form>FColorOptions</Form>
@@ -256,6 +256,7 @@
         <DCCReference Include="bulbtracer\MeshWriter.pas"/>
         <DCCReference Include="bulbtracer\MeshReader.pas"/>
         <DCCReference Include="bulbtracer\MeshIOUtil.pas"/>
+        <DCCReference Include="bulbtracer\MeshSimplifier.pas"/>
         <None Include="CHANGES.txt"/>
         <None Include=".gitignore"/>
         <BuildConfiguration Include="Debug">

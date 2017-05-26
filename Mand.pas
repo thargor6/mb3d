@@ -274,6 +274,7 @@ type
     Label46: TLabel;
     FrameEdit: TEdit;
     FrameUpDown: TUpDown;
+    ScriptBtn: TSpeedButton;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -393,6 +394,7 @@ type
     procedure FrameUpDownClick(Sender: TObject; Button: TUDBtnType);
     procedure FrameEditExit(Sender: TObject);
     procedure MeshExportBtnClick(Sender: TObject);
+    procedure ScriptBtnClick(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
   //    const Rect: TRect; Active: Boolean);
@@ -515,7 +517,7 @@ procedure SaveFormulaBytes;
 
 var
   Mand3DForm: TMand3DForm;
-  M3dVersion: Single = 1.91;
+  M3dVersion: Single = 1.93;
   Testing: LongBool = False;
   TBoostChanged: LongBool = False;
   MCalcStop: LongBool = False;
@@ -543,7 +545,7 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
      uMapCalcWindow, FormulaCompiler, MutaGenGUI, VisualThemesGUI, Vcl.Themes,
-     MapSequencesGUI, MapSequences, BulbTracerUI;
+     MapSequencesGUI, MapSequences, BulbTracerUI, ScriptUI;
 
 {$R *.dfm}
 
@@ -693,6 +695,12 @@ begin
       else
         PostProForm.Edit2.Text := FloatToStrSingle(MHeader.sDOFclipR * s);
     end;
+end;
+
+procedure TMand3DForm.ScriptBtnClick(Sender: TObject);
+begin
+  ScriptEditorForm.Visible := True;
+  BringToFront2(ScriptEditorForm.Handle);
 end;
 
 procedure TMand3DForm.ParasChanged;
@@ -1544,6 +1552,20 @@ begin
       Edit11.Text := IntToStr(MHeader.Width);
       Edit12.Text := IntToStr(MHeader.Height);
       bUserChange := b;
+
+
+    if ( AnimationForm.AniOption = 3 ) and ( AnimationForm.AniOutputFormat = 3) then  begin
+      try
+        AnimationForm.CloseOutPutStream;
+      except
+        // hide this error
+      end;
+      SaveCurrParamAsM3P( stmp );
+      AnimationForm.NextSubFrame;
+      Exit;
+    end;
+
+
     end;
     SaveM3IfileAuto := False;
     SSAORiteration := 0;
@@ -1603,17 +1625,6 @@ begin
     MCalcThreadStats.pMessageHwnd := Self.Handle;
     MCalcThreadStats.iProcessingType := 1;
     MCalcThreadStats.iAllProcessingOptions := AllAutoProcessings(@MHeader);
-
-    if ( AnimationForm.AniOption = 3 ) and ( AnimationForm.AniOutputFormat = 3) then  begin
-      try
-        AnimationForm.CloseOutPutStream;
-      except
-        // hide this error
-      end;
-      SaveCurrParamAsM3P( stmp );
-      AnimationForm.NextSubFrame;
-      Exit;
-    end;
 
     if CalcMandT(@MHeader, @HeaderLightVals, @MCalcThreadStats,
                  @siLight5[0], mSLoffset, mFSIstart, mFSIoffset, GetCalcRect) then

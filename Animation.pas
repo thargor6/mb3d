@@ -138,6 +138,7 @@ type
     procedure SpeedButton13Click(Sender: TObject);
     procedure SpeedButton14Click(Sender: TObject);
     procedure Edit1Exit(Sender: TObject);
+    procedure Edit2Change(Sender: TObject);
   private
     { Private-Deklarationen }
     CalcThreadStats: TCalcThreadStats;
@@ -581,6 +582,11 @@ procedure TAnimationForm.Edit1Exit(Sender: TObject);
 begin
   if CurrentNr < HeaderCount then
     RenderPrevBMP(KFposLUT[CurrentNr]);
+end;
+
+procedure TAnimationForm.Edit2Change(Sender: TObject);
+begin
+  AniOutputFolder := Edit2.Text;
 end;
 
 procedure TAnimationForm.Button3Click(Sender: TObject);

@@ -1,4 +1,12 @@
-V1.92
+V1.93 (unreleased)
+ - BulbTracer:
+    - Optional mesh simplification using Quadric Mesh Simplification ( http://cseweb.ucsd.edu/~ravir/190/2016/garland97.pdf )
+    - May also load params from harddrive (rather than only importing the current param from main)
+    - Support for generating mesh-sequences (by loading *.mp3-sequences, for example those generated with the animation editor)
+    - Additional function to generate only the currently displayed mesh in sequence-mode
+ - fixed some problems regarding the mp3-output in the animation-editor
+
+V1.92 (unreleased)
  - new "m3p"-output-option in the animation editor
  - new "Unprocessed raw mesh"-output option in the mesh-generator allowing the creating of larger meshes becaue the
    mesh-refinement is done in an external app
