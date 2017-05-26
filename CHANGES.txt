@@ -1,3 +1,8 @@
+V1.94 (unreleased)
+ - BulbTracer:
+    - new lwo2 (Lightwave3D 6.0)-output format for generated meshes (much smaller than *.obj)
+    - improved the speed of the mesh-merging-process
+
 V1.93 (unreleased)
  - BulbTracer:
     - Optional mesh simplification using Quadric Mesh Simplification ( http://cseweb.ucsd.edu/~ravir/190/2016/garland97.pdf )

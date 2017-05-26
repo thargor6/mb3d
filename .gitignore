@@ -8,6 +8,9 @@ formula/__history/*
 prefs/__history/*
 maps/__history/*
 export/__history/*
+bulbtracer/__history/*
+bulbtracer/meshmerge/__history/*
+opengl/__history/*
 *.exe
 *.zip
 Mandelbulb3D.ini
@@ -15,3 +18,5 @@ Mandelbulb3D.ini
 *.~dsk
 *.local
 *.identcache
+color_preset*
+*.m3f
