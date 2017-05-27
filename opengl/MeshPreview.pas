@@ -7,7 +7,7 @@ unit MeshPreview;
 interface
 
 uses
-  SysUtils, Classes, Windows, OpenGL12, Vcl.Graphics, VertexList, VectorMath;
+  SysUtils, Classes, Windows, (*OpenGL12,*) dglOpenGL, Vcl.Graphics, VertexList, VectorMath;
 
 type
   TDisplayStyle = (dsPoints, dsWireframe, dsFlatSolid, dsFlatSolidWithEdges, dsSmoothSolid, dsSmoothSolidWithEdges);
@@ -217,7 +217,7 @@ end;
 procedure TOpenGLHelper.InitGL;
 begin
   if FRC = 0 then begin
-    if not LoadOpenGL then
+    if not InitOpenGL then
       RaiseError('Error initializing OpenGL library');
     SetupPixelFormat;
     FRC := wglCreateContext(FCanvas.Handle);
@@ -226,8 +226,7 @@ begin
     try
       if not wglMakeCurrent(FCanvas.Handle, FRC) then
         RaiseError('Error activating Rendering Context');
-      // ClearExtensions;
-      // ReadExtensions;
+      ReadExtensions;
       SetupGL;
       Application.OnIdle := ApplicationEventsIdle;
     except
