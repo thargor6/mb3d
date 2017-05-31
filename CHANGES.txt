@@ -1,3 +1,9 @@
+V1.95 (unreleased)
+ - OpenGL:
+    - updated the OpenGL-functions to use the OpenGl 4.5 Headers from
+    - Vertex- and Fragment-Shaders are supported now, too. Using them in the
+      new "HMapGen"-module
+
 V1.94 (unreleased)
  - experimental new module "HMapGen" to create heightmaps from meshes
  - BulbTracer:
