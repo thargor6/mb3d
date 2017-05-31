@@ -75,14 +75,22 @@ uses
   BulbTracer in 'bulbtracer\BulbTracer.pas',
   ObjectScanner in 'bulbtracer\ObjectScanner.pas',
   BulbTracerConfig in 'bulbtracer\BulbTracerConfig.pas',
-  MeshPreviewUI in 'opengl\MeshPreviewUI.pas' {MeshPreviewFrm},
   opengl12 in 'opengl\opengl12.pas',
   MeshPreview in 'opengl\MeshPreview.pas',
   BulbTracerUITools in 'bulbtracer\BulbTracerUITools.pas',
   MeshWriter in 'bulbtracer\MeshWriter.pas',
   MeshReader in 'bulbtracer\MeshReader.pas',
   MeshIOUtil in 'bulbtracer\MeshIOUtil.pas',
-  MeshSimplifier in 'bulbtracer\MeshSimplifier.pas';
+  MeshSimplifier in 'bulbtracer\MeshSimplifier.pas',
+  ShaderUtil in 'opengl\ShaderUtil.pas',
+  dglOpenGL in 'opengl\dglOpenGL.pas',
+  MeshPreviewUI in 'opengl\MeshPreviewUI.pas' {MeshPreviewFrm},
+  OpenGLPreviewUtil in 'opengl\OpenGLPreviewUtil.pas',
+  PNMPack in 'heightmapgen\PNMPack.pas',
+  HeightMapGenPreview in 'heightmapgen\HeightMapGenPreview.pas',
+  HeightMapGenUI in 'heightmapgen\HeightMapGenUI.pas' {HeightMapGenFrm},
+  PNMWriter in 'heightmapgen\PNMWriter.pas',
+  PostProcessForm in 'PostProcessForm.pas' {PostProForm};
 
 {$R *.res}
 
@@ -118,6 +126,8 @@ begin
   Application.CreateForm(TParamValueEditFrm, ParamValueEditFrm);
   Application.CreateForm(TFVoxelExport, FVoxelExport);
   Application.CreateForm(TMeshPreviewFrm, MeshPreviewFrm);
+  Application.CreateForm(THeightMapGenFrm, HeightMapGenFrm);
+  Application.CreateForm(TPostProForm, PostProForm);
   //SuppressMessageBoxes := True;
   Application.Run;
 end.

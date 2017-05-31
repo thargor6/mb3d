@@ -1,6 +1,6 @@
 { ---------------------------------------------------------------------------- }
 { BulbTracer for MB3D                                                          }
-{ Copyright (C) 2016 Andreas Maschke                                           }
+{ Copyright (C) 2016-2017 Andreas Maschke                                      }
 { ---------------------------------------------------------------------------- }
 unit MeshPreviewUI;
 
@@ -110,6 +110,9 @@ var
   MeshPreviewFrm: TMeshPreviewFrm;
 
 implementation
+
+uses
+  OpenGLPreviewUtil;
 
 {$R *.dfm}
 const

@@ -177,6 +177,10 @@ object BulbTracerFrm: TBulbTracerFrm
     TabOrder = 1
     object TabSheet1: TTabSheet
       Caption = 'Mesh properties'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel7: TPanel
         Left = 0
         Top = 134
@@ -261,6 +265,8 @@ object BulbTracerFrm: TBulbTracerFrm
             Left = 0
             Top = 0
             Caption = 'Mesh'
+            ExplicitWidth = 0
+            ExplicitHeight = 0
             object Panel6: TPanel
               Left = 0
               Top = 0
@@ -518,6 +524,8 @@ object BulbTracerFrm: TBulbTracerFrm
             Left = 0
             Top = 0
             Caption = 'Point Cloud'
+            ExplicitWidth = 0
+            ExplicitHeight = 0
             object Panel5: TPanel
               Left = 0
               Top = 0
@@ -622,6 +630,10 @@ object BulbTracerFrm: TBulbTracerFrm
       TabOrder = 0
       object TabSheet2: TTabSheet
         Caption = 'Fractal to trace'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Panel3: TPanel
           Left = 0
           Top = 0
@@ -1062,6 +1074,10 @@ object BulbTracerFrm: TBulbTracerFrm
       TabOrder = 1
       object TabSheet3: TTabSheet
         Caption = 'Trace Preview'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Panel4: TPanel
           Left = 0
           Top = 0

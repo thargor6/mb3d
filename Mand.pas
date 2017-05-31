@@ -275,6 +275,7 @@ type
     FrameEdit: TEdit;
     FrameUpDown: TUpDown;
     ScriptBtn: TSpeedButton;
+    HeightMapGenBtn: TSpeedButton;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -395,6 +396,7 @@ type
     procedure FrameEditExit(Sender: TObject);
     procedure MeshExportBtnClick(Sender: TObject);
     procedure ScriptBtnClick(Sender: TObject);
+    procedure HeightMapGenBtnClick(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
   //    const Rect: TRect; Active: Boolean);
@@ -545,7 +547,7 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
      uMapCalcWindow, FormulaCompiler, MutaGenGUI, VisualThemesGUI, Vcl.Themes,
-     MapSequencesGUI, MapSequences, BulbTracerUI, ScriptUI;
+     MapSequencesGUI, MapSequences, BulbTracerUI, ScriptUI, HeightMapGenUI;
 
 {$R *.dfm}
 
@@ -1855,6 +1857,12 @@ procedure TMand3DForm.getI1BMPSLs;
 begin
     I1BMPstartSL := Integer(Image1.Picture.Bitmap.ScanLine[0]);
     I1BMPoffset  := Integer(Image1.Picture.Bitmap.ScanLine[1]) - I1BMPstartSL;
+end;
+
+procedure TMand3DForm.HeightMapGenBtnClick(Sender: TObject);
+begin
+  HeightMapGenFrm.Visible := True;
+  BringToFront2(HeightMapGenFrm.Handle);
 end;
 
 procedure TMand3DForm.RepaintMand3D(bStartTimer: LongBool);

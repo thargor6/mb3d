@@ -246,10 +246,6 @@
         <DCCReference Include="bulbtracer\BulbTracer.pas"/>
         <DCCReference Include="bulbtracer\ObjectScanner.pas"/>
         <DCCReference Include="bulbtracer\BulbTracerConfig.pas"/>
-        <DCCReference Include="opengl\MeshPreviewUI.pas">
-            <Form>MeshPreviewFrm</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
         <DCCReference Include="opengl\opengl12.pas"/>
         <DCCReference Include="opengl\MeshPreview.pas"/>
         <DCCReference Include="bulbtracer\BulbTracerUITools.pas"/>
@@ -257,6 +253,24 @@
         <DCCReference Include="bulbtracer\MeshReader.pas"/>
         <DCCReference Include="bulbtracer\MeshIOUtil.pas"/>
         <DCCReference Include="bulbtracer\MeshSimplifier.pas"/>
+        <DCCReference Include="opengl\ShaderUtil.pas"/>
+        <DCCReference Include="opengl\dglOpenGL.pas"/>
+        <DCCReference Include="opengl\MeshPreviewUI.pas">
+            <Form>MeshPreviewFrm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="opengl\OpenGLPreviewUtil.pas"/>
+        <DCCReference Include="heightmapgen\PNMPack.pas"/>
+        <DCCReference Include="heightmapgen\HeightMapGenPreview.pas"/>
+        <DCCReference Include="heightmapgen\HeightMapGenUI.pas">
+            <Form>HeightMapGenFrm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="heightmapgen\PNMWriter.pas"/>
+        <DCCReference Include="PostProcessForm.pas">
+            <Form>PostProForm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <None Include="CHANGES.txt"/>
         <None Include=".gitignore"/>
         <BuildConfiguration Include="Debug">
@@ -307,10 +321,17 @@
                     <VersionInfoKeys Name="Comments">Freeware</VersionInfoKeys>
                 </VersionInfoKeys>
                 <Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\DataExplorerDBXPluginEnt200.bpl">DBExpress Enterprise Daten-Explorer-Integration</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclfmxstd200.bpl">Embarcadero FMX-Standardkomponenten</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k200.bpl">Microsoft Office 2000 Beispiele für gekapselte Komponenten für Automatisierungsserver</Excluded_Packages>
-                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp200.bpl">Microsoft Office XP Beispiele für gekapselte Komponenten für Automation Server</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\DataExplorerDBXPluginEnt200.bpl">DBExpress Enterprise Data Explorer Integration</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclfmxstd200.bpl">Embarcadero FMX Standard Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dcloffice2k200.bpl">Microsoft Office 2000 Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDSBIN)\dclofficexp200.bpl">Microsoft Office XP Sample Automation Server Wrapper Components</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDS)\Bpl\JclBaseExpert200.bpl">JCL Package containing common units for JCL Experts</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDS)\Bpl\JclDebugExpert200.bpl">JCL Debug IDE extension</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDS)\Bpl\JclProjectAnalysisExpert200.bpl">JCL Project Analyzer</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDS)\Bpl\JclFavoriteFoldersExpert200.bpl">JCL Open and Save IDE dialogs with favorite folders</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDS)\Bpl\JclRepositoryExpert200.bpl">JCL Package containing repository wizards</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDS)\Bpl\JclSIMDViewExpert200.bpl">JCL Debug Window of XMM registers</Excluded_Packages>
+                    <Excluded_Packages Name="$(BDS)\Bpl\JclStackTraceViewerExpert200.bpl">JCL Stack Trace Viewer</Excluded_Packages>
                 </Excluded_Packages>
             </Delphi.Personality>
             <Platforms>

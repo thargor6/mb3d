@@ -1,7 +1,9 @@
 V1.94 (unreleased)
+ - experimental new module "HMapGen" to create heightmaps from meshes
  - BulbTracer:
     - new lwo2 (Lightwave3D 6.0)-output format for generated meshes (much smaller than *.obj)
     - improved the speed of the mesh-merging-process
+    - many other improvements
 
 V1.93 (unreleased)
  - BulbTracer:

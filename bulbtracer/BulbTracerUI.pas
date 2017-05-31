@@ -1539,7 +1539,6 @@ procedure TBulbTracerFrm.SaveMesh;
 var
   FacesList: TFacesList;
   DoPostProcessing: Boolean;
-  F2: TFacesList;
   TargetFaceCount: Integer;
   Agressiveness: Double;
 begin

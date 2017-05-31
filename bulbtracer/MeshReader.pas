@@ -153,27 +153,31 @@ begin
       end
       else if ChunkId = 'POLS' then begin
         SubId := ReadString4;
-        if SubId <> 'FACE' then
-          raise Exception.Create('POLS-type <FACE> expected');
-        Position := 4;
-        while Position < ChunkLen do begin
-          EdgeCount := ReadInt16;
-          Position := Position + 2;
-          if EdgeCount = 3 then begin
-            V1 := ReadVertexId( Position );
-            V2 := ReadVertexId( Position );
-            V3 := ReadVertexId( Position );
+        if SubId <> 'FACE' then begin
+//          raise Exception.Create('POLS-type <FACE> expected');
+          SkipBytes( ChunkLen - 4 );
+        end
+        else begin
+          Position := 4;
+          while Position < ChunkLen do begin
+            EdgeCount := ReadInt16;
+            Position := Position + 2;
+            if EdgeCount = 3 then begin
+              V1 := ReadVertexId( Position );
+              V2 := ReadVertexId( Position );
+              V3 := ReadVertexId( Position );
+              if EOF then
+                 break;
+              Faces.AddFace(V1, V2, V3);
+            end
+            else begin
+              for J:=0 to EdgeCount - 1 do begin
+                ReadVertexId( Position );
+              end;
+            end;
             if EOF then
                break;
-            Faces.AddFace(V1, V2, V3);
-          end
-          else begin
-            for J:=0 to EdgeCount - 1 do begin
-              ReadVertexId( Position );
-            end;
           end;
-          if EOF then
-             break;
         end;
       end
       else

@@ -1,19 +1,16 @@
 { ---------------------------------------------------------------------------- }
 { BulbTracer for MB3D                                                          }
-{ Copyright (C) 2016 Andreas Maschke                                           }
+{ Copyright (C) 2016-2017 Andreas Maschke                                      }
 { ---------------------------------------------------------------------------- }
 unit MeshPreview;
 
 interface
 
 uses
-  SysUtils, Classes, Windows, (*OpenGL12,*) dglOpenGL, Vcl.Graphics, VertexList, VectorMath;
+  SysUtils, Classes, Windows, dglOpenGL, Vcl.Graphics, VertexList, VectorMath,
+  OpenGLPreviewUtil, ShaderUtil;
 
 type
-  TDisplayStyle = (dsPoints, dsWireframe, dsFlatSolid, dsFlatSolidWithEdges, dsSmoothSolid, dsSmoothSolidWithEdges);
-
-  TSetCaptionEvent = procedure(const Msg: String) of object;
-
   TMeshAppearance = class
   private
     procedure InitColors;
@@ -40,52 +37,16 @@ type
     constructor Create;
   end;
 
-  TOpenGLHelper = class
+  TOpenGLHelper = class( TBaseOpenGLHelper )
   private
-    FRC: HGLRC; //OpenGL Rendering Context
-    FCanvas: TCanvas;
-    FFaces, FVertices, FEdges, FNormals: Pointer;
-    FFaceCount, FEdgeCount, FVerticesCount: Integer;
-    FDisplayStyle: TDisplayStyle;
-    FSetWindowCaptionEvent: TSetCaptionEvent;
-    FFrames, FStartTick: Integer;
-    FPosition, FAngle: TS3Vector;
-    FScale: Double;
     FMeshAppearance: TMeshAppearance;
-    FSizeMin, FSizeMax: TS3Vector;
-    FMaxObjectSize: Double;
-    procedure FreeVertices;
-    procedure RaiseError(const Msg: String);
-    procedure SetupPixelFormat;
-    procedure SetupGL;
-    procedure ApplicationEventsIdle(Sender: TObject; var Done: Boolean);
-    function GetXPosition: Double;
-    procedure SetXPosition(const X: Double);
-    function GetYPosition: Double;
-    procedure SetYPosition(const Y: Double);
-    function GetXAngle: Double;
-    procedure SetXAngle(const X: Double);
-    function GetYAngle: Double;
-    procedure SetYAngle(const Y: Double);
-    function GetScale: Double;
-    procedure SetScale(const Scale: Double);
     procedure SetupLighting;
-    procedure DrawBackground;
+    procedure DrawBackground; override;
+    procedure ApplicationEventsIdle(Sender: TObject; var Done: Boolean); override;
   public
     constructor Create(const Canvas: TCanvas);
     destructor Destroy; override;
-    procedure InitGL;
-    procedure CleanupGL;
-    procedure AfterResize(const ClientWidth, ClientHeight: Integer);
-    procedure UpdateMesh(const FacesList: TFacesList); overload;
-    procedure UpdateMesh(const VertexList: TPS3VectorList); overload;
-    procedure SetDisplayStyle(const DisplayStyle: TDisplayStyle);
-    property XPosition: Double read GetXPosition write SetXPosition;
-    property YPosition: Double read GetYPosition write SetYPosition;
-    property XAngle: Double read GetXAngle write SetXAngle;
-    property YAngle: Double read GetYAngle write SetYAngle;
-    property Scale: Double read GetScale write SetScale;
-    property SetWindowCaptionEvent: TSetCaptionEvent read FSetWindowCaptionEvent write FSetWindowCaptionEvent;
+    procedure UpdateMesh(const FacesList: TFacesList); override;
     property MeshAppearance: TMeshAppearance read FMeshAppearance;
   end;
 
@@ -97,156 +58,17 @@ uses
 const
   WindowTitle = 'Mesh Preview';
 
-type
-  TGLFace = packed record
-    V1, V2, V3: Cardinal;
-  end;
-  TPGLFace = ^TGLFace;
-
-  TGLEdge = packed record
-    V1, V2: Cardinal;
-  end;
-  TPGLEdge = ^TGLEdge;
-
-  TGLVertex = packed record
-    X, Y, Z : Single;
-  end;
-  TPGLVertex = ^TGLVertex;
-
 { ------------------------------ TOpenGLHelper ------------------------------- }
 constructor TOpenGLHelper.Create(const Canvas: TCanvas);
 begin
-  inherited Create;
+  inherited Create( Canvas );
   FMeshAppearance := TMeshAppearance.Create;
-  FDisplayStyle := dsFlatSolidWithEdges;
-  FCanvas := Canvas;
-  TSVectorMath.Clear(@FPosition);
-  TSVectorMath.Clear(@FAngle);
-  FScale := 1.0;
 end;
 
 destructor TOpenGLHelper.Destroy;
 begin
-  FreeVertices;
-  CleanupGL;
   FMeshAppearance.Free;
   inherited Destroy;
-end;
-
-procedure TOpenGLHelper.FreeVertices;
-begin
-  FFaceCount := 0;
-  FEdgeCount := 0;
-  FVerticesCount := 0;
-  if FVertices <> nil then begin
-    FreeMem(FVertices);
-    FVertices := nil;
-  end;
-  if FNormals <> nil then begin
-    FreeMem(FNormals);
-    FNormals := nil;
-  end;
-  if FFaces <> nil then begin
-    FreeMem(FFaces);
-    FFaces := nil;
-  end;
-  if FEdges <> nil then begin
-    FreeMem(FEdges);
-    FEdges := nil;
-  end;
-end;
-
-procedure TOpenGLHelper.RaiseError(const Msg: String);
-begin
-  raise Exception.Create('OpenGL: '+Msg);
-end;
-
-procedure TOpenGLHelper.SetupPixelFormat;
-var
-  PixelFormat: TGLuint;
-  PFD: PIXELFORMATDESCRIPTOR;
-begin
-  with PFD do begin
-    nSize:= SizeOf( PIXELFORMATDESCRIPTOR );
-    nVersion:= 1;
-    dwFlags:= PFD_DRAW_TO_WINDOW
-      or PFD_SUPPORT_OPENGL
-      or PFD_DOUBLEBUFFER;
-    iPixelType:= PFD_TYPE_RGBA;
-    cColorBits:= 16;
-    cRedBits:= 0;
-    cRedShift:= 0;
-    cGreenBits:= 0;
-    cBlueBits:= 0;
-    cBlueShift:= 0;
-    cAlphaBits:= 0;
-    cAlphaShift:= 0;
-    cAccumBits:= 0;
-    cAccumRedBits:= 0;
-    cAccumGreenBits:= 0;
-    cAccumBlueBits:= 0;
-    cAccumAlphaBits:= 0;
-    cDepthBits:= 16;
-    cStencilBits:= 0;
-    cAuxBuffers:= 0;
-    iLayerType:= PFD_MAIN_PLANE;
-    bReserved:= 0;
-    dwLayerMask:= 0;
-    dwVisibleMask:= 0;
-    dwDamageMask:= 0
-  end;
-  PixelFormat := ChoosePixelFormat(FCanvas.Handle, @PFD);
-  if PixelFormat=0 then
-    RaiseError('Error choosing PixelFormat');
-  if not Windows.SetPixelFormat(FCanvas.Handle,PixelFormat,@PFD) then
-    RaiseError('Error setting PixelFormat');
-end;
-
-procedure TOpenGLHelper.CleanupGL;
-begin
-  if FRC<>0 then begin
-    try
-      wglMakeCurrent(FCanvas.Handle,0);
-      wglDeleteContext(FRC);
-    finally
-      FRC:=0;
-    end;
-  end;
-end;
-
-procedure TOpenGLHelper.InitGL;
-begin
-  if FRC = 0 then begin
-    if not InitOpenGL then
-      RaiseError('Error initializing OpenGL library');
-    SetupPixelFormat;
-    FRC := wglCreateContext(FCanvas.Handle);
-    if FRC=0 then
-      RaiseError('Failed to create rendering context');
-    try
-      if not wglMakeCurrent(FCanvas.Handle, FRC) then
-        RaiseError('Error activating Rendering Context');
-      ReadExtensions;
-      SetupGL;
-      Application.OnIdle := ApplicationEventsIdle;
-    except
-      wglDeleteContext(FRC);
-      FRC := 0;
-      raise;
-    end;
-  end;
-end;
-
-procedure TOpenGLHelper.SetupGL;
-begin
-  glShadeModel(GL_FLAT);
-  glPolygonMode( GL_FRONT, GL_FILL );
-  glClearColor(0.0, 0.0, 0.0, 0.5);
-  glClearDepth(1.0);
-  glEnable(GL_DEPTH_TEST);
-  glDepthFunc(GL_LEQUAL);
-  glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-  glEnableClientState( GL_VERTEX_ARRAY );
 end;
 
 procedure TOpenGLHelper.DrawBackground;
@@ -393,19 +215,6 @@ begin
   end;
   SwapBuffers(FCanvas.Handle);
   Sleep(1);
-end;
-
-procedure TOpenGLHelper.AfterResize(const ClientWidth, ClientHeight: Integer);
-const
-  FarClipping: Double = 100.0;
-  NearClipping: Double = 1.0;
-begin
-  glViewport(0, 0, ClientWidth, ClientHeight);
-  glMatrixMode( GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(30.0, ClientWidth/ClientHeight, NearClipping, FarClipping);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity;
 end;
 
 procedure TOpenGLHelper.UpdateMesh(const FacesList: TFacesList);
@@ -623,73 +432,6 @@ begin
   end;
   ShowDebugInfo('OpenGL.AddNormals', T0);
   ShowDebugInfo('OpenGL.TOTAL', T00);
-end;
-
-procedure TOpenGLHelper.UpdateMesh(const VertexList: TPS3VectorList);
-begin
-  // TODO
-end;
-
-function TOpenGLHelper.GetXPosition: Double;
-begin
-  Result := FPosition.X;
-end;
-
-procedure TOpenGLHelper.SetXPosition(const X: Double);
-begin
-  FPosition.X := X;
-end;
-
-function TOpenGLHelper.GetYPosition: Double;
-begin
-  Result := FPosition.Y;
-end;
-
-procedure TOpenGLHelper.SetYPosition(const Y: Double);
-begin
-  FPosition.Y := Y;
-end;
-
-function TOpenGLHelper.GetXAngle: Double;
-begin
-  Result := FAngle.X;
-end;
-
-procedure TOpenGLHelper.SetXAngle(const X: Double);
-begin
-  FAngle.X := X;
-end;
-
-function TOpenGLHelper.GetYAngle: Double;
-begin
-  Result := FAngle.Y;
-end;
-
-procedure TOpenGLHelper.SetYAngle(const Y: Double);
-begin
-  FAngle.Y := Y;
-end;
-
-procedure TOpenGLHelper.SetDisplayStyle(const DisplayStyle: TDisplayStyle);
-begin
-  FDisplayStyle := DisplayStyle;
-end;
-
-procedure TOpenGLHelper.SetScale(const Scale: Double);
-var
-  V: Double;
-begin
-  V := Scale;
-  if V < 0.01 then
-    V := 0.01
-  else if V > 100.0 then
-    V := 100.0;
-  FScale := V;
-end;
-
-function TOpenGLHelper.GetScale: Double;
-begin
-  Result := FScale;
 end;
 
 procedure TOpenGLHelper.SetupLighting;
