@@ -18,6 +18,7 @@ type
     procedure AfterInitGL; override;
     procedure ApplicationEventsIdle( Sender: TObject; var Done: Boolean ); override;
   public
+    constructor Create(const Canvas: TCanvas);
     procedure UpdateMesh( const FacesList: TFacesList ); override;
     procedure SaveHeightMap( const Left, Top, Width, Height: Integer );
     procedure SaveAsPNG( const  Width, Height: Integer; const DepthBuffer: PGLfloat; const DepthMin, DepthMax: GLfloat; const Filename: String );
@@ -32,13 +33,29 @@ const
   WindowTitle = 'HeightMap Generator Preview';
 
 { ------------------------------ TOpenGLHelper ------------------------------- }
-procedure TOpenGLHelper.AfterInitGL;
-var
-  ExePath: String;
+constructor TOpenGLHelper.Create(const Canvas: TCanvas);
 begin
-  ExePath :=  IncludeTrailingBackslash( ExtractFilePath( Application.ExeName ) );
-  FShader := TShader.Create( ExePath + 'shaders/shader2.fs');
-//  FShader := TShader.Create( ExePath + 'shaders/shader1.vs', ExePath + 'shaders/shader1.fs');
+  inherited Create( Canvas );
+  FFOV := 10;
+  FScale := 0.5;
+end;
+
+
+procedure TOpenGLHelper.AfterInitGL;
+const
+  FragmentShader: String =
+    'float near = 1.0;'#10 +
+    'float far  = 10.0;'#10 +
+    #10 +
+    'float linearizeDepth(float depth) {'#10 +
+    '  return (2.0 * near * far) / (far + near - depth * (far - near));'#10 +
+    '}'#10 +
+    'void main() {'#10 +
+    '  float depth = linearizeDepth(gl_FragCoord.z)/far;'#10 +
+    '  gl_FragColor = vec4(1.0-vec3(depth), 1.0f);'#10 +
+    '}'#10;
+begin
+  FShader := TShader.Create( FragmentShader );
 end;
 
 procedure TOpenGLHelper.ApplicationEventsIdle(Sender: TObject; var Done: Boolean);
@@ -327,33 +344,47 @@ end;
 procedure TOpenGLHelper.SaveHeightMap(const Left, Top, Width, Height: Integer);
 const
   zNear = 1.0;
-  zFar = 12.0;
+  zFar = 100.0;
 var
   I, ValueCount, BufSize: Integer;
   DepthBuffer: Pointer;
   CurrDepth: PGLfloat;
   DepthMin, DepthMax: GLfloat;
+  FinalDepthMin, FinalDepthMax: GLfloat;
 begin
   ValueCount := Width  * Height;
   BufSize := ValueCount * SizeOf( GLfloat );
   GetMem( DepthBuffer, BufSize );
   try
     glReadPixels( Left, Top, Width, Height, GL_DEPTH_COMPONENT, GL_FLOAT, DepthBuffer );
-    CurrDepth := PGLfloat( DepthBuffer );
-    DepthMin := CurrDepth^;
-    DepthMax := CurrDepth^;
-
+    DepthMin := 1.0;
+    DepthMax := 0.0;
     for I := 0 to ValueCount - 1 do begin
       CurrDepth := PGLfloat( Longint( DepthBuffer ) + Longint( I * SizeOf( GLfloat ) ) );
       CurrDepth^ := ( 2.0 * zNear ) / ( zFar + zNear - CurrDepth^ * ( zFar - zNear ) );
       if CurrDepth^ < DepthMin  then
         DepthMin := CurrDepth^
-      else if CurrDepth^ > DepthMax then
+      else if ( CurrDepth^ > DepthMax ) and ( CurrDepth^ < 0.99 ) then
         DepthMax := CurrDepth^;
     end;
-    OutputDebugString(PChar('Depth: ' + FloatToStr(DepthMin) + '...' + FloatToStr(DepthMax)));
 
-    SaveAsPNG(  Width, Height, DepthBuffer, DepthMin, DepthMax, 'D:\TMP\_z.png');
+    FinalDepthMin := 1.0;
+    FinalDepthMax := 0.0;
+    for I := 0 to ValueCount - 1 do begin
+      CurrDepth := PGLfloat( Longint( DepthBuffer ) + Longint( I * SizeOf( GLfloat ) ) );
+      if CurrDepth^ > DepthMax then
+        CurrDepth^ := 0
+      else
+        CurrDepth^ := DepthMax - CurrDepth^;
+      if  CurrDepth^ < FinalDepthMin  then
+        FinalDepthMin := CurrDepth^
+      else if  CurrDepth^ > FinalDepthMax then
+        FinalDepthMax := CurrDepth^;
+    end;
+
+    OutputDebugString(PChar('Depth: ' + FloatToStr(FinalDepthMin) + '...' + FloatToStr(FinalDepthMax)));
+
+    SaveAsPNG(  Width, Height, DepthBuffer, FinalDepthMin, FinalDepthMax, 'D:\TMP\_z.png');
   finally
     FreeMem( DepthBuffer );
   end;
@@ -364,22 +395,29 @@ var
   I, J: Integer;
   PGMBuffer, CurrPGMBuffer: PWord;
   CurrDepthBuffer: PGLfloat;
-  DepthVal: Double;
+  DepthVal, Delta: Double;
+
+  function TransformValue( const Value: GLfloat ): GLfloat;
+  begin
+    Result := ( Value - DepthMin ) / Delta;
+  end;
+
 begin
+  Delta := DepthMax - DepthMin;
   GetMem( PGMBuffer, Width * Height * SizeOf( Word ) );
   try
     CurrPGMBuffer := PGMBuffer;
-    CurrDepthBuffer := DepthBuffer;
-    for I:= 0 to Height - 1 do begin
+    for I := 0 to Height - 1 do begin
+      CurrDepthBuffer := PGLfloat( Longint(DepthBuffer) + ( Height - I - 1 ) * Width * SizeOf( GLfloat ) );
       for J := 0 to Width - 1 do begin
-        DepthVal := Min( Max( 0.0, CurrDepthBuffer^ ), 1.0 );
+        DepthVal := Min( Max( 0.0, TransformValue( CurrDepthBuffer^ ) ), 1.0 );
         CurrPGMBuffer^ := Word( Round( DepthVal * 65535 ) );
-        CurrDepthBuffer := PGLfloat( Longint( CurrDepthBuffer ) + SizeOf( GLfloat ) );
+        Inc( CurrDepthBuffer );
         CurrPGMBuffer := PWord( Longint( CurrPGMBuffer ) + SizeOf( Word ) );
       end;
     end;
     with TPGM16Writer.Create do try
-      SaveToFile( PGMBuffer, Width, Height, 'D:\_z.pgm');
+      SaveToFile( PGMBuffer, Width, Height, 'D:\9603.pgm');
     finally
       Free;
     end;

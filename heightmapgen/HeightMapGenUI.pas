@@ -145,9 +145,11 @@ procedure THeightMapGenFrm.LoadMeshBtnClick(Sender: TObject);
 begin
   with TLightwaveObjFileReader.Create do try
 //    LoadFromFile('D:\TMP\LW_Dragon.lwo', FFaces);
-//    LoadFromFile('D:\TMP\Half_Ball.lwo', FFaces);
-    LoadFromFile('D:\insect.lwo', FFaces);
+    LoadFromFile('D:\TMP\Half_Ball.lwo', FFaces);
+//    LoadFromFile('D:\insect2.lwo', FFaces);
     SetWindowCaption('Heightmap for LW_Dragon.lwo');
+    FFaces.DoCenter(2.0);
+    FFaces.DoScale(1,-1.0,-1.0);
     UpdateMesh( FFaces );
   finally
     Free;

@@ -43,8 +43,7 @@ type
   private
     FProgram: GLuint;
   private
-    class function CreateShader(const AShaderPath: String;
-      const AShaderType: GLenum): GLuint; static;
+    class function CreateShader(const AShaderCode: String; const AShaderType: GLenum): GLuint; static;
   protected
     { IShader }
     function _GetHandle: GLuint;
@@ -52,8 +51,8 @@ type
     function GetUniformLocationUnicode(const AName: String): Integer;
   {$ENDREGION 'Internal Declarations'}
   public
-    constructor Create(const AVertexShaderPath, AFragmentShaderPath: String); overload;
-    constructor Create(const AFragmentShaderPath: String); overload;
+    constructor Create(const AVertexShaderCode, AFragmentShaderCode: String); overload;
+    constructor Create(const AFragmentShaderCode: String); overload;
     destructor Destroy; override;
     procedure Use;
   end;
@@ -80,8 +79,7 @@ begin
 end;
 {$ENDIF}
 
-constructor TShader.Create(const AVertexShaderPath,
-  AFragmentShaderPath: String);
+constructor TShader.Create(const AVertexShaderCode, AFragmentShaderCode: String);
 var
   Status, LogLength: GLint;
   VertexShader, FragmentShader: GLuint;
@@ -90,9 +88,9 @@ var
 begin
   inherited Create;
   FragmentShader := 0;
-  VertexShader := CreateShader(AVertexShaderPath, GL_VERTEX_SHADER);
+  VertexShader := CreateShader(AVertexShaderCode, GL_VERTEX_SHADER);
   try
-    FragmentShader := CreateShader(AFragmentShaderPath, GL_FRAGMENT_SHADER);
+    FragmentShader := CreateShader(AFragmentShaderCode, GL_FRAGMENT_SHADER);
     FProgram := glCreateProgram;
 
     glAttachShader(FProgram, VertexShader);
@@ -125,7 +123,7 @@ begin
   end;
 end;
 
-constructor TShader.Create(const AFragmentShaderPath: String);
+constructor TShader.Create(const AFragmentShaderCode: String);
 var
   Status, LogLength: GLint;
   FragmentShader: GLuint;
@@ -133,7 +131,7 @@ var
   Msg: String;
 begin
   inherited Create;
-  FragmentShader := CreateShader(AFragmentShaderPath, GL_FRAGMENT_SHADER);
+  FragmentShader := CreateShader(AFragmentShaderCode, GL_FRAGMENT_SHADER);
   try
     FProgram := glCreateProgram;
 
@@ -161,8 +159,7 @@ begin
   end;
 end;
 
-class function TShader.CreateShader(const AShaderPath: String;
-  const AShaderType: GLenum): GLuint;
+class function TShader.CreateShader(const AShaderCode: String; const AShaderType: GLenum): GLuint;
 var
   Source: RawByteString;
   SourcePtr: MarshaledAString;
@@ -174,12 +171,7 @@ begin
   Assert(Result <> 0);
   glErrorCheck;
 
-  with TStringList.Create do try
-    LoadFromFile( AShaderPath );
-    Source := Text;
-  finally
-    Free;
-  end;
+  Source := AShaderCode;
 
   {$IFNDEF MOBILE}
   { Desktop OpenGL doesn't recognize precision specifiers }

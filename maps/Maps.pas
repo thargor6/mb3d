@@ -65,7 +65,7 @@ var
 implementation
 
 uses FileHandling, DivUtils, Mand, Math, UITypes, Forms, HeaderTrafos, Calc,
-  MapSequences;
+  MapSequences, PNMReader;
 
 function VolLightMapPosPas(vd: TPVec3D): LongBool;
 var x, y: Integer;
@@ -669,7 +669,7 @@ begin
             s := IncludeTrailingPathDelimiter(IniDirs[9]) + IntToStr(nr);
             if FindFirst(s + '.*', faAnyFile, SR) = 0 then
             repeat
-              bFound := Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG') > 0;
+              bFound := Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG.PGM') > 0;
               if bFound then
                 s := IncludeTrailingPathDelimiter(IniDirs[9]) + SR.Name;
             until bFound or (FindNext(SR) <> 0);
@@ -678,7 +678,7 @@ begin
             begin
               if FindFirst(s + '*.*', faAnyFile, SR) = 0 then
               repeat
-                bFound := (Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG') > 0) and
+                bFound := (Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG.PGM') > 0) and
                           (Length(SR.Name) > Length(IntToStr(nr))) and
                            not (SR.Name[Length(IntToStr(nr)) + 1] in ['0'..'9']);
                 if bFound then
@@ -913,6 +913,8 @@ var BMP: TBitmap;
     c: Cardinal;
     bGrayScale: LongBool;
     tmpCursor: TCursor;
+    PGM16Reader: TPGM16Reader;
+    PGM: PWord;
 begin
   Result := False;
   tmpCursor := Screen.Cursor;
@@ -980,6 +982,40 @@ begin
         end;
       end;
       PNG.Free;
+    end
+    else if CompareText(Copy(FileName, x - 3, 4), '.pgm') = 0 then
+    begin
+      PGM16Reader := TPGM16Reader.Create;
+      try
+        PGM16Reader.LoadFromFile(FileName);
+        LM.LMWidth := PGM16Reader.Width;
+        LM.LMHeight := PGM16Reader.Height;
+        Result := (LM.LMWidth > 4) and (LM.LMHeight > 4);
+        try
+          SetLength(LM.LMa, ((LM.LMWidth + 1) * (LM.LMHeight + 1) * 6 + 6) div 4); //+xx in case of 8 Bytes access (mmx) to 3 words at the end
+          LM.iMapType := 1;
+          LM.sIntensity := 1;
+          LM.iLMstart := Integer(@LM.LMa[0]);
+          LM.sLMXfactor := LM.LMWidth;
+          LM.sLMYfactor := LM.LMHeight;
+          pw := TP3Word(LM.iLMstart);
+          PGM := PGM16Reader.Buffer;
+          for y := 0 to LM.LMHeight -1  do begin
+            for xx := 0 to LM.LMWidth - 1 do begin
+              pw[0] := PGM^;
+              pw[1] := pw[0];
+              pw[2] := pw[0];
+              Inc(pw);
+              Inc(PGM);
+            end;
+          end;
+        except
+          Result := False;
+          x := 0;
+        end;
+      finally
+        PGM16Reader.Free;
+      end;
     end
     else x := 0;
     if x = 0 then

@@ -29,6 +29,7 @@ type
     function GetVertex(const Idx: Integer): TPS3Vector;
     procedure MoveVertices(const Src: TPS3VectorList);
     procedure DoCenter(const MaxSize: Double);
+    procedure DoScale(const ScaleX, ScaleY, ScaleZ: Double);
     procedure RemoveDuplicates;
     property Count: Integer read GetCount;
   end;
@@ -82,6 +83,7 @@ type
     procedure TaubinSmooth(const Lambda, Mu: Double; const Passes: Integer);
     procedure CompressFaces(const Passes: Integer);
     procedure DoCenter(const MaxSize: Double);
+    procedure DoScale(const ScaleX, ScaleY, ScaleZ: Double);
     procedure RecalcVertexKeys;
     procedure AddUnvalidatedVertex(const X, Y, Z: Double);
     procedure AddUnvalidatedFace(const Vertex1, Vertex2, Vertex3: Integer);
@@ -240,6 +242,19 @@ begin
     end;
   finally
     KeyList.Free;
+  end;
+end;
+
+procedure TPS3VectorList.DoScale(const ScaleX, ScaleY, ScaleZ: Double);
+var
+  I: Integer;
+  Vertex: TPS3Vector;
+begin
+  for I := 0 to FVertices.Count - 1 do begin
+    Vertex := FVertices[I];
+    Vertex^.X := ScaleX * Vertex^.X;
+    Vertex^.Y := ScaleY * Vertex^.Y;
+    Vertex^.Z := ScaleZ * Vertex^.Z;
   end;
 end;
 
@@ -989,6 +1004,11 @@ end;
 procedure TFacesList.DoCenter(const MaxSize: Double);
 begin
   FVertices.DoCenter(MaxSize);
+end;
+
+procedure TFacesList.DoScale(const ScaleX, ScaleY, ScaleZ: Double);
+begin
+  FVertices.DoScale(ScaleX, ScaleY, ScaleZ);
 end;
 
 procedure TFacesList.LaplaceSmooth(const NeighboursList: TVertexNeighboursList; const Strength: Double);

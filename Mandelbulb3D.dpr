@@ -90,7 +90,8 @@ uses
   HeightMapGenPreview in 'heightmapgen\HeightMapGenPreview.pas',
   HeightMapGenUI in 'heightmapgen\HeightMapGenUI.pas' {HeightMapGenFrm},
   PNMWriter in 'heightmapgen\PNMWriter.pas',
-  PostProcessForm in 'PostProcessForm.pas' {PostProForm};
+  PostProcessForm in 'PostProcessForm.pas' {PostProForm},
+  PNMReader in 'heightmapgen\PNMReader.pas';
 
 {$R *.res}
 

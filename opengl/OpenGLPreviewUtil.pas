@@ -26,6 +26,7 @@ type
     FPosition, FAngle: TS3Vector;
     FScale: Double;
     FSizeMin, FSizeMax: TS3Vector;
+    FFOV: Double;
     FMaxObjectSize: Double;
     procedure FreeVertices;
     procedure RaiseError(const Msg: String);
@@ -59,6 +60,7 @@ type
     property XAngle: Double read GetXAngle write SetXAngle;
     property YAngle: Double read GetYAngle write SetYAngle;
     property Scale: Double read GetScale write SetScale;
+    property FOV: Double read FFOV write FFOV;
     property SetWindowCaptionEvent: TSetCaptionEvent read FSetWindowCaptionEvent write FSetWindowCaptionEvent;
   end;
 
@@ -90,6 +92,7 @@ begin
   TSVectorMath.Clear(@FPosition);
   TSVectorMath.Clear(@FAngle);
   FScale := 1.0;
+  FFOV := 30.0;
 end;
 
 destructor TBaseOpenGLHelper.Destroy;
@@ -241,7 +244,10 @@ begin
   glViewport(0, 0, ClientWidth, ClientHeight);
   glMatrixMode( GL_PROJECTION);
   glLoadIdentity();
-  gluPerspective(30.0, ClientWidth/ClientHeight, NearClipping, FarClipping);
+
+  gluPerspective(FFOV, ClientWidth/ClientHeight, NearClipping, FarClipping);
+
+
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity;
 end;

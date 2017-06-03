@@ -3,8 +3,8 @@ object HeightMapGenFrm: THeightMapGenFrm
   Top = 0
   BorderStyle = bsSizeToolWin
   Caption = 'HeightMap Generator'
-  ClientHeight = 464
-  ClientWidth = 657
+  ClientHeight = 570
+  ClientWidth = 794
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -24,10 +24,10 @@ object HeightMapGenFrm: THeightMapGenFrm
   PixelsPerInch = 96
   TextHeight = 13
   object Panel1: TPanel
-    Left = 499
+    Left = 636
     Top = 0
     Width = 158
-    Height = 464
+    Height = 570
     Align = alRight
     TabOrder = 0
     object Label15: TLabel

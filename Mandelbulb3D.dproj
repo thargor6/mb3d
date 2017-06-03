@@ -271,6 +271,7 @@
             <Form>PostProForm</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="heightmapgen\PNMReader.pas"/>
         <None Include="CHANGES.txt"/>
         <None Include=".gitignore"/>
         <BuildConfiguration Include="Debug">
