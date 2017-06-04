@@ -86,7 +86,7 @@ uses
   dglOpenGL in 'opengl\dglOpenGL.pas',
   MeshPreviewUI in 'opengl\MeshPreviewUI.pas' {MeshPreviewFrm},
   OpenGLPreviewUtil in 'opengl\OpenGLPreviewUtil.pas',
-  PNMPack in 'heightmapgen\PNMPack.pas',
+  PNMPack in '..\PNMPack.pas',
   HeightMapGenPreview in 'heightmapgen\HeightMapGenPreview.pas',
   HeightMapGenUI in 'heightmapgen\HeightMapGenUI.pas' {HeightMapGenFrm},
   PNMWriter in 'heightmapgen\PNMWriter.pas',

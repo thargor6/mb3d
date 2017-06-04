@@ -14,12 +14,21 @@ uses
   SpeedButtonEx, BulbTracerUITools, HeightMapGenPreview;
 
 type
+  TMapType = (mt8BitPNG, mt16BitPBM);
+
   THeightMapGenFrm = class(TForm)
     Panel1: TPanel;
     Label15: TLabel;
     Label16: TLabel;
     LoadMeshBtn: TButton;
-    Button1: TButton;
+    SaveMapBtn: TButton;
+    MapNumberUpDown: TUpDown;
+    MapNumberEdit: TEdit;
+    Label19: TLabel;
+    MapTypeCmb: TComboBox;
+    Label1: TLabel;
+    SaveImgBtn: TButton;
+    SaveImgDialog: TSaveDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -34,7 +43,8 @@ type
     procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
       MousePos: TPoint; var Handled: Boolean);
     procedure LoadMeshBtnClick(Sender: TObject);
-    procedure Button1Click(Sender: TObject);
+    procedure SaveMapBtnClick(Sender: TObject);
+    procedure SaveImgBtnClick(Sender: TObject);
   private
     { Private declarations }
     FDragging: Boolean;
@@ -45,6 +55,8 @@ type
     FRefreshing: Boolean;
     FFaces: TFacesList;
     procedure SetWindowCaption(const Msg: String);
+    function GetHeightMapFileExtension: String;
+    procedure EnableControls;
   public
     { Public declarations }
     procedure UpdateMesh(const FacesList: TFacesList); overload;
@@ -56,7 +68,7 @@ var
 
 implementation
 
-uses MeshReader;
+uses MeshReader, Maps;
 
 {$R *.dfm}
 const
@@ -64,16 +76,66 @@ const
   SIZE_SCALE: Double = 0.01;
   ROTATE_SCALE: Double = 0.2;
 
-procedure THeightMapGenFrm.Button1Click(Sender: TObject);
+function THeightMapGenFrm.GetHeightMapFileExtension: String;
 begin
-  FOpenGLHelper.SaveHeightMap(0, 0, ClientWidth, ClientHeight);
+  case MapTypeCmb.ItemIndex of
+    0: Result := 'png';
+    1: Result := 'pgm';
+  else
+    raise Exception.Create('Invalid format');
+  end;
+end;
+
+procedure THeightMapGenFrm.SaveImgBtnClick(Sender: TObject);
+begin
+  case MapTypeCmb.ItemIndex of
+    0: begin
+         SaveImgDialog.Filter := 'Portable Network Graphic|*.png';
+         SaveImgDialog.DefaultExt := 'png';
+       end;
+    1: begin
+         SaveImgDialog.Filter := 'Portable Gray Map|*.pgm';
+         SaveImgDialog.DefaultExt := 'pgm';
+       end;
+  else
+    raise Exception.Create('Invalid format');
+  end;
+  SaveImgDialog.InitialDir := GetHeighMapFolder;
+  if SaveImgDialog.Execute then
+    FOpenGLHelper.SaveHeightMap(0, 0, ClientWidth, ClientHeight, SaveImgDialog.FileName);
+end;
+
+procedure THeightMapGenFrm.SaveMapBtnClick(Sender: TObject);
+var
+  Filename: String;
+begin
+  Filename := MakeHeightMapFilename( MapNumberUpDown.Position, GetHeightMapFileExtension );
+  if FileExists( Filename ) or ( FindHeightMap( MapNumberUpDown.Position ) <> '' ) then begin
+    if MessageDlg('This file already exists. Do you really want to overwrite it?', mtConfirmation, mbYesNo, 0) <> mrOK  then
+      exit;
+  end;
+  FOpenGLHelper.SaveHeightMap(0, 0, ClientWidth, ClientHeight, Filename);
 end;
 
 procedure THeightMapGenFrm.FormCreate(Sender: TObject);
+var
+  I: Integer;
 begin
   FOpenGLHelper := TOpenGLHelper.Create(Canvas);
   FOpenGLHelper.SetWindowCaptionEvent := SetWindowCaption;
   FFaces := TFacesList.Create;
+
+  MapTypeCmb.Items.Clear;
+  MapTypeCmb.Items.Add('8 Bit PNG');
+  MapTypeCmb.Items.Add('16 Bit PGM');
+  MapTypeCmb.ItemIndex := 1;
+  I := 1;
+  while FindHeightMap( I ) <> '' do begin
+    Inc( I );
+  end;
+  MapNumberUpDown.Position := I;
+
+  EnableControls;
 end;
 
 procedure THeightMapGenFrm.FormDestroy(Sender: TObject);
@@ -147,13 +209,15 @@ begin
 //    LoadFromFile('D:\TMP\LW_Dragon.lwo', FFaces);
     LoadFromFile('D:\TMP\Half_Ball.lwo', FFaces);
 //    LoadFromFile('D:\insect2.lwo', FFaces);
+//    LoadFromFile('D:\TMP\mini!.lwo', FFaces);
     SetWindowCaption('Heightmap for LW_Dragon.lwo');
     FFaces.DoCenter(2.0);
-    FFaces.DoScale(1,-1.0,-1.0);
+    FFaces.DoScale(1,-1.0,1.0);
     UpdateMesh( FFaces );
   finally
     Free;
   end;
+  EnableControls;
 end;
 
 procedure THeightMapGenFrm.UpdateMesh(const FacesList: TFacesList);
@@ -169,6 +233,12 @@ end;
 procedure THeightMapGenFrm.SetWindowCaption(const Msg: String);
 begin
   Caption := Msg;
+end;
+
+procedure THeightMapGenFrm.EnableControls;
+begin
+  SaveMapBtn.Enabled := FFaces.Count > 0;
+  SaveImgBtn.Enabled := FFaces.Count > 0;
 end;
 
 end.

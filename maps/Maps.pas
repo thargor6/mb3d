@@ -39,6 +39,9 @@ type
   end;
 
 function LoadLightMap(var LM: TLightMap; FileName: String; Smooth, Convert2Spherical, SetHGCursor: LongBool; fitBorder: Integer): LongBool;
+function FindHeightMap( const Nr: Integer ): String;
+function GetHeighMapFolder: String;
+function MakeHeightMapFilename( const Nr: Integer; const Extension: String): String;
 function LoadLightMapNr(nr: Integer; LMap: TPLightMap): LongBool;
 procedure LoadEmptyLightMap(var LM: TLightMap; Smooth, Convert2Spherical, SetHGCursor: LongBool; fitBorder: Integer);
 procedure FreeLightMap(LM: TPLightMap);
@@ -631,10 +634,54 @@ begin
       Break;
     end;
 end;
+
+function MakeHeightMapFilename( const Nr: Integer; const Extension: String): String;
+var
+  Ext: String;
+begin
+  if ( Extension <> '' ) and ( Pos( '.', Extension ) <> 1 )  then
+    Ext := '.' + Extension
+  else
+    Ext := Extension;
+  Result := ChangeFileExt(IncludeTrailingPathDelimiter(IniDirs[9]) + IntToStr(nr), '.'+Ext);
+end;
+
+function GetHeighMapFolder: String;
+begin
+  Result := IncludeTrailingPathDelimiter(IniDirs[9]);
+end;
+
+function FindHeightMap( const Nr: Integer ): String;
+var
+  s: String;
+  SR: TSearchRec;
+  bFound: Boolean;
+begin
+  Result := '';
+  s := IncludeTrailingPathDelimiter(IniDirs[9]) + IntToStr(nr);
+  if FindFirst(s + '.*', faAnyFile, SR) = 0 then
+  repeat
+    bFound := Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG.PGM') > 0;
+    if bFound then
+      Result := IncludeTrailingPathDelimiter(IniDirs[9]) + SR.Name;
+  until bFound or (FindNext(SR) <> 0);
+  FindClose(SR);
+
+  if not bFound then begin
+    if FindFirst(s + '*.*', faAnyFile, SR) = 0 then
+    repeat
+      bFound := (Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG.PGM') > 0) and
+                (Length(SR.Name) > Length(IntToStr(nr))) and
+                 not (SR.Name[Length(IntToStr(nr)) + 1] in ['0'..'9']);
+      if bFound then
+        Result := IncludeTrailingPathDelimiter(IniDirs[9]) + SR.Name;
+    until bFound or (FindNext(SR) <> 0);
+    FindClose(SR);
+  end;
+end;
                                 //var LMap, give back a pointer to the resource Map
 function LoadLightMapNr(nr: Integer; LMap: TPLightMap): LongBool;
 var s: String;
-    SR: TSearchRec;
     bFound: LongBool;
     Sequence: TMapSequence;
 begin
@@ -666,26 +713,8 @@ begin
           MapCriticalSection.Enter;
           try
             bFound := False;
-            s := IncludeTrailingPathDelimiter(IniDirs[9]) + IntToStr(nr);
-            if FindFirst(s + '.*', faAnyFile, SR) = 0 then
-            repeat
-              bFound := Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG.PGM') > 0;
-              if bFound then
-                s := IncludeTrailingPathDelimiter(IniDirs[9]) + SR.Name;
-            until bFound or (FindNext(SR) <> 0);
-            FindClose(SR);
-            if not bFound then
-            begin
-              if FindFirst(s + '*.*', faAnyFile, SR) = 0 then
-              repeat
-                bFound := (Pos(UpperCase(ExtractFileExt(SR.Name)), '.JPG.PNG.BMP.JPEG.PGM') > 0) and
-                          (Length(SR.Name) > Length(IntToStr(nr))) and
-                           not (SR.Name[Length(IntToStr(nr)) + 1] in ['0'..'9']);
-                if bFound then
-                  s := IncludeTrailingPathDelimiter(IniDirs[9]) + SR.Name;
-              until bFound or (FindNext(SR) <> 0);
-              FindClose(SR);
-            end;
+            s := FindHeightMap( nr );
+            bFound := s <> '';
             if not bFound then Result := False else
               Result := LoadLightMap(LMap^, s, False, False, False, 0);
             if Result then

@@ -31,18 +31,42 @@ object HeightMapGenFrm: THeightMapGenFrm
     Align = alRight
     TabOrder = 0
     object Label15: TLabel
-      Left = 7
-      Top = 425
-      Width = 143
+      Left = 1
+      Top = 543
+      Width = 156
       Height = 13
+      Align = alBottom
       Caption = 'LMB: move           RMB: rotate'
+      ExplicitLeft = 7
+      ExplicitTop = 425
+      ExplicitWidth = 143
     end
     object Label16: TLabel
-      Left = 7
-      Top = 441
-      Width = 88
+      Left = 1
+      Top = 556
+      Width = 156
       Height = 13
+      Align = alBottom
       Caption = 'MMB/Wheel: zoom'
+      ExplicitLeft = 7
+      ExplicitTop = 441
+      ExplicitWidth = 88
+    end
+    object Label19: TLabel
+      Left = 11
+      Top = 166
+      Width = 60
+      Height = 13
+      AutoSize = False
+      Caption = 'Map Type:'
+    end
+    object Label1: TLabel
+      Left = 11
+      Top = 237
+      Width = 60
+      Height = 13
+      AutoSize = False
+      Caption = 'Map Number:'
     end
     object LoadMeshBtn: TButton
       Left = 11
@@ -53,14 +77,71 @@ object HeightMapGenFrm: THeightMapGenFrm
       TabOrder = 0
       OnClick = LoadMeshBtnClick
     end
-    object Button1: TButton
+    object SaveMapBtn: TButton
       Left = 11
-      Top = 205
+      Top = 261
       Width = 134
       Height = 25
-      Caption = 'Save HeightMap'
+      Hint = 'Save as heightmap inside the MB3D-maps-folder'
+      Caption = 'Save As HeightMap'
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 1
-      OnClick = Button1Click
+      OnClick = SaveMapBtnClick
     end
+    object MapNumberUpDown: TUpDown
+      Left = 126
+      Top = 234
+      Width = 16
+      Height = 21
+      Associate = MapNumberEdit
+      Min = 1
+      Max = 32000
+      Position = 1
+      TabOrder = 2
+      Thousands = False
+    end
+    object MapNumberEdit: TEdit
+      Left = 89
+      Top = 234
+      Width = 37
+      Height = 21
+      Hint = 'Map number'
+      MaxLength = 5
+      NumbersOnly = True
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 3
+      Text = '1'
+    end
+    object MapTypeCmb: TComboBox
+      Left = 11
+      Top = 185
+      Width = 134
+      Height = 21
+      Style = csDropDownList
+      DropDownCount = 32
+      TabOrder = 4
+      Items.Strings = (
+        'Cancel and show result'
+        'Cancel immediately')
+    end
+    object SaveImgBtn: TButton
+      Left = 11
+      Top = 341
+      Width = 134
+      Height = 25
+      Hint = 'Save as image at the location you specify'
+      Caption = 'Save As Image'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 5
+      OnClick = SaveImgBtnClick
+    end
+  end
+  object SaveImgDialog: TSaveDialog
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Left = 688
+    Top = 400
   end
 end

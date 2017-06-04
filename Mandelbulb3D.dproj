@@ -260,7 +260,7 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="opengl\OpenGLPreviewUtil.pas"/>
-        <DCCReference Include="heightmapgen\PNMPack.pas"/>
+        <DCCReference Include="..\PNMPack.pas"/>
         <DCCReference Include="heightmapgen\HeightMapGenPreview.pas"/>
         <DCCReference Include="heightmapgen\HeightMapGenUI.pas">
             <Form>HeightMapGenFrm</Form>

@@ -20,8 +20,8 @@ type
   public
     constructor Create(const Canvas: TCanvas);
     procedure UpdateMesh( const FacesList: TFacesList ); override;
-    procedure SaveHeightMap( const Left, Top, Width, Height: Integer );
-    procedure SaveAsPNG( const  Width, Height: Integer; const DepthBuffer: PGLfloat; const DepthMin, DepthMax: GLfloat; const Filename: String );
+    procedure SaveHeightMap( const Left, Top, Width, Height: Integer; const Filename: String );
+    procedure SaveAsPGM( const  Width, Height: Integer; const DepthBuffer: PGLfloat; const DepthMin, DepthMax: GLfloat; const Filename: String );
   end;
 
 implementation
@@ -341,7 +341,7 @@ begin
   FShader.Use;
 end;
 
-procedure TOpenGLHelper.SaveHeightMap(const Left, Top, Width, Height: Integer);
+procedure TOpenGLHelper.SaveHeightMap(const Left, Top, Width, Height: Integer; const Filename: String);
 const
   zNear = 1.0;
   zFar = 100.0;
@@ -384,13 +384,13 @@ begin
 
     OutputDebugString(PChar('Depth: ' + FloatToStr(FinalDepthMin) + '...' + FloatToStr(FinalDepthMax)));
 
-    SaveAsPNG(  Width, Height, DepthBuffer, FinalDepthMin, FinalDepthMax, 'D:\TMP\_z.png');
+    SaveAsPGM(  Width, Height, DepthBuffer, FinalDepthMin, FinalDepthMax, Filename);
   finally
     FreeMem( DepthBuffer );
   end;
 end;
 
-procedure TOpenGLHelper.SaveAsPNG( const  Width, Height: Integer; const DepthBuffer: PGLfloat; const DepthMin, DepthMax: GLfloat; const Filename: String );
+procedure TOpenGLHelper.SaveAsPGM( const  Width, Height: Integer; const DepthBuffer: PGLfloat; const DepthMin, DepthMax: GLfloat; const Filename: String );
 var
   I, J: Integer;
   PGMBuffer, CurrPGMBuffer: PWord;
@@ -417,7 +417,7 @@ begin
       end;
     end;
     with TPGM16Writer.Create do try
-      SaveToFile( PGMBuffer, Width, Height, 'D:\9603.pgm');
+      SaveToFile( PGMBuffer, Width, Height, 'D:\9606.pgm');
     finally
       Free;
     end;
