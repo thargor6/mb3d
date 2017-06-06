@@ -29,6 +29,7 @@ type
     Label1: TLabel;
     SaveImgBtn: TButton;
     SaveImgDialog: TSaveDialog;
+    OpenDialog1: TOpenDialog;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -205,19 +206,17 @@ end;
 
 procedure THeightMapGenFrm.LoadMeshBtnClick(Sender: TObject);
 begin
-  with TLightwaveObjFileReader.Create do try
-//    LoadFromFile('D:\TMP\LW_Dragon.lwo', FFaces);
-    LoadFromFile('D:\TMP\Half_Ball.lwo', FFaces);
-//    LoadFromFile('D:\insect2.lwo', FFaces);
-//    LoadFromFile('D:\TMP\mini!.lwo', FFaces);
-    SetWindowCaption('Heightmap for LW_Dragon.lwo');
+  if OpenDialog1.Execute  then begin
+    with TWavefrontObjFileReader.Create do try
+      LoadFromFile( OpenDialog1.Filename, FFaces);
+    finally
+      Free;
+    end;
     FFaces.DoCenter(2.0);
     FFaces.DoScale(1,-1.0,1.0);
     UpdateMesh( FFaces );
-  finally
-    Free;
+    EnableControls;
   end;
-  EnableControls;
 end;
 
 procedure THeightMapGenFrm.UpdateMesh(const FacesList: TFacesList);

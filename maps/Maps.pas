@@ -643,7 +643,7 @@ begin
     Ext := '.' + Extension
   else
     Ext := Extension;
-  Result := ChangeFileExt(IncludeTrailingPathDelimiter(IniDirs[9]) + IntToStr(nr), '.'+Ext);
+  Result := ChangeFileExt(IncludeTrailingPathDelimiter(IniDirs[9]) + IntToStr(nr), Ext);
 end;
 
 function GetHeighMapFolder: String;

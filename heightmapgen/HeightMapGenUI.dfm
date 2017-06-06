@@ -37,8 +37,6 @@ object HeightMapGenFrm: THeightMapGenFrm
       Height = 13
       Align = alBottom
       Caption = 'LMB: move           RMB: rotate'
-      ExplicitLeft = 7
-      ExplicitTop = 425
       ExplicitWidth = 143
     end
     object Label16: TLabel
@@ -48,8 +46,6 @@ object HeightMapGenFrm: THeightMapGenFrm
       Height = 13
       Align = alBottom
       Caption = 'MMB/Wheel: zoom'
-      ExplicitLeft = 7
-      ExplicitTop = 441
       ExplicitWidth = 88
     end
     object Label19: TLabel
@@ -143,5 +139,11 @@ object HeightMapGenFrm: THeightMapGenFrm
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Left = 688
     Top = 400
+  end
+  object OpenDialog1: TOpenDialog
+    DefaultExt = 'obj'
+    Filter = 'Wavefront OBJ (*.obj)|*.obj'
+    Left = 656
+    Top = 80
   end
 end

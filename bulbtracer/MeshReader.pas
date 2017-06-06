@@ -19,6 +19,11 @@ type
     procedure LoadFromFile(const Filename: String; Faces: TFacesList);
   end;
 
+  TWavefrontObjFileReader = class( TAbstractFileReader )
+  public
+    procedure LoadFromFile(const Filename: String; Faces: TFacesList);
+  end;
+
 implementation
 
 uses
@@ -185,6 +190,56 @@ begin
     end;
   finally
     FileStream.Free;
+  end;
+end;
+
+{ -------------------------- TWavefrontObjFileReader ------------------------- }
+// Reads only the portions currently needed: vertices and polygons/faces
+procedure TWavefrontObjFileReader.LoadFromFile(const Filename: String; Faces: TFacesList);
+var
+  Line: String;
+  Lines, TokenLst: TStringList;
+  FS: TFormatSettings;
+
+  function GetVertexFromStr( const VertexStr: String): Integer;
+  var
+    P: Integer;
+  begin
+    P := Pos( '/', VertexStr );
+    if P > 1  then
+      Result := StrToInt( Copy( VertexStr, 1, P - 1 ) ) - 1
+    else
+      Result := StrToInt( VertexStr ) - 1;
+  end;
+
+begin
+  FS := TFormatSettings.Create('en-US');
+  Lines := TStringList.Create;
+  try
+    Lines.LoadFromFile( Filename );
+    Faces.Clear;
+    TokenLst := TStringList.Create;
+    try
+      TokenLst.Delimiter := ' ';
+      TokenLst.StrictDelimiter := True;
+      for Line in Lines do begin
+        TokenLst.DelimitedText := Line;
+        if ( TokenLst.Count = 4 ) and ( TokenLst[ 0 ] = 'v' ) then begin
+          Faces.AddUnvalidatedVertex( StrToFloat( TokenLst[ 1 ], FS ), StrToFloat( TokenLst[ 2 ], FS ), StrToFloat( TokenLst[ 3 ], FS ) );
+        end
+        else if ( TokenLst.Count = 4 ) and ( TokenLst[ 0 ] = 'f' ) then begin
+          Faces.AddFace( GetVertexFromStr( TokenLst[ 1 ] ), GetVertexFromStr( TokenLst[ 2 ] ), GetVertexFromStr( TokenLst[ 3 ] ) );
+        end
+        else if ( TokenLst.Count = 5 ) and ( TokenLst[ 0 ] = 'f' ) then begin
+          Faces.AddFace( GetVertexFromStr( TokenLst[ 1 ] ), GetVertexFromStr( TokenLst[ 2 ] ), GetVertexFromStr( TokenLst[ 3 ] ) );
+          Faces.AddFace( GetVertexFromStr( TokenLst[ 1 ] ), GetVertexFromStr( TokenLst[ 3 ] ), GetVertexFromStr( TokenLst[ 4 ] ) );
+        end;
+      end;
+    finally
+      TokenLst.Free;
+    end;
+  finally
+    Lines.Free;
   end;
 end;
 

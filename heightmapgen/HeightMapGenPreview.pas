@@ -17,17 +17,18 @@ type
     procedure SetupLighting;
     procedure AfterInitGL; override;
     procedure ApplicationEventsIdle( Sender: TObject; var Done: Boolean ); override;
+    procedure SaveAsPGM( const  Width, Height: Integer; const DepthBuffer: PGLfloat; const DepthMin, DepthMax: GLfloat; const Filename: String );
+    procedure SaveAsPNG( const  Width, Height: Integer; const DepthBuffer: PGLfloat; const DepthMin, DepthMax: GLfloat; const Filename: String );
   public
     constructor Create(const Canvas: TCanvas);
     procedure UpdateMesh( const FacesList: TFacesList ); override;
     procedure SaveHeightMap( const Left, Top, Width, Height: Integer; const Filename: String );
-    procedure SaveAsPGM( const  Width, Height: Integer; const DepthBuffer: PGLfloat; const DepthMin, DepthMax: GLfloat; const Filename: String );
   end;
 
 implementation
 
 uses
-  Forms, Math, DateUtils, PNMWriter;
+  Forms, Math, DateUtils, PNMWriter, FileHandling;
 
 const
   WindowTitle = 'HeightMap Generator Preview';
@@ -45,13 +46,13 @@ procedure TOpenGLHelper.AfterInitGL;
 const
   FragmentShader: String =
     'float near = 1.0;'#10 +
-    'float far  = 10.0;'#10 +
+    'float far  = 30.0;'#10 +
     #10 +
     'float linearizeDepth(float depth) {'#10 +
     '  return (2.0 * near * far) / (far + near - depth * (far - near));'#10 +
     '}'#10 +
     'void main() {'#10 +
-    '  float depth = linearizeDepth(gl_FragCoord.z)/far;'#10 +
+    '  float depth = linearizeDepth(gl_FragCoord.z)/20.0;'#10 +
     '  gl_FragColor = vec4(1.0-vec3(depth), 1.0f);'#10 +
     '}'#10;
 begin
@@ -384,7 +385,10 @@ begin
 
     OutputDebugString(PChar('Depth: ' + FloatToStr(FinalDepthMin) + '...' + FloatToStr(FinalDepthMax)));
 
-    SaveAsPGM(  Width, Height, DepthBuffer, FinalDepthMin, FinalDepthMax, Filename);
+    if AnsiLowerCase( ExtractFileExt( Filename ) ) = '.pgm' then
+      SaveAsPGM(  Width, Height, DepthBuffer, FinalDepthMin, FinalDepthMax, Filename)
+    else
+      SaveAsPNG(  Width, Height, DepthBuffer, FinalDepthMin, FinalDepthMax, Filename);
   finally
     FreeMem( DepthBuffer );
   end;
@@ -417,7 +421,7 @@ begin
       end;
     end;
     with TPGM16Writer.Create do try
-      SaveToFile( PGMBuffer, Width, Height, 'D:\9606.pgm');
+      SaveToFile( PGMBuffer, Width, Height, Filename );
     finally
       Free;
     end;
@@ -426,6 +430,42 @@ begin
   end;
 end;
 
+procedure TOpenGLHelper.SaveAsPNG( const  Width, Height: Integer; const DepthBuffer: PGLfloat; const DepthMin, DepthMax: GLfloat; const Filename: String );
+var
+  I, J: Integer;
+  CurrDepthBuffer: PGLfloat;
+  DepthVal, Delta: Double;
+  BMP: TBitmap;
+  PB: PByte;
+
+  function TransformValue( const Value: GLfloat ): GLfloat;
+  begin
+    Result := ( Value - DepthMin ) / Delta;
+  end;
+
+begin
+  BMP := TBitmap.Create;
+  try
+    BMP.PixelFormat := pf8Bit;
+    BMP.SetSize( Width, Height );
+    Make8bitGreyscalePalette(Bmp);
+
+    Delta := DepthMax - DepthMin;
+    for I := 0 to Height - 1 do begin
+      CurrDepthBuffer := PGLfloat( Longint(DepthBuffer) + ( Height - I - 1 ) * Width * SizeOf( GLfloat ) );
+      PB := BMP.ScanLine[ I ];
+      for J := 0 to Width - 1 do begin
+        DepthVal := Min( Max( 0.0, TransformValue( CurrDepthBuffer^ ) ), 1.0 );
+        Inc( CurrDepthBuffer );
+        PB^:=Byte(Round(DepthVal*255.0));
+        Inc(PB);
+      end;
+    end;
+    SavePNG( Filename, BMP, False );
+  finally
+    BMP.Free;
+  end;
+end;
 
 
 end.
