@@ -85,7 +85,8 @@ const
 
 implementation
 
-uses Mand, Math, Dialogs, Windows, Math3D, formulas, FormulaGUI, HeaderTrafos, FormulaCompiler, Classes;
+uses Mand, Math, Dialogs, Windows, Math3D, formulas, FormulaGUI, HeaderTrafos, FormulaCompiler,
+  Classes, CompilerUtil;
 
 procedure CheckHybridOptions(pHCA: PTHeaderCustomAddon);
 var x, end1, repeat1, start2, end2, repeat2: Integer;
@@ -695,7 +696,7 @@ var n, i, j: Integer;
     d: Double;
     EndOfSection: Boolean;
     Code: TStringList;
-    CompiledFormula: TCompiledFormula;
+    CompiledFormula: TCompiledArtifact;
     Formulaname: String;
     p: Pointer;
     FreeParseResult: Boolean;

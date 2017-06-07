@@ -8,115 +8,63 @@ unit FormulaCompiler;
 interface
 
 uses
-  SysUtils, Classes, TypeDefinitions, JITFormulas;
-
-type
-  TFormulaLanguage = (langDELPHI);
-
-  TCompiledFormula = class
-  private
-    FErrorMessages: TStrings;
-    FCodeSize: Integer;
-    FCodePointer: Pointer;
-  protected
-    procedure AddErrorMessage(const Msg: String);
-  public
-    constructor Create;
-    destructor Destroy;override;
-    function IsValid: Boolean;
-    property ErrorMessage: TStrings read FErrorMessages;
-    property CodeSize: Integer read FCodeSize;
-    property CodePointer: Pointer read FCodePointer;
-  end;
-
-  TFormulaCompiler = class
-  public
-    {$ifdef JIT_FORMULA_PREPROCESSING}
-    function PreprocessCode(const Code: String; const Formula: TJITFormula): String; virtual;abstract;
-    {$endif}
-    function CompileFormula(const Formula: TJITFormula): TCompiledFormula;virtual;abstract;
-  end;
-
-  TFormulaCompilerRegistry = class
-  public
-    class function GetCompilerInstance(const FormulaLanguage: TFormulaLanguage): TFormulaCompiler;
-  end;
-
-implementation
-
-uses
-  Windows, Messages, Graphics, Controls, Forms, Dialogs, StdCtrls,
+  SysUtils, Classes, TypeDefinitions, JITFormulas,
 {$ifdef USE_PAX_COMPILER}
   PaxCompiler, PaxProgram, PaxRegister,
 {$endif}
-  TypInfo, Math, Math3D;
+  CompilerUtil;
 
-{$ifdef USE_PAX_COMPILER}
 type
-  TPaxCompiledFormula = class (TCompiledFormula)
+{$ifdef USE_PAX_COMPILER}
+  TPaxCompiledFormula = class (TCompiledArtifact)
   private
     FPaxProgram: TPaxProgram;
   public
     destructor Destroy;override;
   end;
 
-  TPaxFormulaCompiler = class (TFormulaCompiler)
+  TPaxFormulaCompiler = class (TPaxArtifactCompiler)
   private
-    FPaxCompiler: TPaxCompiler;
-    FPaxPascalLanguage: TPaxPascalLanguage;
-    procedure Initialize;
     procedure Register_TypeTIteration3D;
     procedure Register_TypeTIteration3Dext;
-    procedure Register_MathFunctions;
-    procedure Register_MiscFunctions;
+  protected
+    procedure RegisterFunctions; override;
+  public
+    {$ifdef JIT_FORMULA_PREPROCESSING}
+    function PreprocessCode(const Code: String; const Formula: TJITFormula): String;
+    {$endif}
+    function CompileFormula(const Formula: TJITFormula): TCompiledArtifact;
+  end;
+{$endif}
+
+
+  TFormulaCompiler = class
+  private
+{$ifdef USE_PAX_COMPILER}
+    FDelegate: TPaxFormulaCompiler;
+{$endif}
   public
     constructor Create;
     destructor Destroy; override;
     {$ifdef JIT_FORMULA_PREPROCESSING}
-    function PreprocessCode(const Code: String; const Formula: TJITFormula): String; override;
+    function PreprocessCode(const Code: String; const Formula: TJITFormula): String;
     {$endif}
-    function CompileFormula(const Formula: TJITFormula): TCompiledFormula; override;
+    function CompileFormula(const Formula: TJITFormula): TCompiledArtifact;
   end;
-{$endif}
-{ ----------------------------- TCompiledFormula ----------------------------- }
-constructor TCompiledFormula.Create;
-begin
-  inherited Create;
-  FErrorMessages := TStringList.Create;
-end;
 
-destructor TCompiledFormula.Destroy;
-begin
-  FreeAndNil(FErrorMessages);
-  inherited Destroy;
-end;
+  TFormulaCompilerRegistry = class
+  public
+    class function GetCompilerInstance(const Language: TCompilerLanguage): TFormulaCompiler;
+  end;
 
-procedure TCompiledFormula.AddErrorMessage(const Msg: String);
-begin
-  FErrorMessages.Add(Msg)
-end;
+implementation
 
-function TCompiledFormula.IsValid: Boolean;
-begin
-  Result := (FErrorMessages.Count = 0) and (FCodeSize > 0);
-end;
+uses
+  Windows, Messages, Graphics, Controls, Forms, Dialogs, StdCtrls,
+  TypInfo, Math, Math3D;
+
 {$ifdef USE_PAX_COMPILER}
 { --------------------------- TPaxFormulaCompiler ---------------------------- }
-constructor TPaxFormulaCompiler.Create;
-begin
-  inherited Create;
-  FPaxPascalLanguage := TPaxPascalLanguage.Create(nil);
-  FPaxCompiler := TPaxCompiler.Create(nil);
-  Initialize;
-end;
-
-destructor TPaxFormulaCompiler.Destroy;
-begin
-  FreeAndNil(FPaxPascalLanguage);
-  FreeAndNil(FPaxCompiler);
-  inherited Destroy;
-end;
-
 procedure TPaxFormulaCompiler.Register_TypeTIteration3D;
 var
   H_FormulaRange: Integer;
@@ -261,234 +209,8 @@ begin
   {H_TPIteration3Dext :=} FPaxCompiler.RegisterPointerType(0, 'TPIteration3Dext', H_TIteration3Dext);
 end;
 
-type
-  TStdDoubleMonadicFunc = function(const X: Double): Double;
-  TDoubleBooleanMonadicFunc = function (const AValue: Double): Boolean;
-  TDoubleIntegerMonadicFunc = function(const X: Double): Integer;
-  TStdDoubleDyadicFunc = function(const X, Y: Double): Double;
-  TSinCosProc = procedure(const Theta: Double; var Sin, Cos: Double);
-  TIntPowerFunc = function(const Base: Double; const Exponent: Integer): Double;
-  TRandGFunc = function(Mean, StdDev: Double): Double;
 
-function IntFunc(const X: Double): Double;
-begin
-  Result := System.Int(X);
-end;
-
-function FracFunc(const X: Double): Double;
-begin
-  Result := System.Frac(X);
-end;
-
-function ExpFunc(const X: Double): Double;
-begin
-  Result := System.Exp(X);
-end;
-
-function CosFunc(const X: Double): Double;
-begin
-  Result := System.Cos(X);
-end;
-
-function SinFunc(const X: Double): Double;
-begin
-  Result := System.Sin(X);
-end;
-
-function LnFunc(const X: Double): Double;
-begin
-  Result := System.Ln(X);
-end;
-
-function ArcTanFunc(const X: Double): Double;
-begin
-  Result := System.ArcTan(X);
-end;
-
-function SqrtFunc(const X: Double): Double;
-begin
-  Result := System.Sqrt(X);
-end;
-
-procedure TPaxFormulaCompiler.Register_MathFunctions;
-var
-  StdMFunc: TStdDoubleMonadicFunc;
-  StdDFunc: TStdDoubleDyadicFunc;
-  DoubleBooleanMonadicFunc: TDoubleBooleanMonadicFunc;
-  DoubleIntegerMFunc: TDoubleIntegerMonadicFunc;
-  LSinCosProc: TSinCosProc;
-  LIntPowerFunc: TIntPowerFunc;
-  LRandGFunc: TRandGFunc;
-begin
-  FPaxCompiler.RegisterHeader(0, 'function Int(const X: Double): Double;', @IntFunc);
-
-  FPaxCompiler.RegisterHeader(0, 'function Frac(const X: Double): Double;', @FracFunc);
-
-  FPaxCompiler.RegisterHeader(0, 'function Exp(const X: Double): Double;', @ExpFunc);
-
-  FPaxCompiler.RegisterHeader(0, 'function Cos(const X: Double): Double;', @CosFunc);
-
-  FPaxCompiler.RegisterHeader(0, 'function Sin(const X: Double): Double;', @SinFunc);
-
-  FPaxCompiler.RegisterHeader(0, 'function Ln(const X: Double): Double;', @LnFunc);
-
-  FPaxCompiler.RegisterHeader(0, 'function ArcTan(const X: Double): Double;', @ArcTanFunc);
-
-  FPaxCompiler.RegisterHeader(0, 'function Sqrt(const X: Double): Double;', @SqrtFunc);
-
-  StdMFunc := ArcCos; // To choose the right one of the overload variants
-  FPaxCompiler.RegisterHeader(0, 'function ArcCos(const X : Double) : Double;', @StdMFunc);
-
-  StdMFunc := ArcSin;
-  FPaxCompiler.RegisterHeader(0, 'function ArcSin(const X : Double) : Double;', @StdMFunc);
-
-  StdDFunc := ArcTan2;
-  FPaxCompiler.RegisterHeader(0, 'function ArcTan2(const Y, X: Double): Double;', @StdDFunc);
-
-  LSinCosProc := SinCos;
-  FPaxCompiler.RegisterHeader(0, 'procedure SinCos(const Theta: Double; var Sin, Cos: Double);', @LSinCosProc);
-
-  StdMFunc := Tan;
-  FPaxCompiler.RegisterHeader(0, 'function Tan(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := Cotan;
-  FPaxCompiler.RegisterHeader(0, 'function Cotan(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := Secant;
-  FPaxCompiler.RegisterHeader(0, 'function Secant(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := Cosecant;
-  FPaxCompiler.RegisterHeader(0, 'function Cosecant(const X: Double): Double;', @StdMFunc);
-
-  StdDFunc := Hypot;
-  FPaxCompiler.RegisterHeader(0, 'function Hypot(const X, Y: Double): Double;', @StdDFunc);
-
-  StdMFunc := RadToDeg;
-  FPaxCompiler.RegisterHeader(0, 'function RadToDeg(const Radians: Double): Double;', @StdMFunc);
-
-  StdMFunc := DegToRad;
-  FPaxCompiler.RegisterHeader(0, 'function DegToRad(const Degrees: Double): Double;', @StdMFunc);
-
-  StdMFunc := DegNormalize;
-  FPaxCompiler.RegisterHeader(0, 'function DegNormalize(const Degrees: Double): Double;', @StdMFunc);
-
-  StdMFunc := Cot;
-  FPaxCompiler.RegisterHeader(0, 'function Cot(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := Sec;
-  FPaxCompiler.RegisterHeader(0, 'function Sec(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := Csc;
-  FPaxCompiler.RegisterHeader(0, 'function Csc(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := Cosh;
-  FPaxCompiler.RegisterHeader(0, 'function Cosh(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := Sinh;
-  FPaxCompiler.RegisterHeader(0, 'function Sinh(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := Tanh;
-  FPaxCompiler.RegisterHeader(0, 'function Tanh(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := CotH;
-  FPaxCompiler.RegisterHeader(0, 'function CotH(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := SecH;
-  FPaxCompiler.RegisterHeader(0, 'function SecH(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := CscH;
-  FPaxCompiler.RegisterHeader(0, 'function CscH(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := ArcCot;
-  FPaxCompiler.RegisterHeader(0, 'function ArcCot(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := ArcSec;
-  FPaxCompiler.RegisterHeader(0, 'function ArcSec(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := ArcCsc;
-  FPaxCompiler.RegisterHeader(0, 'function ArcCsc(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := ArcCosh;
-  FPaxCompiler.RegisterHeader(0, 'function ArcCosh(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := ArcSinh;
-  FPaxCompiler.RegisterHeader(0, 'function ArcSinh(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := ArcTanh;
-  FPaxCompiler.RegisterHeader(0, 'function ArcTanh(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := ArcCotH;
-  FPaxCompiler.RegisterHeader(0, 'function ArcCotH(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := ArcSecH;
-  FPaxCompiler.RegisterHeader(0, 'function ArcSecH(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := ArcCscH;
-  FPaxCompiler.RegisterHeader(0, 'function ArcCscH(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := LnXP1;
-  FPaxCompiler.RegisterHeader(0, 'function LnXP1(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := Log10;
-  FPaxCompiler.RegisterHeader(0, 'function Log10(const X: Double): Double;', @StdMFunc);
-
-  StdMFunc := Log2;
-  FPaxCompiler.RegisterHeader(0, 'function Log2(const X: Double): Double;', @StdMFunc);
-
-  StdDFunc := LogN;
-  FPaxCompiler.RegisterHeader(0, 'function LogN(const Base, X: Double): Double;', @StdDFunc);
-
-  LIntPowerFunc := IntPower;
-  FPaxCompiler.RegisterHeader(0, 'function IntPower(const Base: Double; const Exponent: Integer): Double;', @LIntPowerFunc);
-
-  StdDFunc := Power;
-  FPaxCompiler.RegisterHeader(0, 'function Power(const Base, Exponent: Double): Double;', @StdDFunc);
-
-  DoubleIntegerMFunc := Ceil;
-  FPaxCompiler.RegisterHeader(0, 'function Ceil(const X: Double): Integer;', @DoubleIntegerMFunc);
-
-  DoubleIntegerMFunc := Floor;
-  FPaxCompiler.RegisterHeader(0, 'function Floor(const X: Double): Integer;', @DoubleIntegerMFunc);
-
-  StdDFunc := Min;
-  FPaxCompiler.RegisterHeader(0, 'function Min(const A, B: Double): Double;', @StdDFunc);
-
-  StdDFunc := Max;
-  FPaxCompiler.RegisterHeader(0, 'function Max(const A, B: Double): Double;', @StdDFunc);
-
-  LRandGFunc := RandG;
-  FPaxCompiler.RegisterHeader(0, 'function RandG(Mean, StdDev: Double): Double;', @LRandGFunc);
-
-  DoubleBooleanMonadicFunc := IsNan;
-  FPaxCompiler.RegisterHeader(0, 'function IsNan(const AValue: Double): Boolean;', @DoubleBooleanMonadicFunc);
-
-  DoubleBooleanMonadicFunc := IsInfinite;
-  FPaxCompiler.RegisterHeader(0, 'function IsInfinite(const AValue: Double): Boolean;', @DoubleBooleanMonadicFunc);
-end;
-
-function LocalIntToStr(Value: Integer): String;
-begin
-  Result := IntToStr(Value);
-end;
-
-function LocalFloatToStr(Value: Double): String;
-begin
-  Result := FloatToStr(Value);
-end;
-
-procedure LocalOutputDebugString(const Msg: String);
-begin
-  Windows.OutputDebugString(PWideChar(Msg));
-end;
-
-procedure TPaxFormulaCompiler.Register_MiscFunctions;
-begin
-  FPaxCompiler.RegisterHeader(0, 'function IntToStr(Value: Integer): String;', @LocalIntToStr);
-  FPaxCompiler.RegisterHeader(0, 'function FloatToStr(Value: Double): String;', @LocalFloatToStr);
-  FPaxCompiler.RegisterHeader(0, 'procedure OutputDebugString(const Msg: String)', @LocalOutputDebugString);
-end;
-
-procedure TPaxFormulaCompiler.Initialize;
+procedure TPaxFormulaCompiler.RegisterFunctions;
 begin
   Register_TypeTIteration3D;
   Register_TypeTIteration3Dext;
@@ -625,7 +347,7 @@ begin
 end;
 {$endif}
 
-function TPaxFormulaCompiler.CompileFormula(const Formula: TJITFormula): TCompiledFormula;
+function TPaxFormulaCompiler.CompileFormula(const Formula: TJITFormula): TCompiledArtifact;
 const
   DfltModule = '1';
 var
@@ -692,8 +414,8 @@ begin
         MemStream.Free;
       end;
 *)
-      Result.FCodePointer := TPaxCompiledFormula(Result).FPaxProgram.GetAddress(H_ProcName);
-      Result.FCodeSize := TPaxCompiledFormula(Result).FPaxProgram.ProgramSize;
+      Result.CodePointer := TPaxCompiledFormula(Result).FPaxProgram.GetAddress(H_ProcName);
+      Result.CodeSize := TPaxCompiledFormula(Result).FPaxProgram.ProgramSize;
     end
     else begin
       for I:=0 to FPaxCompiler.ErrorCount do
@@ -715,24 +437,57 @@ end;
 { ------------------------ TFormulaCompilerRegistry -------------------------- }
 {$ifdef USE_PAX_COMPILER}
 var
-  PaxFormulaCompiler : TPaxFormulaCompiler;
+  PaxFormulaCompiler : TFormulaCompiler;
 {$endif}
 
-class function TFormulaCompilerRegistry.GetCompilerInstance(const FormulaLanguage: TFormulaLanguage): TFormulaCompiler;
+class function TFormulaCompilerRegistry.GetCompilerInstance(const Language: TCompilerLanguage): TFormulaCompiler;
 begin
-  case FormulaLanguage of
+  case Language of
     langDELPHI:
       begin
         {$ifdef USE_PAX_COMPILER}
         if PaxFormulaCompiler = nil then
-          PaxFormulaCompiler := TPaxFormulaCompiler.Create;
+          PaxFormulaCompiler := TFormulaCompiler.Create;
         Result := PaxFormulaCompiler;
         exit;
         {$endif}
       end;
   end;
 
-  raise Exception.Create('No compiler available for language <'+GetEnumName(TypeInfo(TFormulaLanguage), Ord(FormulaLanguage))+'>');
+  raise Exception.Create('No compiler available for language <'+GetEnumName(TypeInfo(TCompilerLanguage), Ord(Language))+'>');
+end;
+
+{ ---------------------------- TFormulaCompiler ------------------------------ }
+constructor TFormulaCompiler.Create;
+begin
+  inherited;
+{$ifdef USE_PAX_COMPILER}
+  FDelegate := TPaxFormulaCompiler.Create;
+{$endif}
+end;
+
+destructor TFormulaCompiler.Destroy;
+begin
+{$ifdef USE_PAX_COMPILER}
+  FDelegate.Free;
+{$endif}
+  inherited;
+end;
+
+{$ifdef JIT_FORMULA_PREPROCESSING}
+function TFormulaCompiler.PreprocessCode(const Code: String; const Formula: TJITFormula): String;
+begin
+{$ifdef USE_PAX_COMPILER}
+  Result := FDelegate.PreprocessCode( Code, Formula );
+{$endif}
+end;
+{$endif}
+
+function TFormulaCompiler.CompileFormula(const Formula: TJITFormula): TCompiledArtifact;
+begin
+{$ifdef USE_PAX_COMPILER}
+  Result := FDelegate.CompileFormula( Formula );
+{$endif}
 end;
 
 initialization

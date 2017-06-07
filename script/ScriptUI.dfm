@@ -24,9 +24,6 @@ object ScriptEditorForm: TScriptEditorForm
     BevelOuter = bvNone
     BorderWidth = 8
     TabOrder = 0
-    ExplicitLeft = -292
-    ExplicitTop = 382
-    ExplicitWidth = 975
     object CancelAndExitBtn: TButton
       Left = 8
       Top = 8
@@ -44,7 +41,6 @@ object ScriptEditorForm: TScriptEditorForm
       Align = alRight
       Caption = 'Save + exit'
       TabOrder = 1
-      ExplicitLeft = 772
     end
   end
   object Panel2: TPanel
@@ -55,10 +51,6 @@ object ScriptEditorForm: TScriptEditorForm
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = -292
-    ExplicitTop = -120
-    ExplicitWidth = 975
-    ExplicitHeight = 543
     object Panel4: TPanel
       Left = 0
       Top = 0
@@ -67,7 +59,6 @@ object ScriptEditorForm: TScriptEditorForm
       Align = alLeft
       BevelOuter = bvNone
       TabOrder = 1
-      ExplicitHeight = 543
       object Panel5: TPanel
         Left = 0
         Top = 0
@@ -110,7 +101,6 @@ object ScriptEditorForm: TScriptEditorForm
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 3
-        ExplicitTop = 393
         object Panel9: TPanel
           Left = 0
           Top = 0
@@ -223,7 +213,6 @@ object ScriptEditorForm: TScriptEditorForm
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 2
-        ExplicitTop = 243
         object Panel13: TPanel
           Left = 0
           Top = 0
@@ -336,7 +325,6 @@ object ScriptEditorForm: TScriptEditorForm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 1
-        ExplicitHeight = 163
         object Panel17: TPanel
           Left = 0
           Top = 0
@@ -362,7 +350,6 @@ object ScriptEditorForm: TScriptEditorForm
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 1
-          ExplicitHeight = 149
           object Panel19: TPanel
             Left = 159
             Top = 0
@@ -372,7 +359,6 @@ object ScriptEditorForm: TScriptEditorForm
             BevelOuter = bvNone
             BorderWidth = 8
             TabOrder = 1
-            ExplicitHeight = 149
             object ParamDeleteBtn: TSpeedButton
               Left = 8
               Top = 48
@@ -428,7 +414,6 @@ object ScriptEditorForm: TScriptEditorForm
             Padding.Top = 8
             Padding.Bottom = 8
             TabOrder = 0
-            ExplicitHeight = 149
             object ParamsList: TListBox
               Left = 8
               Top = 8
@@ -439,7 +424,6 @@ object ScriptEditorForm: TScriptEditorForm
               ItemHeight = 13
               ParentDoubleBuffered = False
               TabOrder = 0
-              ExplicitHeight = 133
             end
           end
         end
@@ -454,8 +438,6 @@ object ScriptEditorForm: TScriptEditorForm
       BevelOuter = bvNone
       BorderWidth = 8
       TabOrder = 2
-      ExplicitLeft = 904
-      ExplicitHeight = 543
       object Panel8: TPanel
         Left = 8
         Top = 161
@@ -537,7 +519,6 @@ object ScriptEditorForm: TScriptEditorForm
         ReadOnly = True
         ShowHint = True
         TabOrder = 2
-        ExplicitTop = 347
       end
     end
     object MainPageControl: TPageControl
@@ -548,12 +529,8 @@ object ScriptEditorForm: TScriptEditorForm
       ActivePage = CodeSheet
       Align = alClient
       TabOrder = 0
-      ExplicitWidth = 704
-      ExplicitHeight = 543
       object CodeSheet: TTabSheet
         Caption = 'Code'
-        ExplicitWidth = 696
-        ExplicitHeight = 515
         object CodePnl: TPanel
           Left = 0
           Top = 0
@@ -563,8 +540,6 @@ object ScriptEditorForm: TScriptEditorForm
           BevelOuter = bvNone
           BorderWidth = 8
           TabOrder = 0
-          ExplicitWidth = 696
-          ExplicitHeight = 515
           object CodeEdit: TRichEdit
             Left = 8
             Top = 8
@@ -581,8 +556,6 @@ object ScriptEditorForm: TScriptEditorForm
             TabOrder = 0
             WantTabs = True
             Zoom = 100
-            ExplicitWidth = 680
-            ExplicitHeight = 499
           end
         end
       end
@@ -652,10 +625,6 @@ object ScriptEditorForm: TScriptEditorForm
       object SupportedFunctionsSheet: TTabSheet
         Caption = 'Supported mathematical functions'
         ImageIndex = 3
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Panel23: TPanel
           Left = 0
           Top = 0
@@ -665,8 +634,6 @@ object ScriptEditorForm: TScriptEditorForm
           BevelOuter = bvNone
           BorderWidth = 8
           TabOrder = 0
-          ExplicitWidth = 696
-          ExplicitHeight = 515
           object SupportedFunctionsEdit: TRichEdit
             Left = 8
             Top = 8

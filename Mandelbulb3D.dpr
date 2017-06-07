@@ -55,7 +55,7 @@ uses
   ScriptUI in 'script\ScriptUI.pas' {ScriptEditorForm},
   ColorOptionForm in 'ColorOptionForm.pas' {FColorOptions},
   uMapCalcWindow in 'uMapCalcWindow.pas' {MapCalcWindow},
-  FormulaCompiler in 'formula\FormulaCompiler.pas',
+  ScriptCompiler in 'script\ScriptCompiler.pas',
   PreviewRenderer in 'render\PreviewRenderer.pas',
   MB3DFacade in 'facade\MB3DFacade.pas',
   MutaGenGUI in 'mutagen\MutaGenGUI.pas' {MutaGenFrm},
@@ -90,7 +90,9 @@ uses
   HeightMapGenUI in 'heightmapgen\HeightMapGenUI.pas' {HeightMapGenFrm},
   PNMWriter in 'heightmapgen\PNMWriter.pas',
   PostProcessForm in 'PostProcessForm.pas' {PostProForm},
-  PNMReader in 'heightmapgen\PNMReader.pas';
+  PNMReader in 'heightmapgen\PNMReader.pas',
+  CompilerUtil in 'script\CompilerUtil.pas',
+  FormulaCompiler in 'formula\FormulaCompiler.pas';
 
 {$R *.res}
 

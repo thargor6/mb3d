@@ -210,7 +210,7 @@
         <DCCReference Include="uMapCalcWindow.pas">
             <Form>MapCalcWindow</Form>
         </DCCReference>
-        <DCCReference Include="formula\FormulaCompiler.pas"/>
+        <DCCReference Include="script\ScriptCompiler.pas"/>
         <DCCReference Include="render\PreviewRenderer.pas"/>
         <DCCReference Include="facade\MB3DFacade.pas"/>
         <DCCReference Include="mutagen\MutaGenGUI.pas">
@@ -271,6 +271,8 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="heightmapgen\PNMReader.pas"/>
+        <DCCReference Include="script\CompilerUtil.pas"/>
+        <DCCReference Include="formula\FormulaCompiler.pas"/>
         <None Include="CHANGES.txt"/>
         <None Include=".gitignore"/>
         <BuildConfiguration Include="Debug">

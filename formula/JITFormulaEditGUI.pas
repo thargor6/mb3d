@@ -133,7 +133,7 @@ implementation
 {$R *.dfm}
 uses
   CustomFormulas, FileHandling, ParamValueEditGUI, DivUtils, TypeDefinitions,
-  FormulaCompiler;
+  FormulaCompiler, CompilerUtil;
 
 procedure TJITFormulaEditorForm.CancelAndExitBtnClick(Sender: TObject);
 begin
@@ -509,7 +509,7 @@ const
   MaxVars = 32;
   MaxConsts = 32;
 var
-  CompiledFormula: TCompiledFormula;
+  CompiledFormula: TCompiledArtifact;
   pCodePointer: ThybridIteration2;
   IterationExt: TPIteration3Dext;
   X, Y, Z, W: Double;
