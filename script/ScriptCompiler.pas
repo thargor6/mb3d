@@ -21,13 +21,14 @@ type
     FPaxProgram: TPaxProgram;
   public
     destructor Destroy;override;
+    property PaxProgram: TPaxProgram read FPaxProgram;
   end;
 
   TPaxScriptCompiler = class (TPaxArtifactCompiler)
   protected
     procedure RegisterFunctions; override;
   public
-    function CompileScript(const Script: String): TCompiledArtifact;
+    function CompileScript(const Script: String): TPaxCompiledScript;
   end;
 {$endif}
 
@@ -60,9 +61,38 @@ begin
   Register_MiscFunctions;
 end;
 
-function TPaxScriptCompiler.CompileScript(const Script: String): TCompiledArtifact;
+function TPaxScriptCompiler.CompileScript(const Script: String): TPaxCompiledScript;
+const
+  DfltModule = '1';
+var
+  I:Integer;
 begin
-  // TODO
+  Result := TPaxCompiledScript.Create;
+  try
+    TPaxCompiledScript(Result).FPaxProgram := TPaxProgram.Create(nil);
+    FPaxCompiler.ResetCompilation;
+    FPaxCompiler.AddModule(DfltModule, FPaxPascalLanguage.LanguageName);
+
+
+    with TStringList.Create do begin
+      Text := Script;
+      for I := 0 to Count - 1 do
+        FPaxCompiler.AddCode(DfltModule, Strings[ I ] );
+    end;
+
+    FPaxCompiler.DebugMode := False;
+    if FPaxCompiler.Compile(TPaxCompiledScript(Result).FPaxProgram, False, False) then begin
+      Result.CodePointer := TPaxCompiledScript(Result).FPaxProgram.GetProgPtr;
+      Result.CodeSize := TPaxCompiledScript(Result).FPaxProgram.ProgramSize;
+    end
+    else begin
+      for I:=0 to FPaxCompiler.ErrorCount do
+        Result.AddErrorMessage(FPaxCompiler.ErrorMessage[I]);
+    end;
+  except
+    FreeAndNil(Result);
+    raise;
+  end;
 end;
 { -------------------------- TPaxCompiledScript ------------------------------ }
 destructor TPaxCompiledScript.Destroy;

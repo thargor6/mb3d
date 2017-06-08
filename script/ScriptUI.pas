@@ -14,42 +14,9 @@ type
     SaveAndExitBtn: TButton;
     Panel2: TPanel;
     Panel4: TPanel;
-    Panel5: TPanel;
-    Label1: TLabel;
-    FormulanameEdit: TEdit;
-    OptionsPnl: TPanel;
-    Panel9: TPanel;
-    Label2: TLabel;
-    Panel10: TPanel;
-    Panel11: TPanel;
-    OptionDeleteBtn: TSpeedButton;
-    OptionAddBtn: TSpeedButton;
-    OptionEditBtn: TSpeedButton;
-    Panel12: TPanel;
-    OptionsList: TListBox;
-    ConstantsPnl: TPanel;
-    Panel13: TPanel;
-    Label3: TLabel;
-    Panel14: TPanel;
-    Panel15: TPanel;
-    ConstantDeleteBtn: TSpeedButton;
-    ConstantAddBtn: TSpeedButton;
-    ConstantEditBtn: TSpeedButton;
-    Panel16: TPanel;
-    ConstantsList: TListBox;
-    ParamsPnl: TPanel;
-    Panel17: TPanel;
-    Label4: TLabel;
-    Panel18: TPanel;
-    Panel19: TPanel;
-    ParamDeleteBtn: TSpeedButton;
-    ParamAddBtn: TSpeedButton;
-    ParamEditBtn: TSpeedButton;
-    Panel20: TPanel;
-    ParamsList: TListBox;
     Panel6: TPanel;
     Panel8: TPanel;
-    CompileBtn: TSpeedButton;
+    RunBtn: TSpeedButton;
     SaveBtn: TSpeedButton;
     Panel21: TPanel;
     LoadFormulaBtn: TSpeedButton;
@@ -58,18 +25,18 @@ type
     CodeSheet: TTabSheet;
     CodePnl: TPanel;
     CodeEdit: TRichEdit;
-    DescriptionSheet: TTabSheet;
-    Panel7: TPanel;
-    DescriptionEdit: TRichEdit;
-    PreprocessedCodeSheet: TTabSheet;
-    Panel22: TPanel;
-    PreprocessedCodeEdit: TRichEdit;
     SupportedFunctionsSheet: TTabSheet;
     Panel23: TPanel;
     SupportedFunctionsEdit: TRichEdit;
     OpenDialog: TOpenDialog;
+    CompileBtn: TSpeedButton;
+    procedure CompileBtnClick(Sender: TObject);
+    procedure RunBtnClick(Sender: TObject);
   private
     { Private-Deklarationen }
+    procedure Compile( const DoRun: Boolean );
+    procedure ShowInfoMsg(const Msg: String);
+    procedure ShowError(const Msg: String);
   public
     { Public-Deklarationen }
   end;
@@ -79,12 +46,66 @@ var
 
 implementation
 
-uses Mand, DOF, DivUtils, ImageProcess, DoubleSize, CalcPart, HeaderTrafos,
- CalcMonteCarlo, CalcSR, Math3D, Tiling, LightAdjust, FileHandling;
+uses Mand, Math3D, FileHandling, ScriptCompiler, CompilerUtil, DateUtils;
 
 {$R *.dfm}
 
+procedure TScriptEditorForm.Compile( const DoRun: Boolean );
+var
+  CompiledFormula: TCompiledArtifact;
+  T0, T1: Longint;
+begin
+  try
+    CompiledFormula := TScriptCompilerRegistry.GetCompilerInstance(langDELPHI).CompileScript( CodeEdit.Text );
+    try
+      if CompiledFormula.IsValid then begin
+        if DoRun then begin
+{$ifdef USE_PAX_COMPILER}
+          try
+            T0 := DateUtils.MilliSecondsBetween(Now, 0);
+            TPaxCompiledScript( CompiledFormula ).PaxProgram.Run;
+            T1 := DateUtils.MilliSecondsBetween(Now, 0);
+            ShowInfoMsg('Script executed in ' + FloatToStr((T1-T0)/1000.0)+' s');
+          except
+            on E: Exception do begin
+              ShowError( E.Message );
+            end;
+          end;
+{$endif}
+        end
+        else
+          ShowInfoMsg('Compiling succeeded');
+      end
+      else
+        ShowError(CompiledFormula.ErrorMessage.Text);
+    finally
+      CompiledFormula.Free;
+    end;
+  except
+    on E: Exception do
+      ShowError(E.Message);
+  end;
+end;
 
+procedure TScriptEditorForm.ShowInfoMsg(const Msg: String);
+begin
+  InfoMemo.Lines.Append(Msg);
+end;
+
+procedure TScriptEditorForm.CompileBtnClick(Sender: TObject);
+begin
+  Compile( False );
+end;
+
+procedure TScriptEditorForm.RunBtnClick(Sender: TObject);
+begin
+  Compile( True );
+end;
+
+procedure TScriptEditorForm.ShowError(const Msg: String);
+begin
+  MessageDlg(Msg, mtInformation, [mbOK], 0);
+end;
 
 end.
 

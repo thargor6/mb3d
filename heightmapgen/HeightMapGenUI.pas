@@ -17,7 +17,7 @@ type
   TMapType = (mt8BitPNG, mt16BitPBM);
 
   THeightMapGenFrm = class(TForm)
-    Panel1: TPanel;
+    NavigatePnl: TPanel;
     Label15: TLabel;
     Label16: TLabel;
     LoadMeshBtn: TButton;
@@ -30,6 +30,7 @@ type
     SaveImgBtn: TButton;
     SaveImgDialog: TSaveDialog;
     OpenDialog1: TOpenDialog;
+    Label2: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -46,6 +47,8 @@ type
     procedure LoadMeshBtnClick(Sender: TObject);
     procedure SaveMapBtnClick(Sender: TObject);
     procedure SaveImgBtnClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
+    procedure NavigatePnlClick(Sender: TObject);
   private
     { Private declarations }
     FDragging: Boolean;
@@ -139,6 +142,11 @@ begin
   EnableControls;
 end;
 
+procedure THeightMapGenFrm.FormDblClick(Sender: TObject);
+begin
+  NavigatePnl.Visible := not NavigatePnl.Visible;
+end;
+
 procedure THeightMapGenFrm.FormDestroy(Sender: TObject);
 begin
   FOpenGLHelper.Free;
@@ -217,6 +225,11 @@ begin
     UpdateMesh( FFaces );
     EnableControls;
   end;
+end;
+
+procedure THeightMapGenFrm.NavigatePnlClick(Sender: TObject);
+begin
+  NavigatePnl.Visible := False;
 end;
 
 procedure THeightMapGenFrm.UpdateMesh(const FacesList: TFacesList);

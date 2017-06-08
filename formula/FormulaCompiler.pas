@@ -33,7 +33,7 @@ type
     {$ifdef JIT_FORMULA_PREPROCESSING}
     function PreprocessCode(const Code: String; const Formula: TJITFormula): String;
     {$endif}
-    function CompileFormula(const Formula: TJITFormula): TCompiledArtifact;
+    function CompileFormula(const Formula: TJITFormula): TPaxCompiledFormula;
   end;
 {$endif}
 
@@ -347,7 +347,7 @@ begin
 end;
 {$endif}
 
-function TPaxFormulaCompiler.CompileFormula(const Formula: TJITFormula): TCompiledArtifact;
+function TPaxFormulaCompiler.CompileFormula(const Formula: TJITFormula): TPaxCompiledFormula;
 const
   DfltModule = '1';
 var
@@ -361,7 +361,7 @@ var
 begin
   Result := TPaxCompiledFormula.Create;
   try
-    TPaxCompiledFormula(Result).FPaxProgram := TPaxProgram.Create(nil);
+    Result.FPaxProgram := TPaxProgram.Create(nil);
     FPaxCompiler.ResetCompilation;
     FPaxCompiler.AddModule(DfltModule, FPaxPascalLanguage.LanguageName);
     // add formula-code (Delphi procedure) here

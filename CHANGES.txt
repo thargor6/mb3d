@@ -1,3 +1,7 @@
+V1.97 (work in progress)
+ - Basic foundation for a scripting-module, utilizing the Pax-Compiler
+ - HeightMapGen: hide right panel Dbl-Clicking
+
 V1.96 (unreleased)
  - finished the new Heightmap-Generator:
     - generates heightmaps from arbitrary meshes
@@ -5,7 +9,7 @@ V1.96 (unreleased)
     - WaveFront OBJ format for loading of meshes is supported, only triangles and quadtrangles are imported
       (so if your mesh contains polygons with more than 4 corners you must convert them to triangles first,
       probably each 3D software will support this)
-    - Two types of maps are suzpported:
+    - Two types of maps are supported:
         - 8 Bit PNG
         - 16 Bit PGM (PGM because Delphi seems not able to generate 16 Bit PNG's)
     - The map can be saved as image or directly saved as the next new slot to the maps folder

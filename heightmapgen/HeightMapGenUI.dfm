@@ -13,6 +13,7 @@ object HeightMapGenFrm: THeightMapGenFrm
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnDestroy = FormDestroy
   OnMouseDown = FormMouseDown
   OnMouseMove = FormMouseMove
@@ -23,20 +24,22 @@ object HeightMapGenFrm: THeightMapGenFrm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Panel1: TPanel
+  object NavigatePnl: TPanel
     Left = 636
     Top = 0
     Width = 158
     Height = 570
     Align = alRight
     TabOrder = 0
+    OnClick = NavigatePnlClick
     object Label15: TLabel
       Left = 1
-      Top = 543
+      Top = 530
       Width = 156
       Height = 13
       Align = alBottom
       Caption = 'LMB: move           RMB: rotate'
+      ExplicitTop = 543
       ExplicitWidth = 143
     end
     object Label16: TLabel
@@ -45,8 +48,8 @@ object HeightMapGenFrm: THeightMapGenFrm
       Width = 156
       Height = 13
       Align = alBottom
-      Caption = 'MMB/Wheel: zoom'
-      ExplicitWidth = 88
+      Caption = 'DblClick: hide right panel'
+      ExplicitWidth = 117
     end
     object Label19: TLabel
       Left = 11
@@ -63,6 +66,15 @@ object HeightMapGenFrm: THeightMapGenFrm
       Height = 13
       AutoSize = False
       Caption = 'Map Number:'
+    end
+    object Label2: TLabel
+      Left = 1
+      Top = 543
+      Width = 156
+      Height = 13
+      Align = alBottom
+      Caption = 'MMB/Wheel: zoom'
+      ExplicitWidth = 88
     end
     object LoadMeshBtn: TButton
       Left = 11
