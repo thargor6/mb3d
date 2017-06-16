@@ -1,0 +1,16 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double fixZ = 0.0
+
+[CODE]
+558BEC568B75088B7630DD01DD46F0DEC1D9E1DD46F0D9E0DEC1DD195E5DC208
+00
+[END]
+
+Description:
+
+Absolute value for z (with fixing constant) - Can work as a "mirror" or... ?!
+Formula by Luca GN 2011
+
+z' = abs(z+fixZ)-fixZ

@@ -1,0 +1,39 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double Radius = 1
+.2Doubles X halfwidth = 1
+.2Doubles Scale = 2
+.Double Z add = 0
+.Double Y add = 0
+.Double X add = 3
+.Double Barrel = 0
+.Double Tip = 0
+.Integer apply scale+add = 1
+.Integer OTrap option (0..3) = 0
+.Single OTrap offset = 1
+.Single OTrap scale = 1
+.Double Inside radius = -1
+[CONSTANTS]
+INT64 = $7FFFFFFFFFFFFFFF
+INT64 = $7FFFFFFFFFFFFFFF
+[CODE]
+660F104690F20F104E88660F5947D0F20F594FD0660F5847C0F20F584FB8837F
+A4007419F20F106E70F20F596FD0660F114690F20F114E88F20F116E70660F28
+E1660F59C0660F540F660F70D04E660F28D9F20F5C4FE0F20F58C2F20F5D5FE0
+F20F5967A8F20F59DBF20F51C0F20F105790F20F595FB0F20F5CD0F20F5C47F0
+F20F5CD3F20F58C3F20F5CD4F20F58C4F20F5FC2F20F5FC1837FA4007505F20F
+5E47D08B47A0F20F1146E083E003DD44C680D84F98D8479CDD9E80000000C3
+[END]
+
+Cylinder shape dIFS with OTrap coloring options:
+
+0: Change with DEstop
+1: Change with X
+2: Change with Y
+3: Change with Z
+
+DEstop might vary on distance, choose OTrap_scale = 0 to switch off.
+
+You have to choose the 2nd coloring choice with orbit trap to see these changes.

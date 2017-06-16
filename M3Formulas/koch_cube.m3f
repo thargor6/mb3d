@@ -1,0 +1,97 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 2
+.DEscale = 1
+.SIpower = 1
+.RStop = 5
+.Double Post-scale = 1
+.Double XY Stretch = 1
+.Double Z Fold = 1
+.Double X Add = 0
+.Double Y Add = 0
+.Double Z Add = 0
+.3SingleAngles Rotation = 0
+[CONSTANTS]
+Double = 2
+Double = 3
+Double = 4
+[CODE]
+558BEC81EC200000005356578B75088B
+7E308BD8DD03D9E1DC4F08DD1B90DD02
+D9E1DC4F08DD1A90DD01D9E1DC4F08DD
+19DD4108DC4F08DC77E8DC4FF0DD5908
+90D9D0DD03DD02DED9DFE080E4417708
+DD03DD02DD1BDD1ADD03DD01DED9DFE0
+80E4417708DD03DD01DD1BDD19DD01DD
+02DED9DFE080E4417608DD01DD02DD19
+DD1AD9D0DD01DC47C8DD02DC47D0DD03
+DC47D8D9C0D84FACD9C2D84FA8DEC1D9
+C3D84FA4DEC1D9C1D84FC4D9C3D84FC0
+DEC1D9C4D84FBCDEC1D9CAD84FB8D9CB
+D84FB4DEC3D9CBD84FB0DEC2DD1BDD1A
+DD1990DD47E0DC21D9E1D9E0DC47E0DD
+1990DD4708D9C0DD47E8DEC1DD5DE8DD
+47E8DEE9DD5DE090DD03DC65E0DD5DF8
+90DD03DC65E8DD5DF090DD45F8DD02DE
+D9DFE080E4417712DD45F8DD1BDD02DC
+65E0DD1AEB2690909090DD45F0DD02DE
+D9DFE080E441760990DD45F0DD1BEB0C
+90DD02DD45F0DD1ADD1BD9D0DD03DC4F
+F0DC77E8DD1BDD02DC4FF0DC77E8DD1A
+DD01DC4FF0DD198BC35F5E5B89EC5DC2
+0800
+[END]
+Cubic Koch fractal. Inspired from a Wikipedia image ( http://en.wikipedia.org/wiki/File:Quadratic_Koch_3D_(type1_stage2).png )
+Added options for scale, stretching and other goodies
+TIP - With default settings you don't see the fractal correctly; decrease DEstop, and use miniter=10 or something to see a better
+plot. Be careful with scale and stretching tweaks, they greatly affect the render!
+If you use xy stretch, the fractal will be less uniform but with some singularities.
+
+----------------
+  ; basic cubic fold (from Menger3 formula)
+  ; scale has been replaced by a postscale 
+  ; to fix some branch cut troubles
+  x = abs(x)*3
+  y = abs(y)*3
+  z = abs(z)*3
+  if y>x
+  t=x
+  x=y
+  y=t
+  endif
+  if z>x
+  t=x
+  x=z
+  z=t
+  endif
+  if z>y
+  t=y
+  y=z
+  z=t
+  endif
+  x = x+xa, y=y+ya, z=z+za
+  ( ... rotation of x,y,z on specified angles ... )
+  ; basic vars
+  a=3-stretch, b=3+stretch, c=x-a, d=x-b
+  ; the routine works only for scale = 3, else some discontinuities will appear
+  ; Now, draw the cube WITHOUT making discontinuites in the spatial vars
+  ; bring what falls "out of the small cube zone" in the interval (-1;1) (next iter will take care)
+  ; z must be folded to get a homogen look
+  z=zfix-abs(zfix-z)
+  if (c<y)
+   ; out of the cube ... normalize
+   x=c
+   y=y-a ; NOT a-y -> discontinue
+  elseif (d>y)
+   ; point falls just over the small cube
+   x=d
+  else
+   ; vertical faces of small cube (swap)
+   t=x
+   x=y
+   y=d
+  endif
+  x = x/stretch, y=y/stretch ;NON conformal stretching
+  x = x*postscale, y = y*postscale, z = z*postscale
+----------------
+FORMULA AND IMPLEMENTATION; 100% by Luca G.N. 2011.

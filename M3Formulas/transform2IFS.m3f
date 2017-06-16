@@ -1,0 +1,21 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 21
+.Double Add X = 0
+.Double Add Y = 0
+.Double Add Z = 0
+.3SingleAngles Rotation = 0
+.Integer Abs X = 0
+.Integer Abs Y = 1
+.Integer Abs Z = 0
+[CODE]
+DD4698837FB0007402D9E1DD4690837FB4007402D9E1DD4688837FB8007402D9
+E1D9C0D84FC4D9C2D84FC0DEC1D9C3D84FBCDEC1D9C1D84FDCD9C3D84FD8DEC1
+D9C4D84FD4DEC1D9CAD84FD0D9CBD84FCCDEC3D9CBD84FC8DEC2DC47F0DD5E88
+DC47E8DD5E90DC47E0DD5E98C3
+[END]
+
+"Inverse" of transform. Does everything in reversed order, because 
+normal transform adds, rotates, does abs while this does abs at first,
+then rotates and finally adds. Useful for some shape transforms at low iters.
+

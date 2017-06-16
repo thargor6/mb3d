@@ -1,0 +1,25 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double fixZ = 0.0
+.Double fixLg = 0.01
+.Double Mul = 1.0
+.Double Base = 0.367879441
+[CODE]
+558BEC53505657908B75088BD88B7E30DD01DD47E0DEC9DD47F0DEC1DD118A61
+0780E480D9E1DD47E8D9E1DEC1DD47D8D9C9D9F1DD193061078BC35F5E585B5D
+C20800
+[END]
+
+Description:
+
+Logarithm for z + some bells & whistles
+k must be nonzero!
+Formula by Luca GN 2013
+
+x' = Mul*z+fixZ
+s = sign(x')
+z = ln(x'+fixLg)/ln(Base)*s
+
+
+

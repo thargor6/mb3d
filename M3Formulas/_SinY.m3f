@@ -1,0 +1,27 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Integer Index = 1
+.Single Offset 1 = 0
+.Single Scale 1 = 1
+.Single Scale 2 = 1
+.Single Offset 2 = 0
+[CODE]
+558BEC56578B75088B7E308B77F483E603DD04F0D867F0D84FECD9FED84FE8D8
+47E4DD1CF05F5E5DC20800
+[END]
+
+New added parameters:
+
+Index:
+Do this function on vectorpart: 
+
+0: x
+1: y
+2: z
+3: w
+
+
+The function itself:
+
+a = Sin((a - offset1) * scale1) * scale2 + offset2

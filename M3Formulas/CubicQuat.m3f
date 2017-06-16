@@ -1,0 +1,32 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double X mul = 1
+.Double Y mul = 1
+.Double Z mul = 1
+.Double W mul = 1
+.Double W add = 0
+.Double X twist = 0
+.Double Y twist = 0
+[CODE]
+558BEC56578B75088B7E30DD02D8C8DC4FE8DD01D8C8DC4FE0DD4108D8C8DC4F
+D8DEC1DEC1D9E0DD00D8C8DC4FF0DEC1DC4618DD4620DC4FC8DEC1D9D0DD00DC
+0ADC4FE8D8C0DC4620DD4618DC4FC0DEC1D9D0DD00DC09DC4FE0D8C0DC4628D9
+D0DD00DC4908DC4FD8D8C0DC47D0DC46C8D9D0DD5908DD19DD1ADD18D9D05F5E
+5DC20800
+[END]
+
+
+Description:
+
+An attempt to replicate a formula from Gilles Nadau (2003) - from UF database
+It is an "approximation" of the original one.
+That formula have an additional "twisting" parameter, like this.
+Modified, some additional user parameters added:
+
+x' = X_mul * x*x - (Y_mul * y*y + Z_mul *z*z + W_mul * w*w) + Cx + Cy * X_twist 
+y' = 2*Y_mul * x*y + Cy + Cx * Y_twist 
+z' = 2*Z_mul * x*z + Cz
+w' = 2*W_mul * x*w + W_add + Cw

@@ -1,0 +1,21 @@
+[OPTIONS]
+.Version = 3
+.DEscale = 2
+.SIpower = 2
+[CODE]
+558BEC5356578B75088B7E308BD8DD03D8C8DD01DC0AD8C0DEE9D9D0DD01D8C8
+DD02DC0BD8C0DEC1D9D0DD02D8C8DD01DC0BD8C0DEC1D9D0DC4628DD19DC4620
+DD1ADC4618DD1BD9D08BC35F5E5B89EC5DC20800
+[END]
+
+
+Description:
+
+From a formula by QuickDudley, uploaded at FractalForums
+(using his original mult. table). Has nice minibrots.
+
+x' = +x*x - z*y*2 + Cx
+y' = +z*z + y*x*2 + Cy
+z' = +y*y + x*z*2 + Cz
+
+Luca GN 2015

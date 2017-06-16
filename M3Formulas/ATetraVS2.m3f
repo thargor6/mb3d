@@ -1,0 +1,67 @@
+[OPTIONS]
+.Version = 8
+.DEscale = 0.2
+.DEoption = 11
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 1.414
+.Boxscale Min R = 0.5
+.Double Fold = 1
+.Double Scale vary = 0
+.DRecipro Radius = 8
+[CONSTANTS]
+Double = -0.70710678118654752440084436210485
+[CODE]
+558BEC5657538B7D0889C38B773081C780000000837F50007F09FF4750DD46F0
+DD5F48DD4748D9E8D9C1D9E1DEE1DC4ED0DEC1DD5F48DD46D8DC0EDD02D8C1DD
+03D8C2D9C0D8C2D9EEDED9DFE0D0EC7714D9E0D8E2DD1AD9E0D8E1DD1BDDD8EB
+3490909090D8E2D8E2D9C9D8E2D8E2D9C9D9C0D8C2D9EEDED9DFE0D0EC7210D9
+E0D8C2DD1AD9E0D8C1DD1BDDD8EB06DDD8DDD8DDD8DD46D8DC0EDD01D8C1DD03
+D8C2D9C0D8C2D9EEDED9DFE0D0EC7714D9E0D8E2DD19D9E0D8E1DD1BDDD8EB34
+90909090D8E2D8E2D9C9D8E2D8E2D9C9D9C0D8C2D9EEDED9DFE0D0EC7210D9E0
+D8C2DD19D9E0D8C1DD1BDDD8EB06DDD8DDD8DDD8DD46D8DC0EDD01D8C1DD02D8
+C2D9C0D8C2D9EEDED9DFE0D0EC7714D9E0D8E2DD19D9E0D8E1DD1ADDD8EB3490
+909090D8E2D8E2D9C9D8E2D8E2D9C9D9C0D8C2D9EEDED9DFE0D0EC7210D9E0D8
+C2DD19D9E0D8C1DD1ADDD8EB06DDD8DDD8DDD8DD01DD02DD03D9C0D8C9D9C2D8
+CBDEC1D9C3D8CCDEC1DC4EC8DC56E0DFE0D0EC7307DDD8DD46E8EB16D9E8D8D1
+DFE0D0EC7207DDD8DC7F48EB05DED9DD4748DD4108D8C9DD5908DCCBDCCADEC9
+DC47A8DD19DC47A0DD1ADC4798DD1B89D85B5F5E5DC20800
+[END]
+
+Revised and improved edition of Amazing Tetrahedron. More simple and visually correct results.
+Based on this folding formula;
+
+  Fold45 = - fold / sqrt(2)
+  m = 0
+  // folds the positive quadrant
+  x = x + Fold45 // moves x to the first alignment
+  y = y + Fold45 // moves y to the first alignment
+  m = x+y
+  if m>0
+     n = x // does the fold
+     x = -y
+     y = -n
+     x = x - Fold45
+     y = y - Fold45
+     else
+         // folds the negative quadrant
+         // we need a nested if to avoid a 4x fold, we need a triple repetition
+         x = x - 2*Fold45 // moves x to the second alignment
+         y = y - 2*Fold45 // moves y to the second alignment
+         m = x+y
+         if m<0
+            n = x // does the 2nd fold
+            x = -y
+            y = -n
+         endif
+         x = x + Fold45 // and finally moves x and y back to the original spot
+         y = y + Fold45
+  endif
+  (... do it for x+y, then x+z then y+z. Like in Sierpinski3 formula but it's a folding)
+Luca GN 2011
+
+-------
+
+EDIT
+
+may 23 2012 added radius. A great improvement in the fractal look is notable when radius is near to 10... Experiment by yourself!

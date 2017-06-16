@@ -1,0 +1,138 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double X Center = 0
+.Double Y Center = .5
+.Double Z Center = 0
+.Double R Max = 1
+.Double Speed (max 1) = .5
+.Double X Seed = 0
+.Double Y Seed = 0
+.Double Z Seed = 0
+.Integer Inside mode = 0
+.Double Recenter = 0
+.Integer Shape = 0
+[CODE]
+558BEC5657538B750889C38B7E30837FA8017538DD03DC67F0D9E1DD02DC67E8
+D9E1DD01DC67E0D9E1D8D1DFE080E4417704DDD9EB02DDD8D8D1DFE080E44177
+04DDD9EB02DDD8E91801000090837FA8027520DD03DC67F0D8C8DD02DC67E8D8
+C8DEC1DD01DC67E0D8C8DEF9D9FAE9F100000090837FA8037517DD03DC67F0D8
+C8DD02DC67E8D8C8DEC1D9FAE9D300000090837FA8FE7535DD01DC67E0D9EEDE
+D9DFE080E441761EDD03DC67F0D8C8DD02DC67E8D8C8DEC1D9FADD01DC67E0DE
+F9E99E000000D9E8E99A00000090837FA804752BDD03DC67F0D9E1DD02DC67E8
+D9E1D8D1DFE080E4417704DDD9EB02DDD8DD01DC67E0D9E1DEF9E96500000090
+837FA8FC7543DD01DC67E0D9EEDED9DFE080E441762BDD03DC67F0D9E1DD02DC
+67E8D9E1D8D1DFE080E4417704DDD9EB02DDD8DD01DC67E0D9E1DEF9E9230000
+00D9E8E91F00000090DD03DC67F0D8C8DD02DC67E8D8C8DD01DC67E0D8C8DEC1
+DEC1D9FADC77D8837FB4017405E9A4000000D9E8D8D990DFE080E441776DDC67
+D0D9EED8D990DFE080E441766BD9E8DC67D0DEF9D9C0DC4E18D9E8D8E2DC4FC8
+DEC1DD5E18D9C0DC4E20D9E8D8E2DC4FC0DEC1DD5E20D9C0DC4E28D9E8D8E2DC
+4FB8DEC1DD5E28D9E8DEE1DC4FAC90DD47F0D8C9DC2BDD1BDD47E8D8C9DC2ADD
+1ADD47E0D8C9DC29DD1990DDD889D85B5F5E89EC5DC20800DD47C8DD5E18DD47
+C0DD5E20DD47B8DD5E28DDD8DD47ACEBBED9D0D9D090D9E8D8D990DFE080E441
+7614DD47C8DD5E18DD47C0DD5E20DD47B8DD5E28EBB5DC67D0D9EED8D990DFE0
+80E4417663D9E8DC67D0DEF9D9C0DC4FC8D9E8D8E2DD4618DD47ACDC4FF0D9E0
+DEC1DEC9DEC1DD5E18D9C0DC4FC0D9E8D8E2DD4620DD47ACDC4FE8D9E0DEC1DE
+C9DEC1DD5E20D9C0DC4FB8D9E8D8E2DD4628DD47ACDC4FE0D9E0DEC1DEC9DEC1
+DD5E28E91FFFFFFF90DD4618DD47ACDC4FF0D9E0DEC1DD5E18DD4620DD47ACDC
+4FE8D9E0DEC1DD5E20DD4628DD47ACDC4FE0D9E0DEC1DD5E28E92CFFFFFF
+[END]
+
+A pretransform to enable partly the julia mode
+outside (or inside) a solid. The transition
+is gradual if speed < 1, but acts like a scissor
+when speed = 1. Gradual transition gives a "lens" effect
+to the fractal.
+Recenter;
+Normally, the Julia and the Mset are inside a "bubble"
+that has a different center.
+This allows you to see Mset and Julia as a "continuum"...
+But too bad, this means often no visibility when Center
+is too far from the origin for the other
+set (Mandel or Julia depending from mode).
+But don't be mad; the formula can automatically 
+adjust this when you set recenter = 1!
+In this mode, Mandel and Julia are 
+displayed as "separate worlds".
+Recenter can be any float value though.
+Shape;
+You can enable the Julia mode inside a different solid...
+Not only the sphere but;
+
+Shape = -4 -> Single sided pyramid
+Shape = -2 -> Single sided cone
+Shape = 1 -> Cube
+Shape = 2 -> Double cone
+Shape = 3 -> Cylinder
+Shape = 4 -> Double Pyramid
+Any other value -> Sphere
+***
+
+Formula
+
+(x' is x - xCenter etc)
+R = sqrt(x'*x'+y'*y'+z'*z')/Rmax; // Euclidean metric (sphere)
+// Cubic metric (not euclidean but funny);
+// x' = abs(x'); y' = abs(y'); z' = abs(z'); 
+// R = max(x',y',z')/Rmax;
+// Biconical metric;
+// R = sqrt((x'*x'+y'*y')/(z'*z'))/Rmax; <- rmax controls the pendence
+// Cylindrical metric;
+// R = sqrt(x'*x'+y'*y')/Rmax;
+// Pyramid metric;
+// R = (max(x',y')/z')/Rmax;
+
+if inside==1 {
+// simple mode, out Mandel and in Julia.
+if R < 1 {
+  R -= Speed
+  if R > 0 {      // Transition
+    // never get here if R==0 or you get in trouble!...
+    R /= (1-Speed);
+    Cx = (1-R) * Sx + R * Cx;
+    Cy = (1-R) * Sy + R * Cy;
+    Cz = (1-R) * Sz + R * Cz;
+    rc = rec*(1-R);
+    x -= rc*xC;
+    y -= rc*yC;
+    z -= rc*zC;
+  } else {      // inside must be Julia
+    rc = rec;
+    Cx = Sx;    Cy = Sy;    Cz = Sz;
+    x -= rc*xC; y -= rc*yC; z -= rc*zC; // implemented with a GOTO
+}}  // outside is left untouched
+} else {
+// alternate mode, out Julia and in Mandel. Longer formula
+if R < 1 {
+  R -= Speed
+  if R > 0 {      // Transition
+    // never get here if R==0 or you get in trouble!...
+    R /= (1-Speed);
+    Cx = (1-R) * (Cx-rec*xC) + R * Sx;
+    Cy = (1-R) * (Cy-rec*yC) + R * Sy;
+    Cz = (1-R) * (Cz-rec*zC) + R * Sz;
+    rc = rec*(1-R); // implemented with a GOTO
+    x -= rc*xC;
+    y -= rc*yC;
+    z -= rc*zC;
+  } else {      // inside must be shifted Mset
+    Cx = Cx-rec*xC;
+    Cy = Cy-rec*yC;
+    Cz = Cz-rec*zC;
+    rc = rec; // implemented with a GOTO
+    x -= rc*xC; y -= rc*yC; z -= rc*zC;
+}} else {   // (R>=1 is outside)
+  // outside must be unshifted Julia with given seed!
+  Cx = Sx;
+  Cy = Sy;
+  Cz = Sz;
+}
+
+} // end
+
+
+// like always Cx is the C value and x the spatial coord
+
+Hint! Use bigger R values for "box-type" fractals
+
+Luca GN 2011

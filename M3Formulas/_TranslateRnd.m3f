@@ -1,0 +1,29 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double X Vtn Range = 1
+.Double Y Vtn Range = 1
+.Double Z Vtn Range = 1
+.INTEGER X Rand. Seed = -84371888
+.INTEGER Y Rand. Seed = -84375168
+.INTEGER Z Rand. Seed = -84321698
+[CONSTANTS]
+Double = .5
+Double = 6.1e-5
+[CODE]
+558BEC5657538B750889C38B7E3083C4D0FF86D000000089542410908B86D000
+0000662D073DF7E08944240C8B47DC66F764240C25FF3F00008904248B47D866
+F764240C25FF3F0000894424048B47D466F764240C25FF3F00008944240890B8
+FF3F00008944240C8B54241090DD01DD02DD03DD47F0DB0424DC4F0890DC27DE
+C9DEC1DD1BDD47E8DB442404DC4F0890DC27DEC9DEC1DD1ADD47E0DB442408DC
+4F0890DC27DEC9DEC1DD199083C43089D85B5F5E5DC20800
+[END]
+
+This special transform generates a pseudorandom vector that depends on the iteration count,
+and a random seed that you can choose for each axis.
+Its components can be in the interval; (-r/2 ... +r/2) where r is the range.
+Then it adds the "randomized vector" to x,y,z.
+The fractals that you will get will not be exactly self similar, that is fun!
+Try to use this with Menger to see a fractal that changes when you zoom...
+
+Luca GN 2012

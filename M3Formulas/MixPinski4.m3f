@@ -1,0 +1,69 @@
+[OPTIONS]
+.Version = 6
+.DEscale = 0.2
+.ADEscale = 2
+.DEoption = 6
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Double CScale X = 1
+.Double CScale Y = 1
+.Double CScale Z = 0.5
+.Double CScale W = 0.5
+.6SingleAngles Rotation = 0
+[CODE]
+558BEC53565789C38B75088B7E30DD41
+08DD01DD02DD0390D9E0D8D1DFE0D0EC
+7202D9C9D8D2DFE0D0EC7202D9CAD9E0
+D9C9D9E0D8D2DFE0D0EC7202D9CAD9E0
+D9C990D9E0D8D3DFE0D0EC7202D9CBD9
+E0D9C9D9E0D8D3DFE0D0EC7202D9CBD9
+E0D9C9D9CAD9E0D8D3DFE0D0EC7202D9
+CBD9E0D9CA9083EF28D9C0D84FF4D9C2
+D84FF0DEC1D9C3D84FECDEC1D9C4D84F
+E8DEC1DD1BD9C0D84FE4D9C2D84FE0DE
+C1D9C3D84FDCDEC1D9C4D84FD8DEC1DD
+1AD9C0D84FD4D9C2D84FD0DEC1D9C3D8
+4FCCDEC1D9C4D84FC8DEC1DD19D84FC4
+D9C9D84FC0DEC1D9C9D84FBCDEC1D9C9
+D84FB8DEC183C728DD47F0DCC9D9E8DE
+E9DC4FD0DEE9DD5908DD01DD02DD03DD
+47F0DD86E8000000D8C9DD9EE8000000
+9090DCCADCC9D9C0D9E8DEE9D9C0D9C0
+DC4FE8DEEDDC4FE0DEEBD8F1DC4FD8DC
+ECD9CCD9E1DEECDECBDD1ADD1BDD1990
+909089D85F5E5B5DC20800
+[END]
+
+Description:
+
+NOTE: If the formula does not render correctly together with 3D formulas check "Disable analytical DE".
+
+A strange but intriguing fractal, that mixes Sierpinski and Menger folds. The amazing thing is that in 3D it does not work so well!
+
+MixPinski4(x,y,z,w){
+   r=x*x+y*y+z*z;
+   for(i=0;i<MI && r<bailout;i++){
+
+      if(z.x+z.y<0.0) z.xy = -z.yx;
+      if(z.x+z.z<0.0) z.xz = -z.zx;
+      if(z.y+z.z<0.0) z.zy = -z.yz;
+      if(z.x+z.w<0.0) z.xw = -z.wx;
+      if(z.y+z.w<0.0) z.yw = -z.wy;
+      if(z.z+z.w<0.0) z.zw = -z.wz;
+
+      rotate4D(x,y,z,w);
+
+      x=scale*x-CX*(scale-1);
+      y=scale*y-CY*(scale-1);
+      w=scale*w-CW*(scale-1);
+      z-=0.5*CZ*(scale-1)/scale;
+      z=-abs(-z);
+      z+=0.5*CZ*(scale-1)/scale;
+      z=scale*z;
+      
+      r=x*x+y*y+z*z;
+   }
+   return sqrt(x*x+y*y+z*z)*scale^(-i);
+
+LUCA GN 2011

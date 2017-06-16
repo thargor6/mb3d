@@ -1,0 +1,24 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double xyz mul = 1
+.Double C-xyz mul = 0
+[CODE]
+558BEC56578B75088B7E30D9D0DD00DC4FF0DD4618DC4FE8DEC1DD5E1890DD02
+DC4FF0DD4620DC4FE8DEC1DD5E2090DD01DC4FF0DD4628DC4FE8DEC1DD5E2890
+5F5E5DC20800
+[END]
+
+
+Description:
+
+Moves x, y, z values to Cx, Cy, Cz or linear-combines C and xyz values, like this
+
+Cx = 1*x + .5*Cx (Spider's variation)
+Use as an iterated transform to see Spider version of Mandelbulb (if Integer Power 
+is the first formula, or any other you like). Spider works in Julia mode too.
+
+Another usage of this is a pretransform.
+This allows you to calculate any Mandelbrot-like set in warped coordinates.
+Remember that all transforms MUST be used as pretransforms, put this AFTER all of them,
+then put the set (or the sets). Check repeat from here in the first M-set.

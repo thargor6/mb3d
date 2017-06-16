@@ -1,0 +1,101 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.Double dx = 1
+.Double dy = 0
+.Double dz = 0
+.Double dw = 0
+.Double w add = 0
+.Double Thresold = 0
+.Integer ConjMode = 0
+.Integer FlipMode = 0
+.Integer TentMode = 0
+[CONSTANTS]
+Double = 0.5
+Double = 2.0
+[CODE]
+558BEC81EC180000005356578B75088B
+7E308BD8837FBC000F8483000000DD03
+DD47F0D8C8DD47E8D8C8DEC1DD47E0D8
+C8DEC1DD47D8D8C8DEC1D9FADC0FDED9
+DFE080E4417726DD03DC4F08DD1BDD02
+DC4F08DD1ADD01DC4F08DD19DD4108DC
+4F08DC47D0DD5908E9B3000000DD47F0
+DC23DC4F08DD1BDD47E8DC22DC4F08DD
+1ADD47E0DC21DC4F08DD19DD47D8DC61
+08DC47D0DC4F08DD590890EB56909090
+90DD03DD47C8DED9DFE080E4417723DD
+03DC47F0DD1BDD02DC47E8DD1ADD01DC
+47E0DD19DD4108DC47D8DC47D0DD5908
+EB4EDD03DC67F0DD1BDD02DC67E8DD1A
+DD01DC67E0DD19DD4108DC67D8DC47D0
+DD5908DD4620DD5DF0837FC4007409DD
+4620D9E0DD5DF090837FC0007419DD45
+F0DD5DE8DD4618DD5DF0EB1190909090
+DD4620DD5DF090DD4618DD5DE8DD0390
+DC4DE89090DD0290DC4DF0D9E0DEC1DD
+0190DC4E28D9E0DEC1DD4108DC4EC890
+90DEC1D9D0DD0290DC4DE89090DD0390
+DC4DF09090DEC1DD4108DC4E28D9E0DE
+C1DD0190DC4EC8D9E0DEC1D9D0DD0190
+DC4DE89090DD4108DC4DF0D9E0DEC1DD
+0390DC4E289090DEC1DD0290DC4EC8D9
+E0DEC1D9D0DD4108DC4DE89090DD0190
+DC4DF09090DEC1DD0290DC4E289090DE
+C1DD0390DC4EC89090DEC1D9D090DD59
+08DD19DD1ADD1BD9D08BC35F5E5B89EC
+5DC20800
+[END]
+
+This is a 4-D extension of the (generalized) Barnsley conditional formula.
+This implementation uses a commutative quat product, I found the formula here; http://home.comcast.net/~cmdaven/hyprcplx.htm
+Mset is not very interesting but Julia is very intriguing.
+Try to set the same values that you used in normal 2D Barnsley they all work.
+Also, try to use 4D rotations to explore an enormous number of variations (rotations will modify the condition).
+Remember that this formula is discontinue (acts like a scissor); so also the shapes always have sharp edges.
+UPDATED APR 7 2011
+Fixed code, added Conj option, that generates fractal-tree like shapes. 
+Inspired from a UF formula from Olivier Steiger. Thank you!
+Also added Flip option. Less interesting, but can be also good
+
+Barnsley (and Tent Map) commutative 4D formula
+----------------
+S is the quaternion that contains (x,y,z,w+wadd).
+K is the quaternion that contains (dx,dy,dz,dw).
+C is the quaternion that contains (Cx,Cy,Cz,Cw).
+Defining quat multiplication as follows (commutative rule);
+A q* B := ( Ax Bx - Ay By - Az Bz + Aw Bw , Ay Bx + Ax By - Aw Bz - Az Bw ,  Az Bx - Aw By + Ax Bz - Ay Bw , Aw Bx + Az By + Ay Bz + Ax Bw)
+A + B  := ( Ax + Bx , ... , Aw + Bw ) term by term sum
+----------------
+
+if ConjMode = ON
+Cy = -Cy // 2D flip
+endif
+if FlipMode = ON
+flip Cx & Cy
+endif
+
+if tent = ON
+
+// thresold is ignored
+if Sx > |K|/2
+S' = ( ( K - S ) q* C)
+else
+S' = ( ( S ) q* C)
+endif
+S' = 2*S'
+
+else
+
+if Sx > thresold
+S' = ( ( S + K ) q* C)
+else
+S' = ( ( S - K ) q* C)
+endif
+
+endif
+
+(Flip, Conj do NOT change really C value. Cx and Cy are stored in the stack and modified temporarily)
+----------------
+FORMULA AND IMPLEMENTATION; 100% by Luca G.N. 2011.

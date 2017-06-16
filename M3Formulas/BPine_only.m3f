@@ -1,0 +1,32 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.Double pixel_x = 1.0
+.Double pixel_y = 1.0
+.Double pixel_z = 1.0
+[CONSTANTS]
+
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0DD03D8C8DD5DF8DD02D8C8DD5DF0DD01D8C8DD5DE8
+DD03D8C0DD45F0DC45E8D9FADEF9DD5DE090DD45F8DC65F0DC65E890DD45E0DD
+45F0DC65E8DEC990DD45E0D8C0DC09DC0A90DD4620DC4FE0DEC1DD1A90DD4628
+DC4FE8DEC1DD1990DD4618DC4FF0DEC1DD1BD9D08BC35F5E5B89EC5DC20800
+[END]
+
+
+Description:
+  Change pixel components around if you want.  Using just the x pixel component (pixel_y=0 and pixel_z=0) works well in combination with the various transforms (transform 1 through 5b...) and some of the formulas like Pine1, Pine2, Pine1SquareType...
+
+//"Benesi pinetree XYZ pixel"
+xt = x*x; yt = y*y; zt = z*z;
+t = 2*x/sqrt(yt+zt);
+x = xt-yt-zt+Cx;
+z = t*(yt-zt);
+y = 2*t*y*z;
+
+
+  ;p
+
+
+  M Benesi

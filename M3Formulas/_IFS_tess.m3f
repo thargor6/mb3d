@@ -1,0 +1,119 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 1
+.Double x Shift = 0
+.Double y Shift = 0
+.Double z Shift = 0
+.Double Scale = 1
+.Double Dispersion = 1.707
+.Double Atom size = 1
+.Double Rot-axiom (deg) = -45
+.Integer MAXDEPTH = 10
+.Integer Variation = 1
+[CONSTANTS]
+Double = 2.000
+Double = 0.707106781
+Double = 0.017453293
+Integer = 50
+Double = 500
+[CODE]
+558BEC81EC500000005356578B75088B7E308BD8D9D0DD03DC47F0DD1BDD02DC
+47E8DD1ADD01DC47E0DD19D9D0DD02DD5DF0DD01DD5DE8D9EEDB5DC4D9EEDB5D
+B0DD47C0DC4F10D9FBDD5DC8DD5DD090DD03DD55BCD9E1DD47C8DED9DFE080E4
+410F8787020000D9D0DD45F0D9E1DD47C8DED9DFE080E4410F8717000000D9D0
+DD45E8D9E1DD47C8DED9DFE080E4410F8659020000837FB8040F8CE3000000DD
+45F0D9E1DD47C8DED9DFE080E4410F8717000000D9D0DD45E8D9E1DD47C8DED9
+DFE080E4410F8646010000D9D0DD45F0D9E1DD55F8D9EEDED9DFE080E44180F4
+407409DD45F8DC75F0DD5DF890DD45F8DC4FD0D9E0DC45F0DD5DE0D9D0DD47D0
+DC0FD9E0DC45E8DD5DD8DD45F8D9EEDED9DFE080E441763790909090DD45E0DC
+4DC8D9D0DD45D8DC4DD0D9E0DEC1DD5DF0D9D0DD45E0DC4DD0D9D0DD45D8DC4D
+C8D9D0DEC1DD5DE8D9D0E92C000000DD45E0DC4DC8D9D0DD45D8DC4DD0D9D0DE
+C1DD5DF0D9D0DD45E0DC4DD0D9E0DD45D8DC4DC8D9D0DEC1DD5DE8D9D0E9C800
+0000D9E8DD5DF8D9D0DD45F0DD45E8DED9DFE080E4410F8612000000DD45F0DD
+47D0DC4F08D9E0DEC1DD5DF0EB18DD45E8DD47D0DC4F08D9E0DEC1DD5DE8DD45
+F8D9E0DD5DF8DD45F0DC4DD0D9E0DD45E8DC4DC8D9E0DEC1D9D0DD45F0DC4DC8
+D9D0DD45E8DC4DD0D9E0DEC1DD5DE8D9D0DD5DF0DD45F8D9EEDED9DFE080E441
+0F8742000000837FB8017512DD45F0D9E0DD5DF0DD45E8D9E0DD5DE8EB2A837F
+B802750EDD45F0DD45E8DD5DF0DD5DE8EB16837FB8037510DD45F0DD45E8D9E0
+DD5DF0D9E0DD5DE8D9D0DD45F0DC7708DD5DE0DD45E8DC7708DD5DD8D9D0DD45
+E0D9E1DD47C8DED9DFE080E441772CDD45D8D9E1DD47C8DED9DFE080E441771B
+DD45E0DD1ADD45D8DD19DD45BCDC7708DD5DBCD9E8DB5DB0EB2E90DD45E0DD5D
+F0DD45D8DD5DE88B45C439471C76193947BC9076138345C401DD45BCDC7708DD
+5DBCE9CEFDFFFF90837DB001742090909090DD4718DC0ADD1ADD4718DC09DD19
+DD4718DC0B90DD1B90E923000000DD45BCDC4FD8DC67F0DD1BDD02DC4FD8DC67
+E8DD1ADD01DC4FD8DC67E0DD19D9D0D9D08BC35F5E5B8BE55DC20800
+[END]
+
+Description:
+Be sure to apply this as a pretransform only with one iteration, I don't know what
+happens if you don't do so.
+This is a fractal linear tessellation in 3D (well, it looks more like 2D anyway).
+Uses an approximation of the IFS method.
+Remember, I said an approximation...
+So, you don't get the *same* result that you can get with "probability method", but
+you get it very faster and if you adjust parameters you can get very nice fractals.
+Remember that IFS programs need to allocate huge amounts of memory and take a long
+time for their computations, so approximation is also an advantage in terms of time.
+Anyway, this transform *must* be used as pre transform. NEVER iterate it, but change
+maxdepth instead. Don't worry, iterations are auto-limited to 40 (you will never
+need more than 20-25 iterations, anyway... :) )
+Everything outside the gasket will be brutally cutted off. It's necessary for a
+correct visualization. Always use an appropriate scale adjustment.
+TINY GUIDE: HOW TO GET SOME NICE FRACTALS
+Supposing to leave every other param as default:
+VARIATION = 1 + ROTAXIOM = -45 -> Heighway dragon (nicely curly)
+VARIATION = 0 + ROTAXIOM = 45 + ATOMSIZE = .5 + SCALE = 2 -> Twindragon (less disperse)
+VARIATION = 2 + ROTAXIOM = -45 -> Levy C "tree"
+VARIATION = 4 + ROTAXIOM = 45 + SCALE&DISP = 1 + ATOM = 1.1 -> Pytagoras tree (it's larger than dragons, zoom out)
+VARIATION = 4 + ROTAXIOM = 90 + SCALE&DISP = 1 + ATOM = 1.1 -> Mandelbrot tree (it's larger than dragons, zoom out)
+VARIATION = 4 + ROTAXIOM = 60 + SCALE&DISP = 1 + ATOM = 1.1 -> Equilateral tree (it's larger than dragons, zoom out)
+More equilateral variations: angle 30, 120
+... experiment by yourself and find new variations :)
+
+Encoded directly from scratch, LucaGN 2011.
+I found very useful IDeviant's PDF tutorial for Pytagoras trees, so thank you!
+
+I also enclose the important part of the source code. Very simple, IFS transforms are simple!
+
+(... some checks and initializations. move y to x0, z to y0)
+loopbegin:
+if variation > 3
+ // Pytagoras mode
+ k =  abs(x0)
+ if x0 != 0
+  k = k / x0
+ endif
+ xt = x0 - k * dispersion
+ yt = y0 - 2 * dispersion
+ if k > 0
+  x0 = (+xt*cos(angle) - yt*sin(angle))
+  y0 = (+xt*sin(angle) + yt*cos(angle))
+ else
+  x0 = (+xt*cos(angle) + yt*sin(angle))
+  y0 = (-xt*sin(angle) + yt*cos(angle))
+ endif
+else
+ // Dragon mode
+ k=1
+ if x0 > y0
+  x0 = x0 - dispersion*(sqrt(2)/2)
+ else
+  y0 = y0 - dispersion*(sqrt(2)/2)
+  k=-k
+ endif
+ x0t = x0
+ x0 = (+x0t*cos(angle) - y0*sin(angle))
+ y0 = (+x0t*sin(angle) + y0*cos(angle))
+ if k>0
+ ( ... depending to the value of variation, swaps/changes sign of x&y)
+endif
+xt = x0 / (sqrt(2)/2)
+yt = y0 / (sqrt(2)/2)
+if abs(xt)< atomsz && abs(yt)< atomsz
+ x = xt
+ y = yt
+ ( and exit loop ... else control iteration count)
+ goto loopbegin
+ (... then scale it, translate back. If no iter was performed, cut off. Take care 
+ of obvious special cases, like when x & y initially are < than atomsz. etc.)

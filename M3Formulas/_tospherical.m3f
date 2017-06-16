@@ -1,0 +1,17 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BECDD00DC08DD02DC0ADEC1DD01DC09D8C1D9FAD9C9D9FADD01D9F3DD02DD
+00D9F3DD19DD1ADD185DC20800
+[END]
+
+Description:
+
+Spherical coords. Fast conversion without parameters.
+Formula by Luca GN 2011
+
+From Wikipedia;
+x' = sqrt(x*x+y*y+z*z)
+y' = atan(sqrt(x*x+y*y)/z)
+z' = atan(y/x)

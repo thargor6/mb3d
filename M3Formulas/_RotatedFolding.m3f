@@ -1,0 +1,27 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.3SingleAngles Fold rotation = 0
+.Double Fold of x = 1
+[CODE]
+558BEC5657538B750889C38B7E30DD01
+DD02DD03D9C0D84FDCD9C2D84FD8DEC1
+D9C3D84FD4DEC1D9C1D84FF4D9C3D84F
+F0DEC1D9C4D84FECDEC1D9CAD84FE8D9
+CBD84FE4DEC3D9CBD84FE0DEC2D9C0DC
+47CCD9E1D9C1DC67CCD9E1D9E0DEC1DE
+E9D9E0D9D0D9C0D84FECD9C2D84FE0DE
+C1D9C3D84FD4DEC1D9C1D84FF4D9C3D8
+4FE8DEC1D9C4D84FDCDEC1D9CAD84FF0
+D9CBD84FE4DEC3D9CBD84FD8DEC2DD1B
+DD1ADD1989D85B5F5E5DC20800
+[END]
+
+A combination of;
+
+- Rotate by the given angles
+- x = abs(x+Fold) - abs(x-Fold) - x
+- RotateBack by the given angles
+
+It's a generalization of Tglad's folding formula (on a single direction).
+"X" is purely conventional, because any direction can be used changing the angles!

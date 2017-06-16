@@ -1,0 +1,23 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Separation = 4
+.Double Julia factor = 0.2
+[CODE]
+558BEC56578B75088B7E30DD47F0D9E8D8F1DD4608D8C9DD06D8CADD4610DECB
+D9C0D9FCD9C2D9FCD9C4D9FCDCEDDC4FE8DD5E28DCEBDC4FE8DD5E20DCE9DC4F
+E8DD5E18D8CBDD5EE0D8CADD5EE8DEC9DD5EF05F5E5DC20800
+[END]
+
+A pretransform to show juliasets from formulas.
+
+rs = 1 / Separation
+Cx = Round(px * rs)
+Cy = Round(py * rs)
+Cz = Round(pz * rs)
+x = (px * rs - Cx) * Separation
+y = (py * rs - Cy) * Separation
+z = (pz * rs - Cz) * Separation
+Cx = Cx * Julia_factor
+Cy = Cy * Julia_factor
+Cz = Cz * Julia_factor

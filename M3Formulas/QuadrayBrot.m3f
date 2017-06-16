@@ -1,0 +1,32 @@
+[OPTIONS]
+.Version = 2
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+[CODE]
+558BEC56578B7508909090DD4618DC4620DC4628D9E1DD00D8C8DEC1DD02D8C8
+DEE9DD4108DC09D8C0DEC190DD4618D9E0DC6620DC4628D9E1DD02D8C8DEC1DD
+00D8C8DEE9DD4108DC09D8C0DEC190DD4618D9E0DC4620DC6628D9E1DD01D8C8
+DEC1DD4108D8C8DEE9DD0090DC0AD8C0DEC19090DD4618DC6620DC6628D9E1DD
+01D8C8DEE9DD4108D8C8DEC1DD0090DC0AD8C0DEC190DD5908DD19DD1ADD1890
+5F5E908BE55DC20800
+[END]
+
+Description:
+
+This formula uses quadray numbers in 4D.
+
+Formula:
+ctx = fabs(Cx+ Cy+ Cz);
+cty = fabs(-Cx -Cy + Cz);
+ctz = fabs(-Cx + Cy-Cz);
+ctw = fabs(Cx-Cy -Cz);
+wz=2*w*z;
+xy=2*x*y;
+x'=x*x-y*y+wz+ctx;
+y'=y*y-x*x+wz+cty;
+z'=z*z-w*w+xy+ctz;
+w'=w*w-z*z+xy+ctw;
+
+Invented and kindly shared by Aexion, the author of Incendia, 2011.
+Implementation Luca GN.

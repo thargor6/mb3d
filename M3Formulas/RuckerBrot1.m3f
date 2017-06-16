@@ -1,0 +1,45 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.Double X mul = 1
+.Double Y mul = 2
+.Double Z mul = -2
+.Double Cz mul = -1
+[CONSTANTS]
+Double = 1e-10
+[CODE]
+558BEC53505657908B75088BD88B7E30DD03D8C8DD02D8C8DD01D8C8DEC1DEC1
+DD03D8C8DD01D8C8DEC1D9FADC07DEF9D9D0DD03D8C8DD02D8C8D9E0DEC1DD03
+D8C8DD02D8C8DEC1DC07DEF9D8C9DD03D9E1DEC9DC4FF0DC4618D9D0DD03DC0A
+DD03D9E1DEC9DD03D8C8DD02D8C8DEC1DC07DEF9D8CADC4FE8DC4620D9D0DD01
+9090DD03D8C8DD02D8C8DD01D8C8DEC1DEC1D9FADEC99090DC4FE0DD4628D9E1
+90909090DC4FD8DEC1D9D0DD19DD1ADD1BDDD8908BC35F5E585B5DC20800
+[END]
+
+
+Description:
+
+This formula is a modified version of Rudy Rucker's 3D Mandelbrot, theorized in 1991
+The idea is to use a different angle: "atan(z/x)" instead of "n atan2(y,x)"
+I found the formula in the topic: http://www.fractalforums.com/theory/summary-of-3d-mandelbrot-set-formulas/
+I am not sure if the formula is really with "atan(z/x)" instead of "n atan(z/x)" like logic can suggest.
+In other words; z is raised to power 1 and x,y to power 2!
+Anyway, I tried it and I liked the result. This formula is a non-trig expansion of the previous, but I fear that
+it has some inexact terms, so I changed something (played with abs) and now I like the final result.
+It looks like a 3D "spiky-fat" Mandelbrot set, not completely symmetric to look more interesting.
+The slice at z=0 is still the good old Mandelbrot power 2. Other sections may look "weird".
+I kept this version out of many others because has more interesting properties and less "defects" than others
+Too bad, deep zooming generally don't give the expected results, due to "spikes" and artifacts...
+Basically, it is good for having fun and experiment and fast to render
+See Julia sets from different angles, it may be interesting
+
+  temp = (x*x+y*y+z*z)/(sqrt(x*x+z*z)+1e-10)
+  nx =   (x*x-y*y)/(y*y+x*x+1e-10)*abs(x)* temp * XMul + Cx
+  ny =   (y*x*abs(x))/(y*y+x*x+1e-10) * temp * YMul + Cy
+  nz =   z*sqrt(x*x+y*y+z*z)* Zmul + abs(Cz) * czmul
+  x=nx
+  y=ny
+  z=nz
+
+1e-10 (almost zero) avoids divisions by zero and reduces the discontinuity

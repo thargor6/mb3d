@@ -1,0 +1,17 @@
+[OPTIONS]
+.Version = 2
+.DEoption = 4
+.DEscale = 1
+.SIpower = 1
+.Double x scale = 1.0
+.Double y scale = 1.0
+.Double z scale = 1.0
+.Double w scale = 1.0
+[CODE]
+558BEC568B75088B7630DD4108DD46D8DEC9DD5908DD01DD46E0DEC9DD19DD02
+DD46E8DEC9DD1ADD00DD46F0DEC9DD185E5DC20800
+[END]
+Description:
+
+Just like normal scaling, but with selectable values for each dimension. 
+Useful for "coordinate fixing" especially in different coordinate systems.

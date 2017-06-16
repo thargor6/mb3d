@@ -1,0 +1,32 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.Integer Map nr = 10
+.Single X offset = 0
+.Single Y offset = 0
+.Single H offset = 0
+.Single X scale = 0.2
+.Single Y scale = 0.2
+.Single H scale = -0.1
+.3SingleAngles Rotation = 0
+.Integer Map channel (0..2) = 0
+.Integer OTrap channel (0..2) = 1
+.Single OTrap offset = 0
+.Single OTrap multiplier = 1
+
+[CODE]
+5183C4E0DD4698DD4690DD4688D9C0D84FC0D9C2D84FBCDEC1D9C3D84FB8DEC1
+D9C1D84FD8D9C3D84FD4DEC1D9C4D84FD0DEC1D9CAD84FCCD9CBD84FC8DEC3D9
+CBD84FC4DEC2D9C2D847E8D947DCDC4FF8DEE9D9E1D947DCD9E1DC8678FFFFFF
+DED9DFE0D0EC7315DED9DD47F8D84FDCD867E8DEE1DD5EE083C42059C3D84FE4
+D867F0DD1C24D84FE0D867ECDD5C2408DD5C241889E08B57F489E1FF960C0100
+008B4FB483E103DD04CCD84FDCD867E8DC642418DD5EE08B4FB083E103DD04CC
+D847ACD84FA8DD9E8000000083C42059C3
+[END]
+
+Use a map to generate a terrain out of the amplitude from the map color,
+use 'Map channel' to choose from r,g,b represented by the values 0,1 and 2.
+
+Use the orbit trap coloring mode to colorize the surface. 
+
+Remember that a value of 1 for "Max. iterations" is enough to generate one dIFS object.

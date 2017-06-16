@@ -1,0 +1,61 @@
+[OPTIONS]
+.Version = 5
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double p = 2
+.Double p of i = 0
+.Double p of j = 0
+.Double p of k = 0
+.Double apx = 1
+.Double apy = 1
+.Double apz = 1
+.Double apw = 1
+.Double C mul = 1
+[CONSTANTS]
+Double = 1e-200
+Double = .5
+Double = 460
+[CODE]
+558BEC53505657908B75088BD88B7E30DD4108D8C8DD02D8C8DEC1DD01D8C8DE
+C1D9FAD9C0D9E4DFE0D9D09EDDC0D9F77451D9C0DD03D9F3D9C1DEF9DD03D8C8
+D9C2D8C8DEC1D9C0DD07DED9DFE080E441740DD9C0D9EDD9C9D9F1DC4F08EB03
+DD4710DD1BDD02D8CADD1ADD01D8CADD19DD4108D8CADD5908DDD8DDD8DDD8EB
+25909090DDD8DD03DD07DED9DFE080E441740EDD03D9EDD9C9D9F1DD1BEB0790
+90DD4710DD1BD9D0D9D0DD4108DD47B8DEC9DD5908DD01DD47C0DEC9DD19DD02
+DD47C8DEC9DD1ADD03DD47D0DEC9DD1BD9D0D9D0DD0390DC4FF09090DD0290DC
+4FE8D9E0DEC1DD0190DC4FE0D9E0DEC1DD4108DC4FD8D9E0DEC1D9D0DD0390DC
+4FE89090DD0290DC4FF09090DEC1DD0190DC4FD89090DEC1DD4108DC4FE0D9E0
+DEC1D9D0DD0390DC4FE09090DD0290DC4FD8D9E0DEC1DD0190DC4FF09090DEC1
+DD4108DC4FE89090DEC1D9D0DD0390DC4FD89090DD0290DC4FE09090DEC1DD01
+90DC4FE8D9E0DEC1DD4108DC4FF09090DEC1D9D090DD5908DD19DD1ADD1BDD41
+08D8C8DD02D8C8DEC1DD01D8C8DEC1D9FAD9C0D9FBD9D0DD03D9EADEC9D9E8D9
+C1D9F8D9F0DEC1D9FDD9C9DDD8D9C0D8CADD1BD8CAD9C3DD07DED9DFE080E441
+7402D8F3DD02D8C9DD1ADD01D8C9DD19DD4108D8C9DD5908DDD8DDD8DDD8DDD8
+D9D0D9D0DD01DD02DD03DD4618DC4FB0DEC1DD1BDD4620DC4FB0DEC1DD1ADD46
+28DC4FB0DEC1DD19908BC35F5E585B5DC20800
+[END]
+
+This is a slow formula. If you don't like to wait, don't use it.
+This 4-D formula raises the coord. quat by arbitrary quat powers, following Hamiltonian theory.
+Plus, you can play with "anisotropic" angular powers; they are apx,apy,apz,apw. They give strange sharpy effects.
+If this is not enough, you can modify the influence of c premultiplying it by a factor.
+Don't use this formula mindlessly; remember that negative powers are not supported by MB.
+----------------
+P is the quaternion that contains (px,py,pz,pw).
+C is the quaternion that contains (Cx,Cy,Cz,Cw).
+Defining quat multiplication as follows (non-commutative rule);
+A q* B := ( Ax Bx - Ay By - Az Bz - Aw Bw , Ax By + Ay Bx + Az Bw - Aw Bz ,  Ax Bz - Ay Bw + Az Bx + Aw By , Ax Bw + Ay Bz - Az By + Aw Bx)
+A + B  := ( Ax + Bx , ... , Aw + Bw ) term by term sum
+log() and exp() are _log4D and _exp4D formulas respectively
+----------------
+
+  S' = log( S )
+  S'' is obtained multiplying S'x by apx, S'y by apy ...
+  S''' = S'' q* P
+  S'''' = exp ( S''')
+  S''''' = S'''' + ( C * cmul )
+
+----------------
+FORMULA AND IMPLEMENTATION; 100% by Luca G.N. 2011.

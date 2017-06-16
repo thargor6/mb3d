@@ -1,0 +1,52 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.Double Scale = 2.0
+.Double xOff = 2.0
+[CONSTANTS]
+Double = 0.816496580927726
+Double = 0.5773502691896258
+Double = 0.7071067811865475
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0DD03DC0FDD01DC4F08D9
+E0DEC1DC4F10DD5DF8DD02DC4F10DD1A90DD03DC4F08DD01DC0FDEC190DD45F8
+DC2290DD45F8DC0290D8C8DD5DF0D8C8DD5DF8D8C8DD19D9D0DD45F0DC01D9FA
+DC67E8D9E1DC4FF0DC4F10DD1B90DD45F8DC01D9FADC67E8D9E1DC4FF0DC4F10
+DD1A90DD45F8DC45F0D9FADC67E8D9E1DC4FF0DD1990DD02DC03DD02DC23DD1A
+DD5DF890DD45F8DC0FDD01DC4F08DEC1DD45F8DC4F08D9E0DD01DC0F90DEC1DD
+19DD1B9090DD03D8C8DD5DF8DD02D8C8DD5DF0DD01D8C8DD5DE8DD03D8C0DD45
+F0DC45E8D9FADEF9DD5DE090DD45F8DC65F0DC65E890DD45E0DD45F0DC65E8DE
+C990DD45E0D8C0DC09DC0A90DC4620DD1A90DC4628DD1990DC4618DD1BD9D08B
+C35F5E5B89EC5DC20800
+[END]
+
+
+Description:
+
+The cool Benesi pinetree formula. Use in conjunction with normal
+ BenesiPine1 or it is messy!
+Or any other formula :)
+(Three iters of pine1 + one of pine2)
+
+// STEP1: "Benesi fold 2"
+tx=(x*sqrt(2/3)-z*sqrt(1/3))*sqrt(1/2);
+y=y*sqrt(1/2);
+z=(x*sqrt(1/3) + z*sqrt(2/3))^2;   	
+tx=(tx-y)^2;          
+ty=(tx+y)^2;
+
+x=abs(sqrt(ty+z)-offset2)*scale2*sqrt(1/2) ;
+y=abs(sqrt(tx+z)-offset2)*scale2*sqrt(1/2) ;   
+z=abs(sqrt(tx+ty)-offset2)*scale2 ;
+
+tx=y+x; y=y-x; 
+x=z*sqrt(1/3)+x*sqrt(2/3);
+z=z*sqrt(2/3)-x*sqrt(1/3);
+
+// STEP2: "Benesi pinetree"
+xt = x*x; yt = y*y; zt = z*z;
+t = 2*x/sqrt(yt+zt);
+x = xt-yt-zt+Cx;
+z = t*(yt-zt)+Cy;
+y = 2*t*y*z+Cz;

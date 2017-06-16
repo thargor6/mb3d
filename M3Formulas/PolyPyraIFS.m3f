@@ -1,0 +1,65 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double Height fix = 1
+.2Doubles Scale = 2
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 0
+.Double XZ angle = 60
+.Integer Apply scale+add = 1
+.Integer PolyFold Order = 5
+.Double Cuts fix = 0
+.Double Initial z add = 1
+.Double Star = 0
+.Double OTrapOnIts = .1
+.Double OTrapOffset = .1
+.Double OTrapSides = -.1
+[CONSTANTS]
+Double = 0.159154943
+Double = -6.283185307
+Double = 1.57079632675
+Double = 0.017453293
+[CODE]
+83C4BE660F104688F20F104E98660F5947E0F20F594FE0660F5847C0F20F584F
+D0837FB4007419F20F106E70F20F596FE0660F114688F20F114E98F20F116E70
+660F110424F20F114C2410DD0424DD442408D9F3DC6F10DC0FDA4FB0DB5C2430
+DB442430DA77B0DC4F08D9FBDD5C2418DD5C2420DD0424DC4C2418DD442408DC
+4C2420D9E0DEC1DD0424DC4C2420DD442408DC4C2418DEC1DC4F98D9E1DEC1DD
+1C24DD442410DD542428DD47A0DEC1D9E0DD5C2410DD4718DC4FB8D9FBDD5C24
+18DD5C2420DD0424DC4C2420DD442410DC4C2418DEC1DD442428DC67A8D9E1DC
+67F0D8D19BDFE0D0EC7304DDD8EB02DDD9837FB4007503DC77E0DD5EE0DB46E8
+DC4F90DC4788DB442430DC4F80DEC1D9E1DD9E8000000083C442C3
+[END]
+
+Powerful generator of pyramid/polygonal shapes. Using the Navi real-time preview mode is a must with this.
+
+* Truncated pyramids;
+- Set a positive "Cuts fix" value, and the pyramid will be truncated.
+
+* Stars;
+- Set a positive "Star" value, and the pyramid will look like a star in the default view.
+(click on 'reset' button to see the effect).
+
+*** Special modes ***
+
+* To get cones (not pyramids);
+- Use a big value as PolyFold Order. I know it's approximeted... but it's good enough
+* You can use cylinderIFS with "tip" to get the exact solid.
+
+* To get extruded polyhedrons (not pyramids);
+- Use a xz angle like 90.1 - Not just 90. I know it's approximeted... but it's good enough
+- Set "Initial z add" to a big negative value (-200 or something)
+- Go to Navigator and adjust visually other parameters to get a good solid
+
+* To get cylinders (not pyramids);
+- Combine the previous techniques ;)
+* You can use cylinderIFS to get the exact solid.
+
+------- UPDATED WITH TRAPCOLORS! -------
+
+Works fine except sides (that should color each side with a different color) buggy for some orders.
+Definitely not a big issue imho!
+
+Luca GN 2012

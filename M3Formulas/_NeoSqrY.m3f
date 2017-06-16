@@ -1,0 +1,30 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double fixY = 0.0
+.Double fixSq = 1.0
+.Double Mul = 1.0
+.Double Div = 1.0
+[CODE]
+558BEC56538B75088BD88B7630DD02DC4EE0DC46F0D9C0D9EEDED9DFE080E441
+7F0DD9C0D9E0DD46E8DEC1DEC9EB0BD9C0DD46E8D9E0DEC1DEC9DC76D8DC66F0
+DD1A8BC35B5E5DC20800
+[END]
+
+Description:
+
+Formula by Luca GN 2011
+
+Let's define a new formula:
+NeoSqr(A,B) :=
+if A>0
+A' = A(B-A)
+else
+A' = A(A-B)
+endif
+
+So my transform is here
+
+y' = NeoSqr( Mul * y + fixY , fixSq )/Div - fixY
+
+This transform is very strange, so use it wisely...

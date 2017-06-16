@@ -1,0 +1,16 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BECDD4108DD01DD02DD00D9E1DD18D9E1DD1AD9E1DD19D9E1DD59085DC208
+00
+[END]
+
+Description:
+
+Takes the absolute values of all 4 vector components:
+ 
+x' = abs(x)
+y' = abs(y)
+z' = abs(z)
+w' = abs(w)

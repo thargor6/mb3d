@@ -1,0 +1,24 @@
+[OPTIONS]
+.Version = 5
+.DEscale = 0.2
+.DEoption = 5
+.Double Scale = 1
+.Double Scale C = 1
+[CODE]
+558BEC56578B75088B7E30DD4108DD01DD02DD00DD47F0DCCCDCCBDCCADEC9DD
+18DD1ADD19DD5908DD46C8DD4628DD4620DD4618DD47E8DCCCDCCBDCCADEC9DD
+5E18DD5E20DD5E28DD5EC85F5E5DC20800
+[END]
+
+Scale the 4d vector length and the 4d C vector:
+
+x = x * Scale
+y = y * Scale
+z = z * Scale
+w = w * Scale
+Cx = Cx * Scale_C
+Cy = Cy * Scale_C
+Cz = Cz * Scale_C
+Cw = Cw * Scale_C
+
+Useful for scaling the whole coordinate system in DEcomb mode, for example.

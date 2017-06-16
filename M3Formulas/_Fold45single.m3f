@@ -1,0 +1,57 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double k = 1.0
+.Integer Mode (0-1) = 0
+.Integer Opposite x = 0
+.Integer Opposite y = 0
+.Integer Opposite z = 0
+.Integer Enable pre-rotation = 0
+[CONSTANTS]
+Double = 0.66666666666666666666666666666667
+[CODE]
+558BEC5356578B75088B7E308BD8D9D0
+837FDC007405E879000000DD03837FE8
+007402D9E0DD02837FE4007402D9E0DE
+C1DD01837FE0007402D9E0DEC1DD47F0
+DEE9D9C0837FEC007402D9E0D9E4DFE0
+9EDDD87232DC0FDD03837FE8007404D8
+C1EB02D8E1DD1BDD02837FE4007404D8
+C1EB02D8E1DD1ADD01837FE0007404D8
+C1EB02D8E1DD19DDD8D9D08BC35F5E5B
+5DC20800DD03837FE8007502D9E0DD02
+837FE4007502D9E0DEC1DD01837FE000
+7502D9E0DEC1DC0FDD03837FE8007504
+D8C1EB02D8E1D9E0DD1BDD02837FE400
+7504D8C1EB02D8E1D9E0DD1ADD01837F
+E0007504D8C1EB02D8E1D9E0DD19DDD8
+C3
+[END]
+
+Description:
+
+This folding introduce asymmetry, and can give unexpected results.
+Basically, it's like "_Abs" modifier but it introduces
+a rotation in some areas. Use itercount>1 to see cool multi-folds!
+Works with any plane inclined like the OctahedronIFS
+folding planes (eight in total).
+The planes are defined by +-x+-y+-z-k=0 (45 deg for each axis)
+Two modes available.
+Formula by Luca GN 2011
+
+if (PR == 1)
+ dd = -(x*xsig + y*ysig + z*zsig)*h  // pre-rotation; center rotated, sides normal
+ x' = -(x - dd*xsig) // Switch both signs to keep the correct effect!
+ y' = -(y - dd*ysig)
+ z' = -(z - dd*zsig)
+endif
+// xsig is +1 if you leave "Use -x" to 0, -1 otherwise.
+// Same for ysig, zsig
+dd = (x*xsig + y*ysig + z*zsig - k)
+// q is +1 in Mode 0, -1 otherwise.
+if dd*q > 0
+dd = dd*h // h=2/3=0.6666 ...
+x' = x - dd*xsig
+y' = y - dd*ysig
+z' = z - dd*zsig
+endif

@@ -1,0 +1,29 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double x add = 0
+.Double y add = 0
+.Double z add = 0
+.Double w add = 0
+.Double Cx add = 0
+.Double Cy add = 0
+.Double Cz add = 0
+.Double Cw add = 0
+[CODE]
+558BEC56578B75088B7E30DD4108DD01DD02DD00DC47F0DD18DC47E8DD1ADC47
+E0DD19DC47D8DD5908DD46C8DD4628DD4620DD4618DC47D0DD5E18DC47C8DD5E
+20DC47C0DD5E28DC47B8DD5EC85F5E5DC20800
+[END]
+
+Add a constant to the 4d vector and C components:
+
+x = x + x_add
+y = y + y_add
+z = z + z_add
+w = w + w_add
+Cx = Cx + Cx_add
+Cy = Cy + Cy_add
+Cz = Cz + Cz_add
+Cw = Cw + Cw_add
+
+Useful if you want to translate the whole coordinate system.

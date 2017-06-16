@@ -1,0 +1,69 @@
+[OPTIONS]
+.Version = 4
+.DEscale = 0.2
+.DEoption = 11
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Double Min R = 0.5
+.Double Fold = 1
+.Double Scale vary = 0
+.Double Inversion radius = 1
+.Double Inversion xC = .5
+.Double Inversion yC = 0
+.Double Inversion zC = 0
+.Integer C-Swap mode = 0
+[CODE]
+558BEC5657538B7D0889C38B773081C7
+80000000837F50007F09FF4750DD46F0
+DD5F48DD4748D9E8D9C1D9E1DEE1DC4E
+D8DEC1DD5F48DD46E0D9C0D9C0DCC2D9
+E0DD03D8D2DFE0D0EC7206D9E0D8C3EB
+0CD8D1DFE0D0EC7304D9E0D8E3DD02D8
+D3DFE0D0EC7206D9E0D8C4EB0CD8D2DF
+E0D0EC7304D9E0D8E4DD01D8D4DFE0D0
+EC7206D9E0D8C5EB0CD8D3DFE0D0EC73
+04D9E0D8E5D9CBDDD8D9CBDDD8D9CBDD
+D8837EB400751ADD46C8D8C1DDD890DD
+46C0D8C2DDD890DD46B8D8C3DDD890EB
+18DD4798D8C1DDD890DD47A0D8C2DDD8
+90DD47A8D8C3DDD890D9C0D8C9D9C2D8
+CBDEC1D9C3D8CCDEC1DD46E8D8C8D8D9
+90DFE0D0EC7213DDD8DD4748DC4ED0DD
+46E8D8C8DEF99090EB1ADD46D0D8D1DF
+E0D0EC720ADDD8DC76D0DC7F48EB05DE
+D9DD4748DD4108D8C9DD5908DCCBDCCA
+DEC9837EB400751ADC47A8DC66B8DD19
+DC47A0DC66C0DD1ADC4798DC66C8DD1B
+EB18DC67A8DC46B8DD19DC67A0DC46C0
+DD1ADC6798DC46C8DD1B89D85B5F5E5D
+C20800
+[END]
+From a variation found on Buddhi's Mandelbulber, custom version (conformal).
+With MinR and selectable radius; always choose MinR<R, or you will create 
+discontinuity!
+Luca GN 2011
+
+Scale = Scale + Scale_vary*(abs(Scale)-1)
+x = abs(x+Fold) - abs(x-Fold) - x
+y = abs(y+Fold) - abs(y-Fold) - y
+z = abs(z+Fold) - abs(z-Fold) - z
+if (CSm == 0)
+x = x+xC; y = y+yC; z = z+zC
+else
+x = x+Cx; y = y+Cy; z = z+Cz
+endif
+rr = x*x + y*y + z*z
+if rr < sqr(Min_R) then m = IR*Scale/sqr(Min_R) else
+  if rr < IR then m = IR*Scale/rr else
+    m = Scale
+endif
+if (CSm == 0)
+x = x * m + Cx - xC
+y = y * m + Cy - yC
+z = z * m + Cz - zC
+else
+x = x * m - Cx + xC
+y = y * m - Cy + yC
+z = z * m - Cz + zC
+endif

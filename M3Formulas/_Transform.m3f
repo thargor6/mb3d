@@ -1,0 +1,21 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Scale = 1
+.Double X add = 0
+.Double Y add = 0
+.Double Z add = 0
+.3DoubleAngles Rotate = 0
+.Integer Copy to C = 1
+[CODE]
+558BEC56578B75088B7E30DD01DC47D8DD02DC47E0DD00DC47E8D9C0DC4FA0D9
+C2DC4F98DEC1D9C3DC4F90DEC1D9C1DC4FD0D9C3DC4FC8DEC1D9C4DC4FC0DEC1
+D9CADC4FB8D9CBDC4FB0DEC3D9CBDC4FA8DEC2DD4108DD86E8000000DD47F0DC
+CDDCCCDCCBDCCADEC9DD9EE8000000DD590883BE98000000007513837F8C0074
+0DDD5618D9C1DD5E20D9C2DD5E28DD18DD1ADD195F5E5DC20800
+[END]
+
+A general transform to shift, scale and rotate Z and C (by option).
+In DEcombinate mode, use it in the second formula tab (first formula of the hybrid of F2 to F6) as a pretransform and repeat on the next formula tab to adjust the whole object relative to the first object.
+
+This transform works with all 3d + 4d bulb and box formulas also in julia mode, just leave the Copy to C option checked.

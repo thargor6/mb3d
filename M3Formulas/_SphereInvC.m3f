@@ -1,0 +1,26 @@
+[OPTIONS]
+.Version = 2
+[CODE]
+558BEC568B7508DD4618DD4620DD4628D9C2D8C8D9C2D8C8D9C2D8C8DEC1DEC1
+D9E8DEF1DCCBDCCADEC9DD5E28DD5E20DD5E18DD00DD02DD01D9C2D8C8D9C2D8
+C8D9C2D8C8DEC1DEC1D9E8DEF1DCCBDCCADEC9DD19DD1ADD185E5DC20800
+[END]
+
+Description:
+
+Complete sphere inversion of the vector and the adding constant:
+
+rSqrL = 1 / (Cx*Cx + Cy*Cy + Cz*Cz)
+Cx = Cx * rSqrL
+Cy = Cy * rSqrL
+Cz = Cz * rSqrL
+rSqrL = 1 / (x*x + y*y + z*z)
+x = x * rSqrL
+y = y * rSqrL
+z = z * rSqrL
+
+
+Suggestion:
+Doing it one time as first formula, repeat on the second, will invert the complete coord system.
+Cut off at Z=0 to see the inside.
+

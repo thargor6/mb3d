@@ -1,0 +1,32 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.SIpower = 2
+.Integer Fold 1st half = 1
+.Integer Fold 2nd half = 1
+[CODE]
+558BEC5657538B750889C38B7E30837FF400745F90909090DD03DC02D9EEDED9
+90DFE0D0EC720CDD03D9E0DD02D9E0DD1BDD1ADD03DC01D9EEDED990DFE0D0EC
+720CDD03D9E0DD01D9E0DD1BDD19DD01DC02D9EEDED990DFE0D0EC720CDD01D9
+E0DD02D9E0DD19DD1A837FF000744990909090DD03DC22D9EEDED990DFE0D0EC
+7208DD03DD02DD1BDD1ADD03DC21D9EEDED990DFE0D0EC7208DD03DD01DD1BDD
+19DD02DC21D9EEDED990DFE0D0EC7208DD02DD01DD1ADD199089D85B5F5E5DC2
+0800
+[END]
+
+Description:
+Note that this code does NOT affect the Menger-type formulas.
+
+1st half tetrahedral symmetry planes:
+     if(x+y<0){x1=-y;y=-x;x=x1;}
+      if(x+z<0){x1=-z;z=-x;x=x1;}
+      if(y+z<0){y1=-z;z=-y;y=y1;}
+2nd half tetrahedral symmetry planes:
+     if(x-y<0){x1=y;y=x;x=x1;}
+      if(x-z<0){x1=z;z=x;x=x1;}
+      if(y-z<0){y1=z;z=y;y=y1;}
+
+Code taken from the forums, KIFS original thread
+side note - if you disable the 1st half, 2nd half will be
+done even if you disable it... (to avoid a NOP transform)
+Coded by Luca GN 2011

@@ -1,0 +1,67 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double k (+) = 1.0
+.Integer Enable pre-rotation = 0
+.Integer Opposite x = 0
+.Integer Opposite y = 0
+.Integer Opposite z = 0
+.Double 2nd k fix = 0.0
+[CONSTANTS]
+Double = 0.66666666666666666666666666666667
+[CODE]
+558BEC5356578B75088B7E308BD8D9D0
+837FEC007405E8C2000000DD03837FE8
+007402D9E0DD02837FE4007402D9E0DE
+C1DD01837FE0007402D9E0DEC1DD47F0
+D9E1DEE9D9C0D9E4DFE09EDDD87237DC
+0FDD03837FE8007404D8C1EB02D8E1DD
+1BDD02837FE4007404D8C1EB02D8E1DD
+1ADD01837FE0007404D8C1EB02D8E1DD
+19EB4D909090DD47F0D9E1DCC1DC47D8
+DEC1D9C0D9E4DFE09EDDD87733DC0FDD
+03837FE8007404D8C1EB02D8E1DD1BDD
+02837FE4007404D8C1EB02D8E1DD1ADD
+01837FE0007404D8C1EB02D8E1DD1990
+DDD8D9D08BC35F5E5B5DC20800DD0383
+7FE8007502D9E0DD02837FE4007502D9
+E0DEC1DD01837FE0007502D9E0DEC1DC
+0FDD03837FE8007504D8C1EB02D8E1D9
+E0DD1BDD02837FE4007504D8C1EB02D8
+E1D9E0DD1ADD01837FE0007504D8C1EB
+02D8E1D9E0DD19DDD8C3
+[END]
+
+Description:
+
+This folding is center-symmetrical, but can give unexpected results.
+You can modify this with the fixing factor (example, for a triple
+Sierpinski pyramid or similar effects...)
+Variation of _Fold45single; it's more like Tglad's folding
+on a single chosen direction. The main difference is that
+it introduces rotations in some areas. This can be interesting.
+Use itercount>1 to see cool multi-folds!
+See the basic version for more comments.
+
+if (PR == 1)
+ dd = -(x*xsig + y*ysig + z*zsig)*h  // pre-rotation; center rotated, sides normal
+ x' = -(x - dd*xsig) // Switch both signs to keep the correct effect!
+ y' = -(y - dd*ysig)
+ z' = -(z - dd*zsig)
+endif
+// k is forced to be positive
+dd = (x*xsig + y*ysig + z*zsig - k)  // first half
+if dd*q > 0
+ dd = dd*h
+ x' = x - dd*xsig
+ y' = y - dd*ysig
+ z' = z - dd*zsig
+else
+ dd = dd + 2*k + k2fix // second half
+ if dd*q < 0
+  dd = dd*h
+  x' = x - dd*xsig
+  y' = y - dd*ysig
+  z' = z - dd*zsig
+ endif
+endif

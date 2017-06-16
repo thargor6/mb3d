@@ -1,0 +1,39 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double CutBoxSz = 2
+.2Doubles Scale = 2
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 0
+.Double Orientation of x = 0
+.Integer Apply scale+add = 1
+.Integer Symmetry order = 1
+.Double zAmpl = 1
+.Double Swirly = 0
+[CONSTANTS]
+Double = 0.5
+Double = 0.017453293
+[CODE]
+83C4DA660F104688F20F104E98660F5947E0F20F594FE0660F5847C0F20F584F
+D0837FB4007419F20F106E70F20F596FE0660F114688F20F114E98F20F116E70
+660F110424F20F114C2410DD0424D8C8DD442408D8C8DEC1D9FAD9FADD442408
+DD0424D9F3DA4FB0DD47B8DC4F08DEC1DC0FD9C1DC4FA0DEC1D9FFD9E1DEC9DC
+4FA8D9C0DC442410D9C9DC642410D8D19BDFE0D0EC7304DDD9EB02DDD8D9E0DD
+0424D9E1DC67F0D8D19BDFE0D0EC7304DDD8EB02DDD9DD442408D9E1DC67F0D8
+D19BDFE0D0EC7304DDD8EB02DDD9837FB4007503DC77E0DD5EE083C426C3
+[END]
+
+This plots the solid limited by the "Riemann square root surface" and the unit cube (no z limits though).
+Idea came from this image;
+
+http://en.wikipedia.org/wiki/File:Riemann_surface_sqrt.jpg
+
+After some reading, I came up with this implicit expression;
+
+z +- sqrt(sqrt(x2 + y2)) * abs(cos(0.5*atan2(y,x))) = 0
+
+Added also three extra modifiers just for fun :)
+
+Luca GN 2012

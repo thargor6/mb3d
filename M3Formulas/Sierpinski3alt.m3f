@@ -1,0 +1,39 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 0.2
+.DEoption = 2
+.SIpower = 2
+.RStop = 1024
+.Double Scale = 2
+.Double CScale X = 1
+.Double CScale Y = 1
+.Double CScale Z = 1
+.Double Rot. dX = .5
+.Double Rot. dY = .5
+.Double Rot. dZ = .5
+.3SingleAngles Rotation2 = 0
+[CODE]
+558BEC535689C38B75088B7630DD01DD
+02DD0390D9E0D8D1DFE0D0EC7202D9C9
+D8D2DFE0D0EC7202D9CAD9E0D9C9D9E0
+D8D2DFE0D0EC7202D9CAD9E0D9C990DD
+46D0DCC1DDD8DD46C8DCC2DDD8DD46C0
+DCC3DDD890D9C0D84EA4D9C2D84EA0DE
+C1D9C3D84E9CDEC1D9C1D84EBCD9C3D8
+4EB8DEC1D9C4D84EB4DEC1D9CAD84EB0
+D9CBD84EACDEC3D9CBD84EA8DEC290DD
+46D0DCE9DDD8DD46C8DCEADDD8DD46C0
+DCEBDDD890DD46F0DD4108D8C9DD5908
+DCCBDCCADCC9D9E8DEE9D9C0DC4ED8DE
+ECD9C0DC4EE0DEEBDC4EE8DEE9DD1BDD
+1ADD1989D85E5B5DC20800
+[END]
+
+Alternate version of Sierpinski3.
+Instead of two rotations only one but with selectable center.
+Rotation1 is a pre-rotation in reality (less useful I think).
+It should be obvious that since you leave all rotations zero you will never notice any effect.
+Plus, you will see that dX and rotation X are independent; only dY and dZ will modify it.
+Same for all other axis.
+
+"Hacked" from Jesse's formula (Luca GN 2011). Idea taken from the original KIFS thread.

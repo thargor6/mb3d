@@ -1,0 +1,49 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.INTEGER Sequential code = 33964
+.INTEGER Formula A (1...6) = 2
+.INTEGER Formula B (1...6) = 3
+.INTEGER Freq Hi = 2
+.INTEGER Freq Lo = 0
+[CODE]
+558BEC50525356578B75088B7E30FF86D00000008B86D00000008BD083E20F90
+8B47F44A83FA007E04D1F8EBF683E00175608B7FF083FF017D07BF01000000EB
+0A83FF067E05BF060000008D7CBE48833F007D050D0000008089078B7E3033C0
+408B7FEC83FF017D07BF01000000EB0A83FF067E05BF060000008D7CBE48833F
+007D050D00000080EB60909090909090909033C08B7FEC83FF017D07BF010000
+00EB0A83FF067E05BF060000008D7CBE48833F007D050D0000008089078B7E30
+33C0408B7FF083FF017D07BF01000000EB0A83FF067E05BF060000008D7CBE48
+833F007D050D0000008089075F5E5B5A585DC20800
+[END]
+
+
+Description:
+
+Warning! Use at your risk, if misused this can freeze the program.
+
+Put other two formulas in the alternation BEFORE pressing calculate.
+I reccomend to use more than just three formulas in total btw to
+justify the use of this switch...
+
+If possible avoid to use this in association with AboxVaryScale 
+or other iter-dependent formulas.
+
+Best used with IFS formulas, less useful with bulbs but still interesting in some cases.
+
+This formula modifies the iteration counts of two formulas,
+in a similar manner of Lyapunov's formula sequence style.
+
+The modification involves a bit of binary maths.
+
+In "simple" words, if N = counts how many times this check occurs, and S = sequential code;
+
+N2  = N & 15          // Aexion suggested 7 but this allows longer sequences
+S   = (S >> N2)) & 1  // and 1 checks the parity
+// now force valid choices for formula A and B then ...
+if (S) then execute formula A and skip formula B
+else execute formula B and skip formula A
+
+Execute means that iter count will be set = 1 and skip = 0 of course.
+
+Luca GN 2012 (suggested by Aexion)

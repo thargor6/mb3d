@@ -1,0 +1,34 @@
+[OPTIONS]
+.Version = 6
+.DEoption = -1
+.Integer Map number = 1
+.Single X offset = -0.5
+.Single Y offset = -0.5
+.Single Z offset = -0.5
+.Single X scale = 0.1
+.Single Y scale = 0.1
+.Single Z scale = 0.1
+[CODE]
+558BEC5657538B7D0889C38B7730DD00DD02DD0189C18B56F4FF9760010000DD
+03D846F0D84EE4DEC3DD4308D846ECD84EE0DEC2DD4310D846E8D84EDCDEC1DD
+5B10DD5B08DD1B89D85B5F5E5DC20800
+[END]
+
+Add a constant from a spherical projected Map to the vector components:
+
+Mvec = GetRGBfromSphereMap(@x, Map_nr)
+x = x + (Mvec[0] + X_offset) * X_scale
+y = y + (Mvec[1] + Y_offset) * Y_scale
+z = z + (Mvec[2] + Z_offset) * Z_scale
+
+
+
+On higher Map scale values you might have to decrease the 'Raystep multiplier' to not overstep.
+If you still get much noise, try to uncheck the 'Normals on DE' option in the Calculation tab.
+
+Because the map function is very slow, use this formula only in few iterations or just as a pretransform.
+
+The maps output range is 0 to 1 (black to white).
+
+The map must be in the 'Lightmap folder' specified by the 'Ini Dirs' button,
+named only by the map number and stored as png or jpeg image.

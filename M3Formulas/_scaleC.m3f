@@ -1,0 +1,11 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double ScaleCx = 1
+.Double ScaleCy = 1
+.Double ScaleCz = 1
+[CODE]
+558BEC56578B75088B7E30DD4618DC4FF0DD5E18DD4620DC4FE8DD5E20DD4628
+DC4FE0DD5E285F5E5DC20800
+[END]
+A pretransform to scale C components.

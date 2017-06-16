@@ -1,0 +1,24 @@
+[OPTIONS]
+.Version = 4
+.DEoption = -1
+.DReci2 Limiter1 = 0.67
+.DReci2 Limiter2 = 0.67
+.Double mul1 = 1
+.Double mul2 = 1
+[CODE]
+558BEC5652DD028B75088A4A078B7630DC4ED0D9E1DC46F0D9E8DEF1D9E0DC46
+E8DD02D8C8DC4EC8D9E1DC46E080E180D9E8DEF1D9E0DC46D8DEC1DD1A304A07
+5A5E5DC20800
+[END]
+
+
+Description:
+
+Computes a reciprocal-style function of y with a different (continuous) function,
+fine-tuneable:
+
+y' = sign(y)(1/Lim1 + 1/lim2 - 1/(abs(y)+ Lim ) - 1/(y*y+ Lim2 ) )
+
+
+The DE is almost untouched, it should work fine also with a Raystep 0.5 !
+Just don't go too low with the limiter to avoid noise.

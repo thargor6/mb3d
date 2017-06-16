@@ -1,0 +1,91 @@
+[OPTIONS]
+.Version = 5
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double Z mul = -1
+.Double c Mul up = 1
+.Double c Mul down = 1
+.Double x Add = -1
+.Integer Fix z zero = 0
+[CONSTANTS]
+Double = 2
+[CODE]
+558BEC81EC480000005356578B75088B7E308BD8D9D083BFD4FFFFFF00742583
+BED000000000751CD9EEDD13DD12DD55E0DD5DD8DD01DD5DD0FF86D0000000EB
+55909090DD03D8C8DD02D8C8DEC19090DD5DF090DD01D8C8DC75F0D9E0D9E8DE
+C1DD5DE890DD03D8C8DD02D8C8DEE9DC4DE8DD5DE0D9D0DD03DC0ADC0FDC4DE8
+DD5DD8D9D0DD45F0D9FADC09DC0FDC4FF0DD5DD0D9D0DD45E0DD4618DC4FE8DE
+C1DD47D890DEC1DD5DE0D9D0DD45D8DD4620DC4FE8DEC1DD5DD8D9D0DD45D0DD
+4628DC4FE8DEC1DD5DD0D9D0DD03DC0FDD47D8D9E8D9E0DEC1DEC1DD4618DC4F
+E0DEC1DD5DC8D9D0DD02DC0FDD4620DC4FE0DEC1DD5DC0D9D0DD01DC0FDC4FF0
+DD4628DC4FE0DEC19090909090DD5DB8D9D0DD45C8D8C8DD45C0D8C8DD45B8D8
+C8DEC1DEC1DD5DF890DD45E0D8C8DD45D8D8C8DEC1D9FADD5DF090DD45C8D8C8
+DD45C0D8C8DEC1D9FADD5DE890DD45E8DC4DD0DD45F0DC4DB8DEE9DC75F8DC4F
+F0DD19D9D0DD45D0DC4DB8DC75F0DC75E8D9E8DEC1DC75F8DD5DF890DD45E0DC
+4DC8DD45D8DC4DC0DEC1DC4DF8DD1BD9D0DD45E0DC4DC0DD45D8DC4DC8DEE1DC
+4DF8DD1AD9D0DD03D8C8DD02D8C8DEC1DD5DF0D9D0DD01D8C8DC75F0D9E0D9E8
+DEC1DD5DE890DD03D8C8DD02D8C8DEE9DC4DE8D9D0DD03DC0ADC0FDC4DE8D9D0
+DD45F0D9FADC09DC0FDC4FF0D9D0DD19DD1ADD1BD9D0DD03D9E8D9E0DEC1D8C8
+DD02D8C8DD01D8C8DEC1DEC1D9E8DEF1DD590890D9D08BC35F5E5B8BE55DC208
+00
+[END]
+
+Description:
+
+Magnetic 3D Mandelbulb set, based on D. White's new "triplex formulas".
+The base are the fast non-trig formulas, reported by Bugman's site.
+( http://bugman123.com/Hypercomplex/index.html )
+Added some user parameters, with those modifiers you get wonderful variations.
+NOTES: This is a 3D formula, not 4D. 4th dimension is used for bailout fix only
+Theorically this is a convergent formula so it should NOT be supported by MB...
+Use "Cutting" at z=0 to see interesting views.
+This fractal is made of "closed cells", so normal views do not show many details...
+--- FIX THE MSET AT Z=0 SLICE (NOT COMPATIBLE WITH JULIA!) ---
+Put the formula as the first one, and set a nonzero value for "Fix z zero".
+This allows you to see the real magnet set at z=0, but x add will no longer work correctly.
+Please note that NOT all values are allowed for the multipliers;
+some will break the convergent bailout rule. Simply don't use those values!
+
+// z = ((z*z + pixel - 1) / (2*z + pixel - 2))^2
+// bailout if |z| > bailout or |z-1| < small bailout.
+// This is an approximated version because I don't know how
+// to implement small bail.
+
+if fixz!=0 and itercount == 0
+x=y=x1=y1=0; // forces the conformance to Magnet 2D set,
+// and avoids the 0-squaring bug (we will simply skip squaring part...)
+z1=z; // avoids weird errors due to uninitialized z1, and gives fancy 3D shape (if zmul=-1)
+else
+r1 = (x*x+y*y); r2 = (1 - z*z/r1);
+// "normal" formula for xyz squaring
+// does NOT work if x=y=0 but normally you will not notice it.
+x1 = (x*x - y*y) * r2;
+y1 = 2 * x*y * r2;
+z1 = 2 * z * sqrt r1;
+z1 *= zmul;
+endif
+x1 += Cx*cmu + xadd; y1 += Cy*cmu ; z1 += Cz*cmu ;
+// ---
+x2 = 2*x + xadd - 1 + Cx*cmd ; y2 = 2*y + Cy*cmd ; z2 = 2*zmul*z + Cz*cmd ;
+// ---
+R = x2*x2 + y2*y2 + z2*z2 ; r1 = sqrt(x1*x1+y1*y1); r2 = sqrt(x2*x2+y2*y2);
+z = r2 * z1 - r1 * z2; z = z / R;
+z *= zmul;
+R = (1 + z1 * z2/(r1*r2)) / R;
+x = +(x1 * x2 + y1 * y2) * R;
+y = -(x1 * y2 - y1 * x2) * R;
+
+// ---
+r1 = (x*x+y*y); r2 = (1 - z*z/r1);
+// "normal" formula for xyz squaring (again)
+// does NOT work if x=y=0 but normally you will not notice it.
+x' = (x*x - y*y) * r2;
+y' = 2 * x*y * r2;
+z' = 2 * z * sqrt r1; z' *= zmul;
+(... assign x=x' ... )
+// I use w to fix bailout only. Don't care about w...
+w = (x-1)^2+y*y+z*z3;
+w = 1/w;
+// w will be added to x,y,z to see when we are bailing out

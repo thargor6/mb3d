@@ -1,0 +1,49 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 0.2
+.DEoption = 2
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Boxscale Min R = 0
+.Double Fold = 2
+.Double Scale vary = 0
+.Double FoldXMod = 0
+.Double FoldYMod = 0
+.Double FoldZMod = 0
+[CODE]
+558BEC5657538B7D0889C38B773081C7
+80000000837F50007F09FF4750DD46F0
+DD5F48DD4748D9E8D9C1D9E1DEE1DC4E
+D0DEC1DD5F48DD46D8DD03DC46C8D9E1
+D8E190D9E1D9E0D8C1DD46C8D9E1D9E0
+DEC1DD02DC46C0D9E1D8E290D9E1D9E0
+D8C2DD46C0D9E1D9E0DEC1DD01DC46B8
+D9E1D8E390D9E1D9E0D8C3DD46B8D9E1
+D9E0DEC190DDDBD9C9D9CAD9C0D8C9D9
+C2D8CBDEC1D9C3D8CCDEC1DC56E0DFE0
+D0EC7307DDD8DD46E8EB16D9E8D8D1DF
+E0D0EC7207DDD8DC7F48EB05DED9DD47
+48DD4108D8C9DD5908DCCBDCCADEC9DC
+47A8DD19DC4798DD1ADC47A0DD1B89D8
+5B5F5E5DC20800
+[END]
+
+
+Description:
+
+Inspired from a 2D formula proposed by Kali at the forums here;
+
+http://www.fractalforums.com/new-theories-and-research/kaliset-plus-boxfold-nice-new-2d-fractal/msg33670/#new
+
+--------------------------
+Scale = Scale + Scale_vary*(abs(Scale)-1)
+x = Fold-abs(abs(x+FoldXM)-Fold)-abs(FoldXM)
+y = Fold-abs(abs(y+FoldYM)-Fold)-abs(FoldYM)
+z = Fold-abs(abs(z+FoldZM)-Fold)-abs(FoldZM)
+// rr = pow(x*x + y*y + z*z + w*w, R_power) <- removed to speedup
+if rr < sqr(Min_R) then m = Scale/sqr(Min_R) else
+if rr < 1 then m = Scale/rr else m = Scale
+x = x * m + Cy
+y = y * m + Cx
+z = z * m + Cz

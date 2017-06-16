@@ -1,0 +1,47 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double ColR + Style = 0.1
+.Double ColDist = .25
+.Double Height = 1
+.2Doubles Scale = 2
+.Double Z add = 0
+.Double Y add = 0
+.Double X add = 2
+.Double Barrel or x2 = 0
+.Integer #Iterations (max 1000) = 6
+.Double Asymmetry = 1
+.Double Delta 1 = 3
+.Double Delta 2 = 0
+.Integer apply scale+add = 1
+[CONSTANTS]
+Double = 0.5
+Double = 0.7071067811865475244
+[CODE]
+83C4D0660F104690F20F104E88660F5947D0F20F594FD0660F5847C0F20F584F
+B8837F90007419F20F106E70F20F596FD0660F114690F20F114E88F20F116E70
+660F110424F20F114C2410DD0424D9E1DD442410D9E1D9C0D8C2D9C1D8E3DC67
+A4DD1C24DC679CDD5C2410DDD8DDD8DD0424D9E1D9E0DD442410D9C0D8EAD9C1
+D8C3D9E0DC6794DC0FDD1C24DC6794DC0FDD5C2410DDD8DDD8DD47E8DD0424D9
+E49BDFE0D0EC76198B57AC4A7E1381FAE70300007F0BD8E9D9E1D8E9D9E14A7F
+F5DDD98B57F481E2000000807538D8C8DD4424108B57B481E2000000807508DC
+6FB0D9E1DC6FB0D8C8DEC1D9FADC67F085D27410DD442408D8C8DD47B0DC47E8
+DEC9DEE9EB3FD9E1DD4424108B57B481E2000000807508DC6FB0D9E1DC6FB0D9
+E1D8D19BDFE0D0EC7304DDD8EB02DDD9DC47F085D2740EDD442408DD47B0DC47
+E8DEC9DEC1DD442408D9E1DC67E0D8D19BDFE0D0EC7304DDD8EB02DDD9837F90
+007503DC77D0DD5EE083C430C3
+[END]
+
+Plots a rectangular arrangement of vertical cylinders, useful to create quickly temples or something.
+Has some tricks added for different styles!
+"ColR"; NEG. values will generate square columns.
+POS. values will generate rounded ones.
+"ColDist"; Makes the columns less close.
+"Delta"; Change the "rectangle size" in some way.
+"Barrel or x2"; NEG. values will generate ...
+ -> barrel-style columns if ColR > 0. This modifier is also affected by ColDist (to get also a neg barrel effect).
+ -> pyramidal columns if ColR < 0. This modifier is also affected by ColDist.
+POS. values will generate a double list of columns.
+
+Luca GN 2012

@@ -1,0 +1,31 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Strength = 1.0
+.Double X step = -0.1
+.Double Y step = -0.1
+.Double Alpha = 2.0
+.Double Beta = -4.0
+.Double Gamma = -.1
+[CODE]
+558BEC568B75088B7630DD00D9C0D9FFDC4ED0DEC1D9FEDC4ED8DD02DC00DC4E
+C8DEE1D9FEDC4EE8DC0290DD02D9C0D9FFDC4ED0DEC1DC4ED8D9FEDD02DC28DC
+4EC8DEC1D9FEDC4EE8DC0090DD46F0DCC9DECADD1ADD185E5DC20800
+[END]
+
+
+Description:
+
+Gnarl deformation in 2D (from Mark Townsend) - variation with step X & Y and strength
+Gnarl formula gives strange "smoke-like" shapes.
+Formula by Luca GN 2011
+TIPS
+Use tiny steps, alpha and beta near to 1, strength = 1 for a "gentle" transformation.
+The more you go far the more you give power to deformation; standard values are a good base to start.
+To "learn" how the deform work use it alone at first with a cutting plane then apply it to other formulas.
+The formula can be hybridated with all formulas including IFS ones.
+Handle with care. This transform uses massively sin - it is slow and may be fuzzy
+
+  x = x + step * (sin( Gamma *(y - xx) + sin( alpha * (y + beta * cos(y) ))))
+  y = y + step * (sin( Gamma *(y + xx)  -  alpha * sin( xx + beta * cos(xx) )))
+z unchanged

@@ -1,0 +1,21 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Integer Flip also C = 0
+[CODE]
+558BEC56578B75088B7E30837FF400740CDD4620DD4628DD5E20DD5E28DD01DD
+02DD19DD1A5F5E5DC20800
+[END]
+
+
+Description:
+
+Exchanging the y and z values, if option is not zero then Cy and Cz too:
+
+y' = z
+z' = y
+
+if Flip_also_C <> 0 {Cy' = Cz; Cz' = Cy}
+
+Note:
+Changing C does not work in Julia mode.

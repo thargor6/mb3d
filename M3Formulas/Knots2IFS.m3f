@@ -1,0 +1,41 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double Radius 1 = 2
+.2Doubles Scale = 2
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 0
+.Double Radius 2 = .25
+.Integer Apply scale+add = 0
+.Integer Order = -3
+.Integer Mobius X = 2
+.Integer Mobius Y = 4
+.Double Radius 3 = -1
+.Integer Change this to close = 3
+[CONSTANTS]
+Double = +0.159154943
+Double = +6.283185307
+Double = 1e10
+Double = +1.57079632675
+[CODE]
+83C4CE660F104688F20F104E98660F5947E0F20F594FE0660F5847C0F20F584F
+D0837FB4007419F20F106E70F20F596FE0660F114688F20F114E98F20F116E70
+660F110424F20F114C2410DD442408DD0424D9F3DD442408D8C8DD0424D8C8DE
+C1D9FADD1C24DD5C2408DD4710DD5EE08B579CDD442408DC4708DD542408DA77
+B0DD542418DA4FACD9FFDC4FA0DC0424DC67F0D8C8DD442418DA4FA8D9FEDC4F
+A0DC442410DC67F0D8C8DEC1D9FADC56E09BDFE0D0EC7305DD5EE0EB02DDD84A
+7FB1DD46E0DC67B8837FB4007503DC77E0DD5EE083C432C3
+[END]
+
+Tool for plotting customized torus knots. As always, it's best to use it using the real-time Navi preview.
+This is an "extended version" of my knot routine, kindly shared by Knighty.
+It allows you to see a big number of knots impossible to obtain with plain "KnotsIFS",
+for example Figure 8 - the simplest not torical knot. It needs a "Lissajous" style coding.
+Some complicated knots will not show correctly in automatic, looking like an open string. 
+That's incorrect of course; knot's ends must be connected.
+When this happens, increase the last integer controller; the "string" (sooner or later) will close.
+Don't use the last controller mindlessly, or the routine can become very slow.
+
+Luca GN 2012

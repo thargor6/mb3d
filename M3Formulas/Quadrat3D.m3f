@@ -1,0 +1,50 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.Double X mul = 1
+.Double Y mul = 2
+.Double Z mul = -2
+.Double HRadius = 0
+.Double ZRadius = 1
+[CODE]
+558BEC53505657908B75088BD88B7E30D9D0D9D0DD03D8C8DD02D8C8DD47D8DE
+C1DEC1D9EED8D9DFE09E7766746C9090DD03D8C8DD02D8C8D9E0DEC1DC4FF0DD
+47D0DD01D8C8D8F3D9E0DEC1DEC9DC4618D9D0DD03DC0ADC4FE8DD47D0DD01D8
+C8D8F4D9E0DEC1DEC9DC4620D9D0DD01D9C3D9FADEC9DC4FE0DC4628D9D0DD19
+DD1ADD1BDDD8D9D08BC35F5E585B5DC20800D9EED9EED9EEEBE2DD4618DD4620
+DD4628EBD790
+[END]
+
+
+Description:
+
+Found on http://bugman123.com/Hypercomplex/index.html
+Quadratic 3D Mandelbulb set, based on D. White's new "triplex squaring formula".
+The base is the fast non-trig formula, reported by Bugman's site.
+I modified it introducing two "hyperbolic radiuses". Standard formula has HR=0 & ZR=1.
+Radiuses will strongly change the fractal shape.
+Neg HR introduces strange cylindrical filled shapes in the fractal.
+Pos HR has analog effects.
+Another way to vary the formula is to choose a different Z radius.
+This will attract/repel the fractal to the xy plane.
+Multipliers for x,y,z included as well
+
+temp = (HR+x*x+y*y)
+// defines the "magnitude" of a "hyp. cylindrical field"
+if temp=0
+// on the critic surface, we return the constant unchanged
+x' = Cx
+y' = Cy
+z' = Cz
+else if temp < 0
+// inside the cylinder nothing exists - this code will run only when you chose a neg HR 
+x' = 0
+y' = 0
+z' = 0
+else
+// "normal" formula outside the sphere
+x' = X_mul * (x*x - y*y) * (ZR - z*z/temp) + Cx
+y' = Y_mul * x*y * (ZR - z*z/temp) + Cy
+z' = Z_mul * z * sqrt temp + Cz
+endif

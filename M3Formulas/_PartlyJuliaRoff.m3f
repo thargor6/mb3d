@@ -1,0 +1,37 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double X sphere = 0
+.Double Y sphere = 0
+.Double Z sphere = 0
+.Double Radius sphere = 0
+[CONSTANTS]
+Double = 1e-10
+[CODE]
+558BEC5657508B75088B7E30DD06DC67F0DD4608DC67E8DD4610DC67E0D9C2D8
+C8D9C2D8C8DEC1D9C1D8C8DEC1D9FADC57D8DFE080E4417541D9C0DC67D8D9C1
+D9E1DC1FDFE080E4417413D9C9D9EEDED9DFE0DD0780E4417502D9E0D9C9DEF1
+DCCBDCCADEC9DC4628DD5E28DC4620DD5E20DC4618DD5E18EB04DED9DED9585F
+5E5DC20800
+[END]
+
+A pretransform to disable the julia mode outside a spheres radius.
+Julia offsets are kept, so a real non-julia mode will usually not appear. 
+
+xt = Px - X_sphere
+yt = Py - Y_sphere
+zt = Pz - Z_sphere
+r = Sqrt(Sqr(xt) + Sqr(yt) + Sqr(zt))
+if r > Radius_sphere {
+  rt = r - Radius_sphere;
+  if Abs(r) < 1e-10 r = sign(r) * 1e-10
+  m = rt / r
+  Cx = Cx + xt * m
+  Cy = Cy + yt * m
+  Cz = Cz + zt * m
+}
+
+
+There will be also some strange boxes if used in non-julia mode.
+
+Thanks to Luca for the idea of using a radius.

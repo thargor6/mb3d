@@ -1,0 +1,15 @@
+[OPTIONS]
+.Version = 2
+.DEoption = 4
+[CODE]
+558BECDD02D9E0DD1ADD01D9E0DD19DD4108D9E0DD59085DC20800
+[END]
+
+Description:
+
+Complex conjugate function
+The simplest function ever... Works well in 4D also
+Warning: This function in most cases simply screws up the fractal. Transforms a Mandelbrot set in a tricorn.
+Formula by Luca GN 2011
+
+conj(S) = (x,-y,-z,-w)

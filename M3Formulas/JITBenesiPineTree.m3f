@@ -1,0 +1,52 @@
+[OPTIONS]
+.DEScale = 1
+.SIPow = 2
+.Version = 9
+.Double Offset = 2
+.Double Scale = 2
+[CONSTANTS]
+.Double sqrt_1_2 = 0.707106781186548
+.Double sqrt_1_3 = 0.577350269189626
+.Double sqrt_2_3 = 0.816496580927726
+[SOURCE]
+procedure BenesiPineTree(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+  temp_x, temp_y, temp_z, temp: Double;  
+  new_x, new_y, new_z: Double;
+  x_temp, y_temp, z_temp: Double;
+begin
+  temp_x := x*sqrt_2_3-z*sqrt_1_3;
+  new_z := x*sqrt_1_3 + z*sqrt_2_3; 
+  new_x := (temp_x-y)*sqrt_1_2; 
+  new_y := (temp_x+y)*sqrt_1_2;
+
+  new_x := abs(new_x);
+  new_y := abs(new_y);
+  new_z := abs(new_z); 
+
+  temp_x := (new_x+new_y)*sqrt_1_2;
+  new_y := (-new_x+new_y)*sqrt_1_2; 
+  new_x := temp_x*sqrt_2_3+new_z*sqrt_1_3;
+  new_z := -temp_x*sqrt_1_3+new_z*sqrt_2_3; 
+
+  x:=scale*new_x-offset; //scale =2 offset=2 
+  y:=scale*new_y;
+  z:=scale*new_z;
+
+  x_temp:=x*x;
+  y_temp:=y*y; 
+  z_temp:=z*z;
+  temp:=(x+x)/sqrt(y_temp+z_temp); 
+
+  new_x:= x_temp - y_temp - z_temp;
+  new_z:=temp*(y_temp-z_temp); //y and z variables are switched to add symmetry 
+  new_y:=temp*2.0*y*z;
+
+  x := new_x + PIteration3D^.J1; 
+  y := new_y; 
+  z := new_z;
+end;
+
+[END]
+Description:
+

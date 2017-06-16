@@ -1,0 +1,58 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 0.2
+.DEoption = 2
+.SIpower = 2
+.RStop = 1024
+.Double Scale = 2
+.Double CScale X = 1
+.Double CScale Y = 1
+.Double CScale Z = 1
+.3SingleAngles Rotation1 = 0
+.3SingleAngles Rotation2 = 0
+.Double Edge1 = 0
+.Double Edge2 = 0
+.Integer Reversed fold = 0
+[CODE]
+558BEC535689C38B75088B7630DD01DD02DD03D9C0D84EBCD9C2D84EB8DEC1D9
+C3D84EB4DEC1D9C1D84ED4D9C3D84ED0DEC1D9C4D84ECCDEC1D9CAD84EC8D9CB
+D84EC4DEC3D9CBD84EC0DEC283BE7CFFFFFF000F854D00000090D9C9D8D1DFE0
+D0EC7302D9C9D8D2DFE0D0EC7302D9CAD9C9D8D2DFE0D0EC7302D9CAD9E0D8D1
+DFE0D0EC7202D9C9D8D2DFE0D0EC7202D9CAD9E0D9C9D9E0D8D2DFE0D0EC7202
+D9CAD9E0EB4BD9E0D8D1DFE0D0EC7202D9C9D8D2DFE0D0EC7202D9CAD9E0D9C9
+D9E0D8D2DFE0D0EC7202D9CAD9E0D9C9D8D1DFE0D0EC7302D9C9D8D2DFE0D0EC
+7302D9CAD9C9D8D2DFE0D0EC7302D9CA90DD4688D9EED8D9DFE0D0EC730BD8E2
+D9E1D9E0DC4688D9CADDD89090DD4680D9EED8D9DFE0D0EC730BD8E1D9E1D9E0
+DC4680D9C9DDD890D9C0D84E98D9C2D84E94DEC1D9C3D84E90DEC1D9C1D84EB0
+D9C3D84EACDEC1D9C4D84EA8DEC1D9CAD84EA4D9CBD84EA0DEC3D9CBD84E9CDE
+C2DD46F0DD4108D8C9DD5908DCCBDCCADCC9D9E8DEE9D9C0DC4ED8DEECD9C0DC
+4EE0DEEBDC4EE8DEE9DD1BDD1ADD1989D85E5B5DC20800
+[END]
+
+A Sierpinski3 "clone" but with full tetrahedral symmetry planes.
+
+Difference is evident in all non-standard modes (example, if you change CScales or rotations).
+
+Also in combination with other formulas expect more symmetry.
+
+Very intriguing new mode is "reversed fold"! Quite different shapes are obtained.
+Ideas taken from original KIFS thread by Knighty.
+Bonus mode; Enable edges to get a "SierpHilbert" like fractal.
+
+Normal full tetra-fold;
+
+      if(x-y<0){x1=y;y=x;x=x1;}
+      if(x-z<0){x1=z;z=x;x=x1;}
+      if(y-z<0){y1=z;z=y;y=y1;}
+      if(x+y<0){x1=-y;y=-x;x=x1;}
+      if(x+z<0){x1=-z;z=-x;x=x1;}
+      if(y+z<0){y1=-z;z=-y;y=y1;}
+
+Reversed full tetra-fold;
+
+      if(x+y<0){x1=-y;y=-x;x=x1;}
+      if(x+z<0){x1=-z;z=-x;x=x1;}
+      if(y+z<0){y1=-z;z=-y;y=y1;}
+      if(x-y<0){x1=y;y=x;x=x1;}
+      if(x-z<0){x1=z;z=x;x=x1;}
+      if(y-z<0){y1=z;z=y;y=y1;}

@@ -1,0 +1,40 @@
+[OPTIONS]
+.Version = 6
+.DEscale = 0.15
+.ADEscale = 0.5
+.DEoption = 2
+.SSE2
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 1.5
+.Boxscale Min R = 0.6
+.2Doubles Z add = 0.5
+.Double Y add = 0.5
+.Double X add = 0.5
+[CONSTANTS]
+INT64 = $7FFFFFFFFFFFFFFF
+INT64 = $7FFFFFFFFFFFFFFF
+Double = 1
+Double = 1
+[CODE]
+558BEC56538B75088B5E30660F1010660F1019660F5413660F541B660F2843C0
+F20F104BD0F20F107BD8660F5CC2F20F5CCB660F28E0660F28E9660F59E4F20F
+59ED660F70F44EF20F58E5F20F58E6660F2E63E07307F20F107BE8EB10660F2E
+6310F20F107BF07304F20F5EFC660FC6FF00660F106E18660FC6CB02660F59C7
+660F59CF660F58C5F20F584E28660F1100660F11095B5E5DC20800
+[END]
+
+
+Description:
+
+A modified amazing box as suggested by Kali, one iteration:
+
+x = X_add - abs(x)
+y = Y_add - abs(y)
+z = Z_add - abs(z)
+rr = x*x + y*y + z*z
+if rr < sqr(Min_R) then m = Scale/sqr(Min_R) else
+if rr < 1 then m = Scale/rr else m = Scale
+x = x * m + Cx
+y = y * m + Cy
+z = z * m + Cz

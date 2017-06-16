@@ -1,0 +1,30 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double X mul = 1
+.Double Y mul = 2
+.Double Z mul 1 = 2
+.Double Z mul 2 = 2
+.Double W mul = 2
+.Double W add = 0
+[CODE]
+558BEC56578B75088B7E30DD00D8C8DD02D8C8D9E0DEC1DD01D8C8D9E0DEC1DD
+4108D8C8D9D0DEC1DC4FF0DC4618D9D0DD00DC0ADD01DC4908DEC1DC4FE8DC46
+20D9D0DD00DC09DC4FE0DD02DC4908DC4FD8DEC1DC4628D9D0DD00DC4908DD02
+DC09DEC1DC4FD0DC46C8DC47C8DD5908DD19DD1ADD1890905F5E5DC20800
+[END]
+
+
+Description:
+
+A formula from David Makin. Found on http://bugman123.com/Hypercomplex/index.html
+some additional user parameters added:
+
+x' = X_mul * (x*x - y*y - z*z + w*w) + Cx
+y' = Y_mul * (x*y + z*w) + Cy
+z' = Z_mul1 * x*z + Z_mul2 * y*w + Cz
+w' = W_mul * (x*w + y*z) + W_add + Cw
+
+Zmul2 can be +2 for the standard variation 1 or -2 for the standard variation 2.

@@ -1,0 +1,45 @@
+[OPTIONS]
+.Version = 4
+.DEscale = .2
+.DEoption = 11
+.RStop = 20
+.SIpower = 2
+.Double Scale = 1.5
+.Boxscale Min R = 0.5
+.Double Fold = 1
+.3SingleAngles Rotation1 = 5
+.Double Scale vary = 0
+.Integer Sphere or Cylinder = 1
+[CODE]
+558BEC5657538B7D0889C38B773081C780000000837F50007F09FF4750DD46F0
+DD5F48DD4748D9E8D9C1D9E1DEE1DC4EACDEC1DD5F48DD46D8DD03D9C0D8E2D9
+E1D8C1D9C9D8C2D9E1DEE1DD02D9C0D8E3D9E1D8C1D9C9D8C3D9E1DEE1DD12D8
+C8D9C9DD13D8C8DEC1DDD9837EA8007506DD01D8C8DEC1DC56E0DFE0D0EC7307
+DDD8DD46E8EB16D9E8D8D1DFE0D0EC7207DDD8DC7F48EB05DED9DD4748DD4108
+D8C9DD5908DD01D8C9DC47A8DD02D8CADC47A0DD03D8CBDC4798D9C0D84EBCD9
+C2D84EB8DEC1D9C3D84EB4DEC1D9C1D84ED4D9C3D84ED0DEC1D9C4D84ECCDEC1
+D9CAD84EC8D9CBD84EC4DEC3D9CBD84EC0DEC2DD1BDD1ADD19DDD89090909089
+D85B5F5E5DC20800
+[END]
+
+
+Description:
+
+Formula proposed by Kali by a private message. I added some features btw
+Luca GN 2012
+
+Scale = Scale + Scale_vary*(abs(Scale)-1)
+x = TgladFold(x,fold)
+y = TgladFold(y,fold)
+// z is not folded
+if SorC != 0
+rr = x*x + y*y // cylinder shape for inversion (sometimes buggy but can be cool)
+else
+rr = x*x + y*y + z*z // sphere shape for inversion (works better)
+endif
+if rr < sqr(Min_R) then m = Scale/sqr(Min_R) else
+if rr < 1 then m = Scale/rr else m = Scale
+x = x * m + Cy
+y = y * m + Cx
+z = z * m + Cz
+Rotate3D(x,y,z,angles)

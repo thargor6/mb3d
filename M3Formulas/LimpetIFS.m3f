@@ -1,0 +1,40 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double R1 = 1.2
+.2Doubles Scale = 2
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 0
+.Double R2 = 1.0
+.Integer Apply scale+add = 1
+.Double Rmul = -1.6
+.3SingleAngles LimpetRot = 0
+[CODE]
+83C4E4660F104688F20F104E98660F5947E0F20F594FE0660F5847C0F20F584F
+D0837FB4007419F20F106E70F20F596FE0660F114688F20F114E98F20F116E70
+660F110424F20F114C241083C7CCDD442410DD442408DD0424D9C0D84FC4D9C2
+D84FC0DEC1D9C3D84FBCDEC1D9C1D84FDCD9C3D84FD8DEC1D9C4D84FD4DEC1D9
+CAD84FD0D9CBD84FCCDEC3D9CBD84FC8DEC2DD1C24DD5C2408DD5C241083C734
+90DD0424D8C8DD442408D8C8DEC1D9FADD1C2490DD47F0DD0424DC4C2410DEC1
+9090DD0424DC4FACDEC1D8C8DD442410D8C8DEC1D9FAD9FADC67B8DD0424DC67
+B8DC67B8DC67B8D8D19BDFE0D0EC7304DDD8EB02DDD9DD442410D9E1DC67B8DC
+67B8DC67B8D8D19BDFE0D0EC7304DDD8EB02DDD9837FB4007503DC77E0DD5EE0
+83C41CC3
+[END]
+
+Limpet torus. An "ufoid"...
+
+Note! This surface is cutted off with a big cylinder, so for some critical parameters
+you won't see it entirely (and in some cases it's impossible to see it "entirely" ...
+because it degenerates in a sort of gaussian bell).
+
+Equation; 
+  // Self found by attempts, it seems really identical to the original
+  // sqrt4(k) = sqrt(sqrt(k))
+  R = sqrt(x*x+y*y)
+  DE = sqrt4(sqr(R1 + z*R + Rmul*R) + z*z) - R2
+  DE = min (DE, cyl(x,y,z, 3 * R2) )
+
+Luca GN 2012

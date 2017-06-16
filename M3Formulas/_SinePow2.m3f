@@ -1,0 +1,17 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.RStop = 16
+.Double Y multiplier = 1
+.Double Z multiplier = -1
+[CODE]
+558BEC568B7508DD01DD02DD008B75088B7630D9C1D8CAD9C1D8CAD9C0D8C2D9
+C0D9FADC4EE8D8CED8C0DD19D9C5DECED9C0DEE6DEFDDEE1D8CBDD18DEC9DEC9
+D8C0DC4EF0DD1A5E5DC20800
+[END]
+
+
+Does the transformation like the sine power 2 bulb, but without adding C.
+
+You can use it for example 3 times and then adding c to make a power 8 bulb clone.

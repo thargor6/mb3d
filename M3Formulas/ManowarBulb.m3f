@@ -1,0 +1,48 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.SSE2
+.Double Power = 8
+.Double z-Mul = -1
+.Double Manowar strength = -.5
+.Double Phoenix strength = .5
+.3SingleAngles Manowar rot = 0
+[CODE]
+558BEC81EC500000005356578B75088B7E308BD8D9D081C680000000837E5000
+7513FF46500F57C00F57C9E925010000909090909081EE80000000660F1145C8
+660F114DB8DD03D8C8DD02D8C8DD01D8C8DEC1DEC1D9FADD47F0D9C9D9E1D9F1
+D9E8D9C1D9F8D9F0DEC1D9FDD9C9DDD8DD5DD8DD02DD03D9F3DC4FF0D9FBDD5D
+F0DD5DF8DD01DD02D8C8DD03D8C8DEC1D9FAD9F3DC4FF0D9FBDD5DE0DD5DE8DD
+47E0DD45C0D8C9DD45D0D8CADD45C8D8CBD9C0D84FBCD9C2D84FB8DEC1D9C3D8
+4FB4DEC1D9C1D84FD4D9C3D84FD0DEC1D9C4D84FCCDEC1D9CAD84FC8D9CBD84F
+C4DEC3D9CBD84FC0DEC2DC4618DD5DD0DC4620DD5DC8DC4628DD5DC0DDD8DD47
+D8DD03D8C9DD02D8CADD01D8CBDC45C0DD5DC0DC45C8DD5DC8DC45D0DD5DD0DD
+D8660F1003660F1009DD45F0DC4DE0DC4DD8DC45D0DD1BDD45F8DC4DE0DC4DD8
+DC45C8DD1ADD45E8DC4DD8DC4FE8DC45C0DD19D9D08BC35F5E5B89EC5DC20800
+[END]
+
+Description:
+Attempt to realize a Manowar in 3D with triplex math.
+Manowar formula is a "blended" version of Mandelbrot; it was featured on Fractint.
+Phoenix is another simple Fractint formula (just add z*zscale to z^power).
+
+You can get some nice bulbs with this. A strong Manowar effect will "blow up" the bulb, creating more holes.
+Manowar's oldz can be rotated to create wild effects.
+
+The problem about Manowar is that it requires three temporary variables to work, so it was not previously done.
+
+TECHNICAL NOTES;
+This uses MMX registers as temporary vars. Not compatible with KaliLinComb, and very old computers.
+
+1. If it is the 1st iteration;
+Set to 0 MMX0, MMX1 regs
+Else
+Load data stored in MMX0, MMX1 regs into the stack
+2. Do the triplex exponentiation with x,y,z - do not save the data for now
+3. Now move current x,y,z to MMX0, MMX1 regs
+4a. Rotate & scale stack's "old x,y,z".
+4b. Add z*PhoScale and C to "old x,y,z".
+5. Add this vector to (x,y,z)^power, save to x,y,z
+
+Implemented by Luca G.N. 2011

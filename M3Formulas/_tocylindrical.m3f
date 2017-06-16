@@ -1,0 +1,15 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BECDD00D8C8DD02D8C8DEC1D9FADD02DD00D9F3DD1ADD185DC20800
+[END]
+
+Description:
+
+Cylindrical coords
+Formula by Luca GN 2011
+
+x' = sqrt(x*x+y*y)
+y' = atan(y/x)
+(z coordinate is unchanged)

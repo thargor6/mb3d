@@ -1,0 +1,40 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.SIpower = 2
+.Double C add = -1.35
+[CODE]
+558BEC56578B75088B7E3083BED0000000007579FF86D0000000DD47F0DD01DD
+02DD00D9C0D8C2D8C3D9E1D8C4DD18D9C2D8E1D8E2D9E1D8C4DD1AD9C1D8E1D8
+E3D9E1D8C4DD19DEE1DEE1D9E1D8C1DD5908DD4628DD4620DD4618D9C0D8C2D8
+C3D9E1D8C4DD5E18D9C2D8E1D8E2D9E1D8C4DD5E20D9C1D8E1D8E3D9E1D8C4DD
+5E28DEE1DEE1D9E1DEC1DD5EC8DD4108DD01DD02DD00D9C2D8CCD8C0D9C1D8CB
+D8C0D9C2D8C8D9C4D8C8DEE9D9C0D8C3DC4618DD18DEEAD9C9DC4620DD1AD9CB
+D8C8D9CCD8C8DEECDED9D9C1D8C1DC4628DD19DEE1DC46C8DD59085F5E5DC208
+00
+[END]
+
+Description:
+
+A formula made by Aexion at fractalforums.com.
+It uses a modified quadray transformation of the coordinates:
+
+if FirstIt = 0 {
+inc(FirstIt)
+Cx = abs(Cx  + Cy + Cz) + C_add
+Cy = abs(-Cx - Cy + Cz) + C_add
+Cz = abs(-Cx + Cy - Cz) + C_add
+Cw = abs(Cx  - Cy - Cz) + C_add
+x = abs(x  + y + z) + C_add
+y = abs(-x - y + z) + C_add
+z = abs(-x + y - z) + C_add
+w = abs(x  - y - z) + C_add
+}
+x' = x*x - y*y + 2*w*z + Cx
+y' = y*y - x*x + 2*w*z + Cy
+z' = z*z - w*w + 2*x*y + Cz
+w' = w*w - z*z + 2*x*y + Cw
+
+Notice:
+Some formulas are also incrementing the FirstIt value, so a combination with those would not work properly.
+The transform makes a 4d mode necessary, but the 4d rotations are not very useful with this formula.

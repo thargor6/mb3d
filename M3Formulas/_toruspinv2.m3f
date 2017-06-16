@@ -1,0 +1,28 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double X center = 0
+.Double Y center = 0
+.Double Z center = 0
+.Double Radius = 1
+.Double R = 1
+[CODE]
+558BEC568B75088B7630DD01DD02DD00DC46F0DD18DC46E8DD1ADC46E0DD19DD
+00D8C8DD02D8C8DEC1D9E0DC46D0D8C8DD01D8C8DEC1D9FADD00D9E1D8F1DD46
+D8DEC9DC66F0DD18DD02D9E1D8F1DD46D8DEC9DC66E8DD1ADD01D9E1D9C9DEC9
+DD46D8DEC9DC66E0DD195E5DC20800
+[END]
+
+Description:
+
+Toric pseudo-inversion in 3D with selectable radius and center. This needs a bit of coordinate adjustment.
+Remind that this is a VERY strong deformation so use it wisely.
+Formula by Luca GN 2011
+
+x', y', z' => Translate + scaling (by radius) of x, y, z with given params.
+Then, defined Rho = abs((R-sqrt(x'*x'+y'*y'))^2+z'*z'),
+x'' = abs(x')/Rho
+y'' = abs(y')/Rho
+z'' = abs(z')*Rho
+For your convenience, x'',y'',z'' are translated back.
+WARNING. This is not an inversion, but only a funny deformation. Not for educational purposes :P

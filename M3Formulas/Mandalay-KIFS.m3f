@@ -1,0 +1,84 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 0.2
+.DEoption = 2
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Boxscale Min R = 0
+.Double Fold = 1
+.3SingleAngles Rotation1 = 0
+.Double XY Tower = 1
+.Double Z Tower = 0
+.Double RDiv = 1
+[CODE]
+558BEC83EC509090905356578B7D0889C38B773081C78000000090909090DD01
+D9E1DD02D9E1DD03D9E1D8D1DFE0D0EC7302D9C9D8D2DFE0D0EC7302D9CAD9C9
+D8D2DFE0D0EC7302D9CADD1ADD1BDD1990DD46D8D8C0DD03D8E1DD5DF0DDD890
+DD46D8DD03D8E1D9E1D8E9DD5DD8DD02D8E1D9E1D8E9DD5DD0DDD8DD46A4D9EE
+D8D9DFE0D0EC730ADD01D8E1D9E1D8E9EB02DC01DD5DC8DDD8909090DD45F0D9
+EED8D9DFE0D0EC734DDD02D8D9DFE0D0EC7343DD46ACDC02D8D9DFE0D0EC731B
+DD45D8DC46ACDD5DD8DD46ACDC66D8DC02D9E1DC6ED8DD5DD0EB1BDD02D9E0DD
+5DD8DD03DC66D8DC66D8DC66D8D9E1DC6ED8DD5DD090DDD890DD45D8DD45D0DD
+45C8D9C0D84EBCD9C2D84EB8DEC1D9C3D84EB4DEC1D9C1D84ED4D9C3D84ED0DE
+C1D9C4D84ECCDEC1D9CAD84EC8D9CBD84EC4DEC3D9CBD84EC0DEC290D9C0D8C9
+D9C2D8CBDEC1D9C3D8CCDEC1DC4E9C90DC56E0DFE0D0EC7307DDD8DD46E8EB16
+D9E8D8D1DFE0D0EC7207DDD8DC7EF0EB05DED9DD46F0DD4108D8C9DD5908DCCB
+DCCADEC9DC47A8DD19DC47A0DD1ADC4798DD1B9089D85F5E5B8BE55DC20800
+[END]
+
+Description:
+
+Attempt to recreate the Mandalex fractal invented by Hiato
+and posted at Fractal forums, but using strictly continuous
+functions. This means DE is perfect and computation is very fast.
+Lots of variations are possible of course, this is
+very versatile in particular.
+It's a midway between a Menger, an octahedron and an Amazing
+Box, with really endless possible fractals!
+This formula was born with the precious and essential
+help of Knighty, killed all discontinuities and simplified everything.
+Speedup version 11/03/2015 by Luca
+
+float DE(vec3 pos) {
+	vec4 p = vec4(pos,1), p0 = p;  // p.w is the distance estimate
+       if(Julia) p0.xyz = JuliaC;
+	
+	for (int i=0; i<Iterations; i++) {
+	     p.xyz*=rot;
+             vec3 n = abs(p);
+             // Kifs Octahedral fold:
+	     if(n.y>n.x) n.xy=n.yx;if(n.z>n.y) n.yz=n.zy;if(n.y>n.x) n.xy=n.yx;
+             // ABoxKali-like abs folding:
+             float fx = -2.*fo+n.x;
+             // float fy = -2.*fo+n.y;float fz = -2.*fo+n.z; // unneeded!
+             // Edges:
+             float xf = (fo-abs(-fo+n.x));
+             float yf = (fo-abs(-fo+n.y));
+             //float zf = (ztower-abs(-fo+n.z)); // used if ztower > 0
+             float zf = ztower+n.z; // used if ztower < 0
+             float gy = g+n.y;
+             // float gx = g+n.x; float gz = g+n.z; // unneeded!
+
+               if (fx > 0 && fx > n.y ) { // && fx > n.z dropped (speedup) as z<y
+                 if (fx > gy ) { // && fx > gz dropped (speedup) as z<y
+                  // top:
+                  xf += g; 
+                  yf = (fo-abs(g-fo+n.y));
+                  // zf ... unchanged
+                 } else { 
+                  // edges:
+                  xf = -n.y; 
+                  yf = (fo-abs(-3.*fo+n.x));
+                  // zf ... unchanged
+                 }
+ 	     }
+             p.x = xf; p.y =yf; p.z = zf;
+	     float r2 = dot(p.xyz, p.xyz);
+	     if (i<ColorIterations) orbitTrap = min(orbitTrap, abs(vec4(p.xyz,r2)));
+	     p *= clamp(max(MinRad2/r2, MinRad2), 0.0, 1.0);  // dp3,div,max.sat,mul
+	     p = p*scale + p0; if ( r2>1000.0) break;
+		
+	}
+	return ((length(p.xyz) - absScalem1) / p.w - AbsScaleRaisedTo1mIters);
+}

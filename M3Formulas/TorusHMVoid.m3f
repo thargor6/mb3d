@@ -1,0 +1,38 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.Integer Map nr = 10
+.Integer Map channel (0..2) = 0
+.Single X offset = 0
+.Single Y offset = 0
+.Single Z offset = 0
+.Single Radius = .8
+.Single Radius2 = .3
+.Single Map height = 0.05
+.3ScalesAngles Scale = 1
+.Integer OTrap channel (0..2) = 1
+.Single OTrap offset = 0
+.Single OTrap multiplier = 1
+[CONSTANTS]
+Double = 0.15915494309189533576888376337251
+Double = 0.05
+[CODE]
+5183C4D0DD4698D867E4DD4690D867E8DD4688D867ECD9C0D84FBCD9C2D84FB8
+DEC1D9C3D84FB4DEC1D9C1D84FD4D9C3D84FD0DEC1D9C4D84FCCDEC1D9CAD84F
+C8D9CBD84FC4DEC3D9CBD84FC0DEC2DD5C2408DD5C2410DD5C2418DD442408D8
+C8DD442410D8C8DEC1D9FAD867E0D9C0D8C8DD442418D8C8DEC1D9FAD867DC90
+D9C0D9E1D947D8D9E1DC4708DC4708DED9DFE0D0EC730DD9E1DD5EE0DDD8DDD8
+DDD8EB61D9C1DD442418D9F3DC0FDD442408DD442410D9F3DC0F90DD1C24DD5C
+2408D95C2418DDD889E08B57F489E1FF960C0100008B4FF083E103DD04CCDC67
+F8D84FD8D86C2418D9E1DC6708DD5EE08B4FB083E103DD04CCD847ACD84FA8DD
+9E8000000083C43059C3
+[END]
+
+Luca hack mar 2015:
+Works exactly as CylinderHeightMap, but wraps around a torus and for 
+some values of radiuses it's also empty inside!
+
+Jesse original comment:
+A displacement map on a cylinder with color option on orbit trap (2nd color choice).
+
+You can choose a RGB channel of the Map (0=R,1=G,2=B) for the displacement and another channel for OTrap coloring.

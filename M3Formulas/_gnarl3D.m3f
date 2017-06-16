@@ -1,0 +1,34 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Strength = 1.03
+.Double X step = 0.1
+.Double Y step = 0.1
+.Double Z step = 0.1
+.Double Alpha = 3.0
+.Double Beta = 2.0
+
+[CODE]
+558BEC568B75088B7630DD01DD46C8DEC9D9FEDD01DEC1DD46D0DEC9D9FEDD01
+DEC1D9FEDD46E8DEC9D9E0DD00DEC1DD46F0DEC9DD00DD46C8DEC9D9FEDD00DE
+C1DD46D0DEC9D9FEDD00DEC1D9FEDD46E0DEC9D9E0DD02DEC1DD46F0DEC9DD02
+DD46C8DEC9D9FEDD02DEC1DD46D0DEC9D9FEDD02DEC1D9FEDD46D8DEC9D9E0DD
+01DEC1DD46F0DEC9DD19DD1ADD185E5DC20800
+[END]
+
+
+Description:
+
+Gnarl deformation in 3D (2D formula is from Mark Townsend) - variation with step X, Y, Z and strength
+Gnarl formula gives strange "smoke-like" shapes.
+Formula by Luca GN 2011
+TIPS
+Use tiny steps, alpha and beta near to 1, strength = 1 for a "gentle" transformation.
+The more you go far the more you give power to deformation; standard values are a good base to start.
+To "learn" how the deform work use it alone at first with a cutting plane then apply it to other formulas.
+The formula can be hybridated with all formulas including IFS ones.
+Handle with care. This transform uses massively sin - it is slow and may be fuzzy
+
+x' = (x - stepX sin(z + sin( a (z + sin (b z )))) * Strength
+y' = (y - stepY sin(x + sin( a (x + sin (b x )))) * Strength
+z' = (z - stepZ sin(y + sin( a (y + sin (b y )))) * Strength

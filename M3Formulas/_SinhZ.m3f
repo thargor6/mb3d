@@ -1,0 +1,23 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double fixZ = 0
+.Double fixLg = 0
+.Double Mul = -2
+.Double Base = 0.367879441
+[CODE]
+558BEC568B75088B7630DD01DD46E0DEC9DD46F0DEC1D9C0D8C8D9E8DEC1D9FA
+DEC1DD46D8D9C9D9F1DD46E8DEE9DD195E5DC20800
+[END]
+
+Description:
+
+Hyp.Sine for z + some bells & whistles
+k must be nonzero!
+Formula by Luca GN 2013
+
+x' = Mul*z+fixZ
+z = ln(x' + sqrt(x'*x' + 1))/ln(Base)+fixLg
+
+
+

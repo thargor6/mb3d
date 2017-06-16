@@ -1,0 +1,72 @@
+[OPTIONS]
+.Version = 5
+.DEscale = 1.5
+.SIpower = 2
+.Double Z mul = -1
+.Double p3dx = 1
+.Double p3dy = 0
+.Double p3dz = 0
+.Double a1 = 1
+.Double a2 = 0
+.Double a3 = 0
+.Integer Int pow = 8
+[CODE]
+558BEC81EC480000005356578B75088B7E308BD8D9D08B47BC83F8167F0583F8
+017F05B808000000D9D0DD03DD02DD01DD5DE8DD5DF0DD5DF848D9D0DD03D8C8
+DD02D8C8DEC1D9FADD5DC89090D9D0DD45F8D8C8DD45F0D8C8DEC1D9FADD55C0
+D9D0DC09DD45C8DC4DE8DEE9DC4FF0D9D0DD45E8DC09DC75C8DC75C0D9E0D9E8
+DEC1DD5DC0D9D0DD03DC4DF8DD02DC4DF0DEE9DC4DC0D9D0DD02DC4DF8DD03DC
+4DF0DEC1DC4DC0D9D0DD5DF0DD5DF8DD5DE84883F8007F9590909090909090DD
+45F8DC4FD0DD03DC4FC8DD4618DC4FC0DEC1DEC1DD5DF890DD45F0DC4FD0DD02
+DC4FC8DD4620DC4FC0DEC1DEC1DD5DF090DD45E8DC4FD0DD01DC4FC8DD4628DC
+4FC0DEC1DEC1DD5DE890DD47E8DC0390DD5DE090DD47E0DC0290DD5DD890DD47
+D8DC0190DD5DD090D9D0DD45E0D8C8DD45D8D8C8DD45D0D8C8DEC1DEC1DD5DB8
+90DD45F8D8C8DD45F0D8C8DEC1D9FADD5DC890DD45E0D8C8DD45D8D8C8DEC1D9
+FADD5DC090DD45C0DC4DE8DD45C8DC4DD0DEE9DC75B8DC4FF0DD19D9D0DD45E8
+DC4DD0DC75C0DC75C8D9E8DEC1DC75B8DD5DB890DD45F8DC4DE0DD45F0DC4DD8
+DEC1DC4DB8DD1BD9D0DD45F8DC4DD8DD45E0DC4DF0DEE1DC4DB8DD1AD9D0D9E8
+DC67C0DD4618D8C9DC03DD1BDD4620D8C9DC02DD1ADD4628DEC9DC01DD199090
+D9D08BC35F5E5B8BE55DC20800
+[END]
+
+Description:
+
+Talis-like 3D set, based on D. White's new "triplex formulas".
+The base are the fast non-trig formulas, reported by Bugman's site.
+( http://bugman123.com/Hypercomplex/index.html )
+
+This formula comes from Fractal Explorer, and the D.H. Van den Berghe
+Ultra Fractal version made in 2010. Added some "extra" parameters.
+Too bad, this implementation does not look good in 3D, because Talis
+uses a fractional formula. 2D sections at z=0 still show the original fractal.
+Maybe, playing with the parameters you can find something interesting?
+Tip. Try to make hybrids with Magnet.
+This implementation is by Luca GN 2011
+
+// z = ((a1*z^pow + a2*z + a3*c) / (z + p3d) + (1-a3)*pixel
+x1=x; y1=y; z1=z;
+i=pow-1;
+r1 = sqrt(x*x+y*y);
+repeat
+// raise z to an int power
+r2 = sqrt(x1*x1+y1*y1);
+z1' = r2 * z - r1 * z1;
+z1' *= zmul;
+r2 = (1 - z * z1/(r1*r2));
+x1' = +(x * x1 - y * y1) * r2;
+y1' = -(y * x1 + y1 * x) * r2;
+save y1',x1',z1'
+i=i-1;
+until i>0;
+x1 = x1*a1+x*a2+Cx*a3; y1 = y1*a1+y*a2+Cy*a3 ; z1 = z1*a1+z*a2+Cz*a3 ;
+// --- divide by z+p3d
+x2 = p3dx+x ; y2 = p3dy+y ; z2 = p3dz+z ;
+// ---
+R = x2*x2 + y2*y2 + z2*z2 ; r1 = sqrt(x1*x1+y1*y1); r2 = sqrt(x2*x2+y2*y2);
+z = r2 * z1 - r1 * z2; z = z / R;
+z *= zmul;
+R = (1 + z1 * z2/(r1*r2)) / R;
+x = +(x1 * x2 + y1 * y2) * R;
+y = -(x1 * y2 - y1 * x2) * R;
+
+x += Cx*(1-a3); y += Cy*(1-a3) ; z += Cz*(1-a3) ;

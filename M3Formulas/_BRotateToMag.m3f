@@ -1,0 +1,33 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.SIpower = 2
+[CONSTANTS]
+Double = 0.816496580927726
+Double = 0.5773502691896258
+Double = 0.7071067811865475
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0DD03DC0FDD01DC4F08D9
+E0DEC1DC4F10DD5DF8DD02DC4F10DD1A90DD03DC4F08DD01DC0FDEC1DD1990DD45F8
+DC22DD1B90DD45F8DC02DD1A90D9D08BC35F5E5B89EC5DC20800
+[END]
+
+
+Description:
+
+  This rotates the whole coordinate system so that the x-axis (-1,0,0) --> (1,0,0) lies on the mag axis (-1,-1,-1) --> (1,1,1).
+
+
+//  this.. I think.  Maybe... :D
+
+tx=(x*sqrt(2/3)-z*sqrt(1/3))*sqrt(1/2);
+y=y*sqrt(1/2);
+z=(x*sqrt(1/3) + z*sqrt(2/3));   	   
+
+x=(tx-y);          
+y=(tx+y);  
+
+
+:D  
+
+  M Benesi		

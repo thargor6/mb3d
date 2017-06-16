@@ -1,0 +1,17 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.3SingleAngles Rotation C = 0
+[CODE]
+558BEC56578B75088B7E30DD4628DD4620DD4618D9C0D84FDCD9C2D84FD8DEC1
+D9C3D84FD4DEC1D9C1D84FF4D9C3D84FF0DEC1D9C4D84FECDEC1D9CAD84FE8D9
+CBD84FE4DEC3D9CBD84FE0DEC2DD5E18DD5E20DD5E285F5E5DC20800
+[END]
+
+Rotation of the constant on 3 axis, based on a generated rotation matrix:
+
+Cx' = Cx*m[0,0] + Cy*m[0,1] + Cz*m[0,2]
+Cy' = Cx*m[1,0] + Cy*m[1,1] + Cz*m[1,2]
+Cz' = Cx*m[2,0] + Cy*m[2,1] + Cz*m[2,2]
+
+In combination with _Rotate to rotate the whole coordinate system, or just for fun.

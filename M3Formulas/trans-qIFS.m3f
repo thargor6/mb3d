@@ -1,0 +1,32 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 21
+.Double Add X = 0
+.Double Add Y = 0
+.Double Add Z = 0
+.3SingleAngles Rotation = 0
+.Double Quadratic X = 2
+.Double Quadratic Y = 2
+[CODE]
+DD4698DC47E0DD4690DC47E8DD4688DC47F0D9C0D84FC4D9C2D84FC0DEC1D9C3
+D84FBCDEC1D9C1D84FDCD9C3D84FD8DEC1D9C4D84FD4DEC1D9CAD84FD0D9CBD8
+4FCCDEC3D9CBD84FC8DEC2DD5E88DD5E90DD5E9890D9E8DD4688D9E1DEE9DD5E
+88D9E8DD4690D9E1DEE9DD5E9090DD4688D9EEDED99BDFE0D0EC731DDD47B4D9
+E8DEE9D9C0D9E8DEE1DC4E88D9C9DC4E88DC4E88DEC1DD5E88DD4690D9EEDED9
+9BDFE0D0EC731DDD47ACD9E8DEE9D9C0D9E8DEE1DC4E90D9C9DC4E90DC4E90DE
+C1DD5E90C390
+[END]
+
+Non-conformal quadratic transformation of x and y (plus z if there is a rotation).
+Similar to a folding but it's quite different when quadratic term is not = 1!
+
+x = 1 - abs(x);
+y = 1 - abs(y);
+a1 = quadr_x - 1; b1 = 1 - a1;
+a2 = quadr_y - 1; b2 = 1 - a2;
+
+if (x > 0) {
+   x = a1 * x * x + b1 * x; } // x = 0 -> newx = 0 and x = 1 -> newx = 1
+
+if (y > 0) {
+   y = a2 * y * y + b2 * y; } // y = 0 -> newy = 0 and y = 1 -> newy = 1

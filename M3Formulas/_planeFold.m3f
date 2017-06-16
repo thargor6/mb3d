@@ -1,0 +1,24 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Normal X = 1
+.Double Normal Y = 0
+.Double Normal Z = 0
+[CODE]
+558BEC568B75088B7630DD46E0DD46E8DD46F0DD01DD02DD00D9C0D8CCD9C2D8
+CEDEC1D9C3D8CFDEC1D8C0DCCCDCCDDECEDEE3DEE3DEE3DD18DD1ADD195E5DC2
+0800
+[END]
+
+
+Description:
+
+A folding on a arbitrary plane with normal N:
+
+dd = 2*(x*Nx + y*Ny + z*Nz)
+x = x - Nx*dd
+y = y - Ny*dd
+z = z - Nz*dd
+
+
+The normal must be normalised to not scale the result and disturb the DE. 

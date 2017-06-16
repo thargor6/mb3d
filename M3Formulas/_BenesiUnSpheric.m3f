@@ -1,0 +1,31 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Scale = 0.81649658092773
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0DD02D8C8DD55F8DD01D8
+C8DD55F0DEF9D9E8D8D9DFE080E4417E04D9E8DEF1D9E8DEC1D9FAD9E8DEF1D9
+C0DC0ADD55F8D8C8DD5DE090DC09DD55F0D8C8DC45E0DD03D8C8DEF9D9E8D8D9
+DFE080E4417E04D9E8DEF1D9E8DEC1D9FAD9E8DEF1DC4FF0DD5DE890DD03DC4D
+E8DD45F8DC4DE8DD45F0DC4DE8DD19DD1ADD1BD9D08BC35F5E5B89EC5DC20800
+[END]
+
+
+Description:
+
+Warps a sphere to a cube; transform made by M.Benesi, optimized by
+Luca. Inverse of "_BenesiSpheric". Can be used in conjunction
+with it for cool effects (place some formulas in the middle
+to see what happens).
+
+void unSpheric (inout vec3 z) {
+	
+float rCyz= (z.y*z.y)/(z.z*z.z);
+if (rCyz<1.) {rCyz=1./sqrt(rCyz+1.);} else {rCyz=1./sqrt(1./rCyz+1.);}
+z.yz*=rCyz;
+
+
+float rCxyz= (z.y*z.y+z.z*z.z)/(z.x*z.x);
+if (rCxyz<1.) {rCxyz=1./sqrt(rCxyz+1.);} else {rCxyz=1./sqrt(1./rCxyz+1.);}
+z.xyz*=rCxyz*sr32; 
+}

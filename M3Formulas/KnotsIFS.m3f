@@ -1,0 +1,50 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double Radius 1 = 2
+.2Doubles Scale = 2
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 0
+.Double Radius 2 = .4
+.Integer Apply scale+add = 0
+.Integer PolyFold Order = 2
+.Integer Mobius torsion 1 = 1
+.Integer Mobius torsion 2 = 1
+.Double Radius 3 = -.5
+[CONSTANTS]
+Double = 0.159154943
+Double = -6.283185307
+Double = 1.57079632675
+[CODE]
+83C4CE660F104688F20F104E98660F5947E0F20F594FE0660F5847C0F20F584F
+D0837FB4007419F20F106E70F20F596FE0660F114688F20F114E98F20F116E70
+660F110424F20F114C2410DD0424DD442408D9F3DB47ACDB47A8DA77B0DEC1DE
+C9D9FBDD5C2420DD5C2418DD0424D8C8DD442408D8C8DEC1D9FADC67F0DD1C24
+DD0424DC4C2418DD442410DC4C2420D9E0DEC1DD0424DC4C2420DD442410DC4C
+2418DEC1DD1C24DD5C2410DD0424DD442410D9F3DC6F10DC0FDA4FB0D9FCDA77
+B0DC4F08D9FBDD5C2418DD5C2420DD0424DC4C2418DD442410DC4C2420D9E0DE
+C1DC47A0D8C8DD0424DC4C2420DD442410DC4C2418DEC1D8C8DEC1D9FADC67B8
+837FB4007503DC77E0DD5EE083C432C3
+[END]
+
+Tool for plotting customized torus knots.
+The main controls are "PolyFold Order" and "Mobius". 
+Mobius controls the curliness of the node (add 1 to get a more 'complicated' knot :D )
+At Y=0 section, the node will show a number of 'circles' controlled by PFOrder.
+So this will change the style of the knot in another way.
+To get a 'normal' knot made of n sub-toruses, I reccomend you to set mobius = 1 + 1/PFOrder.
+Other knots can be obtained setting
+
+Mobius = (a + b/PFOrder) // a and b arbitrary integers
+
+If you will not respect this rule, the result will be discontinue.
+Use a negative Mobius to get left-handed knots.
+
+For example; PolyOrder = 8 -> Mobius = 1 + 1/8 = 1.125 (Normal r-handed knot)
+Another possible knot of order 8; Mobius = 1 + 3/8 = 1.375
+
+The radiuses do not change the type of the knot, only its look.
+
+Luca GN 2012

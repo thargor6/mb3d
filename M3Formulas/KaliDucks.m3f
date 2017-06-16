@@ -1,0 +1,32 @@
+[OPTIONS]
+.Version = 2
+.RStop = 2
+.DEscale = 0.5
+.Double Scale = 1
+.Double Min R = 0.5
+[CODE]
+558BEC56578B75088B7E30DD01D9E1DD02D9E1DD00D9E1DD4638DD47E8D8D1DF
+E080E4417407DDD8DC7FF0EB0AD8C8D9E8DEF1D9C9DDD8DCCADCCBDEC98D42F8
+DC4618DD18DC4620DD1ADC4628DD195F5E5DC20800
+[END]
+
+A formula suggested by Kali at fractalforums.com.
+Try out julias and low R_bailout values of ~3 down to 1.
+You might have to cutoff at z=0, to see something.
+
+One iteration:
+
+x = abs(x)
+y = abs(y)
+z = abs(z)
+
+m = x*x + y*y + z*z
+
+if m < Min_R then
+  m = 1/Sqr(Min_R)
+else
+  m = Scale/m
+
+x = x*m + Cx
+y = y*m + Cy
+z = z*m + Cz

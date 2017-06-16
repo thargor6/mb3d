@@ -1,0 +1,28 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double CXx mul = 1
+.Double CXy mul = 0
+.Double CXz mul = 0
+.Double CYx mul = 0
+.Double CYy mul = 1
+.Double CYz mul = 0
+.Double CZx mul = 0
+.Double CZy mul = 0
+.Double CZz mul = 1
+[CODE]
+558BEC56578B75088B7E30DD4628DD4620DD4618D9C0DC4FF0D9C2DC4FE8DEC1
+D9C3DC4FE0DEC1DD5E18D9C0DC4FD8D9C2DC4FD0DEC1D9C3DC4FC8DEC1DD5E20
+DC4FC0D9C9DC4FB8DEC1D9C9DC4FB0DEC1DD5E285F5E5DC20800
+[END]
+
+Description:
+
+A general 3x3 matrix conversion for C:
+
+Cx' = CXx*Cx + CXy*Cy + CXz*Cz
+Cy' = CYx*Cx + CYy*Cy + CYz*Cz
+Cz' = CZx*Cx + CZy*Cy + CZz*Cz
+
+
+You can use it for example as a pretransform for bulbs or boxes.

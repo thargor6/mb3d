@@ -1,0 +1,44 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.Integer Map nr = 10
+.Single X offset = 0
+.Single Y offset = 0
+.Single H offset = -1
+.Single X scale = 1
+.Single Y scale = 1
+.Single H scale = 0.03
+.3SingleAngles Rotation = 0
+.Integer Map channel (0..2) = 0
+.Integer OTrap channel (0..2) = 1
+.Single OTrap offset = 0
+.Single OTrap multiplier = 1
+.Integer NoPlane = 0
+[CONSTANTS]
+Double = 1
+Double = 1e-20
+[CODE]
+5183C4E0DD4698DD4690DD4688D9C0D8C8D9C2D8C8DEC1D9C3D8C8DEC1D9E8DE
+F1DC1790DFE080E441760FDDD88B4FA483E101C1E103DD043990DCC9DCCADCCB
+DD5EE0D9C0D84FC0D9C2D84FBCDEC1D9C3D84FB8DEC1D9C1D84FD8D9C3D84FD4
+DEC1D9C4D84FD0DEC1D9CAD84FCCD9CBD84FC8DEC3D9CBD84FC4DEC2D9C2D847
+E8D947DCDC4FF8DEE9D9E1D947DCD9E1DC8678FFFFFFDED9DFE0D0EC7318DED9
+DD47F8D84FDCD867E8DEE1DC76E0DD5EE083C42059C3D84FE4D867F0DD1C24D8
+4FE0D867ECDD5C2408DD5C241889E08B57F489E1FF960C0100008B4FB483E103
+DD04CCD84FDCD867E8DC642418DC76E0DD5EE08B4FB083E103DD04CCD847ACD8
+4FA8DD9E8000000083C42059C3
+[END]
+
+Just like HeightMap but with a Riemann projection before.
+An "infinity bubble" appears in the center.
+The NoPlane mode does not work always, the result can be a bit weird.
+LucaGN 2012
+
+Original Jesse's comment;
+
+Use a map to generate a terrain out of the amplitude from the map color,
+use 'Map channel' to choose from r,g,b represented by the values 0,1 and 2.
+
+Use the orbit trap coloring mode to colorize the surface. 
+
+Remember that a value of 1 for "Max. iterations" is enough to generate one dIFS object.

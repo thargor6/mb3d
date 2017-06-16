@@ -1,0 +1,44 @@
+[OPTIONS]
+.Version = 5
+.DEscale = 0.2
+.DEoption = 5
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Boxscale Min R = 0.5
+.Double Fold = 1
+.Double Scale vary = 0
+.Single R power = 1
+.Double W add = 0
+[CODE]
+558BEC5657538B7D0889C38B773081C780000000837F50007F09FF4750DD46F0
+DD5F48DD4748D9E8D9C1D9E1DEE1DC4ED0DEC1DD5F48DD46D8DD03D9C0D8E2D9
+E1D8C1D9C9D8C2D9E1DEE1DD02D9C0D8E3D9E1D8C1D9C9D8C3D9E1DEE1DD01D9
+C0D8E4D9E1D8C1D9C9D8C4D9E1DEE1DD4108D9C0D8E5D9E1D8C1D9C9D8C5D9E1
+DEE1D9CCDDD8D9C0D8C9D9C2D8CBDEC1D9C3D8CCDEC1D9C4D8CDDEC1817ECC00
+00803F7425D946CCD9C9D9EDD9C9D9F1D9C9DEC9D9EADEC9D9C0D9FCDCE9D9C9
+D9F0D9E8DEC1D9FDDDD9DC56E0DFE0D0EC730ADDD8DD4748DC76E0EB16D9E8D8
+D1DFE0D0EC7207DDD8DC7F48EB05DED9DD4748DD4768D8C9DD5F68DCCCDCCBDC
+CADEC9DC47A8DD19DC47A0DD1ADC4798DD1BDC46C4DC8748FFFFFFDD590889D8
+5B5F5E5DC20800
+[END]
+
+
+Description:
+
+A 4d "Amazing Box" (invented by TGlad) aka Mandbox variation,
+having a changing scale with iterationcount and a power function
+on the sphere folding:
+
+Scale = Scale + Scale_vary*(abs(Scale)-1)
+x = abs(x+Fold) - abs(x-Fold) - x
+y = abs(y+Fold) - abs(y-Fold) - y
+z = abs(z+Fold) - abs(z-Fold) - z
+w = abs(w+Fold) - abs(w-Fold) - w
+rr = pow(x*x + y*y + z*z + w*w, R_power)
+if rr < sqr(Min_R) then m = Scale/sqr(Min_R) else
+if rr < 1 then m = Scale/rr else m = Scale
+x = x * m + Cx
+y = y * m + Cy
+z = z * m + Cz
+w = w * m + W_add + Cw

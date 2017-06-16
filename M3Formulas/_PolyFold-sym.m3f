@@ -1,0 +1,25 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Order = 4
+.Double Shift (deg) = 0
+.Double Shift x = 0
+.Double Shift y = 0
+.Double Skew (deg) = 0
+[CONSTANTS]
+Double = 6.283185307
+Double = 0.017453293
+[CODE]
+558BEC5657538B750889C38B7E30DD02DC47D8DD12DD03DC47E0DD13D9F3DD47
+D0DC47E8DC4F08DEC1DC37DC4FF083C4F090DB1C24DB0424D9E0DC77F0DC0FDD
+47E8DC4F08DEC1D9FBD9D0DD03D8C9DD02D8CBDEE1D9D0DD03D8CBDD02D8CBDE
+C18B042483E0017502D9E083C410DC67D8DD1ADC67E0DD1BDDD8DDD85B5F5E5D
+C20800
+[END]
+
+Description:
+
+Useful to get symmetric poly and star effects. Sym because on even orders it is a continue symmetrical transform.
+Also you can use Shift X, Y, and the angular shift without causing discontinuity.
+
+Luca GN 2012

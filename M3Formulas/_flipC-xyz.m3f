@@ -1,0 +1,14 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BEC56578B75088B7E30D9D0DD00DD02DD01DD4618DD4620DD4628DD19DD1A
+DD18DD5E28DD5E20DD5E185F5E5DC20800
+[END]
+
+
+Description:
+
+Just for fun! Swaps x, y, z values with Cx, Cy, Cz.
+
+See "_updateC.m3f" for instructions. But you can use this for wild experiments.

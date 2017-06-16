@@ -1,0 +1,72 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.SIpower = 2
+.Double Scale = 2.0
+.Double xOff = 2.0
+[CONSTANTS]
+Double = 0.816496580927726      
+Double = 0.5773502691896258
+Double = 0.7071067811865475
+Double = 0.8660254037844387
+Double = 0.5
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0dd03d8c8dd02
+d8c8dd01d8c8dec1dec1d9fadd5de0DD03DC4F20DD4108DC4F18DEC1
+D9E1DD5DE890DD03DC4F18DD4108DC4F20D9E0DEC1DD55F0DC0FDD01
+DC4F08D9E0DEC1DC4F10DD5DF8DD45F0DC4F08DD01DC0FDEC1D9E190
+DD45F8DD02DC4F10D9E0DEC1D9E190DD45F8DD02DC4F10DEC1D9E190
+DD1ADD1BDD1990DD03DC02DC4F10DD5DF890DD03D9E0DC02DC4F1090
+DD1AD9D090DD45F8DC0FDD01DC4F08DEC1DD55F090DD45F8DC4F08D9
+E0DD01DC0FDEC190DD19DC4F20D9E0DD45E8DC4F18DEC1DD5908D9D0
+DD45F0DC4F18DD45E8DC4F20DEC1DD55f8d8c8dd02d8c8dd01d8c8de
+c1dec1d9fadc7de0dd55f0dc4df8dc4ff0dc67e8dd1b90DD02DC4FF0
+dc4df0DD1A90DD01DC4FF0dc4df0DD1990D9D08BC35F5E5B89EC5DC20800
+[END]
+
+
+Description:  This isn't very different from the 3d version of Transform 1.  This particular 4d version keeps the original magnitude of xyz=sqrt(x^2+y^2+z^2) and scales xyz so that they keep the same magnitude because a portion of the magnitude becomes part of the w variable when you use this... this keeps the total magnitude the same if you're doing a 3d fractal, but introduces a bit more... not much.  The 3d version is pretty much the best because it is faster.. although in the future, higher dimensional versions might become more interesting as processing power increases.
+
+  Maybe the math... adding cos(sqrt(1/dimensions)) and sin(sqrt((dimensions-1)/dimensions)) can help people understand non-visualizable concepts such as rotations in extra dimensions.
+
+ calculate magnitude of xyz
+ Rotate from x (-1,0,0,0)-->(1,0,0,0) to "mag axis" (-1,-1,-1,-1) --> (1,1,1,1)
+ Take absolute value of variables
+ Rotate back to x axis;
+ normalize xyz;
+  multiply by original magnitude;
+ scale and add in offset
+
+
+rxyz=sqrt(x^2+y^2+z^2);
+new w=abs(x*sqrt(1/4) + w*sqrt(3/4));  //  (yes... sqrt of 1/4 is... 1/2 !@#!)
+x= x*sqrt(3/4) - w/2;    //  yup...
+tx=(x*sqrt(2/3)-z*sqrt(1/3))*sqrt(1/2);
+z=abs(x*sqrt(1/3) + z*sqrt(2/3));   	
+x=abs(tx-y*sqrt(1/2));          
+y=abs(tx+y*sqrt(1/2));
+
+ 
+tx=x*sqrt(1/2)+y*sqrt(1/2);
+y=-x*sqrt(1/2)+y*sqrt(1/2); 
+x=tx*sqrt(2/3)+z*sqrt(1/3);
+z=-tx*sqrt(1/3)+z*sqrt(2/3);	
+tx=x*sqrt(3/4)+w*sqrt(1/4);  //.5!#!@#
+w=-x*sqrt(1/4) +w*sqrt(3/4);
+
+rxyz=rxyz/sqrt(x^2+y^2+z^2);   
+x*=rxyz;
+y*=rxyz;
+z*=rxyz;
+
+
+x=scale*tx-offset;  //scale =2    offset=2       
+y=scale*y;
+z=scale*z;
+w=scale*w;
+
+
+
+:D  
+
+  M Benesi

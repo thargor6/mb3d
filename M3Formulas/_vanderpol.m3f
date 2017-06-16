@@ -1,0 +1,33 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Strength = 1.0
+.Double Alpha = 2.0
+.Double Beta = 0.6
+.Double Gamma = 0.1
+.Double Delta = 0.4
+.Double Phi = 2.0
+.Double r1 = 1.4
+.Double r2 = 1.4
+
+[CODE]
+558BEC568B75088B7630DD00DC4EE0DC01DC4EF0D9D0DD02DC4EE0DC4108DC4E
+F0D9D0DD02DC4ED8DD00DC4ED0D9E0DEC1DD00D8C8D9E0DC4EC0DC46C8DC09DE
+C1D9D0DD00DC4ED8DD02DC4ED0D9E0DEC1DD02D8C8D9E0DC4EB8DC46E8DC4908
+DEC1D9D0DD5908DD19DD1ADD185E5DC20800
+[END]
+
+
+Description:
+
+Van der Pol modified chaotic system in 4D - variation with six parameters and strength
+Formula by Luca GN 2011
+
+This deformation can be likely used alone ( or plus a _addC ) to show the solutions of the system, that look very odd.
+The solution changes much for small increments of the given constants.
+Use strength to get more solid/thin objects. Cut this attractor at z=0, x=0 ... to see amazing views.
+
+x' = (z + b x) * Strength
+y' = (w + b y) * Strength
+z' = c y - d x + (a - r1 x^2) z
+w' = c x - d y + (f - r2 y^2) w

@@ -1,0 +1,42 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Sides = 4.0
+.Double Sides2 = 4.0
+.Double StellAngle = 0.0
+.Double StellAngle2 = 0.0
+[CONSTANTS]
+Double = 3.1415926535898
+Double = .5
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0
+dd07dc77f0dd55f8d8c0dd5df0dd45f8dc4f08d9c0dc67e0d9ffdd5dd8d9ffdc75d8dd5dd8dd07dc77e8
+dd55e8d8c0dd5de0dd45e8dc4f08d9c0dc67d8d9ffdd5dd0d9ffdc75d0dd5dd0dd01dd02
+d9f3d9e1dc55f8dfe080e4417f05dc65f0ebf1D9E1dc67e0d9ffdc4dd8dd55f0dc0add55f8
+d8c8dd45f0dc09dd55f0d8c8dec1d9fad9d0dd03d9f3d9e1dc55e8dfe080e4417f05
+dc65e0ebf1D9E1dc67d8d9ffdc4dd0d9c0d9c0dc4df8dd1ad9d0dc4df0dd19d9d0dc0bdd1b
+D9D08BC35F5E5B89EC5DC20800
+[END]
+
+Description:
+
+Sphere to polyhedron with Stellation angles transform.  Does not make regular polydedra, except for the cube!  If you're mixing it with a Menger, remember to put the polyhedra to sphere (polyhedra with sides=4 and sides2=4) transform after this one... this doesn't include the cube to sphere transform.  
+
+
+
+ rCyz=abs(atan(z.z,z.y));   //atan is atan2  
+
+ while (rCyz>pi/sides) {rCyz-=2.*pi/sides; } 
+
+z.yz*= (cos(pi / sides * .5) * cos(rCyz - starangle) ) / cos( pi / (sides) * .5 - starangle);		
+
+//z.yz*=whatever;  means y= y*whatever and z= z*whatever
+
+ rCxyz=abs(atan(sqrt(z.z*z.z+z.y*z.y),z.x));
+ while (rCxyz>pi/sides2) {rCxyz-=2.*pi/sides2; }  // same concept here!!!!   
+  z*=(cos(pi/sides2*.5)*cos(rCxyz-starangle2))/cos(pi/(sides2)*.5-starangle2);
+
+
+:D  
+
+  M Benesi

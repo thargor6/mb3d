@@ -1,0 +1,21 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double x1 seed = -0.844
+.Double y1 seed = .206
+.Double x2 seed = 0.363
+.Double y2 seed = -0.106
+[CODE]
+558BEC53505657908B75088BD88B7E30DD47F0DD19DD47E8DD5908DD47E0DD5E
+18DD47D8DD5E20908BC35F5E585B5DC20800
+[END]
+
+This PRE-transform is a standard Juli-brot mode in 4D
+with two 2D Julia seeds. They affect z,w,Cx,Cy, leaving unchanged everything else.
+Try to use this with any formula, but don't be surprised of the strange results!
+Julibrot mode was theorized by Mandelbrot, as a 3D extension of his fractal,
+because combines Julia seeds and Mandelbrot mode. To see this at his best,
+use it with Mandel 4D Bi-Complex formula, that treats 4D vector as a system
+of two distinct complex numbers.

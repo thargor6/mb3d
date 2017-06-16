@@ -1,0 +1,31 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double R = 2.0
+.Double Gamma = 0.0
+[CONSTANTS]
+Double = 1.5707963267948966192313216916398
+[CODE]
+558BEC568B75088B7630DD00D8C8DD02
+D8C8DEC1D9FADC66F090D9C0D8C8DD01
+D8C8DEC1D9FA90D9C1DD01D9F3DC66E8
+DC269090DD02DD00D9F390DD19DD1ADD
+18DDD85E5DC20800
+[END]
+
+Description:
+
+Torical (generalized) coords.
+This coordinate system was defined by BradC in FractalForums:
+http://www.fractalforums.com/theory/toroidal-coordinates/msg9428/#msg9428
+Formula by Luca GN 2011
+
+Define R = (inner radius + outer radius) / 2.
+
+t = sqrt(x*x+y*y) - R
+x' = sqrt(t*t+z*z)
+y' = atan2(z,t) - Gamma - pi/2
+z' = atan2(y,x)
+// NOTE - The addition of -pi/2 rends the transform reversible:
+// in other words totorical then invtorical returns the pixels
+// unchanged... Or so it showed up in my tests.

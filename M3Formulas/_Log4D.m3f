@@ -1,0 +1,50 @@
+[OPTIONS]
+.Version = 2
+.DEoption = 4
+.DEscale = 1
+.SIpower = 4
+[CONSTANTS]
+Double = 1e-200
+Double = .5
+Double = 460
+[CODE]
+558BEC56538B75088BD88B7630DD4108D8C8DD02D8C8DEC1DD01D8C8DEC1D9FA
+D9C0D9E4DFE0D9D09EDDC0D9F77451D9C0DD03D9F3D9C1DEF9DD03D8C8D9C2D8
+C8DEC1D9C0DD06DED9DFE080E441740DD9C0D9EDD9C9D9F1DC4E08EB03DD4610
+DD1BDD02D8CADD1ADD01D8CADD19DD4108D8CADD5908DDD8DDD8DDD8EB259090
+90DDD8DD03DD06DED9DFE080E441740EDD03D9EDD9C9D9F1DD1BEB079090DD46
+10DD1B8BC35B5E5DC20800
+[END]
+
+Description:
+
+Computes log(Q), following Hamiltonian theory, exact for all Q but truncated for (Re(Q)>0 & Re(Q)<1e-200).
+Q is a quat that contains in order (x,y,z,w).
+Remember that log(exp(Q)) = Q but exp(log(Q)) *generally* is not Q due to non unicity of log().
+The identity is valid only in "zones near to origin".
+exp(P*log(Q)) = Q ^ P so with those function you can raise Q to arbitrary powers (if Q belongs to the interval).
+Enormous thanks to Dirk Meyer for the basic code!
+
+I implemented this code:
+
+    T1 = sqrt(w*w+y*y+z*z);
+    
+    if (T1 != 0){
+     T2 = atan2(T1,x)/T1;
+     T3 = x*x + T1*T1;
+     if (T3 > 1e-200) {
+      x = .5 * log (T3);
+     } else {
+      x = -460; // -460 = ln (1e-200)
+     }
+     y = T2 * y;
+     z = T2 * z;
+     w = T2 * w;
+    } else {
+     y = atan2(x,0);
+     if (x > 1e-200) {
+      x = log (x);
+     } else {
+      x = -460; // -460 = ln (1e-200)
+     }
+    }

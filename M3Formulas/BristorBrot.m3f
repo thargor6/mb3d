@@ -1,0 +1,24 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.Double X mul = 2
+.Double Y mul = 1
+.Double Z mul = -1
+[CODE]
+558BEC56578B75088B7E30DD00D8C8DD02D8C8D9E0DEC1DD01D8C8D9E0DEC1DC
+4618D9D0DD00DC4FF0DD01DC4FE0DEC1DC0ADC4620D9D0DD00DC4FF0DD02DC4F
+E8DEC1DC09DC4628D9D0DD19DD1ADD1890905F5E5DC20800
+[END]
+
+
+Description:
+
+An easy 3D formula from Doug Bristor. Found on http://bugman123.com/Hypercomplex/index.html
+some additional user parameters added:
+
+x' = x*x - y*y - z*z + Cx
+y' = y * (X_mul * x + Z_mul * z) + Cy
+z' = z * (X_mul * x + Y_mul * y) + Cz
+
+David Makin variation; xmul=ymul=2 & zmul=0

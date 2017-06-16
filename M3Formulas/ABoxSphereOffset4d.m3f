@@ -1,0 +1,41 @@
+[OPTIONS]
+.Version = 5
+.DEscale = 0.2
+.DEoption = 5
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Boxscale Min R = 0.5
+.Double Fold = 1
+.Double Sphere offset X = 0
+.Double Sphere offset Y = 0
+.Double Sphere offset Z = 0
+.Double Sphere offset W = 0
+.Double W add = 0
+[CODE]
+558BEC56578B7D088B773081C780000000DD46D8DD00D9C0D8E2D9E1D8C1D9C9
+D8C2D9E1DEE1DC66D0DD02D9C0D8E3D9E1D8C1D9C9D8C3D9E1DEE1DC66C8DD01
+D9C0D8E4D9E1D8C1D9C9D8C4D9E1DEE1DC66C0DD4108D9C0D8E5D9E1D8C1D9C9
+D8C5D9E1DEE1DC66B8D9CCDDD8D9C0D8C9D9C2D8CBDEC1D9C3D8CCDEC1D9C4D8
+CDDEC1DC56E0DFE0D0EC7307DDD8DD46E8EB13D9E8D8D9DFE0DD46F0D0EC7202
+D8F1D9C9DDD8DD4768D8C9DD5F68DCCCDCCBDCCADEC9DC47A8DC46C0DD19DC47
+A0DC46C8DD1ADC4798DC46D0DD5AF8DC46B0DC46B8DC8748FFFFFFDD59085F5E
+5DC20800
+[END]
+
+Description:
+
+A 4d "Amazing Box" (invented by TGlad) aka Mandbox variation,
+having an offset for the sphere folding:
+
+x = abs(x+Fold) - abs(x-Fold) - x - Sphere_offset_X
+y = abs(y+Fold) - abs(y-Fold) - y - Sphere_offset_Y
+z = abs(z+Fold) - abs(z-Fold) - z - Sphere_offset_Z
+w = abs(w+Fold) - abs(w-Fold) - w - Sphere_offset_W
+rr = x*x + y*y + z*z + w*w
+if rr < sqr(Min_R) then m = Scale/sqr(Min_R) else
+if rr < 1 then m = Scale/rr else m = Scale
+x = x * m + Sphere_offset_X + Cx
+y = y * m + Sphere_offset_Y + Cy
+z = z * m + Sphere_offset_Z + Cz
+w = w * m + Sphere_offset_W + W_add + Cw

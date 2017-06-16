@@ -1,0 +1,32 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double X above = 999
+.Double X below = -999
+.Double X add = 0
+.Double Y above = 999
+.Double Y below = -999
+.Double Y add = 0
+.Double Z above = 999
+.Double Z below = -999
+.Double Z add = 0
+[CODE]
+558BEC5657508B75088B7E30DD06DC57F0DFE080E441740ADC57E8DFE080E441
+7406DC47E0DD5618DD4608DC57D8DFE080E441740ADC57D0DFE080E4417406DC
+47C8DD5620DD4610DC57C0DFE080E441740ADC57B8DFE080E4417406DC47B0DD
+5628DED9DDD8585F5E5DC20800
+[END]
+
+A pretransform to disable partly the julia mode.
+
+if (Px > X_above) or (Px < X_below) then Cx := Px + X_add
+if (Py > Y_above) or (Py < Y_below) then Cy := Py + Y_add
+if (Pz > Z_above) or (Pz < Z_below) then Cz := Pz + Z_add
+
+P is the actual position and C the adding constant.
+
+For example if you want to change the julia mode into the non-julia mode at x=5
+towards lower values, set X_below to 5 and X_add to -5 if julia X is zero.
+If X_add is the difference between the Julia value and X_below (or X_above if you use this),
+then you get a smooth change towards the non-julia mode.
+Same for the Y and Z dimensions.

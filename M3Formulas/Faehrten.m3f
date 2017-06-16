@@ -1,0 +1,25 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.Double Y multiplier = 1
+.Double Z multiplier = 0.5
+.Double Squares multiplier = -.33333333333333333333333
+.Double Twist = 0
+[CODE]
+558BEC56578B75088B7E30DD00DD02DC4FF0DD01DC4FE8DEC1DEC9DC461890DD
+02D8C8DD00D8C8DD01D8C8DEC1DC4FE0DEC1DD00DC09DC4FD8DEC1DC462090DD
+01D8C8DD00D8C8DD02D8C8DEC1DC4FE0DEC1DD00DC0ADC4FD8DEC1DC4628DD19
+DD1ADD185F5E5DC20800
+[END]
+
+Description:
+
+Formula by Trafassel, found in Gestaltlupe files, added more parameters and terms.
+It looks like an "hyperbolic" Mandelbrot. Nice Julia sets.
+(original version had Squares mul = -0.5)
+
+x' =     x (y*ymul+z*zmul) + Cx
+y' = y*y - sqmul*(x*x+z*z) + twist*x*z + Cy
+z' = z*z - sqmul*(x*x+y*y) + twist*x*y + Cz
+
+Luca GN 2011

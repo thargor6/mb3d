@@ -1,0 +1,18 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.RStop = 16
+[CODE]
+558BEC568B7508DD01DD02DD00DD4638D9C0D9FADEF9DCCBDCCADEC9DD18DD1A
+DD195E5DC20800
+[END]
+
+Description:
+
+Squares the current length of the 3d vector.
+
+m = sqrRout / Sqrt(sqrRout)
+x' = x * m
+y' = y * m
+z' = z * m

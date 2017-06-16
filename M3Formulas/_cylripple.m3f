@@ -1,0 +1,50 @@
+[OPTIONS]
+.Version = 2
+.DEscale = .1
+.SIpower = 2
+.3SingleAngles Reference rotation = 0
+.Double Longitudinal (freq.) = 6
+.Double Longitudinal (ampl.) = .05
+.Double Trasverse (freq.) = 12
+.Double Trasverse (ampl.) = .05
+.Integer ByC (L) = 0
+.Integer ByC (T) = 0
+[CODE]
+558BEC81EC200000005657538B750889
+C38B7E30DD01DD02DD03D9C0D84FDCD9
+C2D84FD8DEC1D9C3D84FD4DEC1D9C1D8
+4FF4D9C3D84FF0DEC1D9C4D84FECDEC1
+D9CAD84FE8D9CBD84FE4DEC3D9CBD84F
+E0DEC2DD1BDD1ADD19D9D0837FB00175
+19DD03D8C8DD02D8C8DEC1D9FADD55F8
+DC4FCCD9FEDC4FC4EB0ADD4618D8C8DD
+4620EBE3837FAC017513DD02DD03D9F3
+DD55F0DC4FBCD9FEDC4FB4EB08DD4620
+DD4618EBE9D9E8DEC1DEC1DC4DF8DD1B
+DD45F0DD1ADD03DD02D9FFDEC9DD03DD
+02D9FEDEC9DD1ADD1BD9D0DD01DD02DD
+03D9C0D84FECD9C2D84FE0DEC1D9C3D8
+4FD4DEC1D9C1D84FF4D9C3D84FE8DEC1
+D9C4D84FDCDEC1D9CAD84FF0D9CBD84F
+E4DEC3D9CBD84FD8DEC2DD1BDD1ADD19
+89D85B5F5E89EC5DC20800
+[END]
+
+
+Description:
+You are warned; this transform may slow down and/or cause de trouble.
+If used correctly it can give a cool "ripple" effect...
+
+1)Rotates the reference axis by selected angles
+Use with caution this option! NOTE; this will NOT affect C!
+2) calculate (rho,theta): = tocylindical(x,y) (or Cx,Cy if asked)
+(note that if you use c you may get a very odd result sometimes!)
+let t1=u;t2=v;
+3) cylindrical waves:
+u = La*sin(Lf*u); v = Ta*sin(Tf*v);
+4) (x,y) := invcyl(t1*(1+u+v),t2);
+
+3)Rotates the reference axis at the inital position (transposed rot. matrix)
+NOTE; this will NOT affect C!
+
+2011 - Luca GN

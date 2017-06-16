@@ -1,0 +1,38 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Offset = 4
+.Double ROffset = 0.5
+.Double Order = 5
+[CODE]
+558BEC81EC300000005356578B75088B
+7E308BD890DD03DD02D9F3DC4FE0D95D
+F090DD03D8C8DD02D8C8DEC1D9FAD955
+E8DC67F0D95DE090D945F0D9FB90D945
+E8DCCADEC9DD47E8DCEADEE9DD1ADD1B
+DD01D8C8DC67E8D945E0D8C8DEC1DD59
+0890DD01DC67E8DD1990DD4618DD4620
+D9F3DC4FE0D95DF090DD4618D8C8DD46
+20D8C8DEC1D9FAD955E8DC67F0D95DE0
+90D945F0D9FB90D945E8DCCADEC9DD47
+E8DCEADEE9DD5E20DD5E18DD4628D8C8
+DC67E8D945E0D8C8DEC1DD5EC890DD46
+28DC67E8DD5E28908BC35F5E5B8BE55D
+C20800
+[END]
+
+Description:
+
+Based on Aexions ideas, this performs a toroidal transform to be used as first formula as pre-transform, and choosing 'repeat from here' on the next formula(s).
+
+It is a 3d transform, but the result is 4d, so a combination with 4d formulas would make a better sense (like the 4D ABox).
+
+const float delta=rOffset;
+const float angle=atan2(ny,nx)*Order;
+const float radius=sqrt(nx*nx+ny*ny);
+const float t_radius=radius-Offset;
+x =sin(angle)*radius-delta;
+y =cos(angle)*radius-delta;
+w =t_radius*t_radius+z*z-delta;
+z =z-delta;
+// ... and do the same for C values

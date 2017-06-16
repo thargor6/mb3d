@@ -1,0 +1,18 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double h (phase) = 3.0
+.Double k (ampli) = 1.0
+[CONSTANTS]
+Double = 2.0
+Double = 0.5
+[CODE]
+558BEC568B75088B7630DD01DC4EF0D9EBDEC9D9FFDC4EE8DC66E8DC06DC4E08
+DD01D9FEDEC9DC02DD1A5E5DC20800
+[END]
+Description:
+
+A groovy waveform function that distorts nicely your fractal;
+y = y + 0.5 ( 2 - k + k cos ( pi h z ) ) sin z
+
+h = 0 or h = 0 will revert you to the default yplusSinZ.

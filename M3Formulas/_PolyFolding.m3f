@@ -1,0 +1,36 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Order = 5
+.Double Shift (deg) = 0
+.Double Shift x = 0
+.Double Shift y = 0
+.Double Skew (deg) = 0
+[CONSTANTS]
+Double = 6.283185307
+Double = 0.017453293
+[CODE]
+558BEC5657538B750889C38B7E30DD02DC47D8DD03DC47E0D9F3DD47D0DC47E8
+DC4F08DEC1DC37DC4FF0D9FCD9E0DC77F0DC0FDD47E8DC4F08DEC1D9FBD9D0DD
+03D8C9DD02D8CBDEE1D9D0DD03D8CBDD02D8CBDEC1D9D0DD1ADD1BDDD8DDD85B
+5F5E5DC20800
+[END]
+
+Description:
+
+Useful to get symmetric poly and star effects. It should be used as pretransform
+Also known as "kaleidoscope" or whatever you like
+Don't abuse of this effect, it's kind of cheap. Anyway, it tends to introduce
+discontinuity so use wisely. It can be good if used with KIFS.
+An interesting effect: use it with normal fractals, but choose power=1 and use this as
+"power" instead, on every iter. Nice effects.
+
+// Acts like boxtiling: only on angles instead of lengths
+// find the correct angle
+theta = -roundint(atan2(x+dx,y+dy)/twopi*order+(shift+skew)*degtorad)/order*twopi
+theta = theta + shift*degtorad
+// 2D standard rotation
+x' = x cos theta - y sin theta
+y' = x sin theta + y cos theta
+
+Where twopi and degtorad are constant values

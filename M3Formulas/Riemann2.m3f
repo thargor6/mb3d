@@ -1,0 +1,70 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.3SingleAngles Rotation = 0
+.Double Scale = 1
+.Double RPow = 2
+.Double r-Shift = -.25
+.Double s-Shift = 0
+.Double t-Shift = 0
+.Double x-Shift = 1
+.Double Sin-AddFold = 0
+.Double Smallest value = 1e-5
+[CONSTANTS]
+Double = 3.1415926535898
+Double = 2.0
+[CODE]
+558BEC81EC280000005356578B75088B
+7E308BD8D9D0DD01DD02DD03D9C0D84F
+DCD9C2D84FD8DEC1D9C3D84FD4DEC1D9
+C1D84FF4D9C3D84FF0DEC1D9C4D84FEC
+DEC1D9CAD84FE8D9CBD84FE4DEC3D9CB
+D84FE0DEC2DD1BDD1ADD19D9D0DD03D8
+C8DD02D8C8DD01D8C8DEC1DEC1D9FADD
+55F0DD47CCDEF190DD03D8C9DD1BDD02
+D8C9DD1ADD01D8C9DD19DDD890909090
+D9E8DC23D9C0DD4794DAE9DFE0D0EC72
+09DDD8D9E8909090EB05D9E8DEF190DD
+01D8C9DD5DE8DD02D8C9DD5DE0DDD8DD
+45E8D8C8DD45E0D8C8DEC1D9E8DEC1DD
+5DD890DD45E8DC0FDC47B4D9FED9E1DD
+479CDEC1D9E1DD5DE8DD45E0DC0FDC47
+ACD9FED9E1DD479CDEC1D9E1DD5DE090
+DD45F0DD45D8DC4FC4D9C9D9E1D9F1D9
+E8D9C1D9F8D9F0DEC1D9FDD9C9DDD8DC
+47BCDD5DF090DD4708DD45E8D8C8DD45
+E0D8C8DEC1D9E8DEC1DEF9DD55D890D9
+E0D9E8DEC1DC4DF090DD45F0DC4DE0DC
+4DD890DD45F0DC4DE8DC4DD890DD19DD
+1ADC47A4DD1BD9D08BC35F5E5B8BE55D
+C20800
+[END]
+Generalized from a msltoe formula;
+http://www.fractalforums.com/3d-fractal-generation/riemann-fractals/msg33500/#msg33500
+Use bailout=1.5 and miniter=2 to fix some weird things. This formula
+is very complicated, so renders may be slow.
+
+-------------------------------
+    (rotate xyz; can give cool effects, but also strange things) 
+    r =sqrt(x*x+y*y+z*z);
+    r'=scale/sqrt(r);     // neg scale is cool - r' is temporary only
+    x=x*r';z=z*r';y=y*r';
+    uif (1-x) > smallest { // "unsigned if"
+    s = z/(1-x);
+    t = y/(1-x); } else {
+    s = z; t = y; // introduce discontinuities
+    }
+    
+    w=1+s*s+t*t;
+    
+    s=fabs(fabs(sin(pi*s+ssh)+sinaf)); 
+    t=fabs(fabs(sin(pi*t+tsh)+sinaf)); 
+    
+    r=rsh+pow(r,rp*w);w=2/(1+s*s+t*t);
+    // original msltoe version; w=1+s*s+t*t;z=r*2*s/w;y=r*2*t/w;
+    // x=r*(-1+s*s+t*t)/w=r*(1-2/w); optimized & subst for speed
+    x=r*(1-w);
+    y=r*t*w;z=r*s*w;
+    
+    x+=xsh; // y+=ysh;z+=zsh; shifting y,z leads to weirdness, so don't touch
+

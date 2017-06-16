@@ -1,0 +1,30 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.RStop = 16
+.Double Inv. X center = 0
+.Double Inv. Y center = 0
+.Double Inv. Z center = 0
+.Double Radius = 16
+.Double Move X = 0
+.Double Move Y = 0
+.Double Move Z = 0
+[CODE]
+558BEC5657538B750889C38B7E3083BED0000000007556FF86D0000000DD01DD
+02DD03DC67D0D9C9DC67C8D9CADC67C0D9C9D9C0D8C8D9CBD9C0D8C8DEC4D9CA
+D9C0D8C8DEC4D9CBDD47D8DEF1D9C9D8C9DC67F0DD1BD9C9D8C9DC67E8DD1ADE
+C9DC67E0DD19EB1C9090909090DD01DD02DD03DD4638D9FADCCBDCCADEC9DD1B
+DD1ADD1989D85B5F5E5DC20800
+[END]
+
+Description:
+
+As the name states, this should be used only as the 1st transform on DeCombinates.
+It's a combiantion of a _SphereInv (1st iter) and a _SquareR (all other iters).
+
+Much more flexible than the normal _SquareR to get bubbles, planes or even inverse bubbles!
+
+Use Move controls to move the position of the object and Inv Center to tweak the effect.
+
+The effect will be gorgeous (a kind of deforming mirror) if the reflections are enabled.

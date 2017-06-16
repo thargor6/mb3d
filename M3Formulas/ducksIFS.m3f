@@ -1,0 +1,47 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double PerIterHeight mul = .7
+.2Doubles Scale = 1
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 0
+.Double FinalHeight mul = 4
+.Integer Apply scale+add = 0
+.Integer Iters = 60
+.Integer Flip XZ (0,1) = 0
+.Double Seed X = 0.5602
+.Double Seed Y = -0.4039
+.SingleAngle DucksRotation =0
+.Double OTrapClrMul = 1
+[CONSTANTS]
+Double = 0.5
+Double = 0.03
+Double = 0.1
+[CODE]
+83C4E4660F104688F20F104E98660F5947E0F20F594FE0660F5847C0F20F584F
+D0837FB4007419F20F106E70F20F596FE0660F114688F20F114E98F20F116E70
+660F110424F20F114C24108B57AC83E201C1E204DB47B0DB5C241890DD441410
+D9E1DD47B8D9E1DC4710DC4F0890DC8678FFFFFFDED9DFE0D0EC730BDD441410
+D9E0E9A4000000D9EEDD0414DD442408D9C0D8C8D9C2D8C8DEC1D9EDD9C9D9F1
+DC0FDC47A4D9C1D9E1D9C3D9F3DC479CDDDADDDAD9C1D84F94D9C1D84F98D9E0
+DEC1D9C2D84F98D9C2D84F94DEC1DDDADDDAD9C0D8C8D9C2D8C8DEC1D9FAD9CB
+DC4FF0D9CBDCC3DDD8FF4C24187FA1DDD8DDD8D9E8DEC1D9EDD9C9D9F1D9C0DD
+478CD9EEDED9DFE0D0EC7208D8C8909090909090DC4F8CD9E1DD9E80000000DA
+77B0F7DADC4FB8DC641410837FB4007503DC77E0DD5EE083C41CC3
+[END]
+
+WARNING be sure to execute this ONLY once; it is very math intensive.
+This is because Ducks fractal needs 50 to 100 iters to be seen clearly,
+and uses two slow functions per iter per pixel. So please be patient...
+Heightmap dynamically generated from Sam's 2D Ducks formula.
+Try to change seed to vary the shapes.
+Use more iters to get more details (some details will be much extruded though).
+Be careful with the 'Iters', again, because NO check is done on what you type, and more iters means more time...
+
+Updated; now supports colors and a formula variation (angle).
+Use a negative multiplier for a different color mode (faster variation).
+
+Updated 2; Update; Much faster computation due to an optimization suggested by Jesse.
+It ensures a quality identical as before but 5x faster.

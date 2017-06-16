@@ -1,0 +1,33 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Strength = 1.0
+.Double Alpha = -.4
+.Double Beta = 1.0
+.Double Gamma = 0.1
+.Double Delta = 0.1
+.Double Epsilon = 0.2
+
+[CODE]
+558BEC56538B75088BD88B7630DD03DC4EE0DD01DC4ED8D9E0DEC1DC46D0D9C0
+D9E1D9FAD9C9D9EEDED9DFE080E4417F02D9E0DC02D9D0DD46E8DC23DC4EF0D9
+D0DD46E8DC0ADD03DC4EE0D9E0DEC1DC4EC8DC01D9D0DD19DD1ADD1B8BC35B5E
+5DC20800
+[END]
+
+
+Description:
+
+Hopalong system in 3D - variation with five parameters and strength
+From UF database, modified version
+Formula by Luca GN 2011
+Works very well in combination with many formulas, and gives a nice "rusty" look.
+
+t = b x - c z + d
+if t>0
+x' = y - sqrt abs ( t )
+else
+x' = y + sqrt abs ( t )
+endif
+y' = (a - x) * Strength
+z' = z + (a y - b x) * e

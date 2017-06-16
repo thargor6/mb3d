@@ -1,0 +1,26 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+[CODE]
+558BEC50568B7508DD01DD02DD00D9C2D8C8D9C2D8C8D9C2D8C8D9C2D8C2D9C0
+D9FAD8D5DFE0D9CADEE1D0EC73098A461FD0E07202D9E0DC4618DD5AF8D9E8D8
+C0D9E0DEF1D9CBD9E1DECBDEE1D8C9DC4620DD1ADEC9DEC9D8C0DC4628DD195E
+585DC20800
+[END]
+
+Description:
+
+A formula made by Benesi @fractalforums.com, one iteration:
+
+r1 = y^2 + z^2;
+
+if (Cx < 0) || (x < sqrt(r1))  
+    {x' = x^2 - r1 + Cx}
+else 
+    {x' = -x^2 + r1 + Cx}
+
+r1 = - r1^-.5 * 2 * |x|;
+
+y' = r1 * (y^2 - z^2) + Cy;
+z' = r1 * 2 * y * z + Cz;

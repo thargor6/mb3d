@@ -1,0 +1,33 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.DSQUARE R1 = 1
+.DSQUARE R2 = 2
+.INTEGER Formula nr (1..6) = 2
+.INTEGER ItCount R<R1 = 0
+.INTEGER ItCount R1<R<R2 = 1
+.INTEGER ItCount R>R2 = 2
+[CODE]
+558BEC5056578B75088B7E30DD4638DC57F0DFE080E44174058B47E0EB12DC57
+E8DFE080E44174058B47DCEB038B47D8DDD885C07D0431C0EB0C3D9F8601007E
+05B89F8601008B7FE483FF017D07BF01000000EB0A83FF067E05BF060000008D
+7CBE48833F007D050D0000008089075F5E585DC20800
+[END]
+
+
+Description:
+
+This formula modifies the iteration count on another formula by a condition on the current 3d vector length (R):
+
+if R < R1 { ItCount[Formula[Formula nr]] = ItCount_R<R1 }
+else
+if R < R2 { ItCount[Formula[Formula nr]] = ItCount_R1<R<R2 }
+else
+{ ItCount[Formula[Formula nr]] = ItCount_R>R2 }
+
+
+Use a high value like 1e30 for R2 to disable the condition R>R2.
+A zero value for R1 disables the condition R<R1.
+
+Because the formula iteration counts are not resetted on iteration start, you should only modify formulas that are following this one.
+Else the initial iteration count of the modified formula depends on the last mofification of a previous iteration loop.

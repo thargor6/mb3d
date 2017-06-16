@@ -1,0 +1,37 @@
+[OPTIONS]
+.Version = 2
+.DEscale = .05
+.Double Linear terms = 1
+.Double a = .25
+.Double b = -.25
+.Double c = -.25
+.Double d = 1
+.Double e = .25
+.Double f = .5
+[CODE]
+558BEC568B75088B7630DD00DC4EF0DD
+00D8C8DD46D0DC66E8DEC9DEC1DD02D8
+C8DD46C8DC66E0DEC9DEC1DD01D8C8DD
+46C0DC66D8DEC9DEC1D9D0DD02DC4EF0
+DD00D8C8DD46C0DC66E8DEC9DEC1DD02
+D8C8DD46D0DC66E0DEC9DEC1DD01D8C8
+DD46C8DC66D8DEC9DEC1D9D0DD01DC4E
+F0DD00D8C8DD46C8DC66E8DEC9DEC1DD
+02D8C8DD46C0DC66E0DEC9DEC1DD01D8
+C8DD46D0DC66D8DEC9DEC1D9D0DD19DD
+1ADD185E5DC20800
+[END]
+
+Description:
+
+Quadratic distorsion in 3D. Gives a huge number of strange deformations
+used as pretransform.
+Use linear terms=1 and very small coeffs to get a "gentle" distorsion
+Works well also as an "attractor" if used alone, giving funny 3D shapes
+Here is the expression. Has something to do with matrix expressions;
+
+x' = x*scale + (d-a) x*x + (e-b) y*y + (f-c) z*z
+y' = y*scale + (f-a) x*x + (d-b) y*y + (e-c) z*z
+z' = z*scale + (e-a) x*x + (f-b) y*y + (d-c) z*z
+
+Formula by Luca GN 2011

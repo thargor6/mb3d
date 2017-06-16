@@ -1,0 +1,38 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 0.2
+.DEoption = 2
+.RStop = 1024
+.Double Scale = 3
+.Double CScale X = 1
+.Double CScale Y = 1
+.Double CScale Z = 0.5
+.3SingleAngles Rotation = 0
+.Double Rot. dX = .5
+.Double Rot. dY = .5
+.Double Rot. dZ = .5
+[CODE]
+558BEC535689C38B75088B7630DD01D9
+E1DD02D9E1DD03D9E1D8D1DFE0D0EC73
+02D9C9D8D2DFE0D0EC7302D9CAD9C9D8
+D2DFE0D0EC7302D9CA90DD46ACDCC2DD
+D8DD46A4DCC1DDD8DD469CDCC3DDD8D9
+C1D84EBCD9C1D84EB8DEC1D9C3D84EB4
+DEC1D9C2D84ED4D9C2D84ED0DEC1D9C4
+D84ECCDEC1D9CBD84EC8D9CAD84EC4DE
+C2D9CBD84EC0DEC190DD46ACDCEADDD8
+DD46A4DCE9DDD8DD469CDCEBDDD890DD
+46F0DD4108D8C9DD5908DCCADCC9D9C0
+D9E8DEE9D9C0D9C0DC4EE8DEEDDC4EE0
+DEEBD8F1DC4ED8DCECD9CCD9E1DEECDE
+CBDD1ADD1BDD1989D85E5B5DC20800
+[END]
+
+Description:
+
+Same as normal MengerIFS, but you can move the rotation center arbitrarily for many more variations.
+It should be obvious that since you leave all rotations zero you will never notice any effect.
+Plus, you will see that dX and rotation X are independent; only dY and dZ will modify it.
+Same for all other axis.
+
+"Hacked" from Jesse's formula (Luca GN 2011). Idea taken from the original KIFS thread.

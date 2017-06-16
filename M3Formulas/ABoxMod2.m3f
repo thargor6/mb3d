@@ -1,0 +1,38 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 0.2
+.DEoption = 2
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Boxscale Min R = 0.5
+.Double Fold XY = 1
+.Double Fold Z = 1.5
+.Double Cyl HalfSize = .5
+[CODE]
+558BEC5657538B750889C38B7E30DD47D8DD03D9C0D8E2D9E1D8C1D9C9D8C2D9
+E1DEE1DD02D9C0D8E3D9E1D8C1D9C9D8C3D9E1DEE1DD47D0D9CBDDD8DD01D9C0
+D8E4D9E1D8C1D9C9D8C4D9E1DEE1D9C0D9E1DC57C8DFE0D0EC7615DC67C8D8C8
+D9C2D8CBDEC1D9C3D8CCDEC1EB0E9090DDD8D9C1D8CAD9C3D8CCDEC1DC57E0DF
+E0D0EC7307DDD8DD47E8EB16D9E8D8D1DFE0D0EC7207DDD8DC7FF0EB05DED9DD
+47F0DD4108D8C9DD5908DCCBDCCADEC9DC4628DD19DC4620DD1ADC4618DD1BDD
+D889D85B5F5E5DC20800
+[END]
+
+A curious ABox non-conformal variation, with a different fold for z and a non-conformal inversion.
+Looks like a wardrobe, a phone box... or you name it!
+
+x = abs(x+Fold) - abs(x-Fold) - x
+y = abs(y+Fold) - abs(y-Fold) - y
+z = abs(z+zFold) - abs(z-zFold) - z
+z' = abs(z) - CHS
+if z' > 0 then
+  rr = x*x + y*y + z'*z' // on top & bottom of cyl
+  else
+  rr = x*x + y*y // on cyl body
+  endif
+if rr < sqr(Min_R) then m = Scale/sqr(Min_R) else
+if rr < 1 then m = Scale/rr else m = Scale
+x = x * m + Cx
+y = y * m + Cy
+z = z * m + Cz

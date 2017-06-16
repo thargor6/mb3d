@@ -1,0 +1,27 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Offset = -1.35
+.Double Scale = +1.0
+[CODE]
+558BEC56578B75088B7E30DD47F0DD01DD02DD00D9C0D8C2D8C3D9E1DC4FE8D8
+C4DD18D9C2D8E1D8E2D9E1DC4FE8D8C4DD1AD9C1D8E1D8E3D9E1DC4FE8D8C4DD
+19DEE1DEE1D9E1DC4FE8D8C1DD5908DD4628DD4620DD4618D9C0D8C2D8C3D9E1
+DC4FE8D8C4DD5E18D9C2D8E1D8E2D9E1DC4FE8D8C4DD5E20D9C1D8E1D8E3D9E1
+DC4FE8D8C4DD5E28DEE1DEE1D9E1DC4FE8DEC1DD5EC85F5E5DC20800
+[END]
+
+Description:
+
+Based on Aexions ideas, this performs a modified quadray transform to be used as first formula as pre-transform, and choosing 'repeat from here' on the next formula(s).
+It is a 3d transform, but the result is 4d, so a combination with 4d formulas would make a better sense.
+Try also the opposite offset and scale for a different look. (Works for some fractals, not all!)
+
+Cx' = s*abs( Cx + Cy + Cz) + Offset
+Cy' = s*abs(-Cx - Cy + Cz) + Offset
+Cz' = s*abs(-Cx + Cy - Cz) + Offset
+Cw' = s*abs( Cx - CY - Cz) + Offset
+x' = s*abs( x + y + z) + Offset
+y' = s*abs(-x - y + z) + Offset
+z' = s*abs(-x + y - z) + Offset
+w' = s*abs( x - Y - z) + Offset

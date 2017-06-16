@@ -1,0 +1,31 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Fold X = 1
+.Double Fold xx = 0
+.Double Fold xy = 0
+.Double Fold xz = 0
+.Double Fold Y = 1
+.Double Fold yx = 0
+.Double Fold yy = 0
+.Double Fold yz = 0
+.Double Fold Z = 1
+.Double Fold zx = 0
+.Double Fold zy = 0
+.Double Fold zz = 0
+[CODE]
+558BEC56578B75088B7E30DD01DD02DD00D9C0DC4FE8D9C2DC4FE0DEC1D9C3DC
+4FD8DEC1DC47F0D9C1D8E1D9E1D9C9D8C2D9E1DEE1D8E1D9C1DC4FC8D9C3DC4F
+C0DEC1D9C4DC4FB8DEC1DC47D0D9C3D8E1D9E1D9C9D8C4D9E1DEE1D8E3D9CADC
+4FA8D9CBDC4FA0DEC3D9C3DC4F98DC47B0DEC3D9C2D8E4D9E1D9CBD8C4D9E1DE
+E3D9CBDEEADD1ADD19DD185F5E5DC20800
+[END]
+
+The folding position is influenced by amounts of the input vector:
+
+Xfold = Fold_X + x * Fold_xx + y * Fold_xy + z * Fold_xz
+Yfold = Fold_Y + x * Fold_yx + y * Fold_yy + z * Fold_yz
+Zfold = Fold_Z + x * Fold_zx + y * Fold_zy + z * Fold_zz
+x = abs(x + Xfold) - abs(x - Xfold) - x
+y = abs(y + Yfold) - abs(y - Yfold) - y
+z = abs(z + Zfold) - abs(z - Zfold) - z

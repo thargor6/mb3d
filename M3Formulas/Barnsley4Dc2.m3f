@@ -1,0 +1,87 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.Double dx = 1
+.Double dy = 0
+.Double dz = 1
+.Double dw = 0
+.Double w add = 0
+.Double Thresold 1 = 0
+.Double Thresold 2 = 0
+.Integer ConjMode = 0
+.Integer FlipMode = 0
+[CONSTANTS]
+Double = 0.5
+Double = 2.0
+[CODE]
+558BEC81EC300000005356578B75088B
+7E308BD8DD03DC610890DD02DC019090
+DD03DC410890DD02DC219090DD5908DD
+19DD1ADD1B9090DD03DD47C8DED9DFE0
+80E441771490909090DD03DC47F0DD1B
+DD02DC47E8DD1AEB0EDD03DC67F0DD1B
+DD02DC67E8DD1ADD01DD47C0DED9DFE0
+80E441771690909090DD01DC47E0DD19
+DD4108DC47D8DD5908EB10DD01DC67E0
+DD19DD4108DC67D8DD5908D9D0DD4618
+DD5DE0DD4620DD5DD8837FBC00740C90
+909090DD45D8D9E0DD5DD8837FB80074
+1090909090DD45E0DD45D8DD5DE0DD5D
+D8D9D0DD03DC4DE090DD02DC4DD8D9E0
+DEC1DD03DC4DD890DD02DC4DE09090DE
+C1DD1ADD1BD9D0DD4628DD5DE0DD46C8
+DD5DD8837FBC00740C90909090DD45D8
+D9E0DD5DD8837FB800741090909090DD
+45E0DD45D8DD5DE0DD5DD8D9D0DD01DC
+4DE0DD4108DC4DD8D9E0DEC1DD03DC4D
+D8DD4108DC4DE09090DEC1DC47D0DD59
+08DD1990D9D0DD03DC01DC0FDD5DF0DD
+02DC4108DC0FDD5DE8DD02DC6108DC0F
+DD5DE09090DD03D9E0DC0190DC0FDD5D
+D890DD45D8DD5908DD45E0DD19DD45E8
+DD1ADD45F0DD1BD9D08BC35F5E5B89EC
+5DC20800
+[END]
+
+This is a 4-D extension of the (generalized) Barnsley conditional formula.
+This implementation uses a commutative quat product, as defined in Ron Barnett's UF formulas.
+Apparently he refers to the same algebra as I used in my Barnsley4Dc, but the result looks different, 
+due to differences in the implementation (inclined vs straight cutting planes I think?).
+Another difference; this uses two conditional checks for x and z (not only one) + two thresolds
+The resulting shape is less symmetrical than the "classic" one
+
+Barnsley commutative 4D formula (Barnett)
+----------------
+
+if ConjMode = ON
+Cy = -Cy // 2D flip
+endif
+if FlipMode = ON
+flip Cx & Cy
+endif
+
+// to have the same result probably we should check if x>T1 here. btw!...
+
+x' = x-w; y' = y+z; z' = x+w; w' = y-z; // and update x,y,z,w
+if x > T1
+x' = x + dx; y' = y + dy;
+else
+x' = x - dx; y' = y - dy;
+endif
+// and update...
+x' = x*Cx - y*Cy; y' = x*Cy + y*Cx; // should be a (x,y) * (Cx,Cy) emulation
+// and update...
+if z > T2
+z' = z + dz; w' = w + dw;
+else
+z' = z - dz; w' = w - dw;
+endif
+// and update...
+z' = z*Cz - w*Cw; w' = z*Cw + w*Cz; // should be a (z,w) * (Cz,Cw) emulation
+// and update...
+
+x' = (x+z)/2; y' = (y+w)/2; z' = (+y-w)/2; w' = (-x+z)/2; // and update x,y,z,w
+(Flip, Conj do NOT change really C value. Cx and Cy are stored in the stack and modified temporarily)
+----------------
+FORMULA AND IMPLEMENTATION; 100% by Luca G.N. 2011.

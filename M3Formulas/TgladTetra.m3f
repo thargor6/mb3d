@@ -1,0 +1,72 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.Integer Log2Power (0 to 7) = 0
+.Integer Log2MapPower (0 to 7) = 0
+[CONSTANTS]
+Double = 0.5
+Double = -3.0
+Double = 2.8284271247461901
+Double = 0.3535533905932738
+Double = 3.1819805153394639
+Double = 2.000
+Double = 1e10
+[CODE]
+558BEC81EC600000005356578B75088B7E308BD8D9D08A67F480E407DD03D8C8
+DD02D8C8DEC1D9C0DD01D8C8DEC1C1E010DC57309BDFE0D0EC0F83AB010000C1
+E810D9FADD55B8DD01DEF1DD5DF8D9FADC22DC33DD55F0D8C8DD55D8D9E8DEC1
+D9E8DEF190D9E8DC45F8D9E8DC65F8DEF1D9FA90DEC9D9C0D8C0DC4DF0DD1B90
+D9E8DC65D8DEC9DD1AD9D08A47F0240790DD03D9C0D8C8DEC9DD02D8C8DC4F08
+DC0BDEC1C1E010DC57309BDFE0D0EC0F8337010000C1E810DD5DE0DD02D9C0D8
+C8DEC9DD03D8C8DC4F08DC0ADEC1DD55D8DC4F20DD5DD0DD45D8D8C8DD5DD8DD
+45E0DC4718DD4710DC65E0DEC9DC65D8DD5DC8DD45E0DC4718D8C8DC45D8DD47
+18D9E0DEF1DD5DC090DD45C8DC0BDD45D0DC0AD9E0DEC1DC4DC090DD45C8DC0A
+DD45D0DC0BDEC1DC4DC090DD1ADD1BDD45B8D8C8DD5DB8FEC80F8F52FFFFFFD9
+D0DD03D8C8DD02D8C8DEC1DD55C0D9FADD55E8DC22DC33DD55F0D8C8DD55D8D9
+E8DEC1D9E8DEF1DD55E0D9E8DC65D8DEC9DD5DC890DD45F0D8C0DC4DE0DD5DD0
+90D9E8DC45C0DD4728DEF1DD55D8DC4DE8DD5DE09090DD45B8DC4DD0DC4DE090
+DD45B8DC4DC8DC4DE090DD45D8D9E8DEE9DC4DB89090DD19DD1ADD1BD9D0FECC
+80FC000F8F53FEFFFFDD03DC4618DD02DC4620DD01DC4628DD19DD1ADD1B908B
+C35F5E5B89EC5DC20800DDD8DDD8DD4730D9C0D9C0EBE1
+[END]
+
+
+Description:
+Complicated but wonderful formula invented by Tglad.
+The concept is;
+1) Warp into the Riemann sphere
+2) Apply a complex number Mobius-like map, that acts like
+a tetrahedral angular warp
+3) Warp back and multiply angles like in the normal Mandelbulb
+
+From his Fragmentarium script shared at the Forums,
+after expanding the map into an x-y polynome:
+
+void tetra(inout vec3 p, float r) {
+     float angle = p.z/r;
+     angle = atan(sqrt(1-angle*angle),angle );
+     float omega = atan( p.x, p.y );
+     float zMag = tan(angle*0.5);
+     vec2 z;
+     z.x = sin(omega)*zMag;
+     z.y = cos(omega)*zMag;
+     float x=z.x; float y = z.y;
+     float h = sqrt(8.); float k = 1./h;
+     float S = x*x*x - 3.* x*y*y;
+     float T = y*y*y - 3.* y*x*x; 
+     float B = (h + k) * T;
+     T = T*T;
+     float A = (S + k) * (h - S) - T;
+     float C = -k / (T + (S + k)* (S + k));
+     z.x = (A* x - B* y)*C;
+     z.y = (A* y + B* x)*C;
+    
+     zMag = sqrt(z.x*z.x + z.y*z.y);
+     omega = atan(z.x,z.y);
+     angle = 2.0*atan(zMag);
+
+     p  = (r*r)*vec3( sin(omega)*sin(angle), cos(omega)*sin(angle), cos(angle) );
+}
+
+Implemented by Luca GN 2015

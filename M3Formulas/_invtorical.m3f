@@ -1,0 +1,24 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double R = 2.0
+[CODE]
+558BEC568B75088B7630DD00D9E0DC46F0D9E1DD02D9FFD9E1DEC9DD10DD02D9
+F2DEC9DEC9DD1A5E5DC20800
+[END]
+
+Description:
+
+Reversed torical (generalized) coords.
+Formula by Luca GN 2011
+
+Define R = (inner radius + outer radius) / 2.
+We don't care about two radiuses, we care of the average only.
+
+x' = sqrt((R-x)^2/ ( 1 + (tan y)^2)) that can be simplified as follows; 
+x' = abs(R-x)*(abs cos y) (because sin^2+cos^2=1)
+y' = x' tan y
+(z coordinate is unchanged. Similar to standard cylindrical reversed coords.)
+
+I didn't found much about this metric but a base for information is; http://mathworld.wolfram.com/Torus.html
+Technical note - function can be optimized more calculating sincos instead of cos and tan. todo.

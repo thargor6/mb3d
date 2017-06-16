@@ -1,0 +1,15 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BECDD02D9E0DD1A5DC20800
+[END]
+
+Description:
+
+Complex conjugate function
+The simplest function ever... Normal complex conjugation - affects only y!
+Warning: This function in most cases simply screws up the fractal. Transforms a Mandelbrot set in a tricorn.
+Formula by Luca GN 2011
+
+conj(S) = (x,-y,z,w)

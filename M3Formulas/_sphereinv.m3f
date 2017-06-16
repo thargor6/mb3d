@@ -1,0 +1,51 @@
+[OPTIONS]
+.Version = 8
+.DEscale = 0.2
+.DEoption = 1
+.Double X center = 0
+.Double Y center = 0
+.Double Z center = 0
+.DRecipro Radius = 1
+.DReci2 Rad2 = -1
+.Integer FoldMode (1 or 2) = 1
+[CODE]
+558BEC5657538B750889C38B7E30DD01DC47E0DD02DC47E8DD03DC47F0D9C0D8
+C8D9C2D8C8DEC1D9C3D8C8DEC1DC4FD8837FC400740BD9E8D8D9DFE080E44177
+47DC57D0DFE080E4417725D9E8DEF1DCC9DCCADCCBDDD8DC67F0DD1BDC67E8DD
+1ADC67E0DD1989D85B5F5E5DC2080090837FC4027407DDD8DD47C8EBD2D9E0DC
+47D0DC47D0EBC490DDD8DDD8DDD8DDD8EBD4
+[END]
+
+Description:
+
+Sphere inversion in 3D with radius and center.
+Fold mode; enable this to get conditional inversions.
+MODE 1; inversion INSIDE a sphere. Choose Rad2<Radius 
+to "cancel" the inversion inside a smaller sphere
+MODE 2; same as mode 1, but the "cancel" is a non 
+conformal transformation.
+Formula by Luca GN 2011
+
+x', y', z' => Translate + scaling (by radius) of x, y, z with given params.
+Then, defined Rho = (x'*x'+y'*y'+z'*z'),
+( folding mode section)
+x'' = x'/Rho
+y'' = y'/Rho
+z'' = z'/Rho
+For your convenience, x'',y'',z'' are translated back.
+Basic formula and explanations can be read here;
+http://en.wikipedia.org/wiki/Inversive_geometry
+
+"Folding modes" & optimizations
+
+Folding mode criteria ;
+if rho < Radius & rho > Rad2, do the transform
+if rho < Radius & rho < Rad2, do the transform but 
+in mode 1, let rho = Rad2 (conformal - undo the inversion inside a sphere) 
+in mode 2, let rho = 2 Rad2 - rho (non conformal "reversal" inversion) 
+if rho > Rad2, don't do anything
+
+------
+new version 19 may 2012
+Rewritten to fix some bugs, so now works better.
+It's incompatible with older program versions and params btw sorry... But works in the same way

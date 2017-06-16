@@ -1,0 +1,28 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double R = 2.0
+.Double Gamma = 0.0
+[CODE]
+558BEC81EC50000000568B75088B7630
+DD02DC46E8D9FBDD5DF0DD5DE8DD01D9
+FBDD5DE0DD5DD890DD00DC4DF0DC46F0
+DD5DD090DD00DC4DE8DD19DD45D0DC4D
+D8DD1ADD45D0DC4DE0DD185E89EC5DC2
+0800
+[END]
+
+Description:
+
+Inverse torical (generalized) coords.
+This coordinate system was defined by BradC in FractalForums:
+http://www.fractalforums.com/theory/toroidal-coordinates/msg9428/#msg9428
+Formula by Luca GN 2011
+
+Define R = (inner radius + outer radius) / 2.
+
+// calculate sincos of y+z and z for speed
+t = R + x cos(y+Gamma)
+z' = x sin(y+Gamma)
+y' = t sin z
+x' = t cos z

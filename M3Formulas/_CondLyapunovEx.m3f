@@ -1,0 +1,44 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.INTEGER Sequential code = 33964
+.INTEGER Formula A (1...6) = 2
+.INTEGER Formula B (1...6) = 3
+.INTEGER I.C. Low (0 ... 100) = 0
+.INTEGER I.C. High (1 ... 100) = 2
+[CODE]
+558BEC50525356578B75088B7E30FF86D00000008B86D00000008BD083E20F90
+8B47F44A83FA007E04D1F8EBF683E0010F858F000000908B47E883F8007D07B8
+00000000EB0A83F8647E05B8640000008B7FF083FF017D07BF01000000EB0A83
+FF067E05BF060000008D7CBE48833F007D050D0000008089078B7E308B47E483
+F8017D07B801000000EB0A83F8647E05B8640000008B7FEC83FF017D07BF0100
+0000EB0A83FF067E05BF060000008D7CBE48833F007D050D000000808907E989
+00000090908B47E883F8007D07B800000000EB0A83F8647E05B8640000008B7F
+EC83FF017D07BF01000000EB0A83FF067E05BF060000008D7CBE48833F007D05
+0D0000008089078B7E308B47E483F8017D07B801000000EB0A83F8647E05B864
+0000008B7FF083FF017D07BF01000000EB0A83FF067E05BF060000008D7CBE48
+833F007D050D0000008089075F5E5B5A585DC20800
+[END]
+
+
+Description:
+
+Warning! Use at your risk, if misused this can freeze the program.
+
+Put other two formulas in the alternation BEFORE pressing calculate.
+I reccomend to use more than just three formulas in total btw to
+justify the use of this switch...
+
+If possible avoid to use this in association with AboxVaryScale 
+or other iter-dependent formulas.
+
+Best used with IFS formulas, less useful with bulbs but still interesting in some cases.
+
+This formula modifies the iteration counts of two formulas,
+in a similar manner of Lyapunov's formula sequence style.
+Use this in some hybrids to get a better control of the flow
+than the normal CondLyapunov!
+
+The itercount can be set on a custom value 0 to 100 instead of just 1 or 0.
+
+Luca GN 2012

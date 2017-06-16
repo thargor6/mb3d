@@ -1,0 +1,94 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Integer Power % = 100
+.Double Float pow = 1
+.Integer Cylindric % = 0
+.Integer Spheric % = 0
+.Integer I.Cylindric % = 0
+.Integer I.Spheric % = 0
+.Integer Exp3D % = 0
+[CONSTANTS]
+Double = .01
+Double = .5
+[CODE]
+558BEC81EC48000000535657908B7508
+8BD88B7E309090837FF4007513D9EEDD
+55F8DD55F0DD5DE8E9F7000000909090
+DD47ECD9E8DED9DFE080E44180F4400F
+84BE000000DD47ECD9EEDED9DFE080E4
+4180F4400F84A9000000D9D0DD03D8C8
+DD02D8C8DD01D8C8DEC1DEC1D9FADD55
+E0DD47ECD9C9D9E1D9F1D9E8D9C1D9F8
+D9F0DEC1D9FDD9C9DDD8DD5DD8DD02DD
+03D9F3DC4FEC909090DD01DC75E0D9C0
+D8C8D9E0D9E8DEC1D9FAD9E8DEC1D9C9
+9090D9F3D8C0DC4FEC90D9FBDD5DB8DD
+5DC0D9FBDD5DC8DD5DD0DD45D8DC4DC8
+DC4DB8DA4FF4DC0FDD5DF8DD45D8DC4D
+D0DC4DB8DA4FF4DC0FDD5DF0DD45D8DC
+4DC0909090DA4FF4DC0FDD5DE8EB2290
+909090DD03DA4FF4DC0FDD5DF8DD02DA
+4FF4DC0FDD5DF0DD01DA4FF4DC0FDD5D
+E8909090837FE800742C90909090DD03
+D8C8DD02D8C8DEC1D9FADD02DD03D9F3
+DA4FE8DC0FDC45F0DD5DF0DA4FE8DC0F
+DC45F8DD5DF8837FE400744590909090
+DD03D8C8DD02D8C8DEC1DD01D8C8D8C1
+D9FAD9C9D9FADD01D9F3DD02DD03D9F3
+DA4FE4DC0FDC45E8DD5DE8DA4FE4DC0F
+DC45F0DD5DF0DA4FE4DC0FDC45F8DD5D
+F890837FE000742A90909090DD03DD02
+D9FFDEC9DD03DD02D9FEDEC9DA4FE0DC
+0FDC45F0DD5DF0DA4FE0DC0FDC45F8DD
+5DF890837FDC00744190909090DD02D9
+FBDD01D9FBD9CADC0BDA4FDCDC0FDC45
+E8DD5DE8D9CADCC9D9C9DC0BD9CAD9C9
+DC0BDEC9DA4FDCDC0FDC45F0DD5DF0DA
+4FDCDC0FDC45F8DD5DF890837FD8000F
+84D6000000DD03D8C8DD02D8C8DEC1D9
+FADD01DEF1DD55E090DC0AD9E0DC03D9
+EADEC9D9E8D9C1D9F8D9F0DEC1D9FDD9
+C9DDD8DC4F08DD5DD890DD45E0DC0BDC
+02D9FBDD5DC8DD5DD0DD45E0DC0BDC22
+D9FBDD5DB8DD5DC090DD45E0DC0AD8C0
+D9EADEC9D9E8D9C1D9F8D9F0DEC1D9FD
+D9C9DDD8DD5DE090DD45E0DC4DB8DC45
+C8DC4DD8DA4FD8DC0FDC45F8DD5DF890
+DD45E0DC4DC0D9E0DC45D0DC4DD8DA4F
+D8DC0FDC45F0DD5DF090DD03D8C8DD02
+D8C8DEC1D9FAD9EADEC9D9E8D9C1D9F8
+D9F0DEC1D9FDD9C9DDD8DD01D9FEDEC9
+DA4FD8DC0FDC45E8DD5DE890DD45E8DD
+19DD45F0DD1ADD45F8DD1B8BC35F5E5B
+89EC5DC20800
+[END]
+
+Description:
+
+With this tool you can create a custom linear combination of transformations.
+The basic is the power (standard White/Nylander theory), you can choose an arbitrary
+float number, and you can add/subtract various other coordinate transformations.
+Used alone with _addC allows you to create strange variations of the Mandelbulb.
+Please note that I wanted a general algorithm, so this is slow (especially the
+power routine). Only power = 1 is fast (simply gives x,y,z unaltered), and
+power = 0 is same as pow 1, to avoid bugs or weird stuff.
+Warning, the more transforms you turn on, more time is needed...
+Because a transform that has weight 0% is not calculated at all.
+
+version 1.0 - Power routine, Cylindric, Spheric and inverse ones
+version 1.1 - Experimental feature of exp3D(). Too bad triplex functions are really
+complicated (and slow!) and they don't give that many remarkable effects, but
+still they are not that bad. Sine function is even more complicated than exp,
+so I am undecided if implement it.
+version 2.0 (todo) - Add rotations for z axis (zx and zy)
+They should be done before and after all other ones (to give different looks to
+the transforms, mainly).
+final version 3.xxx (todo) - Add functions of x,y,z (log and sin. But log triplex
+expression seems to involve weird effects, so edventually only sin will be done)
+This will be more time consuming due to the complications of 3D-functions coding
+
+Everything coded by Luca GN 2011
+Triplex functions were expanded by BradC here: http://www.fractalforums.com/theory/triplex-algebra/60/

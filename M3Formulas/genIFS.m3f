@@ -1,0 +1,36 @@
+[OPTIONS]
+.Version = 6
+.DEscale = 0.2
+.ADEscale = 0.5
+.DEoption = 2
+.RStop = 16
+.Double Scale = -1.6
+.Integer Abs X = 1
+.Integer Abs Y = 1
+.Integer Abs Z = 0
+.Single Offset X = -1
+.Single Offset Y = -1
+.Single Offset Z = 0
+.3SingleAngles Rotation = 30
+[CODE]
+558BEC56578B75088B7E30DD01837FE4007402D9E1D847D8DD02837FE8007402
+D9E1D847DCDD00837FEC007402D9E1D847E0D9C0D84FBCD9C2D84FB8DEC1D9C3
+D84FB4DEC1D9C1D84FD4D9C3D84FD0DEC1D9C4D84FCCDEC1D9CAD84FC8D9CBD8
+4FC4DEC3D9CBD84FC0DEC2DD47F0DCCBDCCADCC9DC4908DD5908DC4618DD18DC
+4620DD1ADC4628DD195F5E5DC20800
+[END]
+
+A more general IFS based on an idea from Kali at fractalforums.
+It adds also the C component, so you can make julias out of the whole set.
+
+if AbsX <> 0 then x = abs(x)
+if AbsY <> 0 then y = abs(y)
+if AbsZ <> 0 then z = abs(z)
+x = x + OffsetX
+y = y + OffsetY
+z = z + OffsetZ
+Rotate(XYZ, RotMatrix)
+x = x + Cx
+y = y + Cy
+z = z + Cz
+

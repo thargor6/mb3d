@@ -1,0 +1,34 @@
+[OPTIONS]
+.Version = 8
+.Integer Integer power R = 2
+.SReci2 Angle scale = 0.75
+.Integer Flip Theta-Phi (0,1) = 0
+.Integer Integer power Angle = 2
+.Integer Reciprocal R angle (0,1) = 0
+.Single Reciprocal fixing = 0.1
+.Single Z multiplier = 1
+[CODE]
+558BEC56578B75088B7E30D9E88B47F4DD4638D9FAEB02D8C8D1E873FADCC975
+F6DDD8D9EED9E8DD42F8DD02DD01D9C2D8C8D9C2D8C8DEC1D9FAD9F3D9CAD9F3
+D947F0DCCADEC9837FE8007402D9C9837FE0007415D9C1D8C8D9C1D8C8DEC1D8
+47DCD9E8DEF1DCCADEC98B47E4EB10D9C1D8C9D8C0D9CAD8C8D9C9D8C8DEE1D1
+E873ECD9C2D8C9D9C4D8CBDEE9D9CBD8CAD9C1DECDDEC475D6DED9D947ECDCCA
+DEC9D9FBD9CAD9FBD8CBD8CCDC4618DD5AF8DECAD8CAD84FD8DC4628DD19DEC9
+DC4620DD1A5F5E5DC20800
+[END]
+
+As suggested by Christian Kleinhuis, theta and phi are raised to a complex power.
+The angles are scaled before and rescaled afterwards.
+
+
+Theta = ArcTan2(y,x)
+Phi = ArcTan2(z, Sqrt(x*x+y*y))
+R = IntPower(Sqrt(x*x+y*y+z*z), Integer_power_R)
+
+If Flip_Theta-Phi = 1 then Exchange(Theta, Phi)
+If Reciprocal_R_angle then Complex(Theta, Phi) /= (Dot(Complex(Theta, Phi)) + Reciprocal fixing)
+ComplexIntPower(Complex(Theta, Phi), Integer_power_Angle)
+
+x = R * Cos(Phi) * Cos(Theta) + Cx
+y = R * Cos(Phi) * Sin(Theta) + Cy
+z = R * Sin(Phi) * Z_multiplier + Cz

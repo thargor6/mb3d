@@ -1,0 +1,62 @@
+[OPTIONS]
+.Version = 5
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double dx = 1
+.Double dy = 0
+.Double dz = 0
+.Double dw = 0
+.Double w add = 0
+.Double xCy mul = 1
+.Double yCx mul = 1
+.Double Thresold = 0
+[CODE]
+558BEC53505657908B75088BD88B7E30
+DD03DD4620DEC9DC4FC8DD02DD4618DE
+C9DC4FC0DEC190DD47B8DED9DFE080E4
+4190909090772B90909090DD03DC47F0
+DD1BDD02DC47E8DD1ADD01DC47E0DD19
+DD4108DC47D8DC47D0DD5908EB299090
+9090DD03DC67F0DD1BDD02DC67E8DD1A
+DD01DC67E0DD19DD4108DC67D8DC47D0
+DD590890909090DD0390DC4E189090DD
+0290DC4E20D9E0DEC1DD0190DC4E28D9
+E0DEC1DD4108DC4EC8D9E0DEC1D9D0DD
+0390DC4E209090DD0290DC4E189090DE
+C1DD0190DC4EC89090DEC1DD4108DC4E
+28D9E0DEC1D9D0DD0390DC4E289090DD
+0290DC4EC8D9E0DEC1DD0190DC4E1890
+90DEC1DD4108DC4E209090DEC1D9D0DD
+0390DC4EC89090DD0290DC4E289090DE
+C1DD0190DC4E20D9E0DEC1DD4108DC4E
+189090DEC1D9D090DD5908DD19DD1ADD
+1B908BC35F5E585B5DC20800
+[END]
+
+This is a 4-D extension of the (generalized) Barnsley conditional formula.
+This implementation uses the Hamilton non-commutative quat product, can be found in many sites for example; http://en.wikipedia.org/wiki/Quaternion
+I multiply S +- K by C (not vice-versa).
+Mset is not very interesting but Julia is very intriguing.
+Try to set the same values that you used in normal 2D Barnsley they all work.
+Also, try to use 4D rotations to explore an enormous number of variations (rotations will modify the condition).
+Remember that this formula is discontinue (acts like a scissor); so also the shapes always have sharp edges.
+
+Barnsley 2 non-commutative 4D formula ( xyzw q* C version )
+----------------
+S is the quaternion that contains (x,y,z,w+wadd).
+K is the quaternion that contains (dx,dy,dz,dw).
+C is the quaternion that contains (Cx,Cy,Cz,Cw).
+Defining quat multiplication as follows (commutative rule);
+A q* B := ( Ax Bx - Ay By - Az Bz - Aw Bw , Ax By + Ay Bx + Az Bw - Aw Bz ,  Ax Bz - Ay Bw + Az Bx + Aw By , Ax Bw + Ay Bz - Az By + Aw Bx)
+A + B  := ( Ax + Bx , ... , Aw + Bw ) term by term sum
+----------------
+
+if (mul * Sx * Cy + mul * Sy * Cx > Thresold )
+S' = ( ( S + K ) q* C)
+else
+S' = ( ( S - K ) q* C)
+endif
+----------------
+FORMULA AND IMPLEMENTATION; 100% by Luca G.N. 2011.

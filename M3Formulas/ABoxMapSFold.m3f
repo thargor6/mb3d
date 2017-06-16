@@ -1,0 +1,51 @@
+[OPTIONS]
+.Version = 6
+.DEscale = 0.2
+.DEoption = 11
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Boxscale Min R = 0.5
+.Double Fold = 1
+.Integer Map number = 1
+.Single Map offset = -0.5
+.Single Map scale = 0.02
+[CODE]
+558BEC56575383C4E88B7D0889C38B7730DD46D8DD03D9C0D8E2D9E1D8C1D9C9
+D8C2D9E1DEE1DD1424DD02D9C0D8E3D9E1D8C1D9C9D8C3D9E1DEE1DD542408DD
+01D9C0D8E4D9E1D8C1D9C9D8C4D9E1DEE1DD54241089E089E18B56D4FF976001
+0000D946D0D946CCDD0424D8C2D8C9D8C5D8C8DD442408D8C3D8CAD8C5D8C8DE
+C1DD442410D8C3D8CAD8C4D8C8DEC1DC56E0DFE0D0EC7307DDD8DD46E8EB16D9
+E8D8D1DFE0D0EC7207DDD8DC7EF0EB05DED9DD46F0DD4318D8C9DD5B18DCCDDC
+CCDECBDED9DC4728DD5B10DC4720DD5B08DC4718DD1BDDD889D883C4185B5F5E
+5DC20800
+[END]
+
+Description:
+
+A modified "Amazing Box" by an idea of Aexion,
+the radius for the sphere folding is modified by a 2d pixelmap,
+creating surface pattern on spherefold areas:
+
+x = abs(x+Fold) - abs(x-Fold) - x
+y = abs(y+Fold) - abs(y-Fold) - y
+z = abs(z+Fold) - abs(z-Fold) - z
+Mvec = (GetRGBfromSphereMap(@x, Map_nr) + Map_offset) * Map_scale
+rr = Sqr(x + Mvec[0]) + Sqr(y + Mvec[1]) + Sqr(z + Mvec[2])
+if rr < sqr(Min_R) then m = Scale/sqr(Min_R) else
+if rr < 1 then m = Scale/rr else m = Scale
+x = x * m + Cx
+y = y * m + Cy
+z = z * m + Cz
+
+
+On higher Map scale values you might have to decrease the 'Raystep multiplier' to not overstep.
+If you still get much noise in combination with other formulas, try to uncheck 'Normals on DE'.
+
+Because the map function is very slow,
+use this formula only on one or a few iterations and do the rest with the normal ABox formula.
+
+The maps output range is 0 to 1 (black to white).
+
+The map must be in the 'Lightmap folder' specified by the 'Ini Dirs' button,
+named only by the map number and stored as png or jpeg image.

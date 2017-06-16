@@ -1,0 +1,42 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.Integer Power mode = 0
+.Double Power = 2
+.Double X mul = 1
+.Double Y mul = 0
+.Double Z mul = 0
+[CODE]
+558BEC81EC100000005356578B75088B7E308BD8D9D0837FF4000F8499000000
+DD47ECDD03D9E1D9F1D9E8D9C1D9F8D9F0DEC1D9FDD9C9DDD8DC4FE4DD5DF0DD
+47ECDD02D9E1D9F1D9E8D9C1D9F8D9F0DEC1D9FDD9C9DDD8DC4FDCDC45F0DD5D
+F0DD47ECDD01D9E1D9F1D9E8D9C1D9F8D9F0DEC1D9FDD9C9DDD8DC4FD4DC45F0
+DD47E4DC47DCDC47D4DEF9DD47ECD9E8DEF9D9C9D9F1D9E8D9C1D9F8D9F0DEC1
+D9FDD9C9DDD8DD5108DD5EC8D9D08BC35F5E5B8BE55DC20800DD03DC4FE4DD02
+DC4FDCDD01DC4FD4DEC1DEC1DD47E4DC47DCDC47D4DEF9EBCD
+[END]
+
+Description:
+Normally, w and cw are zero, so you see 4D effect indirectly.
+This option sets those vars as a linear (or non linear) combination of x,y,z!
+It's better use this together with Mandel bicomplex.
+Will effectively work with any 4D formula, showing many new shapes/effects!
+
+Shows similar effects as Fractint-Ultrafractal quats but in real 3D. :)
+Sets w and Cw variables as follows:
+
+in mode 0: (std average)
+w := (xm*x+ym*y+zm*z)/(xm+ym+zm)
+Cw := w
+
+else (arbitrary pow average)
+using absolute values of x,y,z (avoids troubles with powers):
+w := ((xm*(x^p)+ym*(y^p)+zm*(z^p))/(xm+ym+zm))^(1/p)
+Cw := w
+
+Use this mode with two non-zero multipliers, many cool effects will be generated!
+Actually, also power 1 gives a very nice effect, due to the abs function!
+
+BE SURE TO USE AS A PRETRANSFORM and USE NEGATIVE VALUES AT YOUR RISK!
+
+Implemented by Luca G.N. 2011

@@ -1,0 +1,43 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double PiriRadius1 = 0
+.2Doubles Scale = 2
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 0
+.Double PiriRadius2 = 0
+.Integer Apply scale+add = 1
+.Integer Kiss / Norm / DingDong = 1
+.Double Limit X = -1
+.Integer Flip X-Z = 0
+.Integer Mirror = 0
+[CONSTANTS]
+Double = 0.5
+[CODE]
+83C4DA660F104688F20F104E98660F5947E0F20F594FE0660F5847C0F20F584F
+D0837FB4007419F20F106E70F20F596FE0660F114688F20F114E98F20F116E70
+660F110424F20F114C2410837FA400740EDD0424DD442410DD1C24DD5C2410DD
+0424837FA0007404D9E1EB02D9E0DD1424DD542418D8C8837FB0007503DC0C24
+837FB0027403DC0C24D9C0DC0C24D9C9DD1C24DD442408D8C8DEC1DD442410D8
+C8DEC1DC47B8D9C0D9E1DEC1DC0FD9FADD0424DC47F0D9C0D9E1DEC1DC0FD9FA
+D9E0DEC1DD47A8D9EED8D99BDFE0D0EC7313DD442418D9E1D8E1DDD9D8D19BDF
+E0D0EC7304DDD8EB02DDD9837FB4007503DC77E0DD5EE083C426C3
+[END]
+
+A family of simple but very elegant revolution surfaces. The origin is a singularity if r1=r2=0.
+In normal piriform it is "infinitely sharp".
+
+A base algorithm;
+
+#define sqrt0(a) ((a<0) ? 0 : sqrt(a))
+// flip x,z and x = -x
+u = IntPow(x,curvetype); // try 2,3,4
+DE = sqrt0(u*x + y*y + z*z + r1) - sqrt0(u + r2);
+// some variants are infinitely extended. To optionally "fix" this, use a limiter for x.
+if (limit > 0) {
+DE = min (DE, abs(x) - limit);
+}
+
+Luca GN 2012

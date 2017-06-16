@@ -1,0 +1,30 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Strength = 1.0
+.Double Alpha = -.4
+.Double Beta = 1.0
+.Double Gamma = 0.1
+.Double Delta = 0.1
+.Double Epsilon = 0.2
+
+[CODE]
+558BEC56538B75088BD88B7630DD03DC4EE0DD01DC4ED8D9E0DEC1DC46D0D9E8
+D9F3DC02DDC1D9D0DD46E8DC23DC4EF0D9D0DD46E8DC0ADD03DC4EE0D9E0DEC1
+DC4EC8DC01D9D0DD19DD1ADD1B8BC35B5E5DC20800
+[END]
+
+
+Description:
+
+Hopalong (modified) system in 3D - variation with five parameters and strength
+From UF database, modified version and changed formula (atan instead of +-sqrt abs)
+"atan" is a continuous and derivable function so this version is much smoother than the poly counterparts.
+Too bad, atan is notably slower than sqrt; it's trascendental.
+Formula by Luca GN 2011
+Works very well in combination with many formulas, and gives a nice "rusty" look.
+
+t = b x - c z + d
+x' = y - atan ( t )
+y' = (a - x) * Strength
+z' = z + (a y - b x) * e

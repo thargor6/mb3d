@@ -1,0 +1,33 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Strength = 1.0
+.Double Alpha = 0.5
+.Double Beta = 1.0
+.Double Gamma = 1.5
+.Double Delta = 1.0
+
+[CODE]
+558BEC568B75088B7630DD02DC01D9E0DC4EF0D9D0DD00DD02DC4EE8DEC1DC41
+08DC4EF0D9D0DD46E0DD00DC09DEC1DC4EF0D9D0DD46D8DC09D9E0DD46D0DC49
+08DEC1DC4EF0D9D0DD5908DD19DD1ADD185E5DC20800
+[END]
+
+
+Description:
+
+Rossler hyperchaotic system in 4D - variation with four parameters and strength
+Adapted from an article of Jiang Xu, Guoliang Cai, Song Zheng. 
+Published by "International Journal of Nonlinear Science Vol.8(2009) No.1,pp.117-123". Found in a PDF.
+Formula by Luca GN 2011
+
+This deformation can be likely used alone ( or plus a _addC ) to show the solutions of the system, that look very odd.
+The solution changes much for small increments of the given constants.
+Use strength to get more solid/thin objects.
+
+x' = ( -y - z )* Strength
+y' = ( x + ay + w ) * Strength
+z' = ( b + xz )* Strength
+w' = ( d w - c z ) * Strength
+
+In the article those parameters are used; a=.25, b=3, c=.5, d=.05

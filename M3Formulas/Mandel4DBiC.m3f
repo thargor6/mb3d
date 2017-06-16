@@ -1,0 +1,27 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double w add = 0
+[CODE]
+558BEC53505657908B75088BD88B7E30DD03D8C8DD02D8C8DEE9DC4618D9D0DD
+03DC0AD8C0DC4620D9D0DD01D8C8DD4108D8C8DEE9DC4628D9D0DD01DC4908D8
+C0DC46C8DC47F0D9D0DD5908DD19DD1ADD1B908BC35F5E585B5DC20800
+[END]
+
+The good old 4D Mandelbrot in a basic bicomplex system.
+The first "3D fractals" ever were created in a similar way. 
+Bicomplex numbers are just combiantions of complex numbers, so the easiest formula looks like this
+
+x' = x*x - y*y + Cx
+y' = 2*x*y + Cy
+z' = z*z - w*w + Cz
+w' = 2*z*w + Cw + wadd
+
+This involves in the most annoying squared quat-fractal of all times.
+But try to rotate and twist it in 4D, if you do so some interesting variations will appear!
+Also, this formula creates interesting variations together with Julibrot transform.
+
+----------------
+IMPLEMENTATION; 100% by Luca G.N. 2011.

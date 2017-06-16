@@ -1,0 +1,28 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Strength = 1.0
+.Double Alpha = 0.1
+.Double Beta = 0.1
+.Double Gamma = 1.5
+.Double Delta = 1.5
+
+[CODE]
+558BEC568B75088B7630DD00DD02DC4ED8D9FFD9E0DC4EE8DEC1DD01DC4ED0D9
+FED9E0DC4EE0DEC1DC4EF0D9D0DD02DD01DC4ED8D9FFD9E0DC4EE8DEC1DD00DC
+4ED0D9FED9E0DC4EE0DEC1DC4EF0D9D0DD01DD00DC4ED8D9FFD9E0DC4EE8DEC1
+DD02DC4ED0D9FED9E0DC4EE0DEC1DC4EF0D9D0DD19DD1ADD185E5DC20800
+[END]
+
+
+Description:
+
+Dynamic deformation in 3D - variation with four parameters and strength
+(inspired from 2D dynamic formula from Mark Townsend)
+Formula by Luca GN 2011
+
+Please, note that it is slow. Sometimes VERY slow!
+
+x' = (x - a cos(c y) - b sin(d z))* Strength
+y' = (y - a cos(c z) - b sin(d x)) * Strength
+z' = (z - a cos(c x) - b sin(d y)) * Strength

@@ -1,0 +1,15 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BECDD02D9FBDD00DCCADEC9DD18DD1A5DC20800
+[END]
+
+Description:
+
+Inverse cylindrical coords, very easy transform
+Formula by Luca GN 2011
+
+x' = x cos(y)
+y' = x sin(y)
+(z coordinate is unchanged)

@@ -1,0 +1,35 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 21
+.Double Add X = -0.04
+.Double Add Y = -0.04
+.Double Add Z = 0
+.3SingleAngles Rotation = 0
+.Double Mul Z = 1.2
+[CODE]
+DD4698DC47E0DD4690DC47E8DD4688DC47F0D9C0D84FC4D9C2D84FC0DEC1D9C3
+D84FBCDEC1D9C1D84FDCD9C3D84FD8DEC1D9C4D84FD4DEC1D9CAD84FD0D9CBD8
+4FCCDEC3D9CBD84FC8DEC2DD5E88DD5E90DC4FB4DD5E98DD47B4D9E1DC4E70DD
+5E709083C4E4DD4688D8C8DD542410DD4690D8C8D9C0DC642410D8C0DD5C2410
+D9C0D8CAD8C0D9C9D8C8D9CAD8C8DEC1DEC1DD1424D9E8DEE9DD0424DD4690DC
+4E88D8C0D8C0DEC1D9E8DEC1DD1424DEF9DD5E88DD442410DC3424DD5E9083C4
+1CC3
+[END]
+
+Modified inverse Cayley transformation. Similar to a Julia-Newton transform in 2D.
+Try to change Rotation Z ( example; -142 with the default parameters).
+Disable always "apply Scale+add" and adjust sizes on ALL the shapes or the transform will have a bad result!
+Also try different sizes for each shape if the fractal structure is not well visible.
+
+Formula (from an Ultra Fractal transform made by Javier López Peña, August 2002)
+
+Translate(x,y,z);
+Rotate(x,y,z);
+m = 2*((x*y)^2) + x^4 + y^4;
+Cayley2_2D(x,y) = (m - 1, 2(y*y - x*x) ) / ( m + 4*x*y + 1);
+
+-------------
+
+edit; DE fixed (thanks Jesse)
+
+Luca GN 2012

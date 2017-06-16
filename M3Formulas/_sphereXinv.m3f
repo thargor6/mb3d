@@ -1,0 +1,27 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double X center = 0
+.Double Y center = 0
+.Double Z center = 0
+.Double Radius = 1
+[CODE]
+558BEC568B75088B7630DD01DD02DD00DC46F0DD18DC46E8DD1ADC46E0DD19DD
+00D8C8DD02D8C8DEC1DD01D8C8DEC1DD00D8F9DD46D8DEC9DC66F0DD18DD02D8
+F1DD46D8DEC9DC66E8DD1ADD01D9C9DEF9DD46D8DEC9DC66E0DD195E5DC20800
+[END]
+
+Description:
+
+This formula born from a coding error while trying to implement sphere inversion.
+Gives a fuzzy result but can give very interesting effects.
+Formula by Luca GN 2011
+
+x', y', z' => Translate + scaling (by radius) of x, y, z with given params.
+Then, defined Rho = (x'*x'+y'*y'+z'*z'),
+x'' = Rho/x' (instead of x'/Rho )
+y'' = y'/Rho
+z'' = z'/Rho
+For your convenience, x'',y'',z'' are translated back.
+Basic formula and explanations can be read here;
+http://en.wikipedia.org/wiki/Inversive_geometry

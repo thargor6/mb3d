@@ -1,0 +1,50 @@
+[OPTIONS]
+.Version = 2
+.DEoption = 4
+.SIpower = 2
+.Integer IJ yz = 4
+.Integer JI yz = 4
+.Integer JJ zz = -2
+.Integer IK yw = -3
+.Integer KI yw = -3
+.Integer JK zw = 1
+.Integer KJ zw = 1
+.Integer KK ww = 2
+[CODE]
+558BEC565783EC208B75088B7E30DD4108DD01DD00DD02D9C1D8C8D9C1D8C8DE
+E9DD1C24D9C1D8C9D8C0DD5C2408D9C1D8CBD8C0DD5C2410D9C1D8CCD8C0DD5C
+241883EF0CD9C3DCCCDCCBD9C3D9CBD9C9D8CAD9C0D9CBD9C9D9CADDD8DD01D9
+C0D8C8D9CADEC9D9C0B9070000008B07487907F7D883E802D9E083E003DC04C4
+DD1CC483EF044979E58D42F88D4A08DD442418DD442410DD442408DD0424DC46
+18DD18DC4620DD1ADC4628DD19DC46C8DD590883C4205F5E5DC20800
+[END]
+
+Description:
+
+A generalization of a power 2 formula with 4 components.
+
+The user values are in the range of 1 to 4, positive or negative.
+They represents the 4d vector component to which the term is added, or subtracted if negative.
+1: real part (X)
+2: i(maginary) part (Y)
+3: j (Z) 
+4: k (W)
+
+The squaring part looks like this: 
+(x,iy,jz,kw)² = xx + i 2xy + j 2xz + ij yz + ji yz - yy + jj zz + k 2xw + ik yw + ki yw + jk zw + kj zw + kk ww
+
+Where the basic components are fix:
+x' = x*x - y*y  + Cx
+y' = 2*x*y      + Cy
+z' = 2*x*z      + Cz
+w' = 2*x*w      + Cw
+
+And all other terms can be user specified, depending on the desired result of i,j and k combinations:
+ij yz + ji yz + jj zz + ik yw + ki yw + jk zw + kj zw + kk ww
+
+The default values represents the associative and commutative version:
+x' = x*x - y*y + 2*w*z  + Cx
+y' = 2*x*y - z*z + w*w  + Cy
+z' = 2*x*z - 2*y*w      + Cz
+w' = 2*y*z + 2*x*w      + Cw
+

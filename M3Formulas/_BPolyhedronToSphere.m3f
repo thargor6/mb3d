@@ -1,0 +1,38 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Sides = 4.0
+.Double Sides2 = 4.0
+[CONSTANTS]
+Double = 3.1415926535898
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0dd07dc77f0dd55f8
+d8c0dd5df0dd07dc77e8dd55e8d8c0dd5de0dd01d8c8dd02d8c8dec1d9fa
+dd03d9f3d9e1dc55e8dfe080e4417f05dc65e0ebf1d9ffd9e8def1d9c0d9c0
+dc0bdd1bdc0add5de8dc09dd55e0dd45e8d9f3d9e1dc55f8dfe080e4417f05
+dc65f0ebf1d9ffd9e8def1d9c0dc4de8dd1adc4de0dd19
+D9D08BC35F5E5B89EC5DC20800
+[END]
+
+
+Description:
+
+Polyhedron to sphere transform. You can make a cube into a sphere, and then make other things out of it.  It doesn't do regular polygons, except the cube, because, well.. it is the inverse function of the polyhedron to sphere function I wrote, which only produces cubes, of the Platonic solids.  I haven't thought of a generalized transform for the regulars yet, since they aren't as simple as this stuff.  Still thinking about a tetrahedral transform for the Sierpinski.  
+
+
+ Here is the math, so it can easily be translated to other languages:
+
+ rCyz=abs(atan(z.z,z.y));   //atan is atan2  (arg!!!!)  abs is absolute value
+ while (rCyz>pi/sides) {rCyz-=2.*pi/sides; }   // if rCyz> pi/sides,  subtract 2*pi/sides from it   
+ z.yz/=cos(rCyz); 				// until it isn't greater than pi/sides...
+
+//z.yz/=whatever;  means y= y/whatever and z= z/whatever
+
+ rCxyz=abs(atan(sqrt(z.z*z.z+z.y*z.y),z.x));
+ while (rCxyz>pi/sides2) {rCxyz-=2.*pi/sides2; }  // same concept here!!!!   
+ z.xyz/=cos(rCxyz); 
+
+
+:D  
+
+  M Benesi

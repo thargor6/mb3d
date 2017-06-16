@@ -1,0 +1,21 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.3SingleAngles Term Rotation = 0
+.Double Term Scale = .5
+[CODE]
+558BEC568B75088B7630DD00D8C8DD02D8C8DD01D8C8DEC1DEC1D9FADD46CCDE
+F1DD01D8C9DD02D8CADD00D8CB909090909090D9C0D84EDCD9C2D84ED8DEC1D9
+C3D84ED4DEC1D9C1D84EF4D9C3D84EF0DEC1D9C4D84EECDEC1D9CAD84EE8D9CB
+D84EE4DEC3D9CBD84EE0DEC2DC00DD18DC02DD1ADC01DD19DDD85E5DC20800
+[END]
+
+A cool 3D transform suggested by Asdam in the forums;
+
+vec3d += Scale * Rotation * vec3d / cabs3d(vec3d)
+
+Where cabs3d(x,y,z) = sqrt(x*x + y*y + z*z)
+
+Somewhat similar to a pinch/punch effect.
+
+LucaGN & Asdam 2012

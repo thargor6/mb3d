@@ -1,0 +1,49 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double Beta = -4
+.2Doubles Scale = 1
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 0
+.Double Amplitude = 0.1
+.Integer Apply scale+add = 0
+.Integer Iters = 16
+.Integer Flip XZ (0,1) = 0
+.Double Alpha = 2
+.Double Step = -.1
+.Double Gamma = -.1
+.Double OTrapClrMul = 1
+[CONSTANTS]
+Double = 1.5
+Double = 0.1
+[CODE]
+83C4E4660F104688F20F104E98660F5947E0F20F594FE0660F5847C0F20F584F
+D0837FB4007419F20F106E70F20F596FE0660F114688F20F114E98F20F116E70
+660F110424F20F114C24108B57AC83E201C1E204DB47B0DB5C241890DD441410
+D9E1DD47B8D9E1DC4708DC0FDC8678FFFFFFDED9DFE0D0EC730BDD441410D9E0
+E999000000DD442408DD0414D9C0D9FFDC4FF0D8C1DC4FA4D9FED9C1D8E3DC4F
+94DEC1D9FEDC4F9CD8C2D9D0D9C2D9FFDC4FF0D8C3DC4FA4D9FED9C2D8C4DC4F
+94DEC1D9FEDC4F9CD8C2DDDADDDAFF4C24187FB8D8C8D9C9D8C8DEC1D9FADD44
+2408D8C8DD0414D8C8DEC1D9FAD9E0DEC1F7DAD9C0DD478CD9EEDED9DFE0D0EC
+720AD9E8DCC1DEC1D9E1D9FADC4F8CD9E1DD9E80000000DC4FB8DC641410837F
+B4007503DC77E0DD5EE083C41CC3DC77E0DD5EE083C41CC3
+[END]
+
+WARNING be sure to execute this ONLY once; it is very math intensive.
+Heightmap dynamically generated from a variation of Gnarl formula, by Mark Townsend.
+This shows a variety of little spirals, and it's interesting and different from the classic one.
+Stunning effects can be done with this map, especially with reflections enabled.
+Try to change Alpha, Beta and steps to vary the shapes. Also Gamma has interesting effects.
+Use more iters to get more details (some details will be much extruded though).
+Be careful with the 'Iters', again, because NO check is done on what you type, and more iters means more time...
+Supports colors.
+Use a negative multiplier for a different color mode (slower variation).
+
+  x = x + step * (sin( Gamma *(y - xx) + sin( alpha * (y + beta * cos(y) ))))
+  y = y + step * (sin( Gamma *(y + xx)  -  alpha * sin( xx + beta * cos(xx) )))
+
+
+Update; Much faster computation due to an optimization suggested by Jesse.
+It ensures a quality identical as before but 5x faster.

@@ -1,0 +1,40 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double N of spirals = 1
+.2Doubles Scale = 2
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 0
+.Double Amplitude= .1
+.Integer Apply scale+add = 1
+.Double R exponent = .8
+.Integer Pow(R) or Log(R) = 0
+[CONSTANTS]
+Double = 1
+[CODE]
+83C4E4660F104688F20F104E98660F5947E0F20F594FE0660F5847C0F20F584F
+D0837FB4007419F20F106E70F20F596FE0660F114688F20F114E98F20F116E70
+660F110424F20F114C2410DD0424D8C8DD442408D8C8DEC1DD47ACD9C9D9E1D9
+F1837FA8007510D9E8D9C1D9F8D9F0DEC1D9FDD9C9DDD8DD442408DD0424D9F3
+DC4FF0DEC1D9FED9E1DC4FB8DC442410D9E0837FB4007503DC77E0DD5EE083C4
+1CC3
+[END]
+
+Generalized "spiral heightfield".
+You can choose any R exponent to get different spirals;
+
+Exponent < 0 -> Whorls (spirals infinitely tight in the center)
+0 ... 0.5 -> spirals that fade out in the distance
+0.5 -> a "normal" spiral - every spire is at a fixed distance
+0.5 + -> Spirals that get tighter when distance grows
+
+Enable the last switch to see a logarithmic spiral (visually it is very appealing)
+
+Equation; 
+  (rho,theta) = tocylindrical(x,y)
+  // actually I don't take square root of rho for speed reasons
+  DE = z - abs(sin(pow(rho,exponent) + N * theta))
+
+Luca GN 2012

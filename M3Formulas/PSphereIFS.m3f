@@ -1,0 +1,41 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double Pseudo Radius = 3
+.2Doubles Scale = 2
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 0
+.Double Max Radius = 2.85
+.Integer Apply scale+add = 1
+.Double Thickness = .001
+.Double Min Radius = .1
+.Integer Flip XZ / YZ = 0
+.Integer Upside down = 0
+[CONSTANTS]
+Double = .3
+Double = .02
+[CODE]
+83C4BA660F104688F20F104E98660F5947E0F20F594FE0660F5847C0F20F584F
+D0837FB4007419F20F106E70F20F596FE0660F114688F20F114E98F20F116E70
+660F110424F20F114C2410837FA001750EDD0424DD442410DD1C24DD5C241083
+7FA0FF7510DD442408DD442410DD5C2408DD5C2410837F9C00740ADD442410D9
+E0DD5C2410DD0424D8C8DD442408D8C8DEC1DD542408D9FADD1C24DD47F0D8C8
+DC642408D9C0D9E1DEC1D9FAD9C0DC47F0DC3424D9EDD9C9D9F1DC4FF0D9C9D9
+E0DEC1DC642410D9E1DC67ACDD0424DC0FDC4708D9E1DEC9DD0424DC67B8D8D1
+9BDFE0D0EC7304DDD8EB02DDD9DD0424DC6FA4D8D19BDFE0D0EC7304DDD8EB02
+DDD9837FB4007503DC77E0DD5EE083C446C3
+[END]
+
+Pretty 3D "surface" generated from the implicit expression of the tractrix. Similar to QCylinder.
+It is infinitely extended but for this purpose I limited it to the most interesting part...
+
+x = sqrt ( y*y + x*x )
+m = sqrt ( a*a + x*x )
+n = sqrt min (( a*a - x*x ) , 0) // avoids math errors
+DE = z - (a ln (( a + n ) / x) - n) // more or less... + some additional juggling and a defix
+// I multiplied by ( R+0.5)*0.3 in the end to fix DE
+// basic formula is copied from; http://it.wikipedia.org/wiki/Trattrice_(geometria) thanks a lot
+
+Luca GN 2012

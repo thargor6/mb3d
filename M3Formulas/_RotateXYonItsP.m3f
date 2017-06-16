@@ -1,0 +1,52 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.3SingleAngles Reference rotation = 0
+.Double Iteration multiplier = 6
+.Double Iteration sub = 0.5
+.Double Iteration pow = -0.8
+[CONSTANTS]
+Double = 0.017453292519943295769236907684886
+[CODE]
+558BEC5657538B750889C38B7E30DD01
+DD02DD03D9C0D84FDCD9C2D84FD8DEC1
+D9C3D84FD4DEC1D9C1D84FF4D9C3D84F
+F0DEC1D9C4D84FECDEC1D9CAD84FE8D9
+CBD84FE4DEC3D9CBD84FE0DEC2DD1BDD
+1ADD19D9D0DD02DD03FF86D0000000DB
+86D0000000DC67C4DD47BCE86D000000
+90DC4FCCDC0FD9FBD9C0D8CBD9C2D8CD
+DEC1DD1BDECBDEC9DEE9DD1A90D9D0DD
+01DD02DD03D9C0D84FECD9C2D84FE0DE
+C1D9C3D84FD4DEC1D9C1D84FF4D9C3D8
+4FE8DEC1D9C4D84FDCDEC1D9CAD84FF0
+D9CBD84FE4DEC3D9CBD84FD8DEC2DD1B
+DD1ADD1989D85B5F5E5DC20800D9C9D9
+E1D9EDD9C9D9F1D9C9DEC9D9EADEC9D9
+C0D9FCDCE9D9C9D9F0D9E8DEC1D9FDDD
+D9C390
+[END]
+
+
+Description:
+WARNING don't use an integer positive sub with a negative pow or you get errors!!!
+(trying to calculate 1/0) - more generalized version of RotXYonIts by Jesse
+
+1) Rotates the reference axis by selected angles
+2) Rotates the XY plane on an angle rho:
+
+rho = ( abs(ItCount - IterFix) ) ^ IterPow
+
+... that is function of the itercount. (It allows you to get a zero rotation on
+very high itcounts and other effects normally unobtainable)
+
+SinCos(Iteration_multiplier * rho * Pid180, s, c)
+x' = x * c + y * s
+y' = y * c - x * s
+
+
+With the constant Pid180 as conversion-factor between grad and radians.
+
+3)Rotates the reference axis at the inital position (transposed rot. matrix)
+
+Added functionality LucaGN

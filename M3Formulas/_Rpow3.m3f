@@ -1,0 +1,18 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 3
+.RStop = 16
+[CODE]
+558BEC568B7508DD01DD02DD00DD4638DCCBDCCADEC9DD18DD1ADD195E5DC208
+00
+[END]
+
+Description:
+
+Does a power of 3 on the current length of the 3d vector.
+Is faster than squaring.
+
+x = x * sqrRout
+y = y * sqrRout
+z = z * sqrRout

@@ -1,0 +1,42 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double dx = 1
+.Double dy = 0
+.Double dz = 0
+.Double dw = 0
+[CODE]
+558BEC53505657908B75088BD88B7E30DD0390DC0BD9E090DD0290DC0A909090
+DEC1DD0190DC09909090DEC1DD4108DC49089090DEC1DC47F0D9D0DD0390DC0A
+D9E090D8C0DC47E8D9D0DD0390DC09D9E090D8C0DC47E0D9D0DD0390DC4908D9
+E0D8C0DC47D8D9D0D9D0D9D0D9D09090DD5908DD19DD1ADD1BDD0390DC4E1890
+90DD0290DC4E20D9E0DEC1DD0190DC4E28D9E0DEC1DD4108DC4EC8D9E0DEC1D9
+D0DD0390DC4E209090DD0290DC4E189090DEC1DD0190DC4EC89090DEC1DD4108
+DC4E28D9E0DEC1D9D0DD0390DC4E289090DD0290DC4EC8D9E0DEC1DD0190DC4E
+189090DEC1DD4108DC4E209090DEC1D9D0DD0390DC4EC89090DD0290DC4E2890
+90DEC1DD0190DC4E20D9E0DEC1DD4108DC4E189090DEC1D9D090DD5908DD19DD
+1ADD1B908BC35F5E585B5DC20800
+[END]
+
+This is a 4-D extension of the (generalized and approximated) Lambda formula. Not the same as the real Lambda but close.
+This implementation uses the Hamilton non-commutative quat product, can be found in many sites for example; http://en.wikipedia.org/wiki/Quaternion
+I multiply S +- K by C (not vice-versa).
+
+Lambda non-commutative 4D formula (approximate, not the exact Lambda formula)
+----------------
+S is the quaternion that contains (x,y,z,w).
+K is the quaternion that contains (dx,dy,dz,dw).
+C is the quaternion that contains (Cx,Cy,Cz,Cw).
+Defining quat multiplication as follows (non-commutative rule);
+A q* B := ( Ax Bx - Ay By - Az Bz - Aw Bw , Ax By + Ay Bx + Az Bw - Aw Bz ,  Ax Bz - Ay Bw + Az Bx + Aw By , Ax Bw + Ay Bz - Az By + Aw Bx)
+A + B  := ( Ax + Bx , ... , Aw + Bw ) term by term sum
+----------------
+
+S' = ( K - S q* S ) 
+Note that S q* S = (x^2-y^2-z^2-w^2,2xy,2xz,2wx)
+S'' = S' q* C
+
+----------------
+FORMULA AND IMPLEMENTATION; 100% by Luca G.N. 2011.

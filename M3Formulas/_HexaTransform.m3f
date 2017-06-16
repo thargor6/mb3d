@@ -1,0 +1,35 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Offset = 0
+[CONSTANTS]
+Double = 0.86602540378443864676372317075294
+Double = -0.5
+[CODE]
+558BEC56578B75088B7E30DD00D9E1DC
+67F090DD02DC0FDD00DC4F08DEC1D9E1
+DC67F090DD01D9E1DC67F090DD02DC0F
+DD00DC4F08DEE1D9E1DC67F090DD5908
+DD19DD1ADD18DD4618D9E1DC67F090DD
+4620DC0FDD4618DC4F08DEC1D9E1DC67
+F090DD4628D9E1DC67F090DD4620DC0F
+DD4618DC4F08DEE1D9E1DC67F090DD5E
+C8DD5E28DD5E20DD5E185F5E5DC20800
+[END]
+
+Description:
+
+Based on Aexions ideas, this performs a hexagonal transform to be used as first formula as pre-transform, and choosing 'repeat from here' on the next formula(s).
+
+It is a 3d transform, but the result is 4d, so a combination with 4d formulas would make a better sense (like the 4D ABox).
+
+Cx' = abs( Cx ) - Offset
+Cy' = abs( Cy*k1 + Cx*k2 ) - Offset
+Cz' = abs( Cz) - Offset
+Cw' = abs( Cy*k3 + Cx*k2 ) - Offset
+x' = abs( x ) - Offset
+y' = abs( y*k1 + x*k2 ) - Offset
+z' = abs( z ) - Offset
+w' = abs( y*k3 + x*k2 ) - Offset
+
+Where k1 = sqrt(3)/2 , k2 = 1/2, k3 = -k1

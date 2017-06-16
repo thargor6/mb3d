@@ -1,0 +1,23 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 21
+.SSE2
+.Double Z offset = 0
+.Double Y offset = 0
+.Double X offset = 0
+.Double Y size = 2
+.Double X size = 2
+.Double TY offset = 0
+.Double TX offset = 0
+.Integer XZY instead ZYX = 1
+[CODE]
+8B47BC83E001C1E003BA0800000029C2D1E2660F10443088F20F105C3288660F
+5C47E0660F5E47D0F20F5C5FF0F20FE6D0F20F115C3288F30FE6D2660F5CC266
+0F5947D0660F5847C0660F11443088C3
+[END]
+
+A tiling transform to spread objects along the x and y axis,
+or along the z and y axis if the last parameter is set to 1.
+
+Use the first 3 parameters to shift the objects.
+Use the size and T parameters to adjust the object in the tile.

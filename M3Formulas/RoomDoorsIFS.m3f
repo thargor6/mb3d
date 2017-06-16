@@ -1,0 +1,70 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double WofWall (- for roof) = 0.1
+.Double HofWall = 1.
+.Double HofDoor = .65
+.2Doubles Scale = 2.
+.Double Z add = 0.
+.Double Door pos (Y+) = 0.
+.Double Wall pos (X+) = -2.
+.Integer PFOrder, apply if +  = -4
+.Double WofDoor = .2
+.DoubleAngle Wall Rho = 0
+.DoubleAngle DoorSides Rho =0
+.Integer DoorPeriod (0 OFF)  = 0
+.Double ArcR = 1e-25
+.Double OTrapOnIts = .1
+.Double OTrapOffset = 0
+.Double OTrapRoof (neg OFF) = -1
+[CONSTANTS]
+Double = 0.5
+Double = 0.159154943
+Double = -6.283185307
+Double = 1.57079632675
+Double = -30
+[CODE]
+5183C4C4660F104690F20F104E88660F5947D0F20F594FD0837FB4007C0FF20F
+106E70F20F596FD0F20F116E70660F110424F20F114C2410DD442410DD0424D9
+F3DC6F18DC4F08DA4FB4DB5C2428DB442428DA77B4DC4F10D9FBDD5C2418DD5C
+2420DD442410DC4C2418DD0424DC4C2420D9E0DEC1DC47B8DD442410DC4C2420
+DD0424DC4C2418DEC1DC47C0DD1C24DD5C2410DD442408DC47C8DD5C2408660F
+100424F20F104C2410837FB4007C0A660F114690F20F114E88DD442408DC4FA4
+DD442410DC4F9CDEC1DD442408DC4F9CDD442410DC4FA4D9E0DEC1DD5C2408DD
+542420DD5C2410DD442410D9E1DD47F0D9E1DEE9D9E0660F110424F20F114C24
+108B442428050001000031D28B4F8883F9007E0BF7F183FA010F8593000000DD
+0424D9E1DC4F8CDD442408DC4F94D9E0DEC1DC67ACDD442408DD47E0D9E0DEE1
+D9C0DD4780D9EEDED99BDFE0D0EC770FDD4780DD5C2418D9EEDD5C2428EB11DD
+47ACDC6780DD5C2418DD4780DD5C2428D8C8DD0424D9E1DC642428D8C8DEC1D9
+FADC642418D8D19BDFE0D0EC7204DDD8EB02DDD9D8D19BDFE0D0EC7304DDD8EB
+02DDD9D8D19BDFE0D0EC7304DDD9EB02DDD8D9E031C98B57F481E20000008074
+6BDD442408DC47E8D9E1DC47F0DD442420DC47F0D8D19BDFE0D0EC7204DDD9EB
+02DDD8D9C0DD4720DC8E78FFFFFFDEC1D9EEDED99BDFE0D0EC7222DD8768FFFF
+FFD9EED8D99BDFE0D0EC720631C9DDD8EB0BB901000000DD9E80000000D8D19B
+DFE0D0EC7304DDD9EB02DDD8DD442408DD47E8DC0FDD542418DEC1D9E1DC6424
+18D8D19BDFE0D0EC7304DDD8EB02DDD983F9007515DB46E8DC8F78FFFFFFDC87
+70FFFFFFDD9E80000000837FB4007D03DC77D0DD5EE083C43C59C3
+[END]
+
+Tried to make a very flexible tool for generating "realistic" rooms, hope it helps.
+
+- WofWall; If positive, there will be no roof, else there will be one. This is the thickness of walls / 2,
+and the thickness of the roof itself.
+- HofWall; Using z as a fixed reference, this will be the total height of the room. 
+- HofDoor, total height of each door, IF ArcR is left at its default value (positive & near to 0).
+- Door,Wall pos; Will also modify x and y values if PFOrder > 0. PForder works as normal "Apply scale + add" but
+  also changes room's shape of course.
+- WofDoor; Make the doors bigger/smaller.
+- Wall rho; Useful to create pyramids or strange walls.
+- DS rho; Makes the doors trapezoidal.
+- Door period; Instead of a door for each wall, you can see a door for each x walls, 0 to disable. Can have odd effects.
+- ArcR; Has nice effects depending on its value compared to WoD;
+  - if AR < 0, the arc will be acute. Bigger R = more acute = higher arc.
+  - if AR = 0, the arc will be round.
+  - if AR < WoD, the arc will be composite (except if AR <= 0).
+  - if AR = WoD, the arc will be round.
+  - if AR > WoD, the arc will be depressed. Bigger R = higher arc.
+- OTrapRoof; You can choose a different color for the roof (useful for some effects in OT mode). Disable with neg values.
+
+Luca GN 2012

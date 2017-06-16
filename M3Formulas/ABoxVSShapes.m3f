@@ -1,0 +1,213 @@
+[OPTIONS]
+.Version = 4
+.DEscale = .2
+.DEoption = 11
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Boxscale Min R = 0.5
+.Double Fold = 1
+.Double Scale vary = 0
+.Integer Shape mode = 1
+.Double Shape modifier 1 = 1.500
+.Double Shape modifier 2 = 0.666
+[CONSTANTS]
+Double = 3
+Double = .1
+Double = .15
+[CODE]
+558BEC81EC500000005657538B7D0889
+C38B773081C780000000837F50007F09
+FF4750DD46F0DD5F48DD4748D9E8D9C1
+D9E1DEE1DC4ED0DEC1DD5F48DD46D8D9
+C0D9C0DCC2D9E0DD03D8D2DFE0D0EC72
+06D9E0D8C3EB0CD8D1DFE0D0EC7304D9
+E0D8E3DD02D8D3DFE0D0EC7206D9E0D8
+C4EB0CD8D2DFE0D0EC7304D9E0D8E4DD
+01D8D4DFE0D0EC7206D9E0D8C5EB0CD8
+D3DFE0D0EC7304D9E0D8E5D9CBDDD8D9
+CBDDD8D9CBDDD890837ECC01751FD9C0
+D8C8D9C2D8C8DEC1D9FADC66C4D8C8D9
+C3D8C8DEC1DC4EBCE97403000090837E
+CC027541D9C2D9E1DD46C4D8D1DFE0D0
+EC762ADEE1D8C890D9C1D8C8D9C3D8C8
+DEC1DC4EBC9090D8D1DFE0D0EC7307DD
+D8E93B030000DDD9E934030000DDD8DD
+D8D9EEEBD390837ECC037541D9C2D9E1
+DD46C4D8D1DFE0D0EC762ADEE1D8C890
+D9C1D8C8D9C3D8C8DEC1DC4EBC9090D8
+D1DFE0D0EC7607DDD8E9F3020000DDD9
+E9EC020000DDD8DDD8D9EEEBD390837E
+CC047541D9C2D9E1DD46C4D8D1DFE0D0
+EC762ADEE1909090D9C1D8C8D9C3D8C8
+DEC1DC4EBCD9C9D8D1DFE0D0EC7307DD
+D8E9AB020000DEF9E9A4020000DDD8DD
+D8D9E8EBD390837ECC057541D9C2D9E1
+DD46C4D8D1DFE0D0EC762ADEE1909090
+D9C1D8C8D9C3D8C8DEC1DC4EBCD9C9D8
+D1DFE0D0EC7607DDD8E963020000DEF9
+E95C020000DDD8DDD8D9E8EBD390837E
+CC06754AD9C2D8C8DD46C4D8D1DFE0D0
+EC7633DEE1D9C1D8C8D9C3D8C8D8D1DF
+E0D0EC7304DDD8EB02DDD9DC4EBCD9C9
+D8D1DFE0D0EC7307DDD8E912020000DE
+F9E90B020000DDD8DDD8D9E8EBC79083
+7ECC07754AD9C2D8C8DD46C4D8D1DFE0
+D0EC7633DEE1D9C1D8C8D9C3D8C8D8D1
+DFE0D0EC7304DDD8EB02DDD9DC4EBCD9
+C9D8D1DFE0D0EC7607DDD8E9C1010000
+DEF9E9BA010000DDD8DDD8D9E8EBC790
+837ECC087520D9C2D8C8D9C0DC66C4DE
+C9D9C1D8C8D9C3D8C8DEC1DEC1DC4EBC
+E98C01000090837ECC0A7521D9C2D8C8
+D8C8D9C2D8C8D8C8DEC1D9C1D8C8D8C8
+DEC1DC4EBCDC66C4E96401000090837E
+CC0B755FD9C2D8C8DD5DF8D9C1D8C8DD
+5DF0D9C0D8C8DD5DE8D9C2D8CAD8C9DC
+0EDD45F8DC4DF0DC4DE8DEC1DD45F8DC
+4DF0DD45F8DC4DE8DEC1DD45E8DC4DF0
+DEC1DC4EC4DEC1DD45F8DC45F0DC45E8
+DC4EC4DC4EC4DEC1DC46BCDC4E08E9FE
+00000090837ECC097537D9C2D8C8D8C8
+D9C2D8C8D8C8DEC1D9C1D8C8D8C8DEC1
+DD5DF0D9C2D8C8D9C2D8C8DEC1D9C1D8
+C8DEC1DC4EBCDC45F0DC46C4E9C00000
+0090837ECC0C752DD9C2D9E0DC4EC4D9
+C1D8C8D9C3D8C8DEC1D9FADC4EBCDEC1
+D9EED8D9DFE0D0EC7604DDD8D9EED8C8
+E98C00000090837ECC0D752BD9C2D9E0
+D9E8D8D9DFE0D0EC7306DDD8D9E89090
+DC4EC4D9C1D8C8D9C3D8C8DEC1DEC1DC
+4EBCE95A00000090837ECC0E7538D9C2
+D8C8DC4EC4D9C2D8C8DEC190D9C3D8C8
+DC4EC4D9C2D8C8DEC190D8D1DFE0D0EC
+730ADDD8DC4EBCE925000000DDD9DC4E
+BCE91B00000090E96300000090909090
+90909090909090909090909090909090
+90DC56E0DFE0D0EC7307DDD8DD46E8EB
+16D9E8D8D1DFE0D0EC7207DDD8DC7F48
+EB05DED9DD4748DD4108D8C9DD5908DC
+CBDCCADEC9DC47A8DD19DC47A0DD1ADC
+4798DD1B89D85B5F5E89EC5DC2080090
+837ECC0F752CD9C0D8C8D9C2D8C8DEC1
+DC4EBCD9C3D9E1DC56C4DFE0D0EC7306
+DDD8D9EEEB05DC66C4D8C8DEC1E97FFF
+FFFF90837ECC100F85A9000000D9C0D8
+C8D9C2DC66C4D8C8DEC1D9C3DC66C4D8
+C8DEC1DD5DF890D9C0DC66C4D8C8D9C2
+D8C8DEC1D9C3DC66C4D8C8DEC1DD5DF0
+90D9C0DC66C4D8C8D9C2DC66C4D8C8DE
+C1D9C3D8C8DEC1DD5DE890D9C0DC46C4
+D8C8D9C2DC46C4D8C8DEC1D9C3DC46C4
+D8C8DEC1DD5DE090DD45F8DD45F0D8D1
+DFE0D0EC7304DDD8EB02DDD9DD45E8D8
+D1DFE0D0EC7304DDD8EB02DDD9DD45E0
+D8D1DFE0D0EC7304DDD8EB02DDD9DC4E
+BCE9CBFEFFFF837ECC117529D9C2D9E1
+D8C0D8C0D9C3D8C8D8C0D9C3D8C8DEC1
+D9C2D8C8DEC1DEF1D8C8DC4EBCDC46C4
+E99CFEFFFFE997FEFFFF
+[END]
+
+Same as normal ABox Vary Scale but "r" is replaced by another expression,
+to get new effects instead of a normal sphere inversion; the final
+look is completely different.
+Change the modifiers when shapes look weird.
+
+Shape mode=1 -> Torus
+Mod1 = Radius of the torus (big), Mod2 = Radius of the circle section
+Mod1 = 0 and Mod2 = 1 is the normal ABoxVaryScale (lol)
+Shape mode=2 -> Cylinder A
+Mod1 = Cut limit, Mod2 = Pendence
+Shape mode=3 -> Cylinder B
+It's similar to the precedent, but not identical at all...
+Shape mode=4 -> Cone A
+It's similar to the precedent (cut limit, pendence)
+but with conic look instead of cylindric.
+Warning, it is a discontinue formula.
+Use mod1=1e90 to remove all discontinuities
+Else just choose a low raystep/stepwidth (it renders fine)
+Shape mode=5 -> Cone B
+Nothing special to say, another variation!
+Shape mode=12 -> Cone C (single sided)
+A new, simplified formula with an alternate definition of distance
+Shape mode=13 -> Paraboloid
+Similar as above
+Shape mode=6 -> Squarry pyramid A
+Shape mode=7 -> Squarry pyramid B
+These variations are "extreme"... They have very strange
+sharpy looks, far from the usual ABox. Mods have the usual meaning.
+They share the discontinuity problem with the cone.
+Shape mode=8 -> Lemniscate of Gerono (*)
+A quartic solid.
+Mod1 = Separation between "poles", Mod2 = Size
+Shape mode=9 -> Pseudo-cube (* but generalized)
+A cube with smoothed edges, but not only!...
+Try neg modifiers to get funky effects (like .7 , -1 )
+Shape mode=10 -> Pseudo-cube 2
+A cube with smoothed edges.
+Mod1 = Correction (use low values), Mod2 = Size
+Shape mode=11 -> Pseudo-octahedron (* but modified)
+A solid that rensembles to a octahedron.
+Shape mode=14 -> BiCylinder
+The intersection of two orthogonal cylinders.
+Shape mode=15 -> Roundy Cylinder
+Finite cylinder that "ends" with spheric caps.
+Too big values for mod1 can generate (ininfluent) discontinuities
+Shape mode=16 -> Spheric Tetra
+The intersection of four spheres, each one is on the vertex
+of a tetrahedron. Too bad if you choose random mod values
+it does not work. Big values for mod1 require (very!) small
+values for mod2 (else you intersect non-overlapping spheres...)
+This shape has a different symmetry type, with interesting effects
+Shape mode=17 -> Bisphere
+Another odd shape
+Shape mode=any other value -> ERROR!
+
+------ rev 19 oct 11 ------ LUCAGN
+
+Formula; 
+Big thanks to Aexion for the inspiration on this.
+And thanks to http://paulbourke.net/geometry/ 
+and to http://www-sop.inria.fr/galaad/surface/ for the shapes that i flagged as (*) !!!
+
+* Torus
+Simply replace r with the expression of x' of _totorical2,
+using mod1 as R and mod2 as a global multiplier.
+* Cylinders
+Let's find z';
+If abs(z) > mod1 {z'=0} else {z'=sqr(mod1-z)}
+Uses mod2*(x*x+y*y) or z'*z' as the radius.
+A picks the biggest value and B the smallest. Both modes are great!
+* Cones (have some discontinuities when mod1 is low)
+See this algorithm;
+
+If abs(z) > mod1 {z'=1} else {z'=(mod1-z)}
+rho = mod2*(x*x+y*y)
+If rho < z' {r=rho/z'} else {r=rho} // Cone B has If rho > z' {r=rho/z'} ...
+* Cone C
+r = (min(-m1*z + sqrt(x*x+y*y), 0)*m2)^2
+* paraboloid
+r = (min(-z, 1)*m1 + (x*x+y*y))*m2
+* Squarry P. (have some discontinuities when mod1 is low)
+See this algorithm;
+
+If abs(z) > mod1 {z'=1} else {z'=(mod1-z)}
+rho = max(x*x,y*y)
+If rho < z' {r=rho/z'} else {r=rho} // SqP B has If rho > z' {r=rho/z'} ...
+* Octahedron
+(xx=x*x, xy = x*y and so on)
+r=.1*(3*xyz+(xyz)^2+m1*(xxyy+xxzz+yyzz)+m1^2*(xx+yy+zz)+m2)
+* Magnolia
+(xx=x*x, xy = x*y and so on. Plus xx' = x*abs(x), yy' = y*abs(y), zz' = z*abs(z))
+r=.15*(3*xyz+(xyz)^2+m1^2*(xxyy+xxzz+yyzz)+m1*(xx'+yy'+zz')+m2)
+* Lemniscate
+This shape were suggested directly by Aexion! Thanks a lot
+r=((x*x - mod1)*x*x + y*y + z*z) * mod2
+* Pseudocube (from http://www-sop.inria.fr thanks a lot)
+r=(x*x*x*x+y*y*y*y+z*z*z*z)+m2*(x*x+y*y+z*z)+m1
+* Pseudocube2
+r=m2*(x*x*x*x+y*y*y*y+z*z*z*z)+m1
+* Bisphere
+r=m2*((2*x*x+y*y+z*z)/abs(4*x))^2+m1
+ 

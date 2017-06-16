@@ -1,0 +1,42 @@
+[OPTIONS]
+.Version = 3
+.DEscale = 1
+.SIpower = 2
+.Integer Fuzzy-Y = 0
+.Integer Fuzzy-Z = 0
+.Double Limiter = 0.01
+[CODE]
+558BEC5356578B75088B7E308BD8DD03D8C8DD02D8C8DEE9DD01D8C8DEE9D9D0
+DD03DC0AD8C0D9E8DD01D8C8837FF4007E02EB12837FF400740EDD01D9EEDED9
+DFE0D0EC7202D9E0DD03D8C8DD02D8C8DEC1DD47E8D9E1DEC1DEF9DEC1DEC9D9
+D0DD03DC09D8C0D9E8DD02D8C8837FF0007E02EB12837FF000740EDD02D9EEDE
+D9DFE0D0EC7202D9E0DD03D8C8DD01D8C8DEC1DD47E8D9E1DEC1DEF9DEC1DEC9
+D9D0DC4628DD19DC4620DD1ADC4618DD1BD9D08BC35F5E5B89EC5DC20800
+[END]
+
+
+Description:
+
+From WIP3D5 in MMFwip3D.ufm, by David Makin, uploaded at FractalForums.
+For formula 4 set positive values for both modifiers.
+Negative values will show a variation I made for fun. 
+The limiter reduces the fuzziness, improving the render quality (and can be disabled setting zero).
+
+l=abs(l)
+x' = x*x - y*y - z*z + Cx
+if Fuzzy-Y > 0
+y' = 2xy ( 1 - z*z/(x*x + y*y + l)) + Cy
+if Fuzzy-Y < 0
+y' = 2xy ( 1 + abs(z)*z/(x*x + y*y +l)) + Cy
+else
+y' = 2xy ( 1 + z*z/(x*x + y*y +l)) + Cy
+endif
+if Fuzzy-Z > 0
+y' = 2xz ( 1 - y*y/(x*x + z*z +l)) + Cy
+if Fuzzy-Z < 0
+y' = 2xz ( 1 + abs(y)*y/(x*x + z*z)) + Cy
+else
+y' = 2xz ( 1 + y*y/(x*x + z*z)) + Cy
+endif
+
+Luca GN 2011

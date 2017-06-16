@@ -1,0 +1,64 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Double Fold = 1
+.Double Inner R = .6
+.Double Inner Scale = -.5
+.Double Unsharpening = 0
+.Double Inv-xCen = 0
+.Double Inv-yCen = 0
+.Double Inv-zCen = 0
+.Double Inner Z Mul = 1
+.Integer Disable box = 0
+[CODE]
+558BEC81EC800000005356578B75088B7E308BD8D9D0DD03DC47E8D9E1DD03DC
+67E8D9E1D9E0DC23DEC1DD1BDD02DC47E8D9E1DD02DC67E8D9E1D9E0DC22DEC1
+DD1ADD01DC47E8D9E1DD01DC67E8D9E1D9E0DC21DEC1DD19DD03D8C8DD02D8C8
+DD01D8C8DEC1DEC1DD55E8D9FADD5DE0DD47F0DD03D8C9DC67C8DD1BDD02D8C9
+DC67C0DD1ADD01D8C9DC67B8DD19DDD8837FAC00751590DD45E0D9E8D9C9DED9
+DFE0D0EC0F83C900000090DD45E0DD47E0DED9DFE0D0EC0F83D10000009090DD
+45E0DC67E0D9E8DC67E0DEF9DD55D8D9E8D8E1DD5DD0DDD890DD02D8C8DD03D8
+C8DEC1DD47D0D9E1DEC1D9FADD5DF89090DD45E8D8C8DD47D8DEF1DD5DE890DD
+01DC75F8D8C8D9E0D9E8DEC1DD5DF090DD03D8C8DD02D8C8D9E0DEC1DC4DF0DC
+4DE890DD03DC0AD9E0DC4DF0DC4DE890DD01D8C0D9E0DC4FB0DC4DF8DC4DE890
+DC4DD0DD01DC4DD8DEC1DC4628DD19DC4DD0DD02DC4DD8DEC1DC4620DD1ADC4D
+D0DD03DC4DD8DEC1DC4618DD1BE99500000090DD03DC4618DD1BDD02DC4620DD
+1ADD01DC4628DD19E97A00000090DD02D8C8DD03D8C8DEC1DD47D0D9E1DEC1D9
+FADD5DF890DD45E8D8C8DD47D8DEF1DD5DE890DD01DC75F8D8C8D9E0D9E8DEC1
+DD5DF090DD03D8C8DD02D8C8D9E0DEC1DC4DF0DC4DE8DC461890DD03DC0AD9E0
+DC4DF0DC4DE8DC462090DD01D8C0D9E0DC4DF8DC4DE8DC4FB0DC462890DD19DD
+1ADD1B90909090DD03DC47C8DD1BDD02DC47C0DD1ADD01DC47B8DD19D9D08BC3
+5F5E5B89EC5DC20800
+[END]
+
+This formula is an experiment with the W/N negative powers.
+And, due to its "weirdness", it requires a very low stepwidth/raystep to show up correctly.
+Don't use a SmallR next to 1, or (even more) weird things can happen.
+This is the concept;
+
+- At first do a Tglad folding
+- Calculate radius = cabs(x,y,z)
+- Scale the vector
+- Raise to power -2 the vector (according to W/N theory), and store in Tvec
+// W/N power -2 formula is (with unsharpening factor);
+// Tvec = [ ( x*x - y*y ) a ; -2*x*y*a ; -2*z*rxy*izM ] * pow(radius,-4)
+// and rxy = sqrt(x*x+y*y+Unsh), a = 1 - (z/rxy)^2
+// (Yes both z and y have negative sign, that's why a neg ISc is better)
+- If radius > 1, just add C. (Gives the boxy look, never executed in "Disable box" mode)
+- ElseIf radius < InR, vector = ISc*Tvec + Cvec (apply the exponentiation)
+- Else; (interpolation, necessary to remove branch cuts)
+  k = (R-InR)/(1-InR)
+  x = ISc*Tvecx * (1-k) + oldx * k + Cx
+  y = ISc*Tvecy * (1-k) + oldy * k + Cy
+  z = ISc*Tvecz * (1-k) + oldz * k + Cz
+
+- Now multiply the vector by the scale
+- Finally add C
+
+The result is full of discontinuities and odd, but you might like it.
+
+Luca GN 2011

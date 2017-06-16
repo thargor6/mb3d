@@ -1,0 +1,28 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Sides = 4.0
+[CONSTANTS]
+Double = 3.1415926535898
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0dd07
+dc77f0dd55f8d8c0dd5df0dd01dd02d9f3d9e1dc55f8dfe0
+80e4417f05dc65f0ebf1d9ffd9e8def1d9c0dc0add1ad9d0dc09dd19D9D0
+8BC35F5E5B89EC5DC20800
+[END]
+
+
+Description:
+
+Circle to polygon transform centered on the x axis (transforms yz plane).  I made it for before Pine Tree Mandelbulb, after transform 1.  Use it sparingly... or a lot.  
+
+ rCyz=abs(atan(z.z,z.y));
+
+	while (rCyz>pi/sides) {rCyz-=2.*pi/sides; }   
+
+z.yz/=cos(rCyz); 
+
+
+:D  
+
+  M Benesi

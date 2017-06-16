@@ -1,0 +1,55 @@
+[OPTIONS]
+.Version = 2
+.DEoption = 4
+.DEscale = 1
+.SIpower = 4
+.Double Px = 0.0
+.Double Py = 0.0
+.Double Pz = 0.0
+.Double Pw = 0.0
+.Double a = 1.5
+[CONSTANTS]
+Double = .5
+Double = 0.00001
+[CODE]
+558BEC53505657908B75088BD88B7E30DD03DC47F0DD1BDD02DC47E8DD1ADD01
+DC47E0DD19DD4108DC47D8DD590890DD4108D8C8DD02D8C8DEC1DD01D8C8DEC1
+D9FAD9C0DD4708DED9DFE080E441727F9090909090909090909090DD03D9FBD9
+D0D9C2D9EADEC9D9E8D9C1D9F8D9F0DEC1D9FDD9C9DDD890D9C0D9E8D9C1DEF9
+D9E0DEC1DC0F909090D9C1D9E8D9C1DEF9D9D0DEC1DC0F909090DDDAD9C3D8CA
+DD1BD9C2D8C9D8F5DDD9DDD9DDD9DDD9DDD99090DD02D8C9DD1ADD01D8C9DD19
+DD4108D8C9DD5908DDD8DDD890EB09DD03D9FEDD1BDDD890DD03DC4FD0DD1BDD
+02DC4FD0DD1ADD01DC4FD0DD19DD4108DC4FD0DD590890908BC35F5E585B5DC2
+0800
+[END]
+
+Description:
+
+Computes sin(Q+P) * a, following Hamiltonian (non commutative) theory.
+Q is a quat that contains in order (x,y,z,w).
+P is the phase. (In quat terms. Phase = pi/2 gives cos() function)
+pi/2 = 1.5707 (approx)
+a is the amplitude. (Real number)
+This formula should be used with non comm.quaternions, lots of wonderful intricate structures appear.
+Try also to change the bailout, setting a high value. Or use a higher/lower amplitude to see various effects.
+Also, this formula can give interesting results with all other formulas available (even if it is a "side effect").
+
+I implemented this code:
+	
+	Translate x y z w by P at first
+	T1 = sqrt(w*w+y*y+z*z);
+	if T1 != 0
+        calculate sin & cos of x;
+        T2 = exp(T1);
+        calculate sinh(T1) = .5 * (T2 - 1/T2);
+        calculate cosh(T1) = .5 * (T2 + 1/T2);
+	x = sin x * cosh T1;
+	T1 = cos x * sinh T1 / T1;
+	y = T1 * y;
+	z = T1 * z;
+	w = T1 * w;
+	else
+	// Real numbers -> shortcut
+	x = sin x
+	endif
+	Do a scaling by a

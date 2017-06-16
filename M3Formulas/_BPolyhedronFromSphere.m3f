@@ -1,0 +1,37 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Sides = 4.0
+.Double Sides2 = 4.0
+[CONSTANTS]
+Double = 3.1415926535898
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0dd07dc77f0dd55f8d8c0
+dd5df0dd07dc77e8dd55e8d8c0dd5de0dd01dd02d9f3d9e1dc55f8dfe080e441
+7f05dc65f0ebf1d9ffdd55f0dc0add55f8d8c8dd45f0dc09dd55f0d8c8dec1d9fa
+d9d0dd03d9f3d9e1dc55e8dfe080e4417f05dc65e0ebf1d9ffd9c0d9c0dc4df8
+dd1ad9d0dc4df0dd19d9d0dc0bdd1bD9D08BC35F5E5B89EC5DC20800
+[END]
+
+Description:
+
+Sphere to polyhedron transform.  Does not make regular polydedra, except for the cube!  I'm probably going to make a single regular tetrahedron/sphere and a sphere/tetrahedron transform, so we can do stuff with the Sierpinski tetrahedron (combine it with the Pine Tree, by sphering it first!).  
+
+  We can already make a Menger a sphere, do the Pine Tree thing, and square it up, do the Menger since we have the cube to sphere and sphere to cube transforms.... ;)
+
+ Here is the math, so it can easily be translated to other languages:
+
+ rCyz=abs(atan(z.z,z.y));   //atan is atan2  (arg!!!!)  abs is absolute value
+ while (rCyz>pi/sides) {rCyz-=2.*pi/sides; }   // if rCyz> pi/sides,  subtract 2*pi/sides from it   
+ z.yz*=cos(rCyz); 				// until it isn't greater than pi/sides...
+
+//z.yz*=whatever;  means y= y*whatever and z= z*whatever
+
+ rCxyz=abs(atan(sqrt(z.z*z.z+z.y*z.y),z.x));
+ while (rCxyz>pi/sides2) {rCxyz-=2.*pi/sides2; }  // same concept here!!!!   
+ z.xyz*=cos(rCxyz); 
+
+
+:D  
+
+  M Benesi

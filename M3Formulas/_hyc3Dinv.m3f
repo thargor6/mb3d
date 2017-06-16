@@ -1,0 +1,30 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double X center = 0
+.Double Y center = 0
+.Double Z center = 0
+.Double Radius = 1
+[CODE]
+558BEC568B75088B7630DD01DD02DD00DC46F0DD18DC46E8DD1ADC46E0DD19DD
+00D8C8DD00DEC9DD02D8C8DD02DEC9DEC1DD01D8C8DD01DEC9DEC1DD00DC09DC
+0AD9C9D8E1D8E1D9C9DEE1D9E0DD00D8C8DD02DD01DEC9DEE9D8F1DC4ED8DC66
+F0DD02D8C8DD00DD01DEC9DEE9D8F2DC4ED8DC66E8DD01D8C8DD00DD02DEC9DE
+E9DEF3DC4ED8DC66E0DD19DD1ADD185E5DC20800
+[END]
+
+Description:
+
+"Hypercomplex 3D inversion" with selectable radius and center. Needs a bit of coordinate adjustment.
+The effect of this inversion is VERY strong and strange (many singularities), so don't mess around...
+Formula by Luca GN 2011
+
+x', y', z' => Translate + scaling (by radius) of x, y, z with given params.
+Then, defined HyRho = (x'*x'*x'+y'*y'*y'+z'*z'*z'-3*x'*y'*z') (the modulus of a number in this theory),
+x'' = (x'*x'-y'*z')/HyRho
+y'' = (y'*y'-x'*z')/HyRho
+z'' = (y'*y'-y'*x')/HyRho
+(note! in this metric, points with coordinates (a,a,a) have a modulus = 0, so inverse doesn't exist!)
+For your convenience, x'',y'',z'' are translated back.
+Basic formula and explanations can be read here;
+http://en.wikipedia.org/wiki/Tricomplex_number

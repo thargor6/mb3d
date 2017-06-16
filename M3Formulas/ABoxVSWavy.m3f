@@ -1,0 +1,58 @@
+[OPTIONS]
+.Version = 4
+.DEscale = 0.2
+.DEoption = 11
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Boxscale Min R = 0.4
+.Double Fold = 1
+.Double Scale vary = 0
+.Double Wave Amp = 0.6
+.Double Wave Frq = 0.3
+.Double Wave2 Amp = -0.4
+.Double Radius mul = 1.3
+.Integer Wave2 alt mode = 0
+[CODE]
+558BEC81EC500000005657538B7D0889C38B773081C780000000837F50007F09
+FF4750DD46F0DD5F48DD4748D9E8D9C1D9E1DEE1DC4ED0DEC1DD5F48DD46D8D9
+C0D9C0DCC2D9E0DD03D8D2DFE0D0EC7206D9E0D8C3EB0CD8D1DFE0D0EC7304D9
+E0D8E3DD02D8D3DFE0D0EC7206D9E0D8C4EB0CD8D2DFE0D0EC7304D9E0D8E4DD
+01D8D4DFE0D0EC7206D9E0D8C5EB0CD8D3DFE0D0EC7304D9E0D8E5D9CBDDD8D9
+CBDDD8D9CBDDD8D9C2DC4EC0D9FBDD5DF0DD5DE8D9C1DC4EC0D9FBDD5DE0DD5D
+D8D9C0DC4EC0D9FBDD5DD0DD5DC890D9C0D8C8D9C2D8C8DEC1D9C3D8C8DEC1D9
+FADD5DC090DD45F0DC4DD8DD45E0DC4DC8DEC1DD45D0DC4DE8DEC1DC4EC890DD
+45F0DC45E0DC45D0DC4EB8837EAC01740EDEC1DD45C0DC4EB0DEC19090EB08DC
+46B0DC4DC0DEC1D8C8DC56E0DFE0D0EC7307DDD8DD46E8EB16D9E8D8D1DFE0D0
+EC7207DDD8DC7F48EB05DED9DD4748DD4108D8C9DD5908DCCBDCCADEC9DC47A8
+DD19DC47A0DD1ADC4798DD1B89D85B5F5E89EC5DC20800
+[END]
+
+This formula has been suggested by Aexion in FF. I modified and generalized it a bit.
+Same as normal ABox Vary Scale but "r" is replaced by a more complicated expression,
+to get new "wavy" effects instead of a normal sphere inversion;
+
+// do the folding, then;
+rho = sqrt(x*x+y*y+z*z); // the radius
+theta1 = cos(f*x) * sin(f*y) + cos(f*y) * sin(f*z) + cos(f*z) * sin(f*x);
+theta2 = cos(f*x) + cos(f*y) + cos(f*z);
+if (mulmode == 1) {
+r = theta1 * Amp + rho * (theta2 * Amp2 + Rmul);
+} else {
+r = theta1 * Amp + theta2 * Amp2 + rho * Rmul; 
+} endif
+// use r for the inversion and add c
+
+Some hints.
+- I often noticed that neg scale looks better. Try it!
+- Wave frq: Don't set too high values, or the fractal will look overly busy
+- Radius mul: Keep it near to 1, and use low amplitudes, to make the fractal 
+look more "boxy" or the deformation will be stronger (Amplitudes = 0 and rmul
+= 1 gives the normal ABoxVS)
+- Alt mode: Wave2 will interfer with the radius multiplier, even more possibilities
+for strange looks! ( Has effect when Wave2 amp > 0 )
+ ***
+- "Original" Aexion formula
+It's very interesting. Set scale = -2, minr>0.5, Wave amp = 3 (or anything 
+you like), frq <= 1, fold = 1 (or anything you like), any other param = 0.
+Tends to look a bit too busy but it can be good.

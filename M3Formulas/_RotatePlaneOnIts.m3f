@@ -1,0 +1,35 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.3SingleAngles Reference rotation = 0
+.Double Iteration multiplier = 0.5
+[CONSTANTS]
+Double = 0.017453292519943295769236907684886
+[CODE]
+558BEC5657538B750889C38B7E30DD01DD02DD03D9C0D84FDCD9C2D84FD8DEC1
+D9C3D84FD4DEC1D9C1D84FF4D9C3D84FF0DEC1D9C4D84FECDEC1D9CAD84FE8D9
+CBD84FE4DEC3D9CBD84FE0DEC2DD1BDD1ADD19D9D0DD02DD03FF86D0000000DB
+86D0000000DC4FCCDC0FD9FBD9C0D8CBD9C2D8CDDEC1DD1BDECBDEC9DEE9DD1A
+90D9D0DD01DD02DD03D9C0D84FECD9C2D84FE0DEC1D9C3D84FD4DEC1D9C1D84F
+F4D9C3D84FE8DEC1D9C4D84FDCDEC1D9CAD84FF0D9CBD84FE4DEC3D9CBD84FD8
+DEC2DD1BDD1ADD1989D85B5F5E5DC20800
+[END]
+
+
+Description:
+1) Rotates the reference axis by selected angles
+2) Rotates the XY plane on an angle multiplied by the iteration count:
+
+SinCos(ItCount * Iteration_multiplier * Pid180, s, c)
+x' = x * c + y * s
+y' = y * c - x * s
+
+
+With the constant Pid180 as conversion-factor between grad and radians.
+
+3)Rotates the reference axis at the inital position (transposed rot. matrix)
+
+Original formula by Jesse - Added functionality LucaGN
+
+Jesse:
+ Renamed formula from _RotateXYOnIts to _ RotatePlaneOnIts to make som of my old parameters still work :)

@@ -1,0 +1,28 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Scale = 1.0
+.Double fixX = 0.0
+.Double fixY = 0.0
+.Double fixZ = 0.0
+.Double fixW = 0.0
+[CODE]
+558BEC56538B75088BD88B7630DD03D8
+C8DC4EF0DC46E8DD1BDD02D8C8DC4EF0
+DC46E0DD1ADD01D8C8DC4EF0DC46D8DD
+19DD4108D8C8DC4EF0DC46D0DD59088B
+C35B5E5DC20800
+[END]
+
+
+Description:
+
+x' = x*x
+y' = y*y
+z' = z*z
+w' = w*w
+
+(x',y',z',w') *= Scale
+(x',y',z',w') += fixVec
+
+Disable Analytical DE to see the effect correctly.

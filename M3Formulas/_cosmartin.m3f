@@ -1,0 +1,29 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Strength = 1.0
+.Double Alpha = .5
+.Double Beta = .75
+.Double Gamma = 1
+.Double Delta = 1
+
+[CODE]
+558BEC568B75088B7630DD02DD00DC4EE0D9FFD9E0DC4EE8DEC1DC4EF0D9D0DD
+46D8DC20DC4EF0D9D0DD1ADD18D9D0DD4108DD01DC4EE0D9FFD9E0DC4EE8DEC1
+DC4EF0D9D0DD46D0DC21DC4EF0D9D0DD5908DD19D9D05E5DC20800
+[END]
+
+
+Description:
+
+CosMartin deformation in 4D - variation with four parameters and strength
+(inspired from CosMartin formula from Mark Townsend)
+Formula by Luca GN 2011
+
+This deformation needs some iterations to take a defined form, try 10-12. 
+The effect strength grows strongly for even small increments of the constants, choose wisely.
+
+x' = ( y - a cos(b x) )* Strength
+y' = ( c - x ) * Strength
+z' = ( w - a cos(b z) )* Strength
+w' = ( d - z ) * Strength

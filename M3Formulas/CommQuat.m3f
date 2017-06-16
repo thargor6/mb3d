@@ -1,0 +1,27 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double X mul = 1
+.Double Y mul = 1
+.Double Z mul = 1
+.Double W mul = 1
+.Double W add = 0
+[CODE]
+558BEC56578B75088B7E30DD4108DD01DD02DD00D9C1D8C8D9C1D8C8DEE1D9C4
+D8CCD8C0DEE9DC4FF0DC4618DD18D9C0D8CAD8C0D9C3D8C8DEC1D9C4D8C8DEE9
+DC4FE8DC4620DD1AD9C0D8CBD9C2D8CDDEE9D8C0DC4FE0DC4628DD19DECBDEC9
+DEC1D8C0DC4FD8DC47D0DC46C8DD59085F5E5DC20800
+[END]
+
+
+Description:
+
+A formula from Fracmonk on fractalforums.com,
+some additional user parameters added:
+
+x' = X_mul * (x*x - y*y - 2*z*w) + Cx
+y' = Y_mul * (2*x*y + z*z - w*w) + Cy
+z' = Z_mul * (2*x*z - 2*y*w) + Cz
+w' = W_mul * (2*x*w + 2*y*z) + W_add + Cw

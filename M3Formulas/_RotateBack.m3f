@@ -1,0 +1,15 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.3SingleAngles Undo rotation = 0
+[CODE]
+558BEC568B75088B7630DD01DD02DD00D9C0D84EECD9C2D84EE0DEC1D9C3D84E
+D4DEC1D9C1D84EF4D9C3D84EE8DEC1D9C4D84EDCDEC1D9CAD84EF0D9CBD84EE4
+DEC3D9CBD84ED8DEC2DD18DD1ADD195E5DC20800
+[END]
+
+You generally don't need to use this. This transform is "specialistic"...
+Un-does a given rotation, putting exactly the things as they were
+before it. It's not that obvious, because a rotation by (-Rotx,-Roty,-Rotz)
+in general does NOT!!! work as a RotBack, and I don't know what angles are needed.
+You have to type the angles without changing the sign (as they are).

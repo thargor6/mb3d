@@ -1,0 +1,38 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double xMin = .707
+.Double xScale = 0.0
+.Double xMax = 1.414
+.Double yzMin = .5
+.Double yzScale = 0.0
+.Double yzMax = 1.0
+.Double xPixelMin = .707
+.Double xPixelScale = 0.0
+.Double xPixelMax = 1.414
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0
+DD03D9E1DC67F0DD03D9E1D9
+E0DC47E0DEC9DC4FE8DD5DF8EB05D8E0DD5DF8DD4618D9E1DD4618D9E1DC47C0DEC9DC4FB8DD5DF0EB05D8E0
+DD5DF0DD02D8C8DD01D8C8DEC1D9FADC4FD0DC45F8DC45F0D9E0DC03D9D0DD1B
+D9D08BC35F5E5B89EC5DC20800
+[END]
+
+  Description:  Alters the x variable- which the T1 Pine Tree Mandelbulb revolves around.  Altering the one variable, rotating around the x axis, doing things to only the x variable... it works well with that particular type of fractal.  
+
+
+  This formula isn't complete.  I wrote it, made an assembly language mistake, and it was surrendipitous, so here we are.  I didn't finish adding everything that I intended to add, or setting it up completely.  This is an alpha version.
+
+  This formula WILL be changed, thus the "V1" at the end of its name.  The newer one will be V2, and have different features.
+
+
+ss1= (xmax-|x|)*(|x|-xmin) * ScaleX; 
+ss2 = (xpixelmax-|xpixel|)* (|xpixel|-xpixelmin) *pixelScale;
+yz = sqrt(y^2+z^2)*yzScale    //finish yzpart... still have 2 options that don't work!!!
+
+x' = x- yz -ss1-ss2;
+
+
+:D  
+
+  M Benesi

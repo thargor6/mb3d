@@ -1,0 +1,23 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BEC568B7508DD01DD02DD00D9C0D8C2D8C3DD18D9C2D8E1D8E2DD1AD9C1D8
+E1D8E3DD19DEE1DEE1DD5908DD4628DD4620DD4618D9C0D8C2D8C3DD5E18D9C2
+D8E1D8E2DD5E20D9C1D8E1D8E3DD5E28DEE1DEE1DD5EC85E5DC20800
+[END]
+
+Description:
+
+Based on Aexions ideas, this performs a quadray transform to be used as first formula as pre-transform, and choosing 'repeat from here' on the next formula(s).
+
+It is a 3d transform, but the result is 4d, so a combination with 4d formulas would make a better sense.
+
+Cx' =  Cx + Cy + Cz
+Cy' = -Cx - Cy + Cz
+Cz' = -Cx + Cy - Cz
+Cw' =  Cx - CY - Cz
+x' =  x + y + z
+y' = -x - y + z
+z' = -x + y - z
+w' =  x - Y - z

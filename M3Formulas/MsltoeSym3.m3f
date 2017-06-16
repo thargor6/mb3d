@@ -1,0 +1,26 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.Double Y multiplier = 1
+[CODE]
+558BEC57538B7D0889C3DD00DD01DD02D9C1D9E1D9C1D9E1DED9DFE080E44174
+02D9C9D8D1DFE0D9CAD0EC7208D9E0D9C9D9E0D9C9D9C1D8C8DC7738D9E8DEE1
+D9C1D8C8D9C4D8C8D9C1D8E1D8CBDC4718DD1BDEC1D9FADECBDEC9DECAD8C0DC
+4728DD198B5F30D8C0DC4BF0DC4720DD1A5B5F5DC20800
+[END]
+
+
+Description:
+
+A formula made by Msltoe at fractalforums.com, one iteration:
+
+if abs(y) < abs(z) then exchange(y,z)
+if y > z then {x = -x, z = -z}  
+zr = 1 - z*z / (x*x + y*y + z*z)
+x' = (x*x - y*y) * zr + Cx
+y' = 2*x*y*zr * Y_multiplier + Cy
+z' = 2*z * sqrt(x*x + y*y) + Cz
+
+
+Try out the julia mode with various x, y and z values on this formula!

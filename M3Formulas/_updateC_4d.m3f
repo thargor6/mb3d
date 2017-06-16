@@ -1,0 +1,16 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BEC568B7508DD4108DD01DD02DD00DD5E18DD5E20DD5E28DD5EC85E5DC208
+00
+[END]
+
+Description:
+
+Moves x, y, z, w values to Cx, Cy, Cz, Cw.
+
+This allows you to calculate any 4d Mandelbrot-like set in warped coordinates.
+IFS are not affected by C.
+Remember that all transforms MUST be used as pretransforms, put this AFTER all of them,
+then put the set (or the sets). Check repeat from here in the first M-set.

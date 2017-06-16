@@ -1,0 +1,12 @@
+[OPTIONS]
+.Version = 2
+.Double Scale = 0.1
+[SOURCE]
+procedure BenesiPineTree(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+begin
+  x:= sinh(x*Scale);
+end;
+
+[END]
+Description:
+

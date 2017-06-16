@@ -1,0 +1,52 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double w add = 0
+.Integer IntPower (2 to 16)  = 8
+.Double ZW mul = 0
+.Double YW mul = 1
+.Double YZ mul = 1
+[CODE]
+558BEC81EC300000005356578B75088B
+7E308BD8D9D08B47EC83F8117C02EB05
+83F8017D05B80200000090DD03DD5DF8
+90DD02DD5DF090DD01DD5DE890DD4108
+DC47F0DD5DE090489048DD03DC4DF8DD
+02DC4DF0DEE9DD01DC4DE8DD4108DC4D
+E0DEC1DEE9DD01DC4DE0DD4108DC4DE8
+DEC1DC4FE4DEC190DD03DC4DF0DD02DC
+4DF8DEC190DD03DC4DE8DD01DC4DF8DE
+C1DD02DC4DE0DD4108DC4DF0DEC1DC4F
+DCDEC190DD03DC4DE0DD4108DC4DF8DE
+C1DD02DC4DE8DD01DC4DF0DEC1DC4FD4
+DEC183F8000F8E13000000DD5DE0DD5D
+E8DD5DF0DD5DF8E96DFFFFFFD9D0DC46
+C8DD5908DC4628DD19DC4620DD1ADC46
+18DD1B90D9D08BC35F5E5B89EC5DC208
+00
+[END]
+
+Description:
+
+This formula was inspired by:
+http://www.fractalforums.com/general-discussion-b77/hyper-dual-numbers/
+It is mathematically meaningless - but can give cool fractals
+
+ // original formula:
+ // a.x*b.x, a.x*b.y + a.y*b.x, a.x*b.z+a.z*b.x,  a.x*b.w+a.y*b.z+a.z*b.y+a.w*b.x
+ // was too unregular - especially x component so I fixed
+ 
+ a=x, b=y, c=z, d=w,  pow = IntPower;
+ do { // do allows you to choose a higher pow
+ newa = xa - yb - ( zc + wd ) - ( zd + wc )*zwMul; // instead of xa
+ // if you remove yb and ( zc + wd ) you get weird things...
+ newb = xb + ya;
+ newc = xc + za + ( yd + wb )*ywMul;
+ newd = xd + wa + ( yc + zb )*yzMul;
+ pow--, a=newa, ... d=newd;
+ } while pow>0;
+ x=a+Cx, y=b+Cy, z=c+Cz, w=d+Cw
+
+LUCAGN 2011

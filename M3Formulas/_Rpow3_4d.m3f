@@ -1,0 +1,21 @@
+[OPTIONS]
+.DEoption = 4
+.Version = 5
+.DEscale = 1
+.SIpower = 3
+.RStop = 16
+[CODE]
+558BEC568B7508DD4108DD01DD02DD00DD4638DCCCDCCBDCCADEC9DD18DD1ADD
+19DD59085E5DC20800
+[END]
+
+Description:
+
+Does a power of 3 on the current length of the 4d vector.
+
+x = x * sqrRout
+y = y * sqrRout
+z = z * sqrRout
+w = w * sqrRout
+
+with: sqrRout = x*x + y*y + z*z + w*w  (in 4d mode)

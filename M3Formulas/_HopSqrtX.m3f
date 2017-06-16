@@ -1,0 +1,27 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double fixX = 0.0
+.Double fixSq = 0.0
+.Double Mul = 1.0
+.Double Div = 1.0
+[CODE]
+558BEC56538B75088BD88B7630DD03DC4EE0DC46F0D9C0D9E1D9FAD9C9D9EEDE
+D9DFE080E4417F02D9E0DC76D8DC46E8DD1B8BC35B5E5DC20800
+[END]
+
+Description:
+
+Sqrt for x as defined in Hopalong attractor + some bells & whistles
+
+Formula by Luca GN 2011
+
+t =  Mul * x + fixX 
+if t>0
+x' = fixSq + sqrt abs ( t )/Div
+else
+x' = fixSq - sqrt abs ( t )/Div 
+endif
+
+
+

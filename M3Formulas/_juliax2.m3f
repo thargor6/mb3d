@@ -1,0 +1,19 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Separation = 2
+.Double X seed (L) = .5
+.Double Y seed (L) = .5
+.Double Z seed (L) = 0
+.Double X seed (R) = -1
+.Double Y seed (R) = 0
+.Double Z seed (R) = 0
+[CODE]
+558BEC5657538B750889C38B7E30DD03D9E4DFE0D0EC7320DC47F0DD1BDD47E8
+DD5E18DD47E0DD5E20DD47D8DD5E2889D85B5F5E5DC20800DC67F0DD1BDD47D0
+DD5E18DD47C8DD5E20DD47C0DD5E28EBDE
+[END]
+
+Description:
+
+Shows a double Julia set, with chosen seeds. Just *don't* turn on Julia mode, and use as a pretransform!

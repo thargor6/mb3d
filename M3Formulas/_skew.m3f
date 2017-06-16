@@ -1,0 +1,26 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Limit = 1
+.Double Skewness = -.125
+[CONSTANTS]
+[CODE]
+558BEC5657538B750889C38B7E30DD47
+F0DD03DC4FE8D8E9DD02DC4FE8D8EADD
+01DC4FE8D8EBD8D1DFE080E4417E04DD
+D9EB02DDD8D8D1DFE080E4417E04DDD9
+EB02DDD8DDD9D9C0D9E1DEC19090DD03
+D8E1DD02D8E2DD01D8E3DD19DD1ADD1B
+DDD889D85B5F5E5DC20800
+[END]
+
+
+Description:
+
+Use this effect with caution. It gives a nice "curliness" to some IFS formulas:
+try it before a Menger3 or an Amazing box!
+The effect must be low to not disturb DE or cause troubles. It is non-conformal.
+
+Skew = min ( x*k - lim, y*k - lim, z*k - lim );
+Skew = Skew + abs (Skew) ;
+x' = x - Skew; y' = y - Skew; z' = z - Skew;

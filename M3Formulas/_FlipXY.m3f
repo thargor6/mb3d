@@ -1,0 +1,14 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BECDD02DD00DD1ADD185DC20800
+[END]
+
+
+Description:
+
+Exchanging the x and y values:
+
+x' = y
+y' = x

@@ -1,0 +1,66 @@
+[OPTIONS]
+.Version = 5
+.DEoption = 4
+.DEscale = 1
+.SIpower = 2
+.Double w add = 0
+.Integer IntPower (2 to 16)  = 8
+.Integer Old angles  = 1
+[CODE]
+558BEC81EC300000005356578B75088B
+7E308BD8D9D08B47EC83F8117C02EB05
+83F8017D05B80200000090DD03DD5DF8
+90DD02DD5DF090DD01DD5DE890DD4108
+DC47F0DD5DE090837FE8007528DD03D8
+C8DD02D8C8DEC1DD03D8C8DD02D8C8DE
+E9D8F1DD5DD8DD03DC0AD8F1DD5DD0DD
+D8EB2CD9D0DD4618D8C8DD4620D8C8DE
+C1DD4618D8C8DD4620D8C8DEE9D8F1DD
+5DD8DD4618DC4E20D8F1DD5DD0DDD848
+9048DD45F8DC0BDD45F0DC0ADEE9DD45
+D8DC4DE8DC09DEE9DD45E8DC4908DD45
+E0DC09DEC1DC4DD0DEC1DD45D8DC4DE0
+DC4908DEC1D9D0DD45F8DC0A90DD45F0
+DC0BDEC1DD45D0DC4DE8DC09DEE9DD45
+E8DC4908DD45E0DC09DEC1DC4DD8DEE9
+DD45D0DC4DE0DC4908DEC1D9D0DD45F8
+DC0990DD45E8DC0BDEC1DD45F0DC4908
+DEE9DD45E0DC0A90DEE9D9D0DD45F8DC
+4908DD45E0DC0BDEC1DD45F0DC0990DE
+C1DD45E8DC0A90DEC1D9D083F8000F8E
+11000000DD5DE0DD5DE8DD5DF0DD5DF8
+E93CFFFFFFD9D0DC46C8DD5908DC4628
+DD19DC4620DD1ADC4618DD1B90D9D08B
+C35F5E5B89EC5DC20800B808000000E9
+97FEFFFF
+[END]
+
+Description:
+
+This formula comes from Pseudogenius:
+http://www.fractalforums.com/3d-fractal-generation/a-different-3d-mandelbrot/
+It is a midway between Mandelbulb and "squarry" quaternions
+I generalized it for any int power as follows. (here ax = a*x and so on)
+
+a=x, b=y, c=z, d=w+wadd, i=power-1 
+(if power is not in range I force i=7 to avoid loop troubles!!!)
+if oldangles = ON
+// angles never change = we will use always Cx & Cy as the reference!
+// this mode looks more interesting!
+      costheta=(Cx^2-Cy^2)/(Cx^2+Cy^2);
+      sintheta=(2*Cx*Cy)/(Cx^2+Cy^2);
+else
+// angles change at every function call
+// more fuzzy
+      costheta=(a^2-b^2)/(a^2+b^2);
+      sintheta=(2*a*b)/(a^2+b^2);
+endif
+do
+      a'=ax-by-costheta*(cz)+sintheta*(cw+zd)+costheta*(dw);
+      b'=ay+bx-sintheta*(cz)-costheta*(cw+zd)+sintheta*(dw);
+      c'=az+xc-bw-yd;
+      d'=aw+xd+bz+yc;
+      (now copy a' in a ...)
+      i=i-1;
+until i>0;
+x=a+Cx, y=b+Cy, z=c+Cz, w=d+Cw

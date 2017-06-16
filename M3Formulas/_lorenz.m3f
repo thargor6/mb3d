@@ -1,0 +1,33 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Strength = 1.0
+.Double Alpha = .5
+.Double Beta = -2
+.Double Gamma = 1
+.Double r = -1.5
+
+[CODE]
+558BEC568B75088B7630DD02DC20DC4EE8DC4108DC4EF0D9D0DD00DC4ED8DC22
+DD00DC09D9E0DEC1DC4EF0D9D0DD00DC0ADD01DC4EE0D9E0DEC1DC4EF0D9D0DD
+4108DC4ED0DD02DC09D9E0DEC1DC4EF0D9D0DD5908DD19DD1ADD185E5DC20800
+[END]
+
+
+Description:
+
+Lorenz hyperchaotic system in 4D - variation with four parameters and strength
+Adapted from an article of Jiang Xu, Guoliang Cai, Song Zheng. 
+Published by "International Journal of Nonlinear Science Vol.8(2009) No.1,pp.117-123". Found in a PDF.
+Formula by Luca GN 2011
+
+This deformation can be likely used alone ( or plus a _addC ) to show the solutions of the system, that look very odd.
+The solution changes much for small increments of the given constants.
+Use strength to get more solid/thin objects.
+
+x' = ( a (y - x) + w )* Strength
+y' = ( c x - y - xz ) * Strength
+z' = ( xy - b z )* Strength
+w' = ( r w - yz ) * Strength
+
+In the article those parameters are used; a=10, b=2.66667, c=28, r=-1

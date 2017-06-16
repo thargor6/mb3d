@@ -1,0 +1,42 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.INTEGER ExecCnt value (1...100) = 1
+.INTEGER Formula nr (1...6) = 2
+.INTEGER ItCount If Lo (0...100) = 5
+.INTEGER ItCount If Eq (0...100) = 0
+.INTEGER ItCount If Hi (0...100) = 0
+[CODE]
+558BEC505256578B75088B7E30FF86D00000008B86D00000008BD08B47F483F8
+017D07B801000000EB0A83F8647E05B8640000003BD07C07744AE94B0000008B
+47EC83F8007D07B800000000EB0A83F8647E05B8640000008B7FF083FF017D07
+BF01000000EB0A83FF067E05BF060000008D7CBE48833F007D050D0000008089
+07EB0D908B47E8EBB9908B47E4EBB3905F5E5A585DC20800
+[END]
+
+
+Description:
+
+Warning! Use at your risk, if misused this can freeze the program.
+
+Put other two formulas in the alternation BEFORE pressing calculate.
+I reccomend to use more than just three formulas in total btw to
+justify the use of this switch...
+
+If possible avoid to use this in association with AboxVaryScale 
+or other iter-dependent formulas.
+
+Best used with IFS formulas, less useful with bulbs but still interesting in some cases.
+
+This formula modifies the iteration count (depending on how many
+times it's executed) of another formula that MUST exist or the 
+program may freeze:
+
+if ExecCount < CVal { ItCount[Formula[Formula nr]] = ICILO }
+else
+if ExecCount = CVal { ItCount[Formula[Formula nr]] = ICIEQ }
+else
+{ ItCount[Formula[Formula nr]] = ICIHI }
+
+Because the formula iteration counts are not resetted on iteration start, you should only modify formulas that are following this one.
+Else the initial iteration count of the modified formula depends on the last mofification of a previous iteration loop.

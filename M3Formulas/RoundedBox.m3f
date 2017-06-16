@@ -1,0 +1,38 @@
+[OPTIONS]
+.Version = 6
+.DEoption = 20
+.SSE2
+.Double Z halfwidth = 1
+.Double Y halfwidth = 1
+.Double X halfwidth = 1
+.2Doubles Scale = 2
+.2Doubles Z add = 0
+.Double Y add = 0
+.Double X add = 2
+.2Doubles Border = 0.1
+.Integer apply scale+add = 1
+.Integer OTrap option (0..3) = 0
+.Single OTrap offset = 1
+.Single OTrap scale = 1
+[CONSTANTS]
+INT64 = $7FFFFFFFFFFFFFFF
+INT64 = $7FFFFFFFFFFFFFFF
+[CODE]
+660F104688F20F104E98660F5947D0F20F594FD0660F5847B0F20F584FC0660F
+57E4837F9C007419F20F106E70F20F596FD0660F114688F20F114E98F20F116E
+70660F5407660F540F660F5C47E0F20F5C4FF0660F5847A0F20F584FA0660F5F
+C4F20F5FCC660F59C0F20F59C9F20F58C8660FC6C001F20F58C8F20F51C9F20F
+5C4FA0837F9C007505F20F5E4FD08B4798F20F114EE083E003DD44C680D84F90
+D84794DD9E80000000C3
+[END]
+
+Rounded box shape dIFS with OTrap coloring options:
+
+0: Change with DEstop
+1: Change with X
+2: Change with Y
+3: Change with Z
+
+DEstop might vary on distance, choose scale = 0 to switch off.
+
+You have to choose the 2nd coloring choice with orbit trap to see these changes.

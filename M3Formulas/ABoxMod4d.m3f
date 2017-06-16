@@ -1,0 +1,35 @@
+[OPTIONS]
+.Version = 5
+.DEscale = 0.2
+.DEoption = 5
+.RStop = 1024
+.SIpower = 2
+.Double Scale = 2
+.Double Fold = 1
+.Double W add = 0
+[CONSTANTS]
+Double = 1e-60
+[CODE]
+558BEC56578B75088B7E30DD47E8DD4108D8C1D9E1D8E1DD01D8C2D9E1D8E2DD
+02D8C3D9E1D8E3DD00D8C4D9E1D8E4DD47F0D9C4D8C8D9C4D8C8DEC1D9C3D8C8
+DEC1D9C2D8C8DEC1DC07D9E8D8D9DFE0D0EC7202DCF98D42F8DDD8DCCCDCCBDC
+CADCC9DC8EE8000000DD9EE8000000DC4618DD18DC4620DD1ADC4628DD19DC46
+C8DC47E0DD5908DDD85F5E5DC20800
+[END]
+
+
+Description:
+
+A modification and simplification of the amazing box as suggested by Trafassel.
+The formula is a bit changed, but not to affect the outcome:
+
+x = abs(x+Fold) - Fold
+y = abs(y+Fold) - Fold
+z = abs(z+Fold) - Fold
+w = abs(w+Fold) - Fold
+rr = x*x + y*y + z*z + w*w + 1e-60
+if rr < 1 then m = Scale/rr else m = Scale
+x = x * m + Cx
+y = y * m + Cy
+z = z * m + Cz
+w = w * m + W_add + Cw

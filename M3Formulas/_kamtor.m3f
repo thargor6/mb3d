@@ -1,0 +1,59 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Soft1 = 1.05
+.Double Soft2 = -0.05
+.Double A1 = 1
+.Double B1 = 0
+.Double C1 = 0
+.Double D1 = 0
+.Double E1 = 0
+.Double F1 = 0
+.Double A2 = 0
+.Double B2 = -1
+.Double C2 = 1
+.Double D2 = 0
+.Double E2 = 0
+.Double F2 = 0
+
+[CODE]
+558BEC56538B75088BD88B7630DD03D8C8DD02D8C8DEC1D9FADC4EE8DD01DC4E
+F0DEC1DD19DD01D9E1D9E8DED9DFE080E4417F10DD01D9C0D8C8D9E0D9E8DEC1
+D9FAEB12D9E8DD01DEF9D9C0D8C8D9E0D9E8DEC1D9FAD9D0DD03DC4EE0DD02DC
+4ED8DEC1DD03D8C8DC4ED0DEC1DD02D8C8DC4EC8DEC1DD03DC0ADC4EC0DEC1DD
+03D8C8DD02D8C8DEC1D9FADC4EB8DEC1D8CA9090DD03DC4EB0DD02DC4EA8DEC1
+DD03D8C8DC4EA0DEC1DD02D8C8DC4E98DEC1DD03DC0ADC4E90DEC1DD03D8C8DD
+02D8C8DEC1D9FADC4E88DEC1D8CADEC1D9D0DD03DC4EE0DD02DC4ED8DEC1DD03
+D8C8DC4ED0DEC1DD02D8C8DC4EC8DEC1DD03DC0ADC4EC0DEC1DD03D8C8DD02D8
+C8DEC1D9FADC4EB8DEC1D8CA9090DD03DC4EB0DD02DC4EA8DEC1DD03D8C8DC4E
+A0DEC1DD02D8C8DC4E98DEC1DD03DC0ADC4E90DEC1DD03D8C8DD02D8C8DEC1D9
+FADC4E88DEC1D8CCDEC1D9D0DD1ADD1BDDC0DDC1D9F7D9F78BC35B5E5DC20800
+[END]
+
+
+Description:
+
+KAM torus system customizable "dynamic" variation in 3D - variation with 12 parameters + 2
+From UF database, modified version. Very odd shape, an interesting "Henon-like" attractor.
+Instead of sine and cosine (slow functions) I use only poly functions. z is the old angle parameter
+Each section at z=constant shows a different "KAM torus" 2D variation (well, with standard params and soft1=1,soft2=0).
+Soft params control the dynamism of the system.
+You can (almost) fully customize the system to see different shapes.
+Formula by Luca GN 2011
+
+z' = Soft1*z + Soft2*(sqrt (x^2 + y^2))
+if |z'|<1
+t1=z' ; t2=sqrt(1 - t1*t1)
+else
+t1=1/z' ; t2=sqrt(1 - t1*t1)
+endif
+x' = t2 ( A1 x + B1 y + C1 x*x + D1 y*y + E1 x*y + F1 sqrt |x^2 + y^2| ) +
+     t1 ( A2 x + B2 y + C2 x*x + D2 y*y + E2 x*y + F2 sqrt |x^2 + y^2| )
+y' = t1 ( A1 x + B1 y + C1 x*x + D1 y*y + E1 x*y + F1 sqrt |x^2 + y^2| ) +
+     t2 ( A2 x + B2 y + C2 x*x + D2 y*y + E2 x*y + F2 sqrt |x^2 + y^2| )
+
+Original uf formula;
+
+x' = x cos theta + (x^2-y) sin theta
+x' = x sin theta + (x^2-y) cos theta
+But there is no need to compute sin,cos if we call sin theta -> z ... etc...

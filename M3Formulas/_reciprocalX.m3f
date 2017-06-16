@@ -1,0 +1,16 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BECDD00D9E8DEF1DD185DC20800
+[END]
+
+
+Description:
+
+Computes the reciprocal of x:
+
+x = 1/x
+
+
+Disturbs the DE, so handle with care.

@@ -1,0 +1,24 @@
+[OPTIONS]
+.Version = 2
+.RStop = 2
+.Double Scale = 1
+.Double Fix = 1e-60
+[CODE]
+558BEC56578B75088B7E30DD01D9E1DD02D9E1DD00D9E1D9C0D8C8D9C2D8C8DE
+C1D9C3D8C8DEC1DC47E8DC7FF0DCCADCCBDEC9DC4618DD18DC4620DD1ADC4628
+DD195F5E5DC20800
+[END]
+
+A formula suggested by Kali at fractalforums.com, added Scale and Fix parameters.
+Try out julias and low R_bailout values of 2 down to 1!
+You might have to cutoff at z=0 or so, to see something.
+
+One iteration:
+
+x = abs(x)
+y = abs(y)
+z = abs(z)
+m = Scale/(x*x + y*y + z*z + Fix)
+x = x*m + Cx
+y = y*m + Cy
+z = z*m + Cz

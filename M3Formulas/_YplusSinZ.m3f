@@ -1,0 +1,10 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BECDD02DD01D9FEDEC1DD1A5DC20800
+[END]
+
+Description:
+
+y' = y + sin(z)

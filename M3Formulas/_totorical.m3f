@@ -1,0 +1,22 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double R = 2.0
+[CODE]
+558BEC568B75088B7630DD00D8C8DD02D8C8DEC1D9FAD9E0DC46F0DD02DD00
+D9F3DD1ADD185E5DC20800
+[END]
+
+Description:
+
+Torical (generalized) coords.
+Formula by Luca GN 2011
+
+Define R = (inner radius + outer radius) / 2.
+We don't care about two radiuses, we care of the average only.
+
+x' = R - sqrt(x*x+y*y)
+y' = atan(y/x)
+(z coordinate is unchanged. Almost identical to standard cylindrical coords.)
+
+I didn't found much about this metric but a base for information is; http://mathworld.wolfram.com/Torus.html

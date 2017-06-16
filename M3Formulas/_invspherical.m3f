@@ -1,0 +1,17 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+[CODE]
+558BECDD02D9FBDD01D9FBD9CADC08DD19D9CADCC9D9C9DC08D9CAD9C9DC08DE
+C9DD1ADD185DC20800
+[END]
+
+Description:
+
+Inverse spherical coords. Fast conversion without parameters.
+Formula by Luca GN 2011
+
+From Wikipedia;
+x' = x sin(y) cos(z)
+y' = x sin(y) sin(z)
+z' = x cos(y)

@@ -1,0 +1,87 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.Double Scale = 2.0
+.Double xOff = 2.0
+.Double pixel_x = 1.0
+.Double pixel_y = 0.0
+.Double pixel_z = 0.0
+.Double yz_angle = 0.0
+.Integer AngleIter = 62
+.Integer A_AfterIter = 0
+.Integer T1_Count = 1
+.Integer PolyIter = 2
+.Integer PolyIterAfter = 62
+.Double Sides = 4.0
+[CONSTANTS]
+Double = 0.816496580927726
+Double = 0.5773502691896258
+Double = 0.7071067811865475
+Double = 3.1415926535898
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D08a47bcDD03DC0F
+DD01DC4F08D9E0DEC1DC4F10DD5DF8DD03DC4F08DD01DC0FDEC1D9E190DD45F8
+DD02DC4F10D9E0DEC1D9E190DD45F8DD02DC4F10DEC1D9E190DD1ADD1BDD1990
+DD03DC02DC4F10DD5DF890DD03D9E0DC02DC4F1090DD45F8DC0FDD01DC4F08
+DEC190DD45F8DC4F08D9E0DD01DC0FDEC190DD19DD1BDD1A90DD03DC4FF0
+DC67E8DD1BDD02DC4FF0DD1ADD01DC4FF0DD1990fec80f8563ffffffd9d0
+8a47c43a464074088a47c03a46407f2bdd47c8D9D0d9fbdd5df890dd55f0
+dd01dec9dd02dc4df8dec1dd02dc4df0dd01dc4df8d9e0dec1dd1add19
+d9d08a47b83a464074088a47b43a46407f33dd4718
+dc77acdd55f8d8c0dd5df0dd01dd02d9f3d9e1dc55f8dfe0
+80e4417f05dc65f0ebf1d9ffd9c0dc0add1ad9d0dc09dd19d9d0DD03D8C8DD5DF8
+DD02D8C8DD5DF0DD01D8C8DD5DE8DD03D8C0DD45F0DC45E8D9FADEF9
+DD5DE090DD45F8DC65F0DC65E890DD45E0DD45F0DC65E8DEC990DD45E0
+D8C0DC09DC0A90DD4620DC4FD0DEC1DD1A90DD4628DC4FD8DEC1DD1990
+DD4618DC4FE0DEC1DD1BD9D08BC35F5E5B89EC5DC20800
+[END]   
+
+
+
+Description:  Transform 1 with Pine Tree Mandelbulb. T1_Count is the number of times you do T1
+before the PTM, if you want to increase the amount of details.  Probably never need more than 3.
+
+AngleIter is the iteration number that the fractal is rotated on- IN RADIANS!!#$!@$  NOT DEGREES!#!@# (did this to save a few computations- but I actually think that M3D has a built in angle function that I can use, so will implement that later.. maybe).  Use for a single iteration of rotation.
+
+A_AfterIter is the iteration number that every iteration has a rotation applied afterwords.  Use to rotate every iteration past a certain point.
+
+  The rotation is just the yz plane (around the x axis), for symmetry, and ease of calculations.  To warp the fractal, and do other stuff, we'll have to introduce a more computationally intensive 3d rotation function (probably copy the _rotate.m3f....  :D) in the same location as the yz plane rotation.
+
+ Poly iter is the iteration that the polygonal transform is applied.  3 sides= triangle.  4=square....
+
+:D  
+
+  M Benesi
+
+
+:T1 loop
+
+tx=(x*sqrt(2/3)-z*sqrt(1/3))*sqrt(1/2);
+z=abs(x*sqrt(1/3) + z*sqrt(2/3));   	
+x=abs(tx-y*sqrt(1/2));          
+y=abs(tx+y*sqrt(1/2));
+			
+tx=x*sqrt(1/2)+y*sqrt(1/2);
+y=-x*sqrt(1/2)+y*sqrt(1/2); 
+x=tx*sqrt(2/3)+z*sqrt(1/3);
+z=-tx*sqrt(1/3)+z*sqrt(2/3);	
+
+x=scale*x-offset;  //scale =2    offset=2       
+y=scale*y;
+z=scale*z;
+
+:end T1Loop
+
+//rotation is here, with conditionals to determine whether to do it or not
+  Just a standard 2d rotation matrix around the x axis (yz-plane rotation).
+//  Polygon transform is here
+
+// STEP2: "Benesi pinetree"
+xt = x*x; yt = y*y; zt = z*z;
+t = 2*x/sqrt(yt+zt);
+x = xt-yt-zt+Cx*x_pixel_mult;
+z = t*(yt-zt)+Cy*y_pixel_mult;
+y = 2*t*y*z+Cz*z_pixel_mult;
+
+

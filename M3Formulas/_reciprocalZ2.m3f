@@ -1,0 +1,19 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Limiter = 0.5
+[CODE]
+558BEC5652DD018B75088A51078B7630D9E1DC46F080E280D9E8DEF1DD193051
+075A5E5DC20800
+[END]
+
+
+Description:
+
+Computes the reciprocal of z:
+
+z' = sign(z)/(abs(z)+Limiter)
+
+
+The limiter makes the formula more handsome, bigger values leads to less noise.
+Disturbs still the DE, so handle with care.

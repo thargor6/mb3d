@@ -1,0 +1,28 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double Scale = 0.81649658092773
+[CODE]
+558BEC81EC300000005356578B75088B7E308BD8D9D0DD02D8C8DD55F8DD01D8
+C8DD55F0DEF9D9E8D8D9DFE080E4417E04D9E8DEF1D9E8DEC1D9FADD5DE890DD
+45F8DC45F0DD03D8C8DEF9D9E8D8D9DFE080E4417E04D9E8DEF1D9E8DEC1D9FA
+DC4FF0D9C0DC4DE8DD5DE8DD5DF090DD03DC4DF0DD02DC4DE8DD01DC4DE8DD19
+DD1ADD1BD9D08BC35F5E5B89EC5DC20800
+[END]
+
+
+Description:
+
+Warps a cube to a sphere; transform made by M.Benesi and Luca.
+Inverse of "_BenesiUnSpheric". Can be used in conjunction
+with it for cool effects (place some formulas in the middle
+to see what happens).
+
+/ spheric  code
+ rCyz= (z.y*z.y)/(z.z*z.z);
+ rCxyz= (z.y*z.y+z.z*z.z)/(z.x*z.x);
+if (rCyz<1.) {rCyz=sqrt(rCyz+1.);} else {rCyz=sqrt(1./rCyz+1.);}
+if (rCxyz<1.) {rCxyz=sqrt(rCxyz+1.);} else {rCxyz=sqrt(1./rCxyz+1.);}
+
+z.yz*=rCyz;  
+z*=rCxyz/sr32;

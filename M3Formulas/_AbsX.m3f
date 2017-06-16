@@ -1,0 +1,16 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.Double fixX = 0.0
+
+[CODE]
+558BEC568B75088B7630DD00DD46F0DEC1D9E1DD46F0D9E0DEC1DD185E5DC208
+00
+[END]
+
+Description:
+
+Absolute value for x (with fixing constant) - Can work as a "mirror" or... ?!
+Formula by Luca GN 2011
+
+x' = abs(x+fixX)-fixX

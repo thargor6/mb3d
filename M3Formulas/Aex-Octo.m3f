@@ -1,0 +1,20 @@
+[OPTIONS]
+.Version = 5
+.DEscale = 1
+.SIpower = 2
+.Double XZ mul = 1.25
+.Double Sq mul = 1
+[CODE]
+558BEC53505657908B75088BD88B7E30D9D0DD03DC09DC4FF0DC461890DD03D8
+C8DD01D8C8DEE1DC4FE8DC462090DD02DC462890DD19DD1ADD1BDDD8D9D08BC3
+5F5E585B5DC20800
+[END]
+
+
+Description:
+The "Octopus formula" kindly suggested to me by Aexion.
+Use in Julia mode!
+
+newx= XZmul *x*z + Cx;
+newy= Sqmul *(-x*x + z*z) + Cy;
+newz = y + Cz;

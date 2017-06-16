@@ -1,0 +1,37 @@
+[OPTIONS]
+.Version = 2
+.DEscale = 1
+.SIpower = 2
+.Single XZ sym-mul = 1
+.Single XY sym-mul = 1
+.Single YZ sym-mul = 1
+[CODE]
+558BEC5657538B7D0889C38B7730DD00DD01D9C0D9E1D84EF4D9C2D9E1DED9DF
+E080E4417402D9C9DD02D9C0D9E1D84EF0D9C3D9E1DED9DFE080E4417402D9CA
+D9C1D9E1D84EECD9C2D9E1DED9DFE080E4417402D9C9D9C1D8CBD9E4DFE0DDD8
+D0EC7206D9C9D9E0D9C9D9C0D8CBD9E4DFE0DDD8D0EC7202D9E0D9C2D8C8D9C1
+D8C8DEE9D9C2D8C8DEE9DC4718DD1BD8CAD8C0DC4720DD1ADEC9D8C0DC4728DD
+195B5F5E5DC20800
+[END]
+
+
+Description:
+
+A formula made by Msltoe at fractalforums.com, one iteration:
+
+if abs(x) < abs(z) * XZ_sym-mul then exchange(x,z)
+if abs(x) < abs(y) * XY_sym-mul then exchange(x,y)
+if abs(y) < abs(z) * YZ_sym-mul then exchange(y,z)
+if (x*z < 0) then z = -z;
+if (x*y < 0) then y = -y;
+x' = x*x - y*y - z*z + Cx
+y' = 2*x*y + Cy
+z' = 2*x*z + Cz
+
+
+Valid values for the sym-mul parameters are:
+<=0: disable the symmetry
+  1: enable the conditional symmetry
+1e30: do a nonconditional symmetry
+
+Other values may introduce discontinuities, corrupting the rendering.

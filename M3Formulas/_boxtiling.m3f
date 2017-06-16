@@ -1,0 +1,35 @@
+[OPTIONS]
+.Version = 2
+.DEoption = -1
+.DEscale = 1
+.SIpower = 1
+.DEscale = 10
+.Double x size = 5.0
+.Double y size = 5.0
+.Double z size = 5.0
+.Double w size = 5.0
+[CODE]
+558BEC5350568B75088BD88B7630DD46D8D9E4DFE0D9D09EDDC0D9F77412DD41
+08D9C0DC76D8D9FCDC4ED8DEE9DD5908DD46E0D9E4DFE0D9D09EDDC0D9F77412
+DD0190D9C0DC76E0D9FCDC4EE0DEE9DD1990DD46E8D9E4DFE0D9D09EDDC0D9F7
+7412DD0290D9C0DC76E8D9FCDC4EE8DEE9DD1A90DD46F0D9E4DFE0D9D09EDDC0
+D9F77412DD0390D9C0DC76F0D9FCDC4EF0DEE9DD1B908BC35E585B5DC20800
+[END]
+Description:
+
+4D tiling, the entire space will be filled with copies of a box with center in the origin and desired dimensions.
+All boxes are equal, and the tiling is (theorically) infinitely extended (but it depends to the floating point
+precision, so it is not really).
+It can be easily turned off for one (or more?) dimension(s) if you just set to 0 the corresponding size.
+With this trick you can do any 3D, 2D, 1D "box-tiling" that you can even think with various effects.
+Works perfectly with IFS fractals and has strange effects on normal ones.
+For people with familiarity with UltraFractal; this is an extension of the "Gaussian integer" concept.
+
+xi = every dimension (x,y,z,w)
+i = 1 to 4
+ if sizei <> 0
+  xi = xi - frndint(xi/sizei)*sizei (where xi is x,y,... etc. )
+ endif
+next i
+
+frndint -> rounds a float to the nearest integer
