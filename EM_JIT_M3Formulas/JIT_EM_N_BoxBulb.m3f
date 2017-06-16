@@ -1,0 +1,50 @@
+[OPTIONS]
+.DEScale = 1
+.SIPow = 2
+.Version = 9
+.Double Power_ = 8
+[SOURCE]
+procedure Boxedbulb(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   sq_r: double;
+   sq_xz: double;
+   r, theta, zangle: double;
+   x1, y1, z1: double;
+
+begin
+
+// supermodulus of power 8. generates pillow like shapes.
+   x1:= IntPower(x,8);
+   y1:= IntPower(y,8);
+   z1:= IntPower(z,8);
+
+   sq_r := Power(x1+y1+z1 , 0.125);
+//   sq_xz := sqrt(x*x+z*z);
+// this one is more boxed
+   sq_xz := Power(x1+z1 , 0.125);
+
+
+
+   r:= power(sq_r, Power_);
+
+   theta := arctan2( sq_xz , y) * Power_;
+   {This is true everywhere, because sq_r is >=0 ; atan2(a,b) differs from atan(a/b) when b<0
+   I must use atan2 because 'acos' is missing in assembly.}
+   zangle := arctan2(x,z)  * Power_;
+
+   x := sin(zangle)*sin(theta)*r+PIteration3D^.J1;
+   y := cos(theta)            *r+PIteration3D^.J2;
+   z := sin(theta)*cos(zangle)*r+PIteration3D^.J3;
+
+end;
+[END]
+ 
+Formula version 1.1
+ 
+Sames as IQ bulb but 
+of more cubic like shape,
+like of chewing gum pillows.
+Thanks to supermodulus instead of modulus.
+
+ * * *
+By Edgar Malinovsky

@@ -1,0 +1,60 @@
+[OPTIONS]
+.DEScale = 0.5
+.SIPow = 2
+.Version = 9
+.Double AdditionW = 0
+.Double Fold = 1
+.Double Scale = 2
+.Double vAdditionX = 0
+.Double vAdditionY = 0
+.Double vAdditionZ = 0
+[SOURCE]
+procedure FldOnion(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1, w1: double;
+intFold: integer;
+
+begin
+
+///Folding
+///This step is necessary, as floats interfere with formula and generates something else.
+	intFold:=round(Fold);
+x := x + abs(x-intFold) - abs(x+intFold); 
+y := y + abs(y-intFold) - abs(y+intFold);
+z := z + abs(z-intFold) - abs(z+intFold);
+w := w + abs(w-intFold) - abs(w+intFold);
+
+x:=x* Scale;
+y:=y* Scale;
+z:=z* Scale;
+w:=w* Scale;
+
+///Addition, new version - julia set like
+x1 := x + vAdditionX ; 
+y1 := y + vAdditionY ;
+z1 := z + vAdditionZ ;
+w1 := w + AdditionW ;
+
+
+
+//crystal version of quaternion pow2
+x := x1*x1 + y1*y1 + z1*z1 + w1*w1;
+y := 2*x1*y1;
+z := 2*x1*z1;
+w := 2*w1*x1;
+
+
+
+end;
+[END]
+4D
+ 
+Formula version 1.1
+ 
+As main fold is used "crystal" version of quaternion multiplication -
+all equation parts is positive. In 2D it is split complex numbers or something like that.
+
+More rounded crystals - onions.
+
+ * * *
+By Edgar Malinovsky

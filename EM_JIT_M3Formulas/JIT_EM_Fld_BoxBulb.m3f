@@ -1,0 +1,64 @@
+[OPTIONS]
+.DEScale = 1
+.SIPow = 2
+.Version = 9
+.Double AdditionZ = 0
+.Double Fold = 1
+.Double Power_ = 2
+.Double Scaleing = 2.5
+.Double vAdditionX = 0
+.Double vAdditionY = 0
+
+[SOURCE]
+procedure FoldBoxbulb(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   sq_r: double;
+   sq_xz: double;
+   r, theta, zangle: double;
+   x1,y1,z1: double;
+intFold: integer;
+begin
+
+///This step is necessary, as floats interfere with formula and generates something else.
+intFold:=round(Fold);
+x := x + abs(x- intFold) - abs(x+ intFold); 
+y := y + abs(y- intFold) - abs(y+ intFold);
+z := z + abs(z- intFold) - abs(z+ intFold);
+
+x:=x* Scaleing;
+y:=y* Scaleing;
+z:=z* Scaleing;
+
+///Addition, new version - julia set like
+x := x + vAdditionX ; 
+y := y + vAdditionY ;
+z := z + AdditionZ ;
+
+// supermodulus of power 8
+   x1:= IntPower(x,8);
+   y1:= IntPower(y,8);
+   z1:= IntPower(z,8);
+// box - pillow
+   sq_r := Power(x1+y1+z1 , 0.125);
+   sq_xz := Power(x1+z1 , 0.125);
+// less boxed
+//   sq_xz := sqrt(x*x+z*z);
+
+
+   r:= power(sq_r, Power_);
+
+   theta := arctan2( sq_xz , y) * Power_;
+   {This is true everywhere, because sq_r is >=0 ; atan2(a,b) differs from atan(a/b) when b<0
+   I must use atan2 because 'acos' is missing in assembly.}
+   zangle := arctan2(x,z)  * Power_;
+
+   x := sin(zangle)*sin(theta)*r ;
+   y := cos(theta)            *r ;
+   z := sin(theta)*cos(zangle)*r ;
+
+end;
+[END]
+Formula version 1.1
+
+Folds pillow like mandelbulb shapes.
+Slow

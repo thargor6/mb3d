@@ -1,0 +1,63 @@
+[OPTIONS]
+.DEScale = 0.5
+.SIPow = 2
+.Version = 9
+.Double AdditionW = 0
+.Double Fold = 1
+.Double Scale = 2
+.Double vAdditionX = 0
+.Double vAdditionY = 0
+.Double vAdditionZ = 0
+[SOURCE]
+procedure FldHypercomplexCrystal(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1, w1: double;
+intFold: integer;
+
+begin
+
+///Folding
+///This step is necessary, as floats interfere with formula and generates something else.
+	intFold:=round(Fold);
+x := x + abs(x-intFold) - abs(x+intFold); 
+y := y + abs(y-intFold) - abs(y+intFold);
+z := z + abs(z-intFold) - abs(z+intFold);
+w := w + abs(w-intFold) - abs(w+intFold);
+
+//Scale
+x:=x* Scale;
+y:=y* Scale;
+z:=z* Scale;
+w:=w* Scale;
+
+///new addition, like julia variable
+x1 := x + vAdditionX ; 
+y1 := y + vAdditionY ;
+z1 := z + vAdditionZ ;
+w1 := w + AdditionW ;
+
+
+
+///hypercomplex multiplication, changed to "crystal" fractal
+// what in 2D complex numbers is when i*i=1.
+
+x:= x1*x1 + y1*y1 + z1*z1 + w1*w1;
+y:= 2*x1*y1 + 2* z1*w1;
+z:= 2*x1*z1 + 2* y1*w1;
+w:= 2*x1*w1 + 2* y1*z1;
+ 
+
+
+end;
+[END]
+Formula version 1.1
+
+4D
+As main fold -
+crystal version of hypercomplex pow2 mandelbrot -
+where y*y=1 is like x*x=1
+Generates diamond like structures.
+
+ * * *
+By Edgar Malinovsky
+

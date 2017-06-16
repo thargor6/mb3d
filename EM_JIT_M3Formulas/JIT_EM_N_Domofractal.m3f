@@ -1,0 +1,103 @@
+[OPTIONS]
+.DEScale = 0.5
+.SIPow = 2
+.Version = 9
+.Double AdditionX = 0
+.Double AdditionY = 0
+.Double AdditionZ = 0
+.Double DomoXY = 0.5
+.Double DomoXZ = 0
+.Double DomoYZ = 0
+.Double FoldX = 0
+.Double FoldY = 0
+.Double FoldZ = 1
+.Double Scale = 3
+.Double Thickness = 0
+.Double vMengerX = 1
+.Double vMengerY = 1
+.Double vMengerZ = 0.5
+[SOURCE]
+procedure DomoFractal(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+scale1, scale2, t , radius : double;
+temp: Double; 
+
+begin
+
+
+
+///=======================================
+//fold
+x := x + abs(x- FoldX) - abs(x+ FoldX) ; 
+y := y + abs(y- FoldY) - abs(y+ FoldY) ;
+z := z + abs(z- FoldZ) - abs(z+ FoldZ) ;
+
+// Two folds - generates 5 stories instead of 3
+x := x + abs(x- FoldX) - abs(x+ FoldX) ; 
+y := y + abs(y- FoldY) - abs(y+ FoldY) ;
+z := z + abs(z- Foldz) - abs(z+ Foldz) ; 
+
+
+//=============================================
+///Addition. Just like julia set but placed between foldings.
+/// abs is part of the code of Menger Cube.
+x := abs(x + AdditionX ); 
+y := abs(y + AdditionY );
+z := abs(z + AdditionZ );
+
+
+///==================================================
+/// not shure how this works
+//  modified Menger code taken from Luca GN formula MengerSmt
+//  Powerfull thing but slightly capricious.
+  scale1 := scale -1;
+  scale2 := scale1/scale;
+
+
+t:=x-y; 
+t:= 0.5*(t-abs(t + DomoXY) );
+x:=x-t ; 
+y:= y+t ;
+
+t:=x-z; 
+t:= 0.5*(t-abs(t + DomoXZ));
+x:=x-t;
+z:= z+t;
+
+t:=y-z;
+t:= 0.5*(t-abs(t +DomoYZ));
+y:=y-t;
+z:= z+t;
+
+z := z - vMengerZ*scale2;
+z := - abs(z);
+z := z + vMengerZ*scale2;
+
+
+  x := scale *x-vMengerX*scale1; 
+  y := scale *y-vMengerY*scale1; 
+  z := scale *z;
+
+
+//=================================================
+// Unit vector addition. Unit Vector = x,y,z / |x,y,z| 
+radius := sqrt(x*x+y*y+z*z) ;
+
+x:= x - Thickness * x/radius ;
+y:= y - Thickness * y/radius ;
+z:= z - Thickness * z/radius ;
+
+
+end;
+[END]
+Formula version 1.1
+ 
+House creator based on folds and Menger Cube
+(Luca GN formula MengerSmt code).
+
+It can generate tower, a 5 - storey block house, a block of 5 houses, rectangle based Menger / JCube like, pure Menger Cube and everything in between.
+
+For more including about variables see the description.
+
+* * *
+By Edgar Malinovsky

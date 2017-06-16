@@ -1,0 +1,15 @@
+[OPTIONS]
+.DEScale = 1
+.SIPow = 2
+.Version = 9
+[SOURCE]
+procedure Nothing(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+begin
+
+end;
+[END]
+ 
+Formula version 1.1
+ 
+Does absolutely nothing.
+Could be usefull if one needs to delate a single formula from the hybrid. But alsou a single iteration of nothing could change the fractal.

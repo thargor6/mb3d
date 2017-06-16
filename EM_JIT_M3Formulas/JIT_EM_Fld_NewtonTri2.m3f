@@ -1,0 +1,49 @@
+[OPTIONS]
+.DEScale = 0.75
+.SIPow = 2
+.Version = 9
+.Double AdditionZ = 0
+.Double Fold = 1
+.Double Scale = 2
+.Double vAdditionX = 0
+.Double vAdditionY = 0
+[SOURCE]
+procedure FOldNewtonTri2(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1: double;
+intFold: integer;
+
+begin
+
+///Folding
+///This step is necessary, as floats interfere with formula and generates something else.
+	intFold:=round(Fold);
+x := x + abs(x-intFold) - abs(x+intFold); 
+y := y + abs(y-intFold) - abs(y+intFold);
+z := z + abs(z-intFold) - abs(z+intFold);
+
+x:=x* Scale;
+y:=y* Scale;
+z:=z* Scale;
+
+///Addition, new version - julia set like
+x1 := x + vAdditionX ; 
+y1 := y + vAdditionY ;
+z1 := z + AdditionZ ;
+
+ ///Square
+x:= x1*x1 - 2*y1*z1;
+y:= 2*x1*y1 - z1*z1;
+z:= y1*y1 + 2*x1*z1;
+
+
+
+end;
+[END]
+Formula version 1.1
+
+Used as Fold.
+Newtonian Triplet
+Another attempt at 3D mandelbrot
+This one is nice and are mathematical correct creation of alternative 3D numbers.
+Power 2 mandelbrot,

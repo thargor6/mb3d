@@ -1,0 +1,52 @@
+[OPTIONS]
+.DEScale = 0.75
+.SIPow = 2
+.Version = 9
+.Double AdditionW = 0
+.Double Fold = 1
+.Double Scaleing = 2
+.Double vAdditionX = 0
+.Double vAdditionY = 0
+.Double vAdditionZ = 0
+[SOURCE]
+procedure FoldMbrotQm4D(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1, w1: double;
+intFold: integer;
+
+begin
+
+///Folding
+///This step is necessary, as floats interfere with formula and generates something else.
+	intFold:=round(Fold);
+x := x + abs(x-intFold) - abs(x+intFold); 
+y := y + abs(y-intFold) - abs(y+intFold);
+z := z + abs(z-intFold) - abs(z+intFold);
+w := w + abs(w-intFold) - abs(w+intFold);
+
+x:=x* Scaleing;
+y:=y* Scaleing;
+z:=z* Scaleing;
+w:=w* Scaleing;
+
+///Addition, new version - julia set like
+x1 := x + vAdditionX ; 
+y1 := y + vAdditionY ;
+z1 := z + vAdditionZ ;
+w1 := w + AdditionW ;
+ 	
+//formula	
+ x := x1*x1 - y1*y1 - 2*z1*z1 - z1*w1 - 1.25*w1*w1;
+ y := 2*x1*y1   	;
+ z := 2*x1*(z1+w1)   	;
+ w := x1*(w1 - 2*z1)	;
+
+
+
+end;
+[END]
+Formula version 1.1
+
+Generates some mandelbrot style folds.
+First of all FLD formulas.
+

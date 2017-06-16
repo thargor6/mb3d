@@ -1,0 +1,57 @@
+[OPTIONS]
+.DEScale = 0.75
+.SIPow = 2
+.Version = 9
+.Double AdditionZ = 0
+.Double Fold = 1
+.Double Scaleing = 2.5
+.Double vAdditionX = 0
+.Double vAdditionY = 0
+[SOURCE]
+procedure Foldstandbulb(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+
+   r, th, ph: double;
+
+intFold: integer;
+begin
+
+///This step is necessary, as floats interfere with formula and generates something else.
+intFold:=round(Fold);
+x := x + abs(x- intFold) - abs(x+ intFold); 
+y := y + abs(y- intFold) - abs(y+ intFold);
+z := z + abs(z- intFold) - abs(z+ intFold);
+
+x:=x* Scaleing;
+y:=y* Scaleing;
+z:=z* Scaleing;
+
+///Addition, new version - julia set like
+x := x + vAdditionX ; 
+y := y + vAdditionY ;
+z := z + AdditionZ ;
+
+
+
+//removed power to speed it up a bitt
+r  := sqrt(x*x + y*y + z*z );
+th := ArcTan2(y, x) * 2;
+ph := ArcSin(z/r) * 2;
+r  := r*r;
+
+x  := r * cos(ph) * cos(th);
+y  := r * cos(ph) * sin(th);
+z  := r * sin(ph);
+
+end;
+[END]
+Formula version 1.1
+
+3D Space fold by the most common version of Mandelbulb.
+
+Round symmetric bulbous shapes with top down rotation axis.
+
+Faster than other bulbs jet slower than algebraic FLDs.
+
+ * * *
+By Edgar Malinovsky

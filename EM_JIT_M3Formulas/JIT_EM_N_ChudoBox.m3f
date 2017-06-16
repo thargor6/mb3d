@@ -1,0 +1,75 @@
+[OPTIONS]
+.DEScale = 0.75
+.SIPow = 2
+.Version = 9
+.Double Addition = 0
+.Double antiFisheye = 5
+.Double Fold = 1
+.Double Min_R = 1
+.Double scale = 3
+[SOURCE]
+procedure ChudoBox(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+
+var
+
+  radius, temp: Double; 
+  fisheye, fishdivisor: Double; 
+
+Fldx, Fldy, Fldz : double;
+intFold, intradius, intMin_R : integer;
+begin
+
+
+///VERSION of  spherefold,  by analytical function
+radius := sqrt( x*x + y*y + z*z );
+intradius :=round(radius);
+intMin_R:=round(Min_R);
+temp := ( abs( intradius - intMin_R )  - abs( intradius + intMin_R) +1 ); 
+
+x := x * temp  ; 
+y := y * temp  ;
+z := z * temp  ;
+
+///Addition
+x := x + Addition ; 
+y := y + Addition ;
+z := z + Addition ;
+ 
+
+
+// folds only by integer, less noise. 
+intFold := round(Fold);
+x := x + abs(x- intFold) - abs(x+ intFold) ; 
+y := y + abs(y- intFold) - abs(y+ intFold) ;
+z := z + abs(z- intFold) - abs(z+ intFold) ;
+
+
+
+/// Fish eye lense like transformation together with scale
+fishdivisor:= scale/(antiFisheye+1);
+fisheye:= (antiFisheye+sqrt( x*x + y*y + z*z ) )*fishdivisor;
+
+x := fisheye * x ; 
+y := fisheye * y ; 
+z := fisheye * z ;
+ 
+
+// + C
+x := x  + PIteration3D^.J1; 
+y := y  + PIteration3D^.J2; 
+z := z  + PIteration3D^.J3;
+ 
+
+end;
+[END]
+ 
+Formula version 1.1
+ 
+Storehouse simulator of amazingbox type fractal.
+
+AntiFisheye acts against fish eye lens effect bloating fractal. Put some 100 and effect will disapear as boxes becomes linear.
+
+Fold and Min_R uses only integer numbers: -1, 0, 1, 2, ...
+
+ * * *
+By Edgar Malinovsky

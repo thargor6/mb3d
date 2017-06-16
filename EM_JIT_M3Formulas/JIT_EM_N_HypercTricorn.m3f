@@ -1,0 +1,44 @@
+[OPTIONS]
+.DEScale = 0.5
+.SIPow = 2
+.Version = 9
+.Double W_Dimension = 0
+[SOURCE]
+procedure HyperTricorn(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1, w1: double;
+intFold: integer;
+
+begin
+
+
+///hypercomplex multiplication. I hope;) After failed attempts of multiplication just made formula look symetric and generate M-brot.
+/// conj. just the Y with different sign. 
+x1:= x*x - y*y - z*z + w*w;
+y1:= 2*z*w - 2*x*y;
+z1:= 2*x*z - 2* y*w;
+w1:= 2*x*w + 2* y*z;
+
+
+x:= x1 + PIteration3D^.J1;
+y:= y1 + PIteration3D^.J2;
+z:= z1 + PIteration3D^.J3;
+w:= w1 + W_Dimension; 
+
+
+end;
+[END]
+4D
+ 
+Formula version 1.1
+ 
+Tricorn fractal aka z=conj(z*z)+c made by 4D hypercomplex number multiplication.
+
+Almoust as trigonometric based "Tricorn" turned by 90 degrees.
+
+W_dimension - unseen 4th dimension of formula.
+
+Lower bailout values will make it more smooth.
+
+ * * *
+By Edgar Malinovsky

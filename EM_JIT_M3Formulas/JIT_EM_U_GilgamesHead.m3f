@@ -1,0 +1,88 @@
+[OPTIONS]
+.DEScale = 0.75
+.SIPow = 2
+.Version = 9
+[SOURCE]
+procedure FoldedGilgamesHead(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1, w1: double;
+begin
+
+// very long instruction.
+// Without this it woun't generate fractal as it did in Chaos Pro. 
+x:= x*0.1;
+y:= y*0.1;
+z:= z*0.1;
+w:= w*0.1;
+
+
+
+
+/// ha ha simple quaternion raising in power 3.
+// with shuffleing variables so that
+/// x, y, z, w, is changed in places so that it rotates throught all the variables as axis
+  
+y1:=x*x*x - 3* x*y*y - 3* x*z*z - 3* x*w*w + PIteration3D^.J1; 
+x1:=3* x*x*y  - y*y*y - y*z*z - y*w*w + PIteration3D^.J2;
+w1:=3*x*x*z - y*y*z - z*z*z - z*w*w + PIteration3D^.J3;
+z1:=3* x*x*w - y*y*w - z*z*w - w*w*w;
+
+// x,y,z,w was changed
+//x:= y1 ;
+//y:= x1 ;
+//z:= w1 ;
+//w:= z1 ;
+
+//=====================================
+
+w:=x1*x1*x1 - 3* x1*y1*y1 - 3* x1*z1*z1 - 3* x1*w1*w1;
+z:=3* x1*x1*y1  - y1*y1*y1 - y1*z1*z1 - y1*w1*w1; 
+y:=3*x1*x1*z1 - y1*y1*z1 - z1*z1*z1 - z1*w1*w1;
+x:=3* x1*x1*w1 - y1*y1*w1 - z1*z1*w1 - w1*w1*w1;
+
+// it was changed
+//x:= w1 ; 
+//y:= z1 ; 
+//z:= y1 ;
+//w:= x1 ;
+
+//===========================
+
+z1:=x*x*x - 3* x*y*y - 3* x*z*z - 3* x*w*w;
+y1:=3* x*x*y  - y*y*y - y*z*z - y*w*w; 
+x1:=3*x*x*z - y*y*z - z*z*z - z*w*w;
+w1:=3* x*x*w - y*y*w - z*z*w - w*w*w;
+
+// it was changed
+//x:= z1 ; 
+//y:= y1 ; 
+//z:= x1 ;
+//w:= w1 ;
+
+//============================
+
+x:=x1*x1*x1 - 3* x1*y1*y1 - 3* x1*z1*z1 - 3* x1*w1*w1;
+w:=3* x1*x1*y1  - y1*y1*y1 - y1*z1*z1 - y1*w1*w1; 
+z:=3*x1*x1*z1 - y1*y1*z1 - z1*z1*z1 - z1*w1*w1;
+y:=3* x1*x1*w1 - y1*y1*w1 - z1*z1*w1 - w1*w1*w1;
+
+// it was changed
+//x:= x1 ;
+//y:= w1 ;
+//z:= z1 ;
+//w:= y1 ;
+
+//now it should be faster.
+
+end;
+[END]
+ 
+Formula version 1.1
+ 
+Switches pow 3 quaternion - rotation around 4 dimensions.
+
+9 formula alternations in a row. It woun't alternate with other fractals well as at most it takes just 2 iterations to bail out. And by the way it is implemented it woun't generate meaningfull julia sets.
+
+
+ * * *
+By Edgar Malinovsky

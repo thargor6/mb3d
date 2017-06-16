@@ -1,0 +1,57 @@
+[OPTIONS]
+.DEScale = 0.75
+.SIPow = 2
+.Version = 9
+.Double AdditionZ = 0
+.Double Fold = 1
+.Double Scaling = 2
+.Double vAdditionX = 0
+.Double vAdditionY = 0
+[SOURCE]
+procedure FoldAlter(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1: double;
+intFold: integer;
+
+begin
+
+///Folding
+///This step is necessary, as floats interfere with formula and generates something else.
+	intFold:=round(Fold);
+x := x + abs(x-intFold) - abs(x+intFold); 
+y := y + abs(y-intFold) - abs(y+intFold);
+z := z + abs(z-intFold) - abs(z+intFold);
+
+x:=x* Scaling;
+y:=y* Scaling;
+z:=z* Scaling;
+
+///Addition, new version - julia set like
+x1 := x + vAdditionX ; 
+y1 := y + vAdditionY ;
+z1 := z + AdditionZ ;
+
+//Alternative number Mandelbrot
+//defined that i^2=-1, j^2=-i, i*j=1
+
+
+  		//power2
+  		x := x1*x1 - y1*y1 + 2*y1*z1;
+		y := 2* x1 * y1 - z1*z1;
+		z := 2*x1*z1;
+
+
+	//power 3
+	//x1 :=x*x*x-3*x*sqr(y)+6*x*y*z+sqr(z)*y-z*z*z;
+	//y1 :=3*sqr(x)*y-3*x*sqr(z)-y*y*y+2*sqr(y)*z;
+	//z1 :=3*sqr(x)*z-sqr(y)*z+2*y*sqr(z);
+
+
+
+end;
+[END]
+Formula version 1.1
+
+Folded alternative number mandelbrot
+defined that i^2=-1, j^2=-i, i*j=1
+Should generate slightly curved and horned shapes.

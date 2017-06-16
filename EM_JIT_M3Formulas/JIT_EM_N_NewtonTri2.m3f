@@ -1,0 +1,36 @@
+[OPTIONS]
+.DEScale = 4
+.SIPow = 2
+.Version = 9
+[SOURCE]
+procedure NewtonTri2(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1: double;
+begin
+
+
+ ///Square
+x1:= x*x - 2*y*z;
+y1:= 2*x*y - z*z;
+z1:= y*y + 2*x*z;
+
+
+x:= x1 + PIteration3D^.J1;
+y:= y1 + PIteration3D^.J2;
+z:= z1 + PIteration3D^.J3;
+
+
+end;
+[END]
+ 
+Formula version 1.1
+ 
+Newtonian Triplet
+Another attempt at 3D mandelbrot
+This one is correct mathematical creation of alternative 3D numbers.
+By someone I forgot in the fractalforums.com
+Throught better as fractal in folds.
+Power 2 mandelbrot,
+
+ * * *
+By Edgar Malinovsky

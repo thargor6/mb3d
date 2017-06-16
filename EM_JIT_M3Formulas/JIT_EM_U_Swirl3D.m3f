@@ -1,0 +1,45 @@
+[OPTIONS]
+.DEScale = 0.04
+.SIPow = 2
+.Version = 9
+.Double frequency = 1
+.Double scale = 2
+.Double spin = 1
+[SOURCE]
+procedure Swirl3D(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+
+var
+  angx, angy, angz, radius: Double; 
+
+begin
+
+
+radius := sqrt( x*x + y*y + z*z );
+
+angx := arctan2(radius, x);
+angy := arctan2(x, y);
+angz := arctan2(radius, z);
+
+radius:=radius*scale;
+
+x := cos(frequency*radius+ spin*angx)*radius;
+y := sin(frequency*radius+ spin*angy)*radius;
+z := sin(frequency*radius+ spin*angz)*radius;
+
+ x := x ;// + PIteration3D^.J1; 
+ y := y ;// + PIteration3D^.J3; 
+ z := z ;// + PIteration3D^.J3; 
+
+end;
+[END]
+ 
+Formula version 1.1
+ 
+Generates a swirls in all 3 dimensions and not just two as formula for swirl.
+ 
+This is transformation, however it makes a fractal.
+Formula generates very thin threads of swirl, what creates noise.
+The result is very DE dependant. 
+
+ * * *
+By Edgar Malinovsky

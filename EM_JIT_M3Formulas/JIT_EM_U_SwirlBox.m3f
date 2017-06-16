@@ -1,0 +1,56 @@
+[OPTIONS]
+.DEScale = 0.1
+.SIPow = 2
+.Version = 9
+.Double Fold = 1
+.Double frequency = 1
+.Double scale = 4
+.Double spin = 1
+.Double Strangeness = 1
+[SOURCE]
+procedure Swirl3D(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+
+var
+  angx, angy, angz, radius: Double; 
+  fisheye, fishdivisor: Double; 
+intFold: integer;
+begin
+
+intFold:=round(Fold); 
+x := x + abs(x-intFold) - abs(x+intFold); 
+y := y + abs(y-intFold) - abs(y+intFold);
+z := z + abs(z-intFold) - abs(z+intFold);
+
+fishdivisor:= scale/(Strangeness+1);
+fisheye:= (Strangeness+sqrt( x*x + y*y + z*z ) )*fishdivisor;
+x := fisheye*x;
+y := fisheye*y;
+z := fisheye*z; 
+
+// swirl in 3D all around
+radius := sqrt( x*x + y*y + z*z );
+
+angx := arctan2(radius, x);
+angy := arctan2(x, y);
+angz := arctan2(radius, z);
+
+x := cos(frequency*radius+ spin*angx)*radius;
+y := sin(frequency*radius+ spin*angy)*radius;
+z := sin(frequency*radius+ spin*angz)*radius;
+
+ x := x  + PIteration3D^.J1; 
+ y := y  + PIteration3D^.J3; 
+ z := z  + PIteration3D^.J3; 
+
+end;
+[END]
+ 
+Formula version 1.1
+ 
+Formula generates very thin threads of swirl, what creates noise.
+The result is very DE dependant. 
+
+But it can create some very natural shapes.
+
+ * * *
+By Edgar Malinovsky

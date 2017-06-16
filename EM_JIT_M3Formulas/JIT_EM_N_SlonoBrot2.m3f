@@ -1,0 +1,38 @@
+[OPTIONS]
+.DEScale = 0.7
+.SIPow = 2
+.Version = 9
+[SOURCE]
+procedure SlonoBrot(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1: double;
+begin
+  z:=abs(z); //allways positive
+		//power2
+		x1 := x*x - y*y + 2*z*x;
+		y1 :=  2*x * y + 2* z * y;
+		z1 := z*z - y*y;
+
+	//power3
+	//x1:= x*x*x - 4*sqr(y)*x + 3*sqr(x)*z + 3*x*sqr(y) - 3*sqr(y)*z;
+	//y1:= 3*sqr(x)*y + 6*x*y*z - 2*y*y*y + 3*y*sqr(z);
+	//z1:= z*z*z - 2*x*sqr(y)-3*sqr(y)*z;
+
+ x := x1  + PIteration3D^.J1; 
+ y := y1  + PIteration3D^.J2; 
+ z := abs(z1)  + abs( PIteration3D^.J3 ); 
+
+
+end;
+[END]
+ 
+Formula version 1.1
+ 
+Cross of Mandelbrot set in XY plane and mandelbrot with always positive x in ZY plane.
+x beeing real numbers, 
+y beeing imaginary numbers, and 
+z beeing double positive numbers. 
+So multiplication rules are:  r=1 (r is plain real number), i*i=-r-j, j=|j|, i*r=i, i*j=i, r*r=r, j*r=r, j*j=
+
+ * * *
+By Edgar Malinovsky

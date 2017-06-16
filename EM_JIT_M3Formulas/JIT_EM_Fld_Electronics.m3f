@@ -1,0 +1,74 @@
+[OPTIONS]
+.DEScale = 0.5
+.SIPow = 2
+.Version = 9
+.Double AdditionW = 0
+.Double Fold = 1
+.Double Scale = 2
+.Double vAdditionX = 0
+.Double vAdditionY = 0
+.Double vAdditionZ = 0
+[SOURCE]
+procedure FldElectronics(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1, w1: double;
+
+intFold: integer;
+
+begin
+
+///Folding
+///This step is necessary, as floats interfere with formula and generates something else.
+	intFold:=round(Fold);
+x := x + abs(x-intFold) - abs(x+intFold); 
+y := y + abs(y-intFold) - abs(y+intFold);
+z := z + abs(z-intFold) - abs(z+intFold);
+w := w + abs(w-intFold) - abs(w+intFold);
+
+x:=x* Scale;
+y:=y* Scale;
+z:=z* Scale;
+w:=w* Scale;
+
+///Addition, new version - julia set like
+x := x + vAdditionX ; 
+y := y + vAdditionY ;
+z := z + vAdditionZ ;
+w := w + AdditionW ;
+
+
+//==============================================
+///cosmic transformation? 
+//From an attempt of hypercomplex sinh fold - too slow
+
+x1:= ( x-w + y+z )*0.5;
+y1:= ( x+w + y-z )*0.5;
+z1:= ( x+w - y+z )*0.5;
+w1:= ( y+z - x+w )*0.5;
+
+//====================================
+
+
+///hypercomplex multiplication. I hope;) 
+x:= x1*x1 - y1*y1 - z1*z1 + w1*w1;
+y:= 2*x1*y1 - 2*z1*w1;
+z:= 2*x1*z1 - 2*y1*w1;
+w:= 2*x1*w1 + 2*y1*z1; 
+
+end;
+[END]
+Formula version 1.1
+
+4D
+Looks like electronic devices.
+
+Hypercomplex FLDs with additional 4D transformation:
+x1:= ( x-w + y+z )*0.5;
+y1:= ( x+w + y-z )*0.5;
+z1:= ( x+w - y+z )*0.5;
+w1:= ( y+z - x+w )*0.5;
+
+It came out from from hypercomplex sinh. I have no ide what this do;)
+
+ * * *
+By Edgar Malinovsky

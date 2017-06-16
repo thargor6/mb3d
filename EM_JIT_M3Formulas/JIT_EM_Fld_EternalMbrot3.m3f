@@ -1,0 +1,53 @@
+[OPTIONS]
+.DEScale = 0.5
+.SIPow = 2
+.Version = 9
+.Double AdditionW = 0
+.Double Fold = 1
+.Double Scaleing = 2
+.Double vAdditionX = 0
+.Double vAdditionY = 0
+.Double vAdditionZ = 0
+[SOURCE]
+procedure foldEternMbrot3(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1, w1: double;
+intFold: integer;
+
+begin
+
+///Folding
+///This step is necessary, as floats interfere with formula and generates something else.
+	intFold:=round(Fold);
+x := x + abs(x-intFold) - abs(x+intFold); 
+y := y + abs(y-intFold) - abs(y+intFold);
+z := z + abs(z-intFold) - abs(z+intFold);
+w := w + abs(w-intFold) - abs(w+intFold);
+
+x:=x* Scaleing;
+y:=y* Scaleing;
+z:=z* Scaleing;
+w:=w* Scaleing;
+
+///Addition, new version - julia set like
+x1 := x + vAdditionX ; 
+y1 := y + vAdditionY ;
+z1 := z + vAdditionZ ;
+w1 := w + AdditionW ;
+
+///Another very simple raising in power 3. 
+//all i,j,k multiplied by other imaginaries = -1 aka my mistake on quaternions. 
+//It's a mandelbrot of eternal lenght but nice when folded.)
+
+x:=x1*x1*x1-3*x1*y1*y1-3*x1*z1*z1-3*x1*w1*w1-6*x1*y1*w1-6*x1*z1*w1-6*x1*y1*z1;
+y:=3*x1*x1*y1-y1*y1*y1-2*y1*y1*z1-y1*z1*z1-y1*w1*w1-2*y1*y1*w1-2*y1*z1*w1;
+z:=3*x1*x1*z1-z1*z1*z1-y1*y1*z1-z1*w1*w1-2*y1*z1*w1-2*z1*z1*y1+2*y1*z1*w1;
+w:=3*x1*x1*w1-w1*w1*w1-y1*y1*w1-z1*z1*w1-2*w1*w1*y1-2*z1*w1*w1-2*z1*y1*w1;
+
+
+end;
+[END]
+4D
+ 
+Formula version 1.1
+ 
