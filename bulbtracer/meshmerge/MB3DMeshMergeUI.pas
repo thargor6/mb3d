@@ -26,7 +26,6 @@ type
     TaubinSmoothMuUpDown: TUpDown;
     TaubinSmoothPassesEdit: TEdit;
     TaubinSmoothPassesEditUpDown: TUpDown;
-    SaveOriginalCBx: TCheckBox;
     LoadPartsBtn: TButton;
     PartsMemo: TMemo;
     OpenDialog: TOpenDialog;
@@ -67,7 +66,7 @@ implementation
 
 uses
   BulbTracerUITools, VertexList, DateUtils, Generics.Collections,
-  MeshWriter, MeshReader,  MeshIOUtil, MeshSimplifier;
+  MeshWriter, MeshReader,  MeshIOUtil, MeshSimplifier, IOUtils;
 
 procedure TMB3DMeshMergeFrm.Button1Click(Sender: TObject);
 begin
@@ -84,20 +83,21 @@ begin
   if PartsMemo.Lines.Count > 0 then begin
     Filename := PartsMemo.Lines[ 0 ];
     BasePath := ExtractFilePath( Filename );
-    BaseFilename := ChangeFileExt( ExtractFileName( Filename ), '' );
-    for I := Length( BaseFilename ) downto 1 do begin
-      if BaseFilename[ I ] = '_' then begin
-        Result :=  IncludeTrailingBackslash( BasePath ) + Copy( BaseFilename, 1, I - 1 ) + '.lwo';
+    for I:=Length(BasePath) downto 1 do begin
+      if BasePath[I] = '\' then begin
+        BasePath := Copy( BasePath, 1, I - 1 );
         break;
       end;
     end;
+    BaseFilename := ChangeFileExt(  ExtractFileName( BasePath ), '.obj' );
+    Result :=  IncludeTrailingBackslash( TDirectory.GetParent(ExcludeTrailingPathDelimiter(BasePath)) ) + BaseFilename;
   end;
 end;
 
 procedure TMB3DMeshMergeFrm.LoadPartsBtnClick(Sender: TObject);
 begin
   OpenDialog.DefaultExt := cMB3DMeshSegFileExt;
-  OpenDialog.Filter := 'Mesh Part (*'+cMB3DMeshSegFileExt+')|*.'+cMB3DMeshSegFileExt;
+  OpenDialog.Filter := 'Mesh Part (*.lwo)|*.lwo';
   if OpenDialog.Execute(Self.Handle) then
     FillPartsMemo( OpenDialog.FileName );
 end;
@@ -108,7 +108,7 @@ const
 var
   T0: Int64;
   FacesList: TFacesList;
-  DoPostProcessing, DoSaveOriginal: Boolean;
+  DoPostProcessing: Boolean;
   FThreadVertexLists: TObjectList;
   MaxFaces: Integer;
 begin
@@ -125,31 +125,25 @@ begin
       ProgressBar.StepIt;
       try
         DoPostProcessing := SmoothGBox.Checked;
-        DoSaveOriginal := SaveOriginalCBx.Checked;
         FacesList.DoCenter(1.0);
 
         MaxFaces := Round( FacesList.Count * MergeRatio );
         if FacesList.Count > MaxFaces then begin
           with TMeshSimplifier.Create(FacesList) do try
-  //          SimplifyMeshLossless;
             SimplifyMesh( MaxFaces );
           finally
             Free;
           end;
         end;
 
-        if not FForceAbort then begin
-          if DoPostProcessing and DoPostProcessing then
-            TLightwaveObjFileWriter.SaveToFile(MakeMeshRawFilename(GetOutputMeshFilename), FacesList);
-        end;
         ProgressBar.StepIt;
         if SmoothGBox.Checked then begin
           FacesList.TaubinSmooth(StrToFloat(TaubinSmoothLambaEdit.Text), StrToFloat(TaubinSmoothMuEdit.Text), StrToInt(TaubinSmoothPassesEdit.Text));
         end;
         ProgressBar.StepIt;
         if not FForceAbort then begin
-          TLightwaveObjFileWriter.SaveToFile(GetOutputMeshFilename, FacesList);
-//          TObjFileWriter.SaveToFile(GetOutputMeshFilename+'.obj', FacesList);
+//          TLightwaveObjFileWriter.SaveToFile(GetOutputMeshFilename, FacesList);
+          TObjFileWriter.SaveToFile(GetOutputMeshFilename, FacesList);
         end;
         ProgressBar.StepIt;
         FThreadVertexLists.Clear;
@@ -190,6 +184,8 @@ begin
   TaubinSmoothLambaEdit.Text := FloatToStr(0.42);
   TaubinSmoothMuEdit.Text := FloatToStr(-0.45);
   TaubinSmoothPassesEdit.Text := IntToStr(12);
+  MeshReductionRetainRatioEdit.Text := FloatToStr(0.25);
+  MeshReductionAgressivenessEdit.Text := FloatToStr(7.0);
 end;
 
 procedure TMB3DMeshMergeFrm.FormShow(Sender: TObject);
@@ -202,7 +198,7 @@ var
   BasePath, BaseFilename, CurrFilename: string;
   I: integer;
 begin
-  // mb3d_mesh_03.mb3dmeshseg
+  // mb3d_mesh_03.lwo
   BasePath := ExtractFilePath(  Filename );
   BaseFilename := ChangeFileExt( ExtractFileName( Filename ), '' );
   for I := Length( BaseFilename ) downto 1 do begin
@@ -216,7 +212,7 @@ begin
   EnableControls;
   I:=0;
   while( True ) do begin
-    CurrFilename := IncludeTrailingBackslash( BasePath ) + TUnprocessedMeshFileWriter.CreatePartFilename( BaseFilename, I );
+    CurrFilename := IncludeTrailingBackslash( BasePath ) + TUnprocessedMeshFileWriter.CreatePartFilename( I );
     if FileExists( CurrFilename ) then
       PartsMemo.Lines.Add( CurrFilename )
     else

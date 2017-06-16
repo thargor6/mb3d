@@ -25,6 +25,9 @@ type
     procedure SaveHeightMap( const Left, Top, Width, Height: Integer; const Filename: String );
   end;
 
+const
+  DFLT_SCALE = 0.5;
+
 implementation
 
 uses
@@ -38,7 +41,7 @@ constructor TOpenGLHelper.Create(const Canvas: TCanvas);
 begin
   inherited Create( Canvas );
   FFOV := 10;
-  FScale := 0.5;
+  FScale := DFLT_SCALE;
 end;
 
 
@@ -46,13 +49,13 @@ procedure TOpenGLHelper.AfterInitGL;
 const
   FragmentShader: String =
     'float near = 1.0;'#10 +
-    'float far  = 30.0;'#10 +
+    'float far  = 36.0;'#10 +
     #10 +
     'float linearizeDepth(float depth) {'#10 +
     '  return (2.0 * near * far) / (far + near - depth * (far - near));'#10 +
     '}'#10 +
     'void main() {'#10 +
-    '  float depth = linearizeDepth(gl_FragCoord.z)/20.0;'#10 +
+    '  float depth = linearizeDepth(gl_FragCoord.z)/16.0;'#10 +
     '  gl_FragColor = vec4(1.0-vec3(depth), 1.0f);'#10 +
     '}'#10;
 begin

@@ -92,7 +92,7 @@ object MB3DMeshMergeFrm: TMB3DMeshMergeFrm
       Left = 593
       Top = 13
       Width = 192
-      Height = 124
+      Height = 100
       Caption = 'Taubin Smooth'
       TabOrder = 0
       Checkable = True
@@ -174,14 +174,6 @@ object MB3DMeshMergeFrm: TMB3DMeshMergeFrm
         Max = 32000
         TabOrder = 5
         OnClick = TaubinSmoothPassesEditUpDownClick
-      end
-      object SaveOriginalCBx: TCheckBox
-        Left = 40
-        Top = 94
-        Width = 137
-        Height = 17
-        Caption = 'Also save original'
-        TabOrder = 7
       end
     end
     object LoadPartsBtn: TButton
@@ -268,6 +260,7 @@ object MB3DMeshMergeFrm: TMB3DMeshMergeFrm
     end
   end
   object OpenDialog: TOpenDialog
+    Filter = '*.lwo'
     Left = 672
     Top = 176
   end

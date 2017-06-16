@@ -39,7 +39,6 @@ object HeightMapGenFrm: THeightMapGenFrm
       Height = 13
       Align = alBottom
       Caption = 'LMB: move           RMB: rotate'
-      ExplicitTop = 543
       ExplicitWidth = 143
     end
     object Label16: TLabel
@@ -145,6 +144,15 @@ object HeightMapGenFrm: THeightMapGenFrm
       ShowHint = True
       TabOrder = 5
       OnClick = SaveImgBtnClick
+    end
+    object ResetBtn: TButton
+      Left = 11
+      Top = 477
+      Width = 134
+      Height = 25
+      Caption = 'Reset position'
+      TabOrder = 6
+      OnClick = ResetBtnClick
     end
   end
   object SaveImgDialog: TSaveDialog

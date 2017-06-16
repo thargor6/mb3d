@@ -1,6 +1,9 @@
-V1.97 (work in progress)
+V1.97
+ - finished the first working version of the external mesh-merging-tool (64 Bit)
  - Basic foundation for a scripting-module, utilizing the Pax-Compiler
  - HeightMapGen: hide right panel Dbl-Clicking
+ - incluced a huge JIT-formula.pack from Alef released at the fractalforums.com
+ - NEW RELEASE 
 
 V1.96 (unreleased)
  - finished the new Heightmap-Generator:

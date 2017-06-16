@@ -52,6 +52,7 @@ type
     procedure InitGL;
     procedure CleanupGL;
     procedure AfterResize(const ClientWidth, ClientHeight: Integer);
+    procedure ResetPosition;
     procedure UpdateMesh(const FacesList: TFacesList); overload; virtual;
     procedure UpdateMesh(const VertexList: TPS3VectorList); overload; virtual;
     procedure SetDisplayStyle(const DisplayStyle: TDisplayStyle);
@@ -251,6 +252,18 @@ begin
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity;
 end;
+
+procedure TBaseOpenGLHelper.ResetPosition;
+begin
+  FPosition.X := 0.0;
+  FPosition.Y := 0.0;
+  FPosition.Z := 0.0;
+  FAngle.X := 0.0;
+  FAngle.Y := 0.0;
+  FAngle.Z := 0.0;
+  FScale := 1.0;
+end;
+
 
 procedure TBaseOpenGLHelper.UpdateMesh(const FacesList: TFacesList);
 begin

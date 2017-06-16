@@ -31,6 +31,7 @@ type
     SaveImgDialog: TSaveDialog;
     OpenDialog1: TOpenDialog;
     Label2: TLabel;
+    ResetBtn: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -49,6 +50,7 @@ type
     procedure SaveImgBtnClick(Sender: TObject);
     procedure FormDblClick(Sender: TObject);
     procedure NavigatePnlClick(Sender: TObject);
+    procedure ResetBtnClick(Sender: TObject);
   private
     { Private declarations }
     FDragging: Boolean;
@@ -230,6 +232,17 @@ end;
 procedure THeightMapGenFrm.NavigatePnlClick(Sender: TObject);
 begin
   NavigatePnl.Visible := False;
+end;
+
+procedure THeightMapGenFrm.ResetBtnClick(Sender: TObject);
+begin
+  FOpenGLHelper.ResetPosition;
+  FOpenGLHelper.Scale := HeightMapGenPreview.DFLT_SCALE;
+  FXPosition := FOpenGLHelper.XPosition;
+  FYPosition := FOpenGLHelper.YPosition;
+  FXAngle := FOpenGLHelper.XAngle;
+  FYAngle := FOpenGLHelper.YAngle;
+  FScale := FOpenGLHelper.Scale;
 end;
 
 procedure THeightMapGenFrm.UpdateMesh(const FacesList: TFacesList);
