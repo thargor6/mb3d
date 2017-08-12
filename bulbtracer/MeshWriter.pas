@@ -17,7 +17,7 @@ type
 
   TPlyFileWriter = class( TAbstractFileWriter )
   public
-    class procedure SaveToFile(const Filename: String; const Vertices, Normals: TPS3VectorList);
+    class procedure SaveToFile(const Filename: String; const Vertices, Normals, Colors: TPS3VectorList);
   end;
 
   TObjFileWriter = class( TAbstractFileWriter )
@@ -54,11 +54,14 @@ begin
     raise Exception.Create('Can not access Folder <'+Folder+'>');
 end;
 { ------------------------------ TPlyFileWriter ------------------------------ }
-class procedure TPlyFileWriter.SaveToFile(const Filename: String; const Vertices, Normals: TPS3VectorList);
+class procedure TPlyFileWriter.SaveToFile(const Filename: String; const Vertices, Normals, Colors: TPS3VectorList);
 var
   I: Integer;
   FOut : TextFile;
   TmpBuf: Array[word] of Byte;
+  WithColors: Boolean;
+  FormatSettings: TFormatSettings;
+  LastDecimalSeparator: Char;
 
   procedure WriteHeader;
   begin
@@ -73,25 +76,45 @@ var
       WriteLn(FOut, 'property float ny');
       WriteLn(FOut, 'property float nz');
     end;
-    // WriteLn(FOut, 'property float intensity');
-    // WriteLn(FOut, 'property uchar diffuse_red');
-    // WriteLn(FOut, 'property uchar diffuse_green');
-    // WriteLn(FOut, 'property uchar diffuse_blue');
+    if Colors <> nil then begin
+      WriteLn(FOut, 'property uchar red');
+      WriteLn(FOut, 'property uchar green');
+      WriteLn(FOut, 'property uchar blue');
+      WriteLn(FOut, 'property uchar alpha');
+    end;
     WriteLn(FOut, 'end_header');
   end;
 
   procedure WriteVertex(const Idx: Integer);
   var
-    Vertex, N: TPS3Vector;
+    Vertex, N, Color: TPS3Vector;
+
+    function RoundColor(const Value: Double): Integer;
+    begin
+      Result := Max(0, Min( 255, Round(255.0 * Value ) ) );
+    end;
+
   begin
-    //13.32 12.84 3.06 -0.352745 -0.230493 0.906887 1 255 243 245
     Vertex := Vertices.GetVertex(Idx);
-    if Normals <> nil then begin
-      N := Normals.GetVertex(Idx);
-      WriteLn(FOut, FloatToStr(Vertex^.X)+' '+FloatToStr(Vertex^.Y)+' '+FloatToStr(Vertex^.Z)+' '+FloatToStr(N^.X)+' '+FloatToStr(N^.Y)+' '+FloatToStr(N^.Z));
+
+    if Colors <> nil then begin
+      Color := Colors.GetVertex(Idx);
+      if Normals <> nil then begin
+        N := Normals.GetVertex(Idx);
+        WriteLn(FOut, FloatToStr(Vertex^.X)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+FloatToStr(N^.X, FormatSettings)+' '+FloatToStr(N^.Y, FormatSettings)+' '+FloatToStr(N^.Z, FormatSettings)+' '+IntToStr(RoundColor(Color.X))+' '+IntToStr(RoundColor(Color.Y))+' '+IntToStr(RoundColor(Color.Z))+' '+IntToStr(255));
+      end
+      else begin
+        WriteLn(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+IntToStr(RoundColor(Color.X))+' '+IntToStr(RoundColor(Color.Y))+' '+IntToStr(RoundColor(Color.Z))+' '+IntToStr(255));
+      end;
     end
     else begin
-      WriteLn(FOut, FloatToStr(Vertex^.X)+' '+FloatToStr(Vertex^.Y)+' '+FloatToStr(Vertex^.Z));
+      if Normals <> nil then begin
+        N := Normals.GetVertex(Idx);
+        WriteLn(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+FloatToStr(N^.X, FormatSettings)+' '+FloatToStr(N^.Y, FormatSettings)+' '+FloatToStr(N^.Z, FormatSettings));
+      end
+      else begin
+        WriteLn(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings));
+      end;
     end;
   end;
 
@@ -101,18 +124,26 @@ begin
   if (Normals <> nil) and (Normals.Count <> Vertices.Count) then
     raise Exception.Create('PlyFileWriter.SaveToFile: Normals count <'+IntToStr(Normals.Count)+'> does not match <'+IntToStr(Vertices.Count)+'>');
   CreateDrawer( Filename );
-  {$I-}
-  AssignFile(FOut, Filename);
-  ReWrite(FOut);
-  SetTextBuf(FOut,TmpBuf);
-  WriteHeader;
-  for I := 0 to Vertices.Count - 1 do begin
-    WriteVertex(I);
+
+  GetLocaleFormatSettings(GetUserDefaultLCID, FormatSettings);
+  LastDecimalSeparator := FormatSettings.DecimalSeparator;
+  try
+    FormatSettings.DecimalSeparator := '.';
+    {$I-}
+    AssignFile(FOut, Filename);
+    ReWrite(FOut);
+    SetTextBuf(FOut,TmpBuf);
+    WriteHeader;
+    for I := 0 to Vertices.Count - 1 do begin
+      WriteVertex(I);
+    end;
+    if IOResult<>0 then
+      raise Exception.Create('PlyFileWriter.SaveToFile: Error writing file');
+    CloseFile(fout);
+    {$I+}
+  finally
+    FormatSettings.DecimalSeparator := LastDecimalSeparator;
   end;
-  if IOResult<>0 then
-    raise Exception.Create('PlyFileWriter.SaveToFile: Error writing file');
-  CloseFile(fout);
-  {$I+}
 end;
 { ----------------------------- TObjFileWriter ------------------------------- }
 class procedure TObjFileWriter.SaveToFile(const Filename: String; const Faces: TFacesList);
@@ -120,7 +151,7 @@ var
   FOut : TextFile;
   TmpBuf: Array[word] of Byte;
   Normals: TPS3VectorList;
-  LastDecimalSeparator: char;
+  LastDecimalSeparator: Char;
   FormatSettings: TFormatSettings;
 
   procedure WriteHeader;
@@ -189,8 +220,6 @@ begin
   LastDecimalSeparator := FormatSettings.DecimalSeparator;
   try
     FormatSettings.DecimalSeparator := '.';
-
-
     {$I-}
     AssignFile(FOut, Filename);
     try
@@ -353,7 +382,6 @@ var
   var
     I: Integer;
     TotalSize, TagsSize, LayrSize, PointsSize, PolsSize: Int32;
-    X, Y, Z: Single;
   begin
     TagsSize := Length( Surfacename ) + 1;
 

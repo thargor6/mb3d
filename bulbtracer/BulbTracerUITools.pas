@@ -10,7 +10,8 @@ uses
   Vcl.ComCtrls, BulbTracerConfig;
 
 type
-  TSaveType = (stMeshAsObj, stMeshAsLWO2, stUnprocessedMeshData, stNoSave);
+  TMeshSaveType = (stMeshAsObj, stMeshAsLWO2, stUnprocessedMeshData, stNoSave);
+  TPointCloudSaveType = (pstAsPly, pstNoSave);
   TCancelType = (ctCancelAndShowResult, ctCancelImmediately);
 
 function Clamp255(i: Integer): Integer;
@@ -21,9 +22,12 @@ procedure Solid4(pc: PCardinal; b1, b2: Integer);
 procedure Solid8(pc: PCardinal; b1, b2: Integer);
 procedure Solid16(pc: PCardinal; b1, b2: Integer);
 
-function GetDefaultMeshFilename(const Filename: String; const SaveType: TSaveType): String;
-function GetMeshFileExt(const SaveType: TSaveType): String;
-function GetMeshFileFilter(const SaveType: TSaveType): String;
+function GetDefaultMeshFilename(const Filename: String; const SaveType: TMeshSaveType): String; overload;
+function GetDefaultMeshFilename(const Filename: String; const SaveType: TPointCloudSaveType): String; overload;
+function GetMeshFileExt(const SaveType: TMeshSaveType): String; overload;
+function GetMeshFileExt(const SaveType: TPointCloudSaveType): String; overload;
+function GetMeshFileFilter(const SaveType: TMeshSaveType): String; overload;
+function GetMeshFileFilter(const SaveType: TPointCloudSaveType): String; overload;
 function MakeMeshRawFilename(const Filename: String): String;
 function UpDownBtnValue(const  Button: TUDBtnType; const Scl: Double): Double;
 function StrToFloatSafe(const Str: String; const DfltVal: Double): Double;
@@ -171,7 +175,7 @@ begin
     pc^ := b2;
 end;
 
-function GetDefaultMeshFilename(const Filename: String; const SaveType: TSaveType): String;
+function GetDefaultMeshFilename(const Filename: String; const SaveType: TMeshSaveType): String; overload;
 var
   OldExt, NewExt: String;
 begin
@@ -185,23 +189,55 @@ begin
     Result := Filename + NewExt;
 end;
 
-function GetMeshFileFilter(const SaveType: TSaveType): String;
+function GetDefaultMeshFilename(const Filename: String; const SaveType: TPointCloudSaveType): String; overload;
+var
+  OldExt, NewExt: String;
+begin
+  OldExt := ExtractFileExt(Filename);
+  NewExt := GetMeshFileExt(SaveType);
+  if NewExt <> '' then
+    NewExt := '.'+ NewExt;
+  if OldExt='' then
+    Result := Copy(Filename, 1, Length(Filename) - Length(OldExt)) + NewExt
+  else
+    Result := Filename + NewExt;
+end;
+
+function GetMeshFileFilter(const SaveType: TMeshSaveType): String; overload;
 begin
   case SaveType of
-    stMeshAsObj: Result := 'Wavefront OBJ (*obj)|*.obj';
-    stMeshAsLWO2: Result := 'Lightwave3D Object (*lwo)|*.lwo';
+    stMeshAsObj: Result := 'Wavefront OBJ (*.obj)|*.obj';
+    stMeshAsLWO2: Result := 'Lightwave3D Object (*.lwo)|*.lwo';
     stUnprocessedMeshData: Result := 'Raw mesh data (*'+cMB3DMeshSegFileExt+')|*.'+cMB3DMeshSegFileExt;
   else
     Result := '';
   end;
 end;
 
-function GetMeshFileExt(const SaveType: TSaveType): String;
+function GetMeshFileFilter(const SaveType: TPointCloudSaveType): String; overload;
+begin
+  case SaveType of
+    pstAsPly: Result := 'Polygon File Format (*.ply)|*.ply';
+  else
+    Result := '';
+  end;
+end;
+
+function GetMeshFileExt(const SaveType: TMeshSaveType): String; overload;
 begin
   case SaveType of
     stMeshAsObj: Result := 'obj';
     stMeshAsLWO2: Result := 'lwo';
     stUnprocessedMeshData: Result := cMB3DMeshSegFileExt;
+  else
+    Result := '';
+  end;
+end;
+
+function GetMeshFileExt(const SaveType: TPointCloudSaveType): String; overload;
+begin
+  case SaveType of
+    pstAsPly: Result := 'ply';
   else
     Result := '';
   end;

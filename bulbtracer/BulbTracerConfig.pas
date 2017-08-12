@@ -7,7 +7,7 @@ unit BulbTracerConfig;
 interface
 
 uses
-  SysUtils, Classes;
+  SysUtils, Classes, Generics.Collections;
 
 type
   TOversampling = (osNone, os2x2x2, os3x3x3);
@@ -22,6 +22,7 @@ type
     constructor Create;
     function CalcStepCount(const ThreadId, ThreadCount: Integer): Integer;
     function CalcRangeMin(const ThreadId, ThreadCount: Integer): Double;
+    function CalcRangeMinIndex(const ThreadId, ThreadCount: Integer): Integer;
     property RangeMin: Double read FRangeMin write FRangeMin;
     property RangeMax: Double read FRangeMax write FRangeMax;
     property StepCount: Integer read FStepCount write FStepCount;
@@ -36,9 +37,12 @@ type
     FVRange: TRange;
     FCalculateNormals: Boolean;
     FRemoveDuplicates: Boolean;
+    FSphericalScan: Boolean;
+    FCalcColors: Boolean;
     FMeshType: TMeshType;
     FOversampling: TOversampling;
     FISOValue: Double;
+    FSharedWorkList: TList<Double>;
   public
     constructor Create;
     destructor Destroy; override;
@@ -49,6 +53,9 @@ type
     property MeshType: TMeshType read FMeshType write FMeshType;
     property Oversampling: TOversampling read FOversampling write FOversampling;
     property ISOValue: Double read FISOValue write FISOValue;
+    property SharedWorkList: TList<Double> read FSharedWorkList write FSharedWorkList;
+    property SphericalScan: Boolean read FSphericalScan write FSphericalScan;
+    property CalcColors: Boolean read FCalcColors write FCalcColors;
   end;
 
 implementation
@@ -108,6 +115,21 @@ begin
   end
   else
     Result := FRangeMin;
+end;
+
+function TRange.CalcRangeMinIndex(const ThreadId, ThreadCount: Integer): Integer;
+var
+  I, Steps: Integer;
+begin
+  ValidateThreadId(ThreadId, ThreadCount);
+  if (ThreadId > 1) and (ThreadCount > 1) then begin
+    Steps := 0;
+    for I := 1 to ThreadId - 1 do
+      Inc(Steps, CalcStepCount(I, ThreadCount) );
+    Result := Steps;
+  end
+  else
+    Result := 0;
 end;
 { ----------------------------- TVertexGenConfig ----------------------------- }
 constructor TVertexGenConfig.Create;

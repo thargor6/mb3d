@@ -103,7 +103,7 @@ type
   public
     { Public declarations }
     procedure UpdateMesh(const FacesList: TFacesList); overload;
-    procedure UpdateMesh(const VertexList: TPS3VectorList); overload;
+    procedure UpdateMesh(const VertexList, ColorList: TPS3VectorList); overload;
   end;
 
 var
@@ -298,9 +298,9 @@ begin
   FOpenGLHelper.UpdateMesh(FacesList);
 end;
 
-procedure TMeshPreviewFrm.UpdateMesh(const VertexList: TPS3VectorList);
+procedure TMeshPreviewFrm.UpdateMesh(const VertexList, ColorList: TPS3VectorList);
 begin
-  FOpenGLHelper.UpdateMesh(VertexList);
+  FOpenGLHelper.UpdateMesh(VertexList, ColorList);
 end;
 
 procedure TMeshPreviewFrm.SetWindowCaption(const Msg: String);

@@ -10,7 +10,7 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Buttons, TypeDefinitions, ComCtrls,
   Contnrs, VertexList, BulbTracerConfig, Vcl.Tabs, BulbTracerUITools,
-  JvExStdCtrls, JvGroupBox, TrackBarEx;
+  JvExStdCtrls, JvGroupBox, TrackBarEx, ObjectScanner, Generics.Collections;
 
 type
   TFVoxelExportCalcPreviewThread = class(TThread)
@@ -152,6 +152,8 @@ type
     MeshReductionAgressivenessEdit: TEdit;
     MeshReductionAgressivenessUpDown: TUpDown;
     GenCurrMeshBtn: TButton;
+    MeshCalcColorsCBx: TCheckBox;
+    MeshSphericalScanCBx: TCheckBox;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -197,6 +199,7 @@ type
       Button: TUDBtnType);
     procedure MeshReductionAgressivenessUpDownClick(Sender: TObject;
       Button: TUDBtnType);
+    procedure MeshTypeCmbChange(Sender: TObject);
   private
     { Private-Deklarationen }
   //  PreviewVoxel: array of Cardinal;   //buffer to not calc everything again if shifted position
@@ -206,10 +209,9 @@ type
     PaintedYsofar, vActiveThreads, PreviewSize: Integer;
     CalcPreview{, PrCalcedAll}: LongBool; //to verify if PreviewVoxel array is complete
     VsiLight: array of Cardinal;  //just 0..255 for color
-    FThreadVertexLists: TObjectList;
+    FThreadVertexLists, FThreadColorLists: TObjectList;
     FVertexGenConfig: TVertexGenConfig;
     FCalculating, FForceAbort: Boolean;
-    FSaveType: TSaveType;
     FCancelType: TCancelType;
     FRefreshing: Boolean;
     procedure PutOutputFolder2record;
@@ -223,6 +225,8 @@ type
     procedure SetProjectName(FileName: String);
     procedure StartNewPreview;
     procedure CalcPreviewSizes;
+    procedure UpdateSaveTypeCmb;
+    procedure EnableMeshOptionControls;
 
     function StartPLYRender: LongBool;
     procedure MergeAndSaveMesh;
@@ -264,14 +268,20 @@ type
 
   TPLYExportCalcThread = class(TThread)
   private
+    FSharedWorkList: TList<Double>;
+    FPrepared: Boolean;
+    FRayCaster: TRayCaster;
+    FObjectScanner: TObjectScanner;
     Iteration3Dext: TIteration3Dext;
   public
     M3Vfile: TM3Vfile;
     MCTparas: TMCTparameter;
-    VertexList: TPS3VectorList;
+    VertexList, ColorList: TPS3VectorList;
     FacesList: TFacesList;
     VertexGenConfig: TVertexGenConfig;
   protected
+    destructor Destroy; override;
+    procedure Prepare;
     procedure Execute; override;
   end;
 var
@@ -282,9 +292,8 @@ var
 implementation
 
 uses CalcVoxelSliceThread, FileHandling, Math, Math3D, Calc, DivUtils, Mand,
-  HeaderTrafos, CustomFormulas, ImageProcess, VectorMath, ObjectScanner,
-  DateUtils, BulbTracer, MeshPreviewUI, MeshWriter, MeshReader, MeshIOUtil,
-  MeshSimplifier;
+  HeaderTrafos, CustomFormulas, ImageProcess, VectorMath, DateUtils, BulbTracer,
+  MeshPreviewUI, MeshWriter, MeshReader, MeshIOUtil, MeshSimplifier;
 
 {$R *.dfm}
 
@@ -798,8 +807,13 @@ begin
       OutputFolder := IniDirs[12];
       PutOutputFolder2record;
       VProjectName := 'new';
-      if(OutputFolder<>'') then
-        FilenameREd.Text := IncludeTrailingPathDelimiter(OutputFolder)+GetDefaultMeshFilename('mb3d_mesh', TSaveType(SaveTypeCmb.ItemIndex));
+
+      MeshTypeCmb.ItemIndex := 1;
+      MeshTypeCmbChange(Sender);
+      SaveTypeCmb.ItemIndex := 0;
+      if(OutputFolder<>'') then begin
+        FilenameREd.Text := IncludeTrailingPathDelimiter(OutputFolder)+GetDefaultMeshFilename('mb3d_mesh', TPointCloudSaveType(SaveTypeCmb.ItemIndex));
+      end;
     end;
 end;
 
@@ -853,15 +867,13 @@ begin
     FParamSource := psMain;
     UpdateParamsRange;
     FThreadVertexLists := TObjectList.Create;
+    FThreadColorLists := TObjectList.Create;
     FVertexGenConfig := TVertexGenConfig.Create;
     bFirstShow := True;
     Benabled := False;
     for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
     bBulbTracerFormCreated := True;
     Panel4.DoubleBuffered := True;
-
-    FSaveType := stMeshAsObj;
-    SaveTypeCmb.ItemIndex := Ord(FSaveType);
 
     FCancelType := ctCancelAndShowResult;
     CancelTypeCmb.ItemIndex := Ord(FCancelType);
@@ -883,6 +895,7 @@ end;
 procedure TBulbTracerFrm.FormDestroy(Sender: TObject);
 begin
   FThreadVertexLists.Free;
+  FThreadColorLists.Free;
   FVertexGenConfig.Free;
 end;
 
@@ -920,8 +933,15 @@ end;
 procedure TBulbTracerFrm.Button3Click(Sender: TObject);
 begin
   try
-    SaveDialog.DefaultExt := GetMeshFileExt(TSaveType(SaveTypeCmb.ItemIndex));
-    SaveDialog.Filter := GetMeshFileFilter(TSaveType(SaveTypeCmb.ItemIndex));
+    UpdateSaveTypeCmb;
+    if FVertexGenConfig.MeshType = mtMesh then begin
+      SaveDialog.DefaultExt := GetMeshFileExt(TMeshSaveType(SaveTypeCmb.ItemIndex));
+      SaveDialog.Filter := GetMeshFileFilter(TMeshSaveType(SaveTypeCmb.ItemIndex));
+    end
+    else begin
+      SaveDialog.DefaultExt := GetMeshFileExt(TPointCloudSaveType(SaveTypeCmb.ItemIndex));
+      SaveDialog.Filter := GetMeshFileFilter(TPointCloudSaveType(SaveTypeCmb.ItemIndex));
+    end;
     SaveDialog.InitialDir := ExtractFilePath(FilenameREd.Text);
     SaveDialog.FileName := FilenameREd.Text;
     if SaveDialog.Execute(Self.Handle) then
@@ -1304,9 +1324,14 @@ begin
 end;
 
 procedure TBulbTracerFrm.CalculateBtnClick(Sender: TObject);
+var
+  DoSave: boolean;
 begin
   if not FCalculating then begin
-    if (FSaveType <> stNoSave) and (FilenameREd.Text = '') then begin
+    DoSave := ( ( FVertexGenConfig.MeshType = mtMesh ) and ( TMeshSaveType(SaveTypeCmb.ItemIndex) <> stNoSave ) ) or
+              ( ( FVertexGenConfig.MeshType = mtPointCloud ) and ( TPointCloudSaveType(SaveTypeCmb.ItemIndex) <> pstNoSave ) );
+
+    if DoSave and (FilenameREd.Text = '') then begin
       Button3Click(Sender);
       if FilenameREd.Text = '' then
         Exit;
@@ -1356,6 +1381,7 @@ var
 begin
   try
     FThreadVertexLists.Clear;
+    FThreadColorLists.Clear;
     ThreadCount := Min(Mand3DForm.UpDown3.Position, M3Vfile.VHeader.Height);
   ////
 //   ThreadCount := 1;
@@ -1411,8 +1437,10 @@ begin
           case FVertexGenConfig.MeshType of
             mtPointCloud:
               begin
-                PLYCalcThreads[x - 1].VertexList      := TPS3VectorList.Create;
+                PLYCalcThreads[x - 1].VertexList     := TPS3VectorList.Create;
+                PLYCalcThreads[x - 1].ColorList      := TPS3VectorList.Create;
                 FThreadVertexLists.Add(PLYCalcThreads[x - 1].VertexList);
+                FThreadColorLists.Add(PLYCalcThreads[x - 1].ColorList);
               end;
             mtMesh:
               begin
@@ -1435,6 +1463,7 @@ begin
       VCalcThreadStats.cCalcTime         := GetTickCount;
       vActiveThreads := ThreadCount;
       PaintedYsofar := 0;
+      for x := 0 to ThreadCount - 1 do PLYCalcThreads[x].Prepare;
       for x := 0 to ThreadCount - 1 do PLYCalcThreads[x].Start;
       Mand3DForm.DisableButtons;
       Label13.Caption := 'Tracing object...';
@@ -1451,29 +1480,46 @@ begin
   end;
 end;
 //################################################################################
-procedure TPLYExportCalcThread.Execute;
-var
-  RayCaster: TRayCaster;
-  ObjectScanner: TObjectScanner;
+destructor TPLYExportCalcThread.Destroy;
 begin
+  if Assigned( FObjectScanner ) then
+    FreeAndNil( FObjectScanner );
+  if Assigned( FRayCaster ) then
+    FreeAndNil( FRayCaster );
+  inherited Destroy;
+end;
+
+procedure TPLYExportCalcThread.Prepare;
+var
+  I: Integer;
+begin
+  case VertexGenConfig.MeshType of
+    mtPointCloud:
+      FRayCaster := TCreatePointCloudRayCaster.Create(VertexList, ColorList);
+    mtMesh:
+      FRayCaster := TCreateMeshRayCaster.Create(FacesList, VertexGenConfig.ISOValue);
+  end;
+  if VertexGenConfig.SphericalScan then
+    FObjectScanner := TSphericalScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster)
+  else
+    FObjectScanner := TCubicScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster);
+
+  if ( MCTparas.iThreadID = 1 ) and ( FObjectScanner.UseShuffledWorkList  ) then begin
+    FSharedWorkList := FObjectScanner.GetWorkList;
+    for I := FSharedWorkList.Count-1 downto 1 do
+      FSharedWorkList.Exchange(i, Random(i+1));
+    VertexGenConfig.SharedWorkList := FSharedWorkList;
+  end;
+
+  FPrepared := True;
+end;
+
+procedure TPLYExportCalcThread.Execute;
+begin
+  if not FPrepared then
+    raise Exception.Create('Call Prepare First');
   try
-    case VertexGenConfig.MeshType of
-      mtPointCloud:
-        RayCaster := TCreatePointCloudRayCaster.Create(VertexList);
-      mtMesh:
-        RayCaster := TCreateMeshRayCaster.Create(FacesList, VertexGenConfig.ISOValue);
-    end;
-    try
-//    ObjectScanner := TSphericalScanner.Create(VertexGenConfig, MCTparas, M3Vfile, RayCaster);
-      ObjectScanner := TCubicScanner.Create(VertexGenConfig, MCTparas, M3Vfile, RayCaster);
-      try
-        ObjectScanner.ScanObject;
-      finally
-        ObjectScanner.Free;
-      end;
-    finally
-      RayCaster.Free;
-    end;
+    FObjectScanner.Scan;
   finally
     with MCTparas do begin
       PCalcThreadStats.CTrecords[iThreadID].isActive := 0;
@@ -1485,28 +1531,42 @@ end;
 procedure TBulbTracerFrm.SavePointCloud;
 var
   I: Integer;
-  VertexList: TPS3VectorList;
+  VertexList, ColorList: TPS3VectorList;
 begin
   try
     if (not FForceAbort) or (FCancelType = ctCancelAndShowResult) then begin
       VertexList := TPS3VectorList.Create;
       try
-        for I := 0 to FThreadVertexLists.Count - 1 do
-          VertexList.MoveVertices(FThreadVertexLists[I] as TPS3VectorList);
-        VertexList.DoCenter(0.1);
-        VertexList.RemoveDuplicates;
-        // TODO handle normals
-        if not FForceAbort then
-          TPlyFileWriter.SaveToFile(FilenameREd.Text, VertexList, nil);
-        FThreadVertexLists.Clear;
-        if OpenGLPreviewCBx.Checked then
-          MeshPreviewFrm.UpdateMesh(VertexList);
+        if FVertexGenConfig.CalcColors then
+          ColorList := TPS3VectorList.Create
+        else
+          ColorList := nil;
+        try
+          for I := 0 to FThreadVertexLists.Count - 1 do begin
+            VertexList.MoveVertices(FThreadVertexLists[I] as TPS3VectorList);
+            if ColorList <> nil then
+              ColorList.MoveVertices(FThreadColorLists[I] as TPS3VectorList);
+          end;
+          VertexList.DoCenter(0.1);
+         // VertexList.RemoveDuplicates;
+          // TODO handle normals
+          if not FForceAbort then begin
+            TPlyFileWriter.SaveToFile(FilenameREd.Text, VertexList, nil, ColorList)
+          end;
+          FThreadVertexLists.Clear;
+          if OpenGLPreviewCBx.Checked then
+            MeshPreviewFrm.UpdateMesh(VertexList, ColorList);
+        finally
+          if ColorList <> nil then
+            ColorList.Free;
+        end;
       finally
         VertexList.Free;
       end;
     end;
   finally
     FThreadVertexLists.Clear;
+    FThreadColorLists.Clear;
   end;
   if OpenGLPreviewCBx.Checked then
     MeshPreviewBtnClick(nil);
@@ -1515,7 +1575,6 @@ end;
 procedure TBulbTracerFrm.SaveTypeCmbChange(Sender: TObject);
 begin
   if (not FRefreshing) then begin
-    FSaveType := TSaveType(SaveTypeCmb.ItemIndex);
     SetExportFilenameExt;
   end;
 end;
@@ -1541,9 +1600,11 @@ var
   DoPostProcessing: Boolean;
   TargetFaceCount: Integer;
   Agressiveness: Double;
+  FSaveType: TMeshSaveType;
 begin
   try
     if (not FForceAbort) or (FCancelType = ctCancelAndShowResult) then begin
+      FSaveType := TMeshSaveType( SaveTypeCmb.ItemIndex );
       if( FSaveType = stUnprocessedMeshData ) then begin
         OutputDebugString(PChar('TOTAL: '+IntToStr(DateUtils.MilliSecondsBetween(Now, 0)-T0)+' ms'));
         TUnprocessedMeshFileWriter.SaveToFile( MakeMeshSequenceFilename( FilenameREd.Text ), FThreadVertexLists);
@@ -1554,7 +1615,7 @@ begin
         FacesList := TFacesList.MergeFacesLists( FThreadVertexLists );
         try
           DoPostProcessing := SmoothGBox.Checked;
-          FacesList.DoCenter(0.1);
+          FacesList.DoCenter(1.0);
           if ( not FForceAbort ) and SmoothGBox.Checked then begin
             FacesList.TaubinSmooth(StrToFloat(TaubinSmoothLambaEdit.Text), StrToFloat(TaubinSmoothMuEdit.Text), StrToInt(TaubinSmoothPassesEdit.Text));
           end;
@@ -1654,6 +1715,12 @@ begin
   MeshReductionRetainRatioEdit.Text := FloatToStr(Value);
 end;
 
+procedure TBulbTracerFrm.MeshTypeCmbChange(Sender: TObject);
+begin
+  UpdateSaveTypeCmb;
+  EnableMeshOptionControls;
+end;
+
 procedure TBulbTracerFrm.MeshVResolutionEditChange(Sender: TObject);
 begin
   if not FRefreshing then
@@ -1682,10 +1749,11 @@ begin
   FVertexGenConfig.CalculateNormals := CalculateNormalsCBx.Checked;
   FVertexGenConfig.URange.StepCount := StrToInt( MeshVResolutionEdit.Text );
   FVertexGenConfig.VRange.StepCount := StrToInt( MeshVResolutionEdit.Text );
-  FVertexGenConfig.MeshType := mtPointCloud;
-  FVertexGenConfig.MeshType := mtMesh;
+  FVertexGenConfig.MeshType := TMeshType( MeshTypeCmb.ItemIndex );
   FVertexGenConfig.Oversampling := TOversampling(MeshOversamplingCmb.ItemIndex);
   FVertexGenConfig.ISOValue := StrToFloat(MeshISOValueEdit.Text);
+  FVertexGenConfig.SphericalScan := MeshSphericalScanCBx.Checked;
+  FVertexGenConfig.CalcColors := MeshCalcColorsCBx.Checked;
 end;
 
 procedure TBulbTracerFrm.EnableControls(const Enabled: Boolean);
@@ -1771,12 +1839,56 @@ var
   NewFileExt: String;
 begin
   if Trim( FilenameREd.Text ) <> '' then begin
-    NewFileExt := GetMeshFileExt(TSaveType(SaveTypeCmb.ItemIndex));
+    UpdateVertexGenConfig;
+    if FVertexGenConfig.MeshType = mtMesh then
+      NewFileExt := GetMeshFileExt(TMeshSaveType(SaveTypeCmb.ItemIndex))
+    else
+      NewFileExt := GetMeshFileExt(TPointCloudSaveType(SaveTypeCmb.ItemIndex));
+
     if NewFileExt <> '' then
       NewFileExt := '.' + NewFileExt;
     FilenameREd.Text := ChangeFileExt( FilenameREd.Text, NewFileExt )
   end;
 end;
+
+procedure TBulbTracerFrm.UpdateSaveTypeCmb;
+begin
+  UpdateVertexGenConfig;
+  SaveTypeCmb.Items.Clear;
+  case FVertexGenConfig.MeshType of
+    mtPointCloud:
+      begin
+        SaveTypeCmb.Items.Add('Mesh as PLY');
+        SaveTypeCmb.Items.Add('Don''t save, only preview');
+        SaveTypeCmb.ItemIndex := 0;
+      end;
+    mtMesh:
+      begin
+        SaveTypeCmb.Items.Add('Mesh as OBJ');
+        SaveTypeCmb.Items.Add('Mesh as Lightwave3d Object');
+        SaveTypeCmb.Items.Add('Unprocessed raw mesh (for huge meshes)');
+        SaveTypeCmb.Items.Add('Don''t save, only preview');
+        SaveTypeCmb.ItemIndex := 0;
+      end;
+  end;
+  SaveTypeCmbChange( nil );
+end;
+
+procedure TBulbTracerFrm.EnableMeshOptionControls;
+var
+  IsPointCloud: Boolean;
+begin
+  IsPointCloud := FVertexGenConfig.MeshType = mtPointCloud;
+  MeshISOValueEdit.Enabled := not IsPointCloud;
+  SmoothGBox.Enabled := not IsPointCloud;
+  MeshReductionGBox.Enabled := not IsPointCloud;
+  MeshISOValueEdit.Enabled := not IsPointCloud;
+  MeshISOValueUpDown.Enabled := not IsPointCloud;
+  MeshOversamplingCmb.Enabled := not IsPointCloud;
+  MeshCalcColorsCBx.Enabled := IsPointCloud;
+  MeshSphericalScanCBx.Enabled := IsPointCloud;
+end;
+
 
 end.
 

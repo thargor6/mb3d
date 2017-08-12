@@ -7,32 +7,36 @@ unit ObjectScanner;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, VectorMath, TypeDefinitions, BulbTracerConfig, VertexList;
+  SysUtils, Classes, Contnrs, VectorMath, TypeDefinitions, BulbTracerConfig,
+  VertexList, Generics.Collections;
 
 type
   TObjectScannerConfig = class
   protected
+    FJitter: Double;
     FIteration3Dext: TIteration3Dext;
     FVertexGenConfig: TVertexGenConfig;
     FMCTparas: TMCTparameter;
     FM3Vfile: TM3Vfile;
+    FLightVals: TLightVals;
     FXMin, FXMax, FYMin, FYMax, FZMin, FZMax, FCentreX, FCentreY, FCentreZ: Double;
     FStepSize, FScale, FMaxRayDist: Double;
   end;
 
   TRayCaster = class
   protected
-    function IsInsideBulb(const FConfig: TObjectScannerConfig; const X, Y, Z: Double): Boolean;
-    function CalculateNormal(const FConfig: TObjectScannerConfig; const Direction, FacePos: TD3Vector; const N: TPD3Vector; const WasInside: Boolean): Boolean;
+    function IsInsideBulb(const FConfig: TObjectScannerConfig; const X, Y, Z: Double ): Boolean; overload;
+    function IsInsideBulb(const FConfig: TObjectScannerConfig; const X, Y, Z: Double; const DoCalcColor: Boolean; var ColorR, ColorG, ColorB: Double ): Boolean; overload;
+    function CalculateNormal(const FConfig: TObjectScannerConfig; const Direction, FacePos: TD3Vector; const N: TPD3Vector; const WasInside: Boolean ): Boolean;
   public
     procedure CastRay(const FConfig: TObjectScannerConfig; const FromPos, Direction: TD3Vector); virtual; abstract;
   end;
 
   TCreatePointCloudRayCaster = class (TRayCaster)
   private
-    FVertexList: TPS3VectorList;
+    FVertexList, FColorList: TPS3VectorList;
   public
-    constructor Create(VertexList: TPS3VectorList);
+    constructor Create(VertexList, ColorList: TPS3VectorList);
     procedure CastRay(const FConfig: TObjectScannerConfig; const FromPos, Direction: TD3Vector); override;
   end;
 
@@ -48,6 +52,7 @@ type
   TObjectScanner = class
   protected
     FConfig: TObjectScannerConfig;
+    FUseShuffledWorkList: Boolean;
     FRayCaster: TRayCaster;
     procedure Init;
 
@@ -56,34 +61,40 @@ type
   public
     constructor Create(const VertexGenConfig: TVertexGenConfig; const MCTparas: TMCTparameter; const M3Vfile: TM3Vfile; const RayCaster: TRayCaster);
     destructor Destroy;override;
-    procedure ScanObject;
+    procedure Scan;
+    function GetWorkList: TList<Double>; virtual; abstract;
+    property UseShuffledWorkList: Boolean read FUseShuffledWorkList;
   end;
 
   TSphericalScanner = class (TObjectScanner)
   protected
     FSlicesTheta, FSlicesPhi: Integer;
     FThetaMin, FPhiMin: Double;
+    FThetaMinIndex: Integer;
     FDTheta, FDPhi: Double;
     FRadius, FStartDist: Double;
     procedure ScannerInit; override;
     procedure ScannerScan; override;
+    function GetWorkList: TList<Double>; override;
   end;
 
   TCubicScanner = class (TObjectScanner)
   protected
     FSlicesU, FSlicesV: Integer;
     FUMin, FVMin: Double;
+    FUMinIndex: Integer;
     FDU, FDV: Double;
   protected
     procedure ScannerInit; override;
     procedure ScannerScan; override;
+    function GetWorkList: TList<Double>; override;
   end;
 
 
 implementation
 
 uses
-  Windows, Math, Math3D, Calc, BulbTracer, DivUtils;
+  Windows, Math, Math3D, Calc, BulbTracer, DivUtils, HeaderTrafos;
 
 { ------------------------------ TObjectScanner ------------------------------ }
 constructor TObjectScanner.Create(const VertexGenConfig: TVertexGenConfig; const MCTparas: TMCTparameter; const M3Vfile: TM3Vfile; const RayCaster: TRayCaster);
@@ -95,6 +106,19 @@ begin
     FMCTparas := MCTparas;
     FM3Vfile := M3Vfile;
     IniIt3D(@FMCTparas, @FIteration3Dext);
+    MakeLightValsFromHeaderLight(@FM3Vfile.VHeader, @FLightVals, 1, FM3Vfile.VHeader.bStereoMode);
+    case FVertexGenConfig.MeshType of
+      mtPointCloud:
+        begin
+          FConfig.FJitter := 0.3;
+          FUseShuffledWorkList := True;
+        end;
+      mtMesh:
+        begin
+          FConfig.FJitter := 0.0;
+          FUseShuffledWorkList := False;
+        end;
+    end;
   end;
   FRayCaster := RayCaster;
 end;
@@ -122,12 +146,15 @@ begin
   ScannerInit;
 end;
 
-procedure TObjectScanner.ScanObject;
+procedure TObjectScanner.Scan;
 begin
   Init;
   ScannerScan;
 end;
 { ----------------------------- TSphericalScanner ---------------------------- }
+const
+  JITTER_MIN = 0.001;
+
 procedure TSphericalScanner.ScannerInit;
 begin
   with FConfig do begin
@@ -136,6 +163,7 @@ begin
       if FSlicesTheta < 1 then
         exit;
       FThetaMin := CalcRangeMin(iThreadID, PCalcThreadStats.iTotalThreadCount) * DegToRad( 360.0 );
+      FThetaMinIndex := CalcRangeMinIndex(iThreadID, PCalcThreadStats.iTotalThreadCount);
       FDTheta := StepSize * DegToRad(360.0) ;
     end;
     with FVertexGenConfig.VRange do begin
@@ -151,6 +179,26 @@ begin
   end;
 end;
 
+function TSphericalScanner.GetWorkList: TList<Double>;
+var
+  I: Integer;
+  Theta, DTheta: Double;
+begin
+  Init;
+  Result := TList<Double>.Create;
+  try
+    DTheta := FConfig.FVertexGenConfig.URange.StepSize * DegToRad(360.0) ;
+    Theta := 0.0;
+    for I := 0 to FConfig.FVertexGenConfig.URange.StepCount do begin
+      Result.Add( Theta );
+      Theta := Theta + DTheta;
+    end;
+  except
+    Result.Free;
+    raise;
+  end;
+end;
+
 procedure TSphericalScanner.ScannerScan;
 var
   I, J: Integer;
@@ -161,10 +209,21 @@ begin
   with FConfig do begin
     Theta := FThetaMin;
     for I := 0 to FSlicesTheta - 1 do begin
-      SinCos(Theta, SinTheta, CosTheta);
+      Sleep(1);
+      if FJitter > JITTER_MIN then begin
+        SinCos(Theta + FDTheta * ( 1.0 - Random ) * FJitter, SinTheta, CosTheta);
+      end
+      else begin
+        SinCos(Theta, SinTheta, CosTheta);
+      end;
       Phi := FPhiMin;
       for J := 0 to FSlicesPhi -1 do begin
-        SinCos(Phi, SinPhi, CosPhi);
+        if FJitter > JITTER_MIN then begin
+          SinCos(Phi + FDPhi * ( 1.0 - Random ) * FJitter, SinPhi, CosPhi);
+        end
+        else begin
+          SinCos(Phi, SinPhi, CosPhi);
+        end;
 
         Dir.X := - SinTheta * CosPhi * FStepSize;
         Dir.Y := - SinTheta * SinPhi * FStepSize;
@@ -202,6 +261,7 @@ begin
       if FSlicesU < 1 then
         exit;
       FUMin :=  FXMin + CalcRangeMin(iThreadID, PCalcThreadStats.iTotalThreadCount) * (FXMax - FXMin);
+      FUMinIndex := CalcRangeMinIndex(iThreadID, PCalcThreadStats.iTotalThreadCount);
       FDU := StepSize * (FXMax - FXMin);
     end;
     with FVertexGenConfig.VRange do begin
@@ -215,15 +275,47 @@ begin
   end;
 end;
 
+function TCubicScanner.GetWorkList: TList<Double>;
+var
+  I: Integer;
+  U, DU: Double;
+begin
+  Init;
+  Result := TList<Double>.Create;
+  try
+    DU := FConfig.FVertexGenConfig.URange.StepSize *  (FConfig.FXMax - FConfig.FXMin);
+    U := 0.0;
+    for I := 0 to FConfig.FVertexGenConfig.URange.StepCount do begin
+      Result.Add( U );
+      U := U + DU;
+    end;
+  except
+    Result.Free;
+    raise;
+  end;
+end;
+
 procedure TCubicScanner.ScannerScan;
 var
-  I, J: Integer;
+  I, J, Idx: Integer;
   U, V: Double;
   CurrPos, Dir: TD3Vector;
 begin
   with FConfig do begin
     U := FUMin;
     for I := 0 to FSlicesU - 1 do begin
+      Sleep(1);
+
+      if FUseShuffledWorkList then begin
+        Idx := I + FUMinIndex;
+        if ( Idx < 0 ) or ( Idx >= FConfig.FVertexGenConfig.SharedWorkList.Count ) then
+          OutputDebugString(PChar('###################'+IntToStr(Idx)+' '+IntToStr( FUMinIndex ) + ' '+IntToStr(FConfig.FVertexGenConfig.SharedWorkList.Count)));
+
+        U := FConfig.FVertexGenConfig.SharedWorkList[ Idx ];
+      end;
+
+
+
       V := FVMin;
       for J := 0 to FSlicesV - 1 do begin
 
@@ -231,9 +323,16 @@ begin
         Dir.Y := 0.0;
         Dir.Z := FStepSize;
 
-        CurrPos.X := U;
-        CurrPos.Y := V;
-        CurrPos.Z := FZMin;
+        if FJitter > JITTER_MIN then begin
+          CurrPos.X := U + FDV * (1.0 - Random) * FJitter;
+          CurrPos.Y := V + FDV * (1.0 - Random) * FJitter;
+          CurrPos.Z := FZMin;
+        end
+        else begin
+          CurrPos.X := U;
+          CurrPos.Y := V;
+          CurrPos.Z := FZMin;
+        end;
 
         FRayCaster.CastRay(FConfig, CurrPos, Dir);
         V := V + FDV;
@@ -254,18 +353,70 @@ begin
   end;
 end;
 { --------------------------------- TRayCaster ------------------------------- }
-function TRayCaster.IsInsideBulb(const FConfig: TObjectScannerConfig; const X, Y, Z: Double): Boolean;
+var
+  DummyColorR, DummyColorG, DummyColorB: Double;
+
+function TRayCaster.IsInsideBulb(const FConfig: TObjectScannerConfig; const X, Y, Z: Double ): Boolean;
+begin
+  Result := IsInsideBulb( FConfig, X, Y, Z, False, DummyColorR, DummyColorG, DummyColorB);
+end;
+
+function TRayCaster.IsInsideBulb(const FConfig: TObjectScannerConfig; const X, Y, Z: Double; const DoCalcColor: Boolean; var ColorR, ColorG, ColorB: Double ): Boolean;
 var
   de: Double;
   CC: TVec3D;
   s: Single;
   psiLight: TsiLight5;
+  iDif: TSVec;
+  LightParas: TPLightingParas9;
+
+  procedure CalcColors(iDif: TPSVec; PsiLight: TPsiLight5; PLVals: TPLightVals);
+  var stmp: Single;
+      ir, iL1, iL2: Integer;
+  begin
+    with PLVals^ do  begin
+      if (iColOnOT and 1) = 0 then ir := PsiLight.SIgradient
+                              else ir := PsiLight.OTrap and $7FFF;
+      ir := Round(MinMaxCS(-1e9, ((ir - sCStart) * sCmul + iDif[0]) * 16384, 1e9));
+      iL2 := 5;
+      if bColCycling then ir := ir and 32767 else
+      begin
+        if ir < 0 then
+        begin
+          iDif^ := PLValigned.ColDif[0];
+          Exit;
+        end
+        else if ir >= ColPos[9] then
+        begin
+          iDif^ := PLValigned.ColDif[9];
+          Exit;
+        end;
+      end;
+      if ColPos[iL2] < ir then
+      begin
+        repeat Inc(iL2) until (iL2 = 10) or (ColPos[iL2] >= ir);
+      end
+      else while (ColPos[iL2 - 1] >= ir) and (iL2 > 1) do Dec(iL2);
+      if bNoColIpol then
+      begin
+        iDif^ := PLValigned.ColDif[iL2 - 1];
+      end
+      else
+      begin
+        iL1 := iL2 - 1;
+        if iL2 > 9 then iL2 := 0;
+        stmp := (ir - ColPos[iL1]) * sCDiv[iL1];
+        iDif^ := LinInterpolate2SVecs(PLValigned.ColDif[iL2], PLValigned.ColDif[iL1], stmp);
+      end;
+    end;
+  end;
+
 begin
   with FConfig do begin
 
+    LightParas := @FM3Vfile.VHeader.Light;
+
     FMCTparas.mPsiLight := TPsiLight5(@psiLight);
-
-
     FMCTparas.Ystart := TPVec3D(@FM3Vfile.VHeader.dXmid)^;                                   //abs offs!
     mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[0], FM3Vfile.VHeader.Width * -0.5 + FM3Vfile.Xoff / FScale);
     mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[1], FM3Vfile.VHeader.Height * -0.5 + FM3Vfile.Yoff / FScale);
@@ -306,8 +457,7 @@ begin
       else Result := False;
     end;
 
-(*
-    if Result then begin
+    if Result and DoCalcColor then begin
       if FMCTparas.ColorOnIt <> 0 then
         RMdoColorOnIt(@FMCTparas);
       RMdoColor(@FMCTparas);
@@ -329,9 +479,18 @@ begin
         else
           FMCTparas.mPsiLight.SIgradient := FMCTparas.mPsiLight.OTrap + 32768;
       end;
-//      OutputDebugString(PChar('SIgradient: '+IntToStr(FMCTparas.mPsiLight.Zpos)));
+//      ColorValue := FMCTparas.mPsiLight.SIgradient;
+
+      CalcColors(@iDif, @psiLight, @FLightVals);
+      ColorR := iDif[0];
+      ColorG := iDif[1];
+      ColorB := iDif[2];
+    end
+    else begin
+      ColorR := 0;
+      ColorG := 0;
+      ColorB := 0;
     end;
-*)
   end;
 end;
 
@@ -353,7 +512,6 @@ var
   P1, P2: TD3Vector;
   L1, L2: Double;
   NTCount: Integer;
-
 begin
   TDVectorMath.Assign(@Axis, @Direction);
   TDVectorMath.Normalize(@Axis);
@@ -506,24 +664,39 @@ begin
   Result := True;
 end;
 { ---------------------- TCreatePointCloudRayCaster -------------------------- }
-constructor TCreatePointCloudRayCaster.Create(VertexList: TPS3VectorList);
+constructor TCreatePointCloudRayCaster.Create(VertexList, ColorList: TPS3VectorList);
 begin
   inherited Create;
   FVertexList := VertexList;
+  FColorList := ColorList;
 end;
 
 procedure TCreatePointCloudRayCaster.CastRay(const FConfig: TObjectScannerConfig; const FromPos, Direction: TD3Vector);
+const
+  ColorScale = 2.0;
 var
   PrevInside, CurrInside: Boolean;
   RayDist: Double;
   CurrPos: TD3Vector;
+  R, G, B, LastInsideR, LastInsideG, LastInsideB: Double;
+  LColor, RColor, LPosition, RPosition: Cardinal;
+  CScale: Double;
+  I: Integer;
 begin
   RayDist := FConfig.FStepSize;
   PrevInside := False;
+  LastInsideR := 0.0;
+  LastInsideG := 0.0;
+  LastInsideB := 0.0;
   TDVectorMath.Assign(@CurrPos, @FromPos);
   TDVectorMath.AddTo(@CurrPos, @Direction);
   while(RayDist < FConfig.FMaxRayDist) do begin
-    CurrInside := IsInsideBulb(FConfig, CurrPos.X, CurrPos.Y, CurrPos.Z);
+    CurrInside := IsInsideBulb(FConfig, CurrPos.X, CurrPos.Y, CurrPos.Z, FConfig.FVertexGenConfig.CalcColors, R, G, B);
+    if CurrInside then begin
+      LastInsideR := R;
+      LastInsideG := G;
+      LastInsideB := B;
+    end;
     if PrevInside <> CurrInside then begin
       if (CurrPos.X >= FConfig.FXMin) and (CurrPos.X <= FConfig.FXMax) and (CurrPos.Y >= FConfig.FYMin) and (CurrPos.Y <= FConfig.FYMax) and (CurrPos.Z >= FConfig.FZMin) and (CurrPos.Z <= FConfig.FZMax) then begin
 //// TODO reintroduce normals-calculation
@@ -534,7 +707,10 @@ begin
         end
         else
 *)
-          FVertexList.AddVertex(CurrPos);
+//OutputDebugString(PChar(IntToStr(Ord(CurrInside))+' '+IntToStr(LastInsideColor)));
+        FVertexList.AddVertex(CurrPos);
+        if FConfig.FVertexGenConfig.CalcColors then
+          FColorList.AddVertex(LastInsideR, LastInsideG, LastInsideB);
       end;
       PrevInside := CurrInside;
     end;
@@ -668,7 +844,4 @@ begin
 end;
 
 end.
-
-      if PsiLight.SIgradient > 32767 then CalcColorsInside(@Result[1], @Result[0], PsiLight, @LVals)
-                                     else CalcColors(@Result[1], @Result[0], PsiLight, @LVals);
 
