@@ -15,7 +15,7 @@ uses
 
 type
   TMeshPreviewFrm = class(TForm)
-    Panel1: TPanel;
+    NaviPanel: TPanel;
     DisplayStyleGrp: TRadioGroup;
     GroupBox1: TGroupBox;
     AppearancePageCtrl: TPageControl;
@@ -64,6 +64,7 @@ type
     ColorDialog: TColorDialog;
     Label15: TLabel;
     Label16: TLabel;
+    Label18: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -89,6 +90,8 @@ type
       MousePos: TPoint; var Handled: Boolean);
     procedure FormMouseWheelUp(Sender: TObject; Shift: TShiftState;
       MousePos: TPoint; var Handled: Boolean);
+    procedure NaviPanelDblClick(Sender: TObject);
+    procedure FormDblClick(Sender: TObject);
   private
     { Private declarations }
     FDragging: Boolean;
@@ -151,6 +154,11 @@ begin
   AppearancePageCtrl.ActivePage := MaterialSheet;
   AppearanceToUI;
   DisplayStyleGrpClick(Sender);
+end;
+
+procedure TMeshPreviewFrm.FormDblClick(Sender: TObject);
+begin
+  NaviPanel.Visible := not NaviPanel.Visible;
 end;
 
 procedure TMeshPreviewFrm.FormDestroy(Sender: TObject);
@@ -279,6 +287,11 @@ end;
 procedure TMeshPreviewFrm.MatShininessEditExit(Sender: TObject);
 begin
   UIToAppearance;
+end;
+
+procedure TMeshPreviewFrm.NaviPanelDblClick(Sender: TObject);
+begin
+  NaviPanel.Visible := False;
 end;
 
 procedure TMeshPreviewFrm.QuadraticAttenuationBtnClick(Sender: TObject;

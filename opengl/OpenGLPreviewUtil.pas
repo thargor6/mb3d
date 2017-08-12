@@ -18,7 +18,7 @@ type
   protected
     FRC: HGLRC; //OpenGL Rendering Context
     FCanvas: TCanvas;
-    FFaces, FVertices, FEdges, FNormals: Pointer;
+    FFaces, FVertices, FEdges, FNormals, FVertexColors: Pointer;
     FFaceCount, FEdgeCount, FVerticesCount: Integer;
     FDisplayStyle: TDisplayStyle;
     FSetWindowCaptionEvent: TSetCaptionEvent;
@@ -111,6 +111,10 @@ begin
   if FVertices <> nil then begin
     FreeMem(FVertices);
     FVertices := nil;
+  end;
+  if FVertexColors <> nil then begin
+    FreeMem(FVertexColors);
+    FVertexColors := nil;
   end;
   if FNormals <> nil then begin
     FreeMem(FNormals);
@@ -272,7 +276,7 @@ end;
 
 procedure TBaseOpenGLHelper.UpdateMesh(const VertexList, ColorList: TPS3VectorList);
 begin
-  // TODO
+  // EMPTY
 end;
 
 function TBaseOpenGLHelper.GetXPosition: Double;

@@ -1499,7 +1499,7 @@ begin
     mtMesh:
       FRayCaster := TCreateMeshRayCaster.Create(FacesList, VertexGenConfig.ISOValue);
   end;
-  if VertexGenConfig.SphericalScan then
+  if VertexGenConfig.SphericalScan and (VertexGenConfig.MeshType = mtPointCloud) then
     FObjectScanner := TSphericalScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster)
   else
     FObjectScanner := TCubicScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster);

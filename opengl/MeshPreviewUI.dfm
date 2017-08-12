@@ -3,7 +3,7 @@ object MeshPreviewFrm: TMeshPreviewFrm
   Top = 0
   BorderStyle = bsSizeToolWin
   Caption = 'MeshPreviewFrm'
-  ClientHeight = 464
+  ClientHeight = 469
   ClientWidth = 683
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,6 +13,7 @@ object MeshPreviewFrm: TMeshPreviewFrm
   Font.Style = []
   OldCreateOrder = False
   OnCreate = FormCreate
+  OnDblClick = FormDblClick
   OnDestroy = FormDestroy
   OnMouseDown = FormMouseDown
   OnMouseMove = FormMouseMove
@@ -23,19 +24,22 @@ object MeshPreviewFrm: TMeshPreviewFrm
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
-  object Panel1: TPanel
+  object NaviPanel: TPanel
     Left = 525
     Top = 0
     Width = 158
-    Height = 464
+    Height = 469
     Align = alRight
     TabOrder = 0
+    OnDblClick = NaviPanelDblClick
+    ExplicitHeight = 464
     object Label15: TLabel
       Left = 7
       Top = 425
       Width = 143
       Height = 13
       Caption = 'LMB: move           RMB: rotate'
+      OnDblClick = NaviPanelDblClick
     end
     object Label16: TLabel
       Left = 7
@@ -43,6 +47,15 @@ object MeshPreviewFrm: TMeshPreviewFrm
       Width = 88
       Height = 13
       Caption = 'MMB/Wheel: zoom'
+      OnDblClick = NaviPanelDblClick
+    end
+    object Label18: TLabel
+      Left = 7
+      Top = 455
+      Width = 132
+      Height = 13
+      Caption = 'DblClick: hide right panel'
+      OnClick = NaviPanelDblClick
     end
     object DisplayStyleGrp: TRadioGroup
       Left = 1
@@ -70,6 +83,7 @@ object MeshPreviewFrm: TMeshPreviewFrm
       Align = alTop
       Caption = 'Appearance'
       TabOrder = 1
+      OnDblClick = NaviPanelDblClick
       object AppearancePageCtrl: TPageControl
         Left = 2
         Top = 15
@@ -80,10 +94,6 @@ object MeshPreviewFrm: TMeshPreviewFrm
         TabOrder = 0
         object MaterialSheet: TTabSheet
           Caption = 'Material'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Label17: TLabel
             Left = 4
             Top = 8
@@ -442,10 +452,6 @@ object MeshPreviewFrm: TMeshPreviewFrm
         object LightSheet: TTabSheet
           Caption = 'Light'
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Label8: TLabel
             Left = 3
             Top = 8

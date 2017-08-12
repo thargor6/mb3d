@@ -3,7 +3,7 @@ unit CalcThread2D;
 interface
 
 uses
-  Windows, Classes, TypeDefinitions;
+  Windows, SysUtils, Classes, TypeDefinitions;
 
 type
   T2DcalcThread = class(TThread)

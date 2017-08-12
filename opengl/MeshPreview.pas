@@ -47,6 +47,7 @@ type
     constructor Create(const Canvas: TCanvas);
     destructor Destroy; override;
     procedure UpdateMesh(const FacesList: TFacesList); override;
+    procedure UpdateMesh(const VertexList, ColorList: TPS3VectorList); override;
     property MeshAppearance: TMeshAppearance read FMeshAppearance;
   end;
 
@@ -119,7 +120,8 @@ begin
   glClearColor(0,0,0,0);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
 
-  DrawBackground();
+  if FFaces <> nil then
+    DrawBackground();
 
   glLoadIdentity;
   glTranslatef( FPosition.X,  FPosition.Y,  ZOffset);
@@ -131,7 +133,11 @@ begin
 
   glDisable(GL_LIGHTING);
 
+  glDisableClientState (GL_VERTEX_ARRAY);
+  glDisableClientState (GL_COLOR_ARRAY);
+
   if FFaces <> nil then begin
+    glEnableClientState (GL_VERTEX_ARRAY);
     glVertexPointer( 3, GL_FLOAT, SizeOf(TGLVertex), FVertices);
     if FNormals <> nil then begin
       glEnableClientState( GL_NORMAL_ARRAY );
@@ -196,6 +202,21 @@ begin
           end;
         end;
     end;
+  end
+  else if FVertices <> nil then begin
+    glEnableClientState (GL_VERTEX_ARRAY);
+    if FVertexColors<>nil then
+      glEnableClientState (GL_COLOR_ARRAY);
+
+    glVertexPointer( 3, GL_FLOAT, SizeOf(TGLVertex), FVertices);
+    if FVertexColors<>nil then
+      glColorPointer( 3, GL_FLOAT, SizeOf(TGLVertex), FVertexColors);
+
+    glShadeModel(GL_FLAT);
+    glPointSize(1.5);
+    glColor3f(FMeshAppearance.PointsColor.X, FMeshAppearance.PointsColor.Y, FMeshAppearance.PointsColor.Z);
+
+    glDrawArrays (GL_POINTS, 0, FVerticesCount);
   end;
 
   //Error Handler
@@ -215,6 +236,99 @@ begin
   end;
   SwapBuffers(FCanvas.Handle);
   Sleep(1);
+end;
+
+procedure TOpenGLHelper.UpdateMesh(const VertexList, ColorList: TPS3VectorList);
+var
+  I: Integer;
+  T0, T00: Int64;
+  GLVertices, GLVertex: TPGLVertex;
+  GLVertexColors, GLVertexColor: TPGLVertex;
+  Vertex: TPS3Vector;
+
+  procedure AddVertex(const Idx: Integer);
+  var
+    Vertex, VertexColor: TPS3Vector;
+  begin
+    Vertex := VertexList.GetVertex(Idx);
+    if Vertex^.X < FSizeMin.X then
+      FSizeMin.X := Vertex^.X
+    else if Vertex^.X > FSizeMax.X then
+      FSizeMax.X := Vertex^.X;
+    if Vertex^.Y < FSizeMin.Y then
+      FSizeMin.Y := Vertex^.Y
+    else if Vertex^.Y > FSizeMax.Y then
+      FSizeMax.Y := Vertex^.Y;
+    if Vertex^.Z < FSizeMin.Z then
+      FSizeMin.Z := Vertex^.Z
+    else if Vertex^.Z > FSizeMax.Z then
+      FSizeMax.Z := Vertex^.Z;
+    GLVertex^.X := Vertex^.X;
+    GLVertex^.Y := -Vertex^.Y;
+    GLVertex^.Z := -Vertex^.Z;
+    GLVertex := Pointer(Longint(GLVertex)+SizeOf(TGLVertex));
+
+    if GLVertexColors <> nil then begin
+      VertexColor := ColorList.GetVertex(Idx);
+      GLVertexColor^.X := VertexColor^.X;
+      GLVertexColor^.Y := VertexColor^.Y;
+      GLVertexColor^.Z := VertexColor^.Z;
+      GLVertexColor := Pointer(Longint(GLVertexColor)+SizeOf(TGLVertex));
+    end;
+  end;
+
+begin
+  T0 := DateUtils.MilliSecondsBetween(Now, 0);
+  T00 := T0;
+
+  FreeVertices;
+  if VertexList.Count > 0 then begin
+    T0 := DateUtils.MilliSecondsBetween(Now, 0);
+    GetMem(GLVertices, VertexList.Count * SizeOf(TGLVertex));
+    try
+      GLVertex := GLVertices;
+      if ColorList <> nil then
+        GetMem(GLVertexColors, VertexList.Count * SizeOf(TGLVertex))
+      else
+        GLVertexColors := nil;
+      try
+        GLVertexColor := GLVertexColors;
+
+        Vertex := VertexList.GetVertex(0);
+        FSizeMin.X := Vertex^.X;
+        FSizeMax.X := FSizeMin.X;
+        FSizeMin.Y := Vertex^.Y;
+        FSizeMax.Y := FSizeMin.Y;
+        FSizeMin.Z := Vertex^.Z;
+        FSizeMax.Z := FSizeMin.Z;
+        for I := 0 to VertexList.Count - 1 do
+          AddVertex(I);
+  ShowDebugInfo('OpenGL.AddVertices', T0);
+  T0 := DateUtils.MilliSecondsBetween(Now, 0);
+
+        FMaxObjectSize := Max(FSizeMax.X - FSizeMin.X, Max(FSizeMax.Y - FSizeMin.Y, FSizeMax.Z - FSizeMin.Z ));
+  ShowDebugInfo('OpenGL.AddFaces', T0);
+  T0 := DateUtils.MilliSecondsBetween(Now, 0);
+
+        FFaceCount := 0;
+        FVerticesCount := VertexList.Count;
+        FEdgeCount := 0;
+        FVertices := GLVertices;
+        FVertexColors := GLVertexColors;
+        FNormals := nil;
+        FFaces := nil;
+        FEdges := nil;
+      except
+        if GLVertexColors <> nil then 
+           FreeMem( GLVertexColors );
+        raise;
+      end;
+    except
+      FreeMem(GLVertices);
+      raise;
+    end;
+  end;
+  ShowDebugInfo('OpenGL.TOTAL', T00);
 end;
 
 procedure TOpenGLHelper.UpdateMesh(const FacesList: TFacesList);
