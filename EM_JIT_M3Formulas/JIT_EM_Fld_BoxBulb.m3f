@@ -1,5 +1,5 @@
 [OPTIONS]
-.DEScale = 1
+.DEScale = 0.9
 .SIPow = 2
 .Version = 9
 .Double AdditionZ = 0
@@ -34,22 +34,18 @@ x := x + vAdditionX ;
 y := y + vAdditionY ;
 z := z + AdditionZ ;
 
-// supermodulus of power 8
-   x1:= IntPower(x,8);
-   y1:= IntPower(y,8);
-   z1:= IntPower(z,8);
+// supermodulus of power 4
+x1:= x*x*x*x;
+y1:= y*y*y*y;
+z1:= z*z*z*z;
 // box - pillow
-   sq_r := Power(x1+y1+z1 , 0.125);
-   sq_xz := Power(x1+z1 , 0.125);
-// less boxed
-//   sq_xz := sqrt(x*x+z*z);
+   sq_r := Power(x1+y1+z1 , 0.25);
+   sq_xz := Power(x1+z1 , 0.25);
 
 
    r:= power(sq_r, Power_);
 
    theta := arctan2( sq_xz , y) * Power_;
-   {This is true everywhere, because sq_r is >=0 ; atan2(a,b) differs from atan(a/b) when b<0
-   I must use atan2 because 'acos' is missing in assembly.}
    zangle := arctan2(x,z)  * Power_;
 
    x := sin(zangle)*sin(theta)*r ;
@@ -58,7 +54,7 @@ z := z + AdditionZ ;
 
 end;
 [END]
-Formula version 1.1
+Formula version 1.2
 
 Folds pillow like mandelbulb shapes.
 Slow

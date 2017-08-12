@@ -1,58 +1,44 @@
 [OPTIONS]
-.DEScale = 2
+.DEScale = 0.5
 .SIPow = 2
 .Version = 9
-.Double Strenght = 1
+.Double Strenght_Vector = 0.5
 [SOURCE]
 procedure Technafractalus(var x, y, z, w: Double; PIteration3D: TPIteration3D);
 var
-  mod_x, mod_y, mod_z, mod_w , modulus, x1,y1,z1,w1: Double;    
+  modulus, x1,y1,z1,w1: Double;    
 begin
 
-//here z = z - z/round(z)
 
-//1 calculate round value
-mod_x := round (x);
-mod_y := round (y);
-mod_z := round (z);
-mod_w := round (w);
+//=================================================
+// Unit Vector = x,y,z / |x,y,z| 
 
-// now goes quaternion math :((( at least no assembly or machine codes
-// inverse quaternion
-modulus := (mod_x*mod_x + mod_y*mod_y + mod_z*mod_z + mod_w*mod_w );
-
-mod_x := mod_x / modulus ;
-mod_y :=0 - mod_y / modulus ;
-mod_z :=0 - mod_z / modulus ;
-mod_w :=0 - mod_w / modulus ;
+//optimised
+modulus :=1/( abs(x)+abs(y)+abs(z)+abs(w) ) ;
+x1:=  x*modulus ;
+y1:=  y*modulus ;
+z1:=  z*modulus ;
+w1:=  w*modulus ;
 
 
-//very simple multiplication
-x1 := x*mod_x - y*mod_y - z*mod_z - w*mod_w ;
-y1 := x*mod_y + mod_x*y + z*mod_w - mod_z*w ;
-z1 := x*mod_z + mod_x*z + w*mod_y - mod_w*y ;
-w1 := x*mod_w + mod_x*w + y*mod_z - mod_y*z ;
+modulus:=1- Strenght_Vector;
 
-// here z= z- mod_z
-// MODIFIED. Now it work as intended
+x:=x1*Strenght_Vector + x*modulus;
+y:=y1*Strenght_Vector + y*modulus;
+z:=z1*Strenght_Vector + z*modulus;
+w:=w1*Strenght_Vector + w*modulus;
 
-x := x -  x1 * Strenght ;
-y := y -  y1 * Strenght ;
-z := z -  z1 * Strenght ;
-w := w -  w1 * Strenght ;
-
-// wasn't so hard, may first creation of JIT.
 
 end;
 [END]
- 
-Formula version 1.1
- 
-Technologise the fractal or turn it into garbage.
-Could ruin image into the dust of DE.
-It cuts fractal into pieces and then reasembles.
+Formula version 1.2
 
-It is interesting with mandelbulb. 
+This transform now works but not as intended.
+It calculates diamond shape of unit lenght. And then moves point along line between it's value and diamond shape. Simpler, 0 no effect, 1 unit cube. 
+The effect is non linear, larger values (SV > 2 or SV < -2 )  works differently than small.
+
+Better with mandelbulbs.
+
 
  * * *
 By Edgar Malinovsky

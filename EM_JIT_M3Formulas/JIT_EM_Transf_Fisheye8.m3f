@@ -7,33 +7,33 @@
 procedure Fisheye3D8th(var x, y, z, w: Double; PIteration3D: TPIteration3D);
 
 var
-  angx, angy, angz, radius: Double; 
   fisheye, fishdivisor: Double; 
- Fldx, Fldy, Fldz: Double;
+ Fldx, Fldy, Fldz, Fldw: Double;
 begin
 
 Fldx:= intPower(x,8);
 Fldy:= intPower(y,8);
 Fldz:= intPower(z,8);
+Fldw:= intPower(w,8);
 
 fishdivisor:= 1/(Strenght+1);
-fisheye:= (Strenght+ power( Fldx + Fldy + Fldz ,0.125 ) )*fishdivisor;
+fisheye:= (Strenght+ power( Fldx + Fldy + Fldz + Fldw  ,0.125 ) )*fishdivisor;
 x := fisheye*x;
 y := fisheye*y;
 z := fisheye*z; 
+w := fisheye*w; 
 
 end;
 [END]
+4D
+Formula version 1.2
  
-Formula version 1.1
- 
-Fish eye based transform. Alone generates just shape.
-In hybrids can induce some fishiness. It distorts fractal to the larger, smoother pillow like shape.
+Fish eye based transform using sigma function. Alone generates just shape.
+In hybrids it will give some cartoony feel (or fishiness). It distorts fractal to the larger, smoother pillow like shape - like air in baloon.
 
 Strenght here is just opposite, the more the value the less it influence
 
-It's not trig based fish eye, instead  it uses simpler sigma function.
-8th power sumper modulus generates pillow like shape inmstead of round 2th power modulus.
+8th power super modulus is pillow shape instead of round 2th power modulus.
 
  * * *
 By Edgar Malinovsky

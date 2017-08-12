@@ -1,0 +1,97 @@
+[OPTIONS]
+.DEScale = 0.35
+.SIPow = 2
+.Version = 9
+.Double FoldW = 1
+.Double FoldX = 1
+.Double FoldY = 1
+.Double FoldZ = 0
+.Double Scale = 1
+[SOURCE]
+procedure FldMandelWeirdN(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1, w1, x2, y2, z2, w2: double;
+contrscale: double;
+
+begin
+
+
+//=====================================
+///folds of different lenght. 
+X := X +  abs(x- FoldX) - abs(x+ FoldX)  ;
+y := y +  abs(y- FoldY) - abs(y+ FoldY)  ;
+z := z +  abs(z- FoldZ) - abs(z+ FoldZ)  ;
+w := w +  abs(w- FoldW) - abs(w+ FoldW)  ;
+
+
+
+//========================================
+x1:=x* Scale;
+y1:=y* Scale;
+z1:=z* Scale;
+w1:=w* Scale;
+
+
+
+//===============================
+//Now goes algebra. Calculates two formulas
+
+
+
+// hyper tricorn - hypercomplex number tricorn.
+x2:= x1*x1 - y1*y1 - z1*z1 + w1*w1;
+y2:= 2* z1*w1 - 2*x1*y1;
+z2:= 2*x1*z1 - 2* y1*w1;
+w2:= 2*x1*w1 + 2* y1*z1;
+
+
+
+//==================================================================
+
+//quaternion pow2
+x := x1*x1 - y1*y1 - z1*z1 - w1*w1;
+y := 2*x1*y1;
+z := 2*x1*z1;
+w := 2*w1*x1;
+
+
+//=============================================================
+//then choses larger value of the two
+
+If (x2>x) then
+x:=x2;
+
+If (y2>y) then
+y:=y2;
+
+If (z2>z) then
+z:=z2;
+
+If (w2>w) then
+w:=w2;
+
+
+
+//========================================
+//scaled C (z=z^2+c) generates strechless fractal
+contrscale:= 1/scale;
+x := x +  contrscale* PIteration3D^.J1; 
+y := y +  contrscale* PIteration3D^.J2; 
+z := z +  contrscale* PIteration3D^.J3; 
+ 
+
+end;
+[END]
+4D
+Formula version 1.2
+
+Generates FLD  mandelbrot set
+During iterations compares and choses largest of:  
+Hyper tricorn - hypercomplex number tricorn, 
+Power 2 quaternion.
+ 
+Weird formula. Without folds and scaling it generates 3D thing made of burning ship and tricorn.
+
+ * * *
+By Edgar Malinovsky
+

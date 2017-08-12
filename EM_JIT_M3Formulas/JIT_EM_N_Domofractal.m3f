@@ -81,7 +81,7 @@ z := z + vMengerZ*scale2;
 
 //=================================================
 // Unit vector addition. Unit Vector = x,y,z / |x,y,z| 
-radius := sqrt(x*x+y*y+z*z) ;
+radius :=sqrt(x*x+y*y+z*z) ;
 
 x:= x - Thickness * x/radius ;
 y:= y - Thickness * y/radius ;

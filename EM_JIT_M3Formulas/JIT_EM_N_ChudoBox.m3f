@@ -1,59 +1,89 @@
 [OPTIONS]
-.DEScale = 0.75
+.DEScale = 0.6
 .SIPow = 2
 .Version = 9
 .Double Addition = 0
 .Double antiFisheye = 5
-.Double Fold = 1
+.Double FoldX = 1
 .Double Min_R = 1
 .Double scale = 3
+.Double vBenesiRotation = 0
+.Double vFoldY = 1
+.Double vFoldZ = 1
+[CONSTANTS]
+.Double sqrt_1_2 = 0.707106781186548
+.Double sqrt_1_3 = 0.577350269189626
+.Double sqrt_2_3 = 0.816496580927726
+.Double sqt13TOsqt12 = 0.408248290463863
+.Double sqt23TOsqt12 = 0.577350269189626
 [SOURCE]
 procedure ChudoBox(var x, y, z, w: Double; PIteration3D: TPIteration3D);
 
 var
 
-  radius, temp: Double; 
-  fisheye, fishdivisor: Double; 
+temp, x1,y1,z1 : Double; 
+intradius : integer;
 
-Fldx, Fldy, Fldz : double;
-intFold, intradius, intMin_R : integer;
 begin
 
 
 ///VERSION of  spherefold,  by analytical function
-radius := sqrt( x*x + y*y + z*z );
-intradius :=round(radius);
-intMin_R:=round(Min_R);
-temp := ( abs( intradius - intMin_R )  - abs( intradius + intMin_R) +1 ); 
+// new radius is faster by 6 sec in minute but is not sphere but rombic
+temp := abs(x) + abs(y) + abs(z);
+
+intradius :=round(temp);
+temp := ( abs( intradius - Min_R )  - abs( intradius + Min_R) +1 ); 
 
 x := x * temp  ; 
 y := y * temp  ;
 z := z * temp  ;
 
+
+//=================================
 ///Addition
 x := x + Addition ; 
 y := y + Addition ;
 z := z + Addition ;
  
 
+//====================================
+///Benesi to Mag / pine transformation
+/// I have no idea how this works, but the effect should be fixed rotation.
+/// Thanks M Benesi for transform.
+// This version is faster than original by about 2 seconds in minute. 
+  temp := x * sqt23TOsqt12 - z * sqt13TOsqt12 ;
+  z1 := x * sqrt_1_3 + z * sqrt_2_3; 
+  y1 := y * sqrt_1_2;
+  x1 := temp - y1 ; 
+  y1 := temp + y1 ;
 
-// folds only by integer, less noise. 
-intFold := round(Fold);
-x := x + abs(x- intFold) - abs(x+ intFold) ; 
-y := y + abs(y- intFold) - abs(y+ intFold) ;
-z := z + abs(z- intFold) - abs(z+ intFold) ;
+///adding this transformation at the regulated amount.
+
+temp:= (1-vBenesiRotation);
+x:=x1*vBenesiRotation + x*temp;
+y:=y1*vBenesiRotation + y*temp;
+z:=z1*vBenesiRotation + z*temp;
+
+
+//=====================================(^_^) 
+///folds of different lenght
+x := x +  abs(x- FoldX) - abs(x+ FoldX)  ; 
+y := y +  abs(y- vFoldY) - abs(y+ vFoldY)  ;
+z := z +  abs(z- vFoldZ) - abs(z+ vFoldZ)  ;
 
 
 
-/// Fish eye lense like transformation together with scale
-fishdivisor:= scale/(antiFisheye+1);
-fisheye:= (antiFisheye+sqrt( x*x + y*y + z*z ) )*fishdivisor;
+//=====================
+/// sigmafunction based Fish eye lense like transformation together with scale
+temp:= scale/(antiFisheye+1);
+temp:= (antiFisheye + sqrt( x*x + y*y + z*z ) )*temp;
 
-x := fisheye * x ; 
-y := fisheye * y ; 
-z := fisheye * z ;
+x := temp * x ; 
+y := temp * y ; 
+z := temp * z ;
  
 
+//====================
 // + C
 x := x  + PIteration3D^.J1; 
 y := y  + PIteration3D^.J2; 
@@ -62,14 +92,15 @@ z := z  + PIteration3D^.J3;
 
 end;
 [END]
+Formula version 1.2
  
-Formula version 1.1
- 
-Storehouse simulator of amazingbox type fractal.
+3D Amazingbox type fractal. This version is more powerfull.
+(^_^) 
+AntiFisheye acts against fish eye lens effect - which is like adding air to baloon. with 1000 effect will disapear as boxes becomes linear.
 
-AntiFisheye acts against fish eye lens effect bloating fractal. Put some 100 and effect will disapear as boxes becomes linear.
+Single fold is divided to folds in x,y,z axis. To keep compatibility with previous saves FoldY and FoldZ is at the bottom and FoldX is in the place of original Fold.
 
-Fold and Min_R uses only integer numbers: -1, 0, 1, 2, ...
+BenesiRotation adds BRotateToMag at dosed amount - weird naturalistic shapes like rotbox but more symmetric.
 
  * * *
 By Edgar Malinovsky

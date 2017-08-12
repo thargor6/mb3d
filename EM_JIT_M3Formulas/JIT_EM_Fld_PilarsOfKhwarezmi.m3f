@@ -1,0 +1,57 @@
+[OPTIONS]
+.DEScale = 0.5
+.SIPow = 2
+.Version = 9
+.Double Fold = 1
+.Double Scale = 2.75
+.Double vAdditionX = 0
+.Double vAdditionY = 0
+.Double vAdditionZ = 0
+[SOURCE]
+procedure FldKhwarezmi(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1: double;
+intFold: integer;
+
+begin
+
+///Folding (^_^)
+///This step is necessary, as floats interfere with formula and generates something else.
+	intFold:=round(Fold);
+x := x + abs(x-intFold) - abs(x+intFold); 
+y := y + abs(y-intFold) - abs(y+intFold);
+z := z + abs(z-intFold) - abs(z+intFold);
+
+
+x:=x* Scale;
+y:=y* Scale;
+z:=z* Scale;
+
+
+///Addition, new version - julia set like
+x1 := x + vAdditionX ; 
+y1 := y + vAdditionY ;
+z1 := z + vAdditionZ ;
+
+
+
+
+
+/// made this as improved version of bicomplex power
+/// bicomplex rising in power with no negatives - split bicomplex ?
+
+x := x1*x1 + y1*y1 ;
+y := 2*x1*y1;
+z := z1*z1   ;
+
+
+end;
+[END]
+Formula version 1.2
+3D 
+(^_^)
+As main fold -
+bicomplex  power 2 with no negatives - split bicomplex ?
+
+ * * *
+By Edgar Malinovsky

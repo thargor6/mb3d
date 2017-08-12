@@ -13,23 +13,19 @@ var
 
 begin
 
-// supermodulus of power 8. generates pillow like shapes.
-   x1:= IntPower(x,8);
-   y1:= IntPower(y,8);
-   z1:= IntPower(z,8);
+// supermodulus of power 4. generates pillow like shapes.
+x1:= x*x*x*x;
+y1:= y*y*y*y;
+z1:= z*z*z*z;
 
-   sq_r := Power(x1+y1+z1 , 0.125);
-//   sq_xz := sqrt(x*x+z*z);
-// this one is more boxed
-   sq_xz := Power(x1+z1 , 0.125);
+   sq_r := Power(x1+y1+z1 , 0.25);
+   sq_xz := Power(x1+z1 , 0.25);
 
 
 
    r:= power(sq_r, Power_);
 
    theta := arctan2( sq_xz , y) * Power_;
-   {This is true everywhere, because sq_r is >=0 ; atan2(a,b) differs from atan(a/b) when b<0
-   I must use atan2 because 'acos' is missing in assembly.}
    zangle := arctan2(x,z)  * Power_;
 
    x := sin(zangle)*sin(theta)*r+PIteration3D^.J1;
@@ -39,7 +35,7 @@ begin
 end;
 [END]
  
-Formula version 1.1
+Formula version 1.2
  
 Sames as IQ bulb but 
 of more cubic like shape,

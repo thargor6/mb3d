@@ -1,0 +1,64 @@
+[OPTIONS]
+.DEScale = 0.4
+.SIPow = 2
+.Version = 9
+.Double FoldW = 1
+.Double FoldX = 1
+.Double FoldY = 1
+.Double FoldZ = 0
+.Double Scale = 1
+[SOURCE]
+procedure FldMsetX(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+   x1, y1, z1, w1: double;
+contrscale: double;
+begin
+
+//=====================================
+///folds of different lenght. 
+X := X +  abs(x- FoldX) - abs(x+ FoldX)  ;
+y := y +  abs(y- FoldY) - abs(y+ FoldY)  ;
+z := z +  abs(z- FoldZ) - abs(z+ FoldZ)  ;
+w := w +  abs(w- FoldW) - abs(w+ FoldW)  ;
+
+
+//========================================
+x1:=x* Scale;
+y1:=y* Scale;
+z1:=z* Scale;
+w1:=w* Scale;
+
+
+//===============================
+//Now goes algebra
+//  (^_^)
+
+
+//simple quaternion pow2
+x := x1*x1 - y1*y1 - z1*z1 - w1*w1;
+y := 2*x1*y1;
+z := 2*x1*z1;
+w := 2*w1*x1; 
+
+
+
+//========================================
+//scaled C (z=z^2+c) generates strechless fractal
+contrscale:= 1/scale;
+x := x +  contrscale* PIteration3D^.J1; 
+y := y +  contrscale* PIteration3D^.J2; 
+z := z +  contrscale* PIteration3D^.J3; 
+
+
+end;
+[END]
+4D
+Formula version 1.2
+(^_^) 
+Mandelbrot version of 
+FLD - algebraic space fold
+
+With pow2 quaternion mandelbrot inside.
+
+ * * *
+By Edgar Malinovsky
