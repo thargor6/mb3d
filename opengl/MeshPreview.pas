@@ -213,7 +213,7 @@ begin
       glColorPointer( 3, GL_FLOAT, SizeOf(TGLVertex), FVertexColors);
 
     glShadeModel(GL_FLAT);
-    glPointSize(1.5);
+    glPointSize(1.25);
     glColor3f(FMeshAppearance.PointsColor.X, FMeshAppearance.PointsColor.Y, FMeshAppearance.PointsColor.Z);
 
     glDrawArrays (GL_POINTS, 0, FVerticesCount);

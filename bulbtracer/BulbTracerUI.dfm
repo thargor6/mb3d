@@ -4,7 +4,7 @@ object BulbTracerFrm: TBulbTracerFrm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Bulb Tracer'
-  ClientHeight = 630
+  ClientHeight = 636
   ClientWidth = 793
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -21,7 +21,7 @@ object BulbTracerFrm: TBulbTracerFrm
   TextHeight = 13
   object Panel2: TPanel
     Left = 0
-    Top = 546
+    Top = 552
     Width = 793
     Height = 84
     Align = alBottom
@@ -169,17 +169,21 @@ object BulbTracerFrm: TBulbTracerFrm
   end
   object PageControl1: TPageControl
     Left = 0
-    Top = 356
+    Top = 358
     Width = 793
-    Height = 190
+    Height = 194
     ActivePage = TabSheet1
     Align = alBottom
     TabOrder = 1
     object TabSheet1: TTabSheet
       Caption = 'Mesh properties'
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 0
+      ExplicitHeight = 0
       object Panel7: TPanel
         Left = 0
-        Top = 134
+        Top = 138
         Width = 785
         Height = 28
         Align = alBottom
@@ -238,7 +242,7 @@ object BulbTracerFrm: TBulbTracerFrm
         Left = 0
         Top = 0
         Width = 785
-        Height = 134
+        Height = 138
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
@@ -254,18 +258,20 @@ object BulbTracerFrm: TBulbTracerFrm
           Left = 0
           Top = 24
           Width = 785
-          Height = 110
+          Height = 114
           Align = alBottom
           TabOrder = 0
           object TPage
             Left = 0
             Top = 0
             Caption = 'Mesh'
+            ExplicitWidth = 0
+            ExplicitHeight = 0
             object Panel6: TPanel
               Left = 0
               Top = 0
               Width = 785
-              Height = 110
+              Height = 114
               Align = alClient
               BevelOuter = bvNone
               TabOrder = 0
@@ -287,7 +293,7 @@ object BulbTracerFrm: TBulbTracerFrm
               end
               object Label20: TLabel
                 Left = 4
-                Top = 32
+                Top = 30
                 Width = 100
                 Height = 13
                 Alignment = taRightJustify
@@ -296,7 +302,7 @@ object BulbTracerFrm: TBulbTracerFrm
               end
               object Label23: TLabel
                 Left = 22
-                Top = 59
+                Top = 55
                 Width = 85
                 Height = 13
                 Hint = 'Measure of the distance to the object'#39's surface'
@@ -311,7 +317,7 @@ object BulbTracerFrm: TBulbTracerFrm
                 Width = 88
                 Height = 21
                 TabOrder = 0
-                Text = '64'
+                Text = '256'
                 OnChange = MeshVResolutionEditChange
               end
               object MeshVResolutionUpDown: TUpDown
@@ -322,12 +328,12 @@ object BulbTracerFrm: TBulbTracerFrm
                 Associate = MeshVResolutionEdit
                 Min = 16
                 Max = 4096
-                Position = 64
+                Position = 256
                 TabOrder = 1
               end
               object MeshOversamplingCmb: TComboBox
                 Left = 113
-                Top = 29
+                Top = 27
                 Width = 104
                 Height = 21
                 Style = csDropDownList
@@ -367,7 +373,7 @@ object BulbTracerFrm: TBulbTracerFrm
                 end
                 object Label22: TLabel
                   Left = 67
-                  Top = 70
+                  Top = 67
                   Width = 37
                   Height = 13
                   Alignment = taRightJustify
@@ -411,7 +417,7 @@ object BulbTracerFrm: TBulbTracerFrm
                 end
                 object TaubinSmoothPassesEdit: TEdit
                   Left = 110
-                  Top = 67
+                  Top = 64
                   Width = 54
                   Height = 21
                   TabOrder = 4
@@ -419,7 +425,7 @@ object BulbTracerFrm: TBulbTracerFrm
                 end
                 object TaubinSmoothPassesEditUpDown: TUpDown
                   Left = 164
-                  Top = 67
+                  Top = 64
                   Width = 17
                   Height = 21
                   Min = -32000
@@ -430,7 +436,7 @@ object BulbTracerFrm: TBulbTracerFrm
               end
               object MeshISOValueEdit: TEdit
                 Left = 113
-                Top = 56
+                Top = 52
                 Width = 54
                 Height = 21
                 TabOrder = 3
@@ -438,7 +444,7 @@ object BulbTracerFrm: TBulbTracerFrm
               end
               object MeshISOValueUpDown: TUpDown
                 Left = 167
-                Top = 56
+                Top = 52
                 Width = 17
                 Height = 21
                 Max = 32000
@@ -514,23 +520,88 @@ object BulbTracerFrm: TBulbTracerFrm
               end
               object MeshCalcColorsCBx: TCheckBox
                 Left = 113
-                Top = 78
-                Width = 104
+                Top = 73
+                Width = 156
                 Height = 21
-                Caption = 'Calulate colors'
+                Hint = 'Does not work fore all types on fractals'
+                Caption = 'Approximate object color'
                 Checked = True
+                ParentShowHint = False
+                ShowHint = True
                 State = cbChecked
                 TabOrder = 7
                 WordWrap = True
               end
               object MeshSphericalScanCBx: TCheckBox
-                Left = 223
-                Top = 78
+                Left = 265
+                Top = 70
                 Width = 104
                 Height = 21
                 Caption = 'Spherical scan'
                 TabOrder = 8
                 WordWrap = True
+              end
+              object Edit2: TEdit
+                Left = 231
+                Top = 24
+                Width = 46
+                Height = 21
+                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'MS Sans Serif'
+                Font.Style = []
+                ParentFont = False
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 9
+                Text = '0.0'
+                OnChange = Edit1Change
+              end
+              object Edit10: TEdit
+                Left = 283
+                Top = 24
+                Width = 46
+                Height = 21
+                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'MS Sans Serif'
+                Font.Style = []
+                ParentFont = False
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 10
+                Text = '0.0'
+                OnChange = Edit1Change
+              end
+              object Edit13: TEdit
+                Left = 335
+                Top = 24
+                Width = 46
+                Height = 21
+                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'MS Sans Serif'
+                Font.Style = []
+                ParentFont = False
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 11
+                Text = '0.0'
+                OnChange = Edit1Change
+              end
+              object CalculateNormalsCBx: TCheckBox
+                Left = 113
+                Top = 93
+                Width = 156
+                Height = 17
+                Caption = 'Approximate normals'
+                TabOrder = 12
               end
             end
           end
@@ -538,11 +609,13 @@ object BulbTracerFrm: TBulbTracerFrm
             Left = 0
             Top = 0
             Caption = 'Point Cloud'
+            ExplicitWidth = 0
+            ExplicitHeight = 0
             object Panel5: TPanel
               Left = 0
               Top = 0
               Width = 785
-              Height = 110
+              Height = 114
               Align = alClient
               BevelOuter = bvNone
               TabOrder = 0
@@ -554,23 +627,12 @@ object BulbTracerFrm: TBulbTracerFrm
                 Alignment = taRightJustify
                 Caption = 'U Param Steps:'
               end
-              object CalculateNormalsCBx: TCheckBox
-                Left = 152
-                Top = 45
-                Width = 129
-                Height = 17
-                Alignment = taLeftJustify
-                Caption = 'Calculate normals'
-                Checked = True
-                State = cbChecked
-                TabOrder = 0
-              end
               object UStepsEdit: TEdit
                 Left = 252
                 Top = 18
                 Width = 64
                 Height = 21
-                TabOrder = 1
+                TabOrder = 0
                 Text = '40'
               end
               object UStepsUpDown: TUpDown
@@ -581,7 +643,7 @@ object BulbTracerFrm: TBulbTracerFrm
                 Min = 16
                 Max = 32000
                 Position = 90
-                TabOrder = 2
+                TabOrder = 1
               end
             end
           end
@@ -628,7 +690,7 @@ object BulbTracerFrm: TBulbTracerFrm
     Left = 0
     Top = 0
     Width = 793
-    Height = 356
+    Height = 358
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
@@ -636,17 +698,21 @@ object BulbTracerFrm: TBulbTracerFrm
       Left = 0
       Top = 0
       Width = 377
-      Height = 356
+      Height = 358
       ActivePage = TabSheet2
       Align = alLeft
       TabOrder = 0
       object TabSheet2: TTabSheet
         Caption = 'Fractal to trace'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Panel3: TPanel
           Left = 0
           Top = 0
           Width = 369
-          Height = 328
+          Height = 330
           Align = alClient
           Alignment = taLeftJustify
           BevelOuter = bvNone
@@ -877,6 +943,8 @@ object BulbTracerFrm: TBulbTracerFrm
             Height = 17
             Alignment = taLeftJustify
             Caption = 'Use default orientation'
+            Checked = True
+            State = cbChecked
             TabOrder = 13
             OnClick = Edit1Change
           end
@@ -1076,17 +1144,21 @@ object BulbTracerFrm: TBulbTracerFrm
       Left = 377
       Top = 0
       Width = 416
-      Height = 356
+      Height = 358
       ActivePage = TabSheet3
       Align = alClient
       TabOrder = 1
       object TabSheet3: TTabSheet
         Caption = 'Trace Preview'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Panel4: TPanel
           Left = 0
           Top = 0
           Width = 408
-          Height = 328
+          Height = 330
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 0

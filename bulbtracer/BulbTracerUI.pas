@@ -110,7 +110,6 @@ type
     MeshVResolutionUpDown: TUpDown;
     Panel5: TPanel;
     Label17: TLabel;
-    CalculateNormalsCBx: TCheckBox;
     UStepsEdit: TEdit;
     UStepsUpDown: TUpDown;
     MeshTypeCmb: TComboBox;
@@ -154,6 +153,10 @@ type
     GenCurrMeshBtn: TButton;
     MeshCalcColorsCBx: TCheckBox;
     MeshSphericalScanCBx: TCheckBox;
+    Edit2: TEdit;
+    Edit10: TEdit;
+    Edit13: TEdit;
+    CalculateNormalsCBx: TCheckBox;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -209,7 +212,7 @@ type
     PaintedYsofar, vActiveThreads, PreviewSize: Integer;
     CalcPreview{, PrCalcedAll}: LongBool; //to verify if PreviewVoxel array is complete
     VsiLight: array of Cardinal;  //just 0..255 for color
-    FThreadVertexLists, FThreadColorLists: TObjectList;
+    FThreadVertexLists, FThreadNormalsLists, FThreadColorsLists: TObjectList;
     FVertexGenConfig: TVertexGenConfig;
     FCalculating, FForceAbort: Boolean;
     FCancelType: TCancelType;
@@ -268,7 +271,6 @@ type
 
   TPLYExportCalcThread = class(TThread)
   private
-    FSharedWorkList: TList<Double>;
     FPrepared: Boolean;
     FRayCaster: TRayCaster;
     FObjectScanner: TObjectScanner;
@@ -276,7 +278,7 @@ type
   public
     M3Vfile: TM3Vfile;
     MCTparas: TMCTparameter;
-    VertexList, ColorList: TPS3VectorList;
+    VertexList, NormalsList, ColorsList: TPS3VectorList;
     FacesList: TFacesList;
     VertexGenConfig: TVertexGenConfig;
   protected
@@ -778,7 +780,7 @@ begin
       OrigWidth := VHeader.Width;
       MaxIts := VHeader.Iterations;
       MinIts := MaxIts div 2;
-      UseDefaultOrientation := False;
+      UseDefaultOrientation := True;
       if VHeader.bVaryDEstopOnFOV > 0 then    //calc DE @ Zmid when VaryDEstopOnFOV
         d := (1 + 0.3 / VHeader.sDEStop) * Max(0, VHeader.dFOVy * Pid180) *
              (VHeader.dZoom * VHeader.Width) / (VHeader.Height * 2.1345)
@@ -814,6 +816,7 @@ begin
       if(OutputFolder<>'') then begin
         FilenameREd.Text := IncludeTrailingPathDelimiter(OutputFolder)+GetDefaultMeshFilename('mb3d_mesh', TPointCloudSaveType(SaveTypeCmb.ItemIndex));
       end;
+      CheckBox3.Checked := True;
     end;
 end;
 
@@ -867,7 +870,8 @@ begin
     FParamSource := psMain;
     UpdateParamsRange;
     FThreadVertexLists := TObjectList.Create;
-    FThreadColorLists := TObjectList.Create;
+    FThreadNormalsLists := TObjectList.Create;
+    FThreadColorsLists := TObjectList.Create;
     FVertexGenConfig := TVertexGenConfig.Create;
     bFirstShow := True;
     Benabled := False;
@@ -895,7 +899,8 @@ end;
 procedure TBulbTracerFrm.FormDestroy(Sender: TObject);
 begin
   FThreadVertexLists.Free;
-  FThreadColorLists.Free;
+  FThreadNormalsLists.Free;
+  FThreadColorsLists.Free;
   FVertexGenConfig.Free;
 end;
 
@@ -1381,10 +1386,11 @@ var
 begin
   try
     FThreadVertexLists.Clear;
-    FThreadColorLists.Clear;
+    FThreadNormalsLists.Clear;
+    FThreadColorsLists.Clear;
     ThreadCount := Min(Mand3DForm.UpDown3.Position, M3Vfile.VHeader.Height);
   ////
-//   ThreadCount := 1;
+   ThreadCount := 1;
   ////
     M3Vfile.VHeader.TilingOptions := 0;
     bGetMCTPverbose := False;
@@ -1438,9 +1444,11 @@ begin
             mtPointCloud:
               begin
                 PLYCalcThreads[x - 1].VertexList     := TPS3VectorList.Create;
-                PLYCalcThreads[x - 1].ColorList      := TPS3VectorList.Create;
+                PLYCalcThreads[x - 1].NormalsList    := TPS3VectorList.Create;
+                PLYCalcThreads[x - 1].ColorsList     := TPS3VectorList.Create;
                 FThreadVertexLists.Add(PLYCalcThreads[x - 1].VertexList);
-                FThreadColorLists.Add(PLYCalcThreads[x - 1].ColorList);
+                FThreadNormalsLists.Add(PLYCalcThreads[x - 1].NormalsList);
+                FThreadColorsLists.Add(PLYCalcThreads[x - 1].ColorsList);
               end;
             mtMesh:
               begin
@@ -1492,24 +1500,33 @@ end;
 procedure TPLYExportCalcThread.Prepare;
 var
   I: Integer;
+  WorkList: TList;
 begin
   case VertexGenConfig.MeshType of
     mtPointCloud:
-      FRayCaster := TCreatePointCloudRayCaster.Create(VertexList, ColorList);
-    mtMesh:
-      FRayCaster := TCreateMeshRayCaster.Create(FacesList, VertexGenConfig.ISOValue);
-  end;
-  if VertexGenConfig.SphericalScan and (VertexGenConfig.MeshType = mtPointCloud) then
-    FObjectScanner := TSphericalScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster)
-  else
-    FObjectScanner := TCubicScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster);
+      begin
+        FRayCaster := TCreatePointCloudRayCaster.Create(VertexList, NormalsList, ColorsList);
 
-  if ( MCTparas.iThreadID = 1 ) and ( FObjectScanner.UseShuffledWorkList  ) then begin
-    FSharedWorkList := FObjectScanner.GetWorkList;
-    for I := FSharedWorkList.Count-1 downto 1 do
-      FSharedWorkList.Exchange(i, Random(i+1));
-    VertexGenConfig.SharedWorkList := FSharedWorkList;
+        if VertexGenConfig.SphericalScan then
+          FObjectScanner := TSphericalScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster)
+        else
+          FObjectScanner := TCubicScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster);
+
+        if ( MCTparas.iThreadID = 1 ) and ( FObjectScanner.UseShuffledWorkList  ) then begin
+          WorkList := FObjectScanner.GetWorkList;
+          for I := WorkList.Count-1 downto 1 do
+            WorkList.Exchange(i, Random(i+1));
+          VertexGenConfig.SharedWorkList := WorkList;
+        end;
+
+      end;
+    mtMesh:
+      begin
+        FRayCaster := TCreateMeshRayCaster.Create(FacesList, VertexGenConfig.ISOValue);
+        FObjectScanner := TParallelScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster);
+      end;
   end;
+
 
   FPrepared := True;
 end;
@@ -1531,34 +1548,45 @@ end;
 procedure TBulbTracerFrm.SavePointCloud;
 var
   I: Integer;
-  VertexList, ColorList: TPS3VectorList;
+  VertexList, NormalsList, ColorsList: TPS3VectorList;
 begin
   try
     if (not FForceAbort) or (FCancelType = ctCancelAndShowResult) then begin
       VertexList := TPS3VectorList.Create;
       try
-        if FVertexGenConfig.CalcColors then
-          ColorList := TPS3VectorList.Create
+        if FVertexGenConfig.CalcNormals then
+          NormalsList := TPS3VectorList.Create
         else
-          ColorList := nil;
+          NormalsList := nil;
+
+        if FVertexGenConfig.CalcColors then
+          ColorsList := TPS3VectorList.Create
+        else
+          ColorsList := nil;
+
         try
           for I := 0 to FThreadVertexLists.Count - 1 do begin
             VertexList.MoveVertices(FThreadVertexLists[I] as TPS3VectorList);
-            if ColorList <> nil then
-              ColorList.MoveVertices(FThreadColorLists[I] as TPS3VectorList);
+            if NormalsList <> nil then
+              NormalsList.MoveVertices(FThreadNormalsLists[I] as TPS3VectorList);
+            if ColorsList <> nil then
+              ColorsList.MoveVertices(FThreadColorsLists[I] as TPS3VectorList);
           end;
+          if FVertexGenConfig.ShowTraceRanges then
+            FVertexGenConfig.AddSampledTraceRanges( VertexList, NormalsList, ColorsList );
           VertexList.DoCenter(0.1);
          // VertexList.RemoveDuplicates;
-          // TODO handle normals
           if not FForceAbort then begin
-            TPlyFileWriter.SaveToFile(FilenameREd.Text, VertexList, nil, ColorList)
+            TPlyFileWriter.SaveToFile(FilenameREd.Text, VertexList, NormalsList, ColorsList)
           end;
           FThreadVertexLists.Clear;
           if OpenGLPreviewCBx.Checked then
-            MeshPreviewFrm.UpdateMesh(VertexList, ColorList);
+            MeshPreviewFrm.UpdateMesh(VertexList, ColorsList);
         finally
-          if ColorList <> nil then
-            ColorList.Free;
+          if NormalsList <> nil then
+            NormalsList.Free;
+          if ColorsList <> nil then
+            ColorsList.Free;
         end;
       finally
         VertexList.Free;
@@ -1566,7 +1594,8 @@ begin
     end;
   finally
     FThreadVertexLists.Clear;
-    FThreadColorLists.Clear;
+    FThreadNormalsLists.Clear;
+    FThreadColorsLists.Clear;
   end;
   if OpenGLPreviewCBx.Checked then
     MeshPreviewBtnClick(nil);
@@ -1744,16 +1773,70 @@ end;
 
 
 procedure TBulbTracerFrm.UpdateVertexGenConfig;
+var
+  SphereRange: TSphereRange;
+  BoxRange: TBoxRange;
+  VRes: Integer;
 begin
+  FVertexGenConfig.Clear;
+
   FVertexGenConfig.RemoveDuplicates := True;
-  FVertexGenConfig.CalculateNormals := CalculateNormalsCBx.Checked;
-  FVertexGenConfig.URange.StepCount := StrToInt( MeshVResolutionEdit.Text );
-  FVertexGenConfig.VRange.StepCount := StrToInt( MeshVResolutionEdit.Text );
+  FVertexGenConfig.CalcNormals := CalculateNormalsCBx.Checked;
+
   FVertexGenConfig.MeshType := TMeshType( MeshTypeCmb.ItemIndex );
   FVertexGenConfig.Oversampling := TOversampling(MeshOversamplingCmb.ItemIndex);
   FVertexGenConfig.ISOValue := StrToFloat(MeshISOValueEdit.Text);
   FVertexGenConfig.SphericalScan := MeshSphericalScanCBx.Checked;
   FVertexGenConfig.CalcColors := MeshCalcColorsCBx.Checked;
+
+  VRes := StrToInt( MeshVResolutionEdit.Text );
+  if ( FVertexGenConfig.MeshType = mtPointCloud ) then begin
+    if FVertexGenConfig.SphericalScan then begin
+      FVertexGenConfig.URange.StepCount := VRes + VRes div 3;
+      FVertexGenConfig.VRange.StepCount := VRes + VRes div 3;
+    end
+    else begin
+      FVertexGenConfig.URange.StepCount := VRes div 3;
+      FVertexGenConfig.VRange.StepCount := VRes div 3;
+    end;
+  end
+  else begin
+    FVertexGenConfig.URange.StepCount := VRes;
+    FVertexGenConfig.VRange.StepCount := VRes;
+  end;
+
+
+  SphereRange := TSphereRange.Create;
+  SphereRange.CentreX := StrToFloat(Edit2.Text);
+  SphereRange.CentreY := StrToFloat(Edit10.Text);
+  SphereRange.CentreZ := StrToFloat(Edit13.Text);
+  SphereRange.Radius := 60.0;
+  SphereRange.Mode := trExclude;
+//  FVertexGenConfig.TraceRanges.Add( SphereRange );
+
+  SphereRange := TSphereRange.Create;
+  SphereRange.CentreX := 110.0;
+  SphereRange.CentreY := 40.0;
+  SphereRange.CentreZ := 50.0;
+  SphereRange.Radius := 30.0;
+  SphereRange.IndicatorColorR := 1.0;
+  SphereRange.IndicatorColorG := 0.0;
+  SphereRange.IndicatorColorB := 0.0;
+  SphereRange.Mode := trInclude;
+//  FVertexGenConfig.TraceRanges.Add( SphereRange );
+
+
+  BoxRange := TBoxRange.Create;
+  BoxRange.CentreX := 0.0;
+  BoxRange.CentreY := 0.0;
+  BoxRange.CentreZ := 0.0;
+  BoxRange.SizeX := 100.0;
+  BoxRange.SizeY := 100.0;
+  BoxRange.SizeZ := 50.0;
+  BoxRange.Mode := trExclude;
+//  FVertexGenConfig.TraceRanges.Add( BoxRange );
+
+  FVertexGenConfig.ShowTraceRanges := True;
 end;
 
 procedure TBulbTracerFrm.EnableControls(const Enabled: Boolean);

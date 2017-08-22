@@ -1,3 +1,22 @@
+V1.98
+ - Point-Cloud-export in the BulbTracer-module, which is able to generate very nice
+   models in high resolution in a short time, even with color (which is currently
+   a limited feature).
+   This mode is now the default mode in the BulbTracer, with a initial volumetric
+   resolution of 256, which is nice to play around, because it is not soo slow, but
+   often creates nice models.
+   For creating a final mesh, a volumetric resolution of 2560 is not unusual, as the new mode
+   is fast and takes not too much memory.
+
+   To use the old way of generating mesh consiting of vertices and faces, choose "Mesh" as Mesh Type)
+ - optimized parallel processing in BulbTracer, especially for point-clouds, in order to maximize performance
+   (example: I can now trace a rather simple object at resolution 1024x1024x1024 in about 5 min,
+   created about 5 Mio points in my tests)
+ - optimized the mesh-writer for faster writing
+ - OpenGl-preview for point-clouds
+ - updated the huge JIT-formula.pack ("EM_JIT_M3Formulas") from Alef from fractalforums.com
+ - NEW RELEASE
+
 V1.97
  - finished the first working version of the external mesh-merging-tool (64 Bit)
  - Basic foundation for a scripting-module, utilizing the Pax-Compiler
