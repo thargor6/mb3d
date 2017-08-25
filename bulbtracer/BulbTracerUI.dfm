@@ -4,8 +4,8 @@ object BulbTracerFrm: TBulbTracerFrm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Bulb Tracer'
-  ClientHeight = 636
-  ClientWidth = 793
+  ClientHeight = 659
+  ClientWidth = 796
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -21,13 +21,15 @@ object BulbTracerFrm: TBulbTracerFrm
   TextHeight = 13
   object Panel2: TPanel
     Left = 0
-    Top = 552
-    Width = 793
+    Top = 575
+    Width = 796
     Height = 84
     Align = alBottom
     BevelOuter = bvNone
     BorderWidth = 8
     TabOrder = 0
+    ExplicitTop = 552
+    ExplicitWidth = 793
     object Label13: TLabel
       Left = 86
       Top = 58
@@ -71,7 +73,7 @@ object BulbTracerFrm: TBulbTracerFrm
     object ProgressBar: TProgressBar
       Left = 8
       Top = 32
-      Width = 777
+      Width = 780
       Height = 17
       Align = alTop
       Max = 15
@@ -79,6 +81,7 @@ object BulbTracerFrm: TBulbTracerFrm
       SmoothReverse = True
       Step = 1
       TabOrder = 2
+      ExplicitWidth = 777
     end
     object CancelBtn: TButton
       Left = 721
@@ -105,13 +108,14 @@ object BulbTracerFrm: TBulbTracerFrm
     object Panel9: TPanel
       Left = 8
       Top = 8
-      Width = 777
+      Width = 780
       Height = 24
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 5
+      ExplicitWidth = 777
       DesignSize = (
-        777
+        780
         24)
       object Label24: TLabel
         Left = 0
@@ -142,7 +146,7 @@ object BulbTracerFrm: TBulbTracerFrm
       end
       object FrameTBar: TTrackBarEx
         Tag = 10
-        Left = 123
+        Left = 125
         Top = 0
         Width = 654
         Height = 21
@@ -155,6 +159,7 @@ object BulbTracerFrm: TBulbTracerFrm
         TickMarks = tmBoth
         TickStyle = tsNone
         OnMouseUp = FrameTBarMouseUp
+        ExplicitLeft = 123
       end
     end
     object GenCurrMeshBtn: TButton
@@ -169,26 +174,26 @@ object BulbTracerFrm: TBulbTracerFrm
   end
   object PageControl1: TPageControl
     Left = 0
-    Top = 358
-    Width = 793
+    Top = 381
+    Width = 796
     Height = 194
     ActivePage = TabSheet1
     Align = alBottom
     TabOrder = 1
+    ExplicitTop = 358
+    ExplicitWidth = 793
     object TabSheet1: TTabSheet
       Caption = 'Mesh properties'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
+      ExplicitWidth = 785
       object Panel7: TPanel
         Left = 0
         Top = 138
-        Width = 785
+        Width = 788
         Height = 28
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 1
+        ExplicitWidth = 785
         object Label10: TLabel
           Left = 503
           Top = 6
@@ -241,11 +246,12 @@ object BulbTracerFrm: TBulbTracerFrm
       object Panel8: TPanel
         Left = 0
         Top = 0
-        Width = 785
+        Width = 788
         Height = 138
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitWidth = 785
         object Label7: TLabel
           Left = 4
           Top = 5
@@ -257,24 +263,25 @@ object BulbTracerFrm: TBulbTracerFrm
         object MeshPropertiesNBk: TNotebook
           Left = 0
           Top = 24
-          Width = 785
+          Width = 788
           Height = 114
           Align = alBottom
           TabOrder = 0
+          ExplicitWidth = 785
           object TPage
             Left = 0
             Top = 0
             Caption = 'Mesh'
-            ExplicitWidth = 0
-            ExplicitHeight = 0
+            ExplicitWidth = 785
             object Panel6: TPanel
               Left = 0
               Top = 0
-              Width = 785
+              Width = 788
               Height = 114
               Align = alClient
               BevelOuter = bvNone
               TabOrder = 0
+              ExplicitWidth = 785
               object Label18: TLabel
                 Left = 4
                 Top = 5
@@ -663,16 +670,16 @@ object BulbTracerFrm: TBulbTracerFrm
             Left = 0
             Top = 0
             Caption = 'Point Cloud'
-            ExplicitWidth = 0
-            ExplicitHeight = 0
+            ExplicitWidth = 785
             object Panel5: TPanel
               Left = 0
               Top = 0
-              Width = 785
+              Width = 788
               Height = 114
               Align = alClient
               BevelOuter = bvNone
               TabOrder = 0
+              ExplicitWidth = 785
               object Label17: TLabel
                 Left = 209
                 Top = 21
@@ -743,34 +750,35 @@ object BulbTracerFrm: TBulbTracerFrm
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 793
-    Height = 358
+    Width = 796
+    Height = 381
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
+    ExplicitWidth = 793
+    ExplicitHeight = 358
     object PageControl2: TPageControl
       Left = 0
       Top = 0
       Width = 377
-      Height = 358
+      Height = 381
       ActivePage = TabSheet2
       Align = alLeft
       TabOrder = 0
+      ExplicitHeight = 358
       object TabSheet2: TTabSheet
         Caption = 'Fractal to trace'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
+        ExplicitHeight = 330
         object Panel3: TPanel
           Left = 0
           Top = 0
           Width = 369
-          Height = 330
+          Height = 353
           Align = alClient
           Alignment = taLeftJustify
           BevelOuter = bvNone
           TabOrder = 0
+          ExplicitHeight = 330
           object Label1: TLabel
             Left = 18
             Top = 55
@@ -834,12 +842,6 @@ object BulbTracerFrm: TBulbTracerFrm
             Height = 13
             Alignment = taRightJustify
             Caption = 'DE:'
-          end
-          object Label12: TLabel
-            Left = 187
-            Top = 346
-            Width = 3
-            Height = 13
           end
           object Label14: TLabel
             Left = 201
@@ -1197,34 +1199,36 @@ object BulbTracerFrm: TBulbTracerFrm
     object PageControl3: TPageControl
       Left = 377
       Top = 0
-      Width = 416
-      Height = 358
+      Width = 419
+      Height = 381
       ActivePage = TabSheet3
       Align = alClient
       TabOrder = 1
+      ExplicitWidth = 416
+      ExplicitHeight = 358
       object TabSheet3: TTabSheet
         Caption = 'Trace Preview'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
+        ExplicitWidth = 408
+        ExplicitHeight = 330
         object Panel4: TPanel
           Left = 0
           Top = 0
-          Width = 408
-          Height = 330
+          Width = 411
+          Height = 353
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 0
+          ExplicitWidth = 408
+          ExplicitHeight = 330
           object Image1: TImage
-            Left = 8
-            Top = 4
+            Left = 12
+            Top = 6
             Width = 322
             Height = 322
           end
           object Button5: TButton
             Left = 340
-            Top = 272
+            Top = 292
             Width = 61
             Height = 54
             Caption = 'Calculate preview'
@@ -1259,6 +1263,17 @@ object BulbTracerFrm: TBulbTracerFrm
             State = cbChecked
             TabOrder = 2
             WordWrap = True
+          end
+          object PreviewProgressBar: TProgressBar
+            Left = 12
+            Top = 334
+            Width = 322
+            Height = 12
+            Max = 15
+            Smooth = True
+            SmoothReverse = True
+            Step = 1
+            TabOrder = 3
           end
         end
       end

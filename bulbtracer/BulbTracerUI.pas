@@ -60,7 +60,6 @@ type
     Label6: TLabel;
     Label8: TLabel;
     Label9: TLabel;
-    Label12: TLabel;
     Label14: TLabel;
     Label15: TLabel;
     Label16: TLabel;
@@ -160,6 +159,7 @@ type
     Edit14: TEdit;
     Edit15: TEdit;
     Edit16: TEdit;
+    PreviewProgressBar: TProgressBar;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -225,11 +225,11 @@ type
     procedure MakeM3V;
     procedure SetFromM3V;
     procedure CalcImageSize;
-    procedure PaintVoxRows(StartRow, EndRow: Integer);
     function StartSlicePreview(nr: Integer): LongBool;
     procedure PaintNextPreviewSlice(nr: Integer);
     procedure SetProjectName(FileName: String);
     procedure StartNewPreview;
+    function  CalcPreviewSize: Integer;
     procedure CalcPreviewSizes;
     procedure UpdateSaveTypeCmb;
     procedure EnableMeshOptionControls;
@@ -443,44 +443,6 @@ begin
     end;
 end;
 
-procedure TBulbTracerFrm.PaintVoxRows(StartRow, EndRow: Integer);
-var x, y, wid: Integer;
-    PC: PCardinal;
-    PSL: TPsiLight5;
-    PSLstart, PLoffset: Integer;
-    ColA: array[0..1] of Cardinal;
-begin
-    if not Mand3DForm.SizeOK(False) then Exit;
-    if M3Vfile.WhiteOutside then
-    begin
-      ColA[0] := $FFFFFF;
-      ColA[1] := 0;
-    end else begin
-      ColA[0] := 0;
-      ColA[1] := $FFFFFF;
-    end;
-    StartRow := Max(0, StartRow);
-    wid := M3Vfile.VHeader.Width;
-    EndRow := Min(EndRow, M3Vfile.VHeader.Height - 1);
-    if (wid > 3) and (wid < 32767) then
-    begin
-      PSLstart := Integer(@Mand3DForm.siLight5[0]);
-      PLoffset := wid * SizeOf(TsiLight5);
-      for y := StartRow to EndRow do
-      begin
-        PSL := TPsiLight5(PSLstart + y * PLoffset);
-        PC := PCardinal(mFSIstart + mFSIoffset * y);
-        for x := 1 to wid do
-        begin
-          PC^ := ColA[PSL.SIgradient and 1];
-          Inc(PSL);
-          Inc(PC);
-        end;
-      end;
-    end;
-    if ImageScale = 1 then UpdateScaledImage(StartRow, EndRow);
-end;
-
 function TBulbTracerFrm.StartSlicePreview(nr: Integer): LongBool;
 var VoxCalcThreads: array of TFVoxelExportCalcPreviewThread;
     x, ThreadCount: Integer;
@@ -544,7 +506,7 @@ begin
     VCalcThreadStats.iTotalThreadCount := ThreadCount;
     vActiveThreads := ThreadCount;
     for x := 0 to ThreadCount - 1 do VoxCalcThreads[x].Start;
-    Timer2.Interval := 50;
+    Timer2.Interval := 10;
     Timer2.Enabled := True;
   end;
 end;
@@ -696,7 +658,7 @@ begin
       GetOutputFolderFromrecord;
       CheckBox3.Checked := UseDefaultOrientation;
       CalcImageSize;
-      Label12.Caption := IntToStr(VHeader.Width) + ' x ' + IntToStr(VHeader.Height);
+      // Label12.Caption := IntToStr(VHeader.Width) + ' x ' + IntToStr(VHeader.Height);
       bUserChange := b;
       VHeader.PCFAddon := @VHAddon;
       for i := 0 to 5 do VHeader.PHCustomF[i] := @HybridCustoms[i];
@@ -859,8 +821,7 @@ begin
     begin
       MakeM3V;
       CalcImageSize;
-      Label12.Caption := IntToStr(M3Vfile.VHeader.Width) + ' x ' +
-                         IntToStr(M3Vfile.VHeader.Height);
+      // Label12.Caption := IntToStr(M3Vfile.VHeader.Width) + ' x ' + IntToStr(M3Vfile.VHeader.Height);
       StartNewPreview;
     end;
 end;
@@ -912,12 +873,17 @@ var d: Double;
 begin
     with M3Vfile do
     begin
-      PreviewSize := 16 shl RadioGroup2.ItemIndex;
+      PreviewSize := CalcPreviewSize;
       d := 1 / MaxCD(MaxCD(Zscale, Yscale), Xscale);
       PVwid := Round(PreviewSize * Xscale * d);
       PVhei := Round(PreviewSize * Yscale * d);
       PVdep := Round(PreviewSize * Zscale * d);
     end;
+end;
+
+function TBulbTracerFrm.CalcPreviewSize: Integer;
+begin
+  Result := 16 shl RadioGroup2.ItemIndex;
 end;
 
 procedure TBulbTracerFrm.Button2Click(Sender: TObject);
@@ -966,8 +932,9 @@ begin
       MCalcStop := True;
   //    Inc(CalcVoxelPreviewIndex);
     end
-    else
-    begin
+    else begin
+      PreviewProgressBar.Position := 0;
+      PreviewProgressBar.Max := CalcPreviewSize;
       MakeM3V;
       CalcPreviewSizes;
     //  Mand3DForm.bCalcTile := False;
@@ -994,9 +961,10 @@ var x, y, y2, i, j, i2, i3, i4, im, ik: Integer;
     PSLstart, PLoffset, bmpSL, bmpOffset, bmpOffP: Integer;
     PC, PSL: PCardinal;
 begin
+    PreviewProgressBar.StepIt;
     PSLstart := Integer(@VsiLight[0]);
     PLoffset := PVwid * SizeOf(Cardinal);
-    i := Round((165 - (nr / PVdep) * 128) * 1.5); 
+    i := Round((165 - (nr / PVdep) * 128) * 1.5);
     i2 := Round(165 - (nr / PVdep) * 128);
     if PreviewSize > 128 then i2 := Round(255 - (nr / PVdep) * 212);
     i4 := i shr 1;
@@ -1285,8 +1253,7 @@ begin
     begin
       MakeM3V;
       CalcImageSize;
-      Label12.Caption := IntToStr(M3Vfile.VHeader.Width) + ' x ' +
-                         IntToStr(M3Vfile.VHeader.Height);
+      // Label12.Caption := IntToStr(M3Vfile.VHeader.Width) + ' x ' + IntToStr(M3Vfile.VHeader.Height);
     end;                     
 end;
 
@@ -1584,6 +1551,12 @@ begin
             TPlyFileWriter.SaveToFile(FilenameREd.Text, VertexList, NormalsList, ColorsList)
           end;
           FThreadVertexLists.Clear;
+
+          if not FForceAbort then
+            Label13.Caption := 'Elapsed time: ' + IntToStr(Round((DateUtils.MilliSecondsBetween(Now, 0)-T0)/1000.0))+' s'
+          else
+            Label13.Caption := 'Operation cancelled';
+
           if OpenGLPreviewCBx.Checked then
             MeshPreviewFrm.UpdateMesh(VertexList, ColorsList);
         finally
@@ -1802,10 +1775,6 @@ begin
     else begin
       FVertexGenConfig.URange.StepCount := Round( VRes / Sqrt( 5.0 ) );
       FVertexGenConfig.VRange.StepCount := Round( VRes / Sqrt( 5.0 ) );
-
- //   FVertexGenConfig.URange.StepCount := VRes;
-//    FVertexGenConfig.VRange.StepCount := VRes;
-
     end;
   end
   else begin
