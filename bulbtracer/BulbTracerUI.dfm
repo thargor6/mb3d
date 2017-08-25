@@ -542,8 +542,8 @@ object BulbTracerFrm: TBulbTracerFrm
                 WordWrap = True
               end
               object Edit2: TEdit
-                Left = 231
-                Top = 24
+                Left = 230
+                Top = 16
                 Width = 46
                 Height = 21
                 Hint = 'This is a absolute offset in x direction of the rotated bulb.'
@@ -560,8 +560,8 @@ object BulbTracerFrm: TBulbTracerFrm
                 OnChange = Edit1Change
               end
               object Edit10: TEdit
-                Left = 283
-                Top = 24
+                Left = 282
+                Top = 16
                 Width = 46
                 Height = 21
                 Hint = 'This is a absolute offset in x direction of the rotated bulb.'
@@ -578,8 +578,8 @@ object BulbTracerFrm: TBulbTracerFrm
                 OnChange = Edit1Change
               end
               object Edit13: TEdit
-                Left = 335
-                Top = 24
+                Left = 334
+                Top = 16
                 Width = 46
                 Height = 21
                 Hint = 'This is a absolute offset in x direction of the rotated bulb.'
@@ -602,6 +602,60 @@ object BulbTracerFrm: TBulbTracerFrm
                 Height = 17
                 Caption = 'Approximate normals'
                 TabOrder = 12
+              end
+              object Edit14: TEdit
+                Left = 230
+                Top = 43
+                Width = 46
+                Height = 21
+                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'MS Sans Serif'
+                Font.Style = []
+                ParentFont = False
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 13
+                Text = '0.0'
+                OnChange = Edit1Change
+              end
+              object Edit15: TEdit
+                Left = 282
+                Top = 43
+                Width = 46
+                Height = 21
+                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'MS Sans Serif'
+                Font.Style = []
+                ParentFont = False
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 14
+                Text = '0.0'
+                OnChange = Edit1Change
+              end
+              object Edit16: TEdit
+                Left = 334
+                Top = 43
+                Width = 46
+                Height = 21
+                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'MS Sans Serif'
+                Font.Style = []
+                ParentFont = False
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 15
+                Text = '0.0'
+                OnChange = Edit1Change
               end
             end
           end

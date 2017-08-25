@@ -157,6 +157,9 @@ type
     Edit10: TEdit;
     Edit13: TEdit;
     CalculateNormalsCBx: TCheckBox;
+    Edit14: TEdit;
+    Edit15: TEdit;
+    Edit16: TEdit;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1390,7 +1393,7 @@ begin
     FThreadColorsLists.Clear;
     ThreadCount := Min(Mand3DForm.UpDown3.Position, M3Vfile.VHeader.Height);
   ////
-   ThreadCount := 1;
+//   ThreadCount := 1;
   ////
     M3Vfile.VHeader.TilingOptions := 0;
     bGetMCTPverbose := False;
@@ -1511,6 +1514,7 @@ begin
           FObjectScanner := TSphericalScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster)
         else
           FObjectScanner := TCubicScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster);
+//          FObjectScanner := TParallelScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster);
 
         if ( MCTparas.iThreadID = 1 ) and ( FObjectScanner.UseShuffledWorkList  ) then begin
           WorkList := FObjectScanner.GetWorkList;
@@ -1792,12 +1796,16 @@ begin
   VRes := StrToInt( MeshVResolutionEdit.Text );
   if ( FVertexGenConfig.MeshType = mtPointCloud ) then begin
     if FVertexGenConfig.SphericalScan then begin
-      FVertexGenConfig.URange.StepCount := VRes + VRes div 3;
-      FVertexGenConfig.VRange.StepCount := VRes + VRes div 3;
+      FVertexGenConfig.URange.StepCount := VRes;
+      FVertexGenConfig.VRange.StepCount := VRes;
     end
     else begin
-      FVertexGenConfig.URange.StepCount := VRes div 3;
-      FVertexGenConfig.VRange.StepCount := VRes div 3;
+      FVertexGenConfig.URange.StepCount := Round( VRes / Sqrt( 5.0 ) );
+      FVertexGenConfig.VRange.StepCount := Round( VRes / Sqrt( 5.0 ) );
+
+ //   FVertexGenConfig.URange.StepCount := VRes;
+//    FVertexGenConfig.VRange.StepCount := VRes;
+
     end;
   end
   else begin
@@ -1810,19 +1818,19 @@ begin
   SphereRange.CentreX := StrToFloat(Edit2.Text);
   SphereRange.CentreY := StrToFloat(Edit10.Text);
   SphereRange.CentreZ := StrToFloat(Edit13.Text);
-  SphereRange.Radius := 60.0;
+  SphereRange.Radius := 20.0;
   SphereRange.Mode := trExclude;
 //  FVertexGenConfig.TraceRanges.Add( SphereRange );
 
   SphereRange := TSphereRange.Create;
-  SphereRange.CentreX := 110.0;
-  SphereRange.CentreY := 40.0;
-  SphereRange.CentreZ := 50.0;
-  SphereRange.Radius := 30.0;
+  SphereRange.CentreX := StrToFloat(Edit14.Text);
+  SphereRange.CentreY := StrToFloat(Edit15.Text);
+  SphereRange.CentreZ := StrToFloat(Edit16.Text);
+  SphereRange.Radius := 20.0;
   SphereRange.IndicatorColorR := 1.0;
   SphereRange.IndicatorColorG := 0.0;
   SphereRange.IndicatorColorB := 0.0;
-  SphereRange.Mode := trInclude;
+  SphereRange.Mode := trExclude;
 //  FVertexGenConfig.TraceRanges.Add( SphereRange );
 
 
