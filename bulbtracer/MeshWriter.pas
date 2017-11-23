@@ -17,7 +17,7 @@ type
 
   TPlyFileWriter = class( TAbstractFileWriter )
   public
-    class procedure SaveToFile(const Filename: String; const Vertices, Normals, Colors: TPS3VectorList);
+    class procedure SaveToFile(const Filename: String; const Vertices: TPS3VectorList; const Normals, Colors: TPSMI3VectorList);
   end;
 
   TObjFileWriter = class( TAbstractFileWriter )
@@ -29,7 +29,7 @@ type
   public
     class procedure CreateFile( const Basefilename: String );
     class function CreatePartFilename( const Idx: integer): string;
-    class procedure SaveToFile(const Filename: String; const FacesLists: TObjectList);
+    class procedure SaveToFile(const Filename: String; const Faces: TFacesList; const Idx: Integer);
   end;
 
   TLightwaveObjFileWriter = class( TAbstractFileWriter )
@@ -54,7 +54,7 @@ begin
     raise Exception.Create('Can not access Folder <'+Folder+'>');
 end;
 { ------------------------------ TPlyFileWriter ------------------------------ }
-class procedure TPlyFileWriter.SaveToFile(const Filename: String; const Vertices, Normals, Colors: TPS3VectorList);
+class procedure TPlyFileWriter.SaveToFile(const Filename: String; const Vertices: TPS3VectorList; const Normals, Colors: TPSMI3VectorList);
 var
   I: Integer;
   FOut : TextFile;
@@ -87,11 +87,12 @@ var
 
   procedure WriteVertex(const Idx: Integer);
   var
-    Vertex, N, Color: TPS3Vector;
+    Vertex : TPS3Vector;
+    N, Color: TPSMI3Vector;
 
-    function RoundColor(const Value: Double): Integer;
+    function RoundColor(const Value: Smallint): Integer;
     begin
-      Result := Max(0, Min( 255, Round(255.0 * Value ) ) );
+      Result := Max(0, Min( 255, Round(255.0 * TPSMI3VectorList.SMIToFloat( Value ) ) ) );
     end;
 
   begin
@@ -101,7 +102,7 @@ var
       Color := Colors.GetVertex(Idx);
       if Normals <> nil then begin
         N := Normals.GetVertex(Idx);
-        WriteLn(FOut, FloatToStr(Vertex^.X)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+FloatToStr(N^.X, FormatSettings)+' '+FloatToStr(N^.Y, FormatSettings)+' '+FloatToStr(N^.Z, FormatSettings)+' '+IntToStr(RoundColor(Color.X))+' '+IntToStr(RoundColor(Color.Y))+' '+IntToStr(RoundColor(Color.Z))+' '+IntToStr(255));
+        WriteLn(FOut, FloatToStr(Vertex^.X)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+FloatToStr(TPSMI3VectorList.SMIToFloat(N^.X), FormatSettings)+' '+FloatToStr(TPSMI3VectorList.SMIToFloat(N^.Y), FormatSettings)+' '+FloatToStr(TPSMI3VectorList.SMIToFloat(N^.Z), FormatSettings)+' '+IntToStr(RoundColor(Color.X))+' '+IntToStr(RoundColor(Color.Y))+' '+IntToStr(RoundColor(Color.Z))+' '+IntToStr(255));
       end
       else begin
         WriteLn(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+IntToStr(RoundColor(Color.X))+' '+IntToStr(RoundColor(Color.Y))+' '+IntToStr(RoundColor(Color.Z))+' '+IntToStr(255));
@@ -110,7 +111,7 @@ var
     else begin
       if Normals <> nil then begin
         N := Normals.GetVertex(Idx);
-        WriteLn(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+FloatToStr(N^.X, FormatSettings)+' '+FloatToStr(N^.Y, FormatSettings)+' '+FloatToStr(N^.Z, FormatSettings));
+        WriteLn(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+FloatToStr(TPSMI3VectorList.SMIToFloat(N^.X), FormatSettings)+' '+FloatToStr(TPSMI3VectorList.SMIToFloat(N^.Y), FormatSettings)+' '+FloatToStr(TPSMI3VectorList.SMIToFloat(N^.Z), FormatSettings));
       end
       else begin
         WriteLn(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings));
@@ -280,6 +281,7 @@ begin
   ForceDirectories( Basefilename );
 end;
 
+(*
 class procedure TUnprocessedMeshFileWriter.SaveToFile(const Filename: String; const FacesLists: TObjectList);
 var
   I: Integer;
@@ -293,6 +295,18 @@ begin
     CreateDrawer( CurrFilename );
     TLightwaveObjFileWriter.SaveToFile(CurrFilename, Faces );
   end;
+end;
+*)
+
+class procedure TUnprocessedMeshFileWriter.SaveToFile(const Filename: String; const Faces: TFacesList; const Idx: Integer);
+var
+  CurrFilename: String;
+begin
+  if Idx = 0 then
+    CreateFile( Filename );
+  CurrFilename := IncludeTrailingBackslash( Filename ) + CreatePartFilename( Idx );
+  CreateDrawer( CurrFilename );
+  TLightwaveObjFileWriter.SaveToFile(CurrFilename, Faces );
 end;
 { -------------------------- TLightwaveObjFileWriter ------------------------- }
 

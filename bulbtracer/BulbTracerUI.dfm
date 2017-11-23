@@ -28,8 +28,6 @@ object BulbTracerFrm: TBulbTracerFrm
     BevelOuter = bvNone
     BorderWidth = 8
     TabOrder = 0
-    ExplicitTop = 552
-    ExplicitWidth = 793
     object Label13: TLabel
       Left = 86
       Top = 58
@@ -81,7 +79,6 @@ object BulbTracerFrm: TBulbTracerFrm
       SmoothReverse = True
       Step = 1
       TabOrder = 2
-      ExplicitWidth = 777
     end
     object CancelBtn: TButton
       Left = 721
@@ -113,7 +110,6 @@ object BulbTracerFrm: TBulbTracerFrm
       Align = alTop
       BevelOuter = bvNone
       TabOrder = 5
-      ExplicitWidth = 777
       DesignSize = (
         780
         24)
@@ -159,7 +155,6 @@ object BulbTracerFrm: TBulbTracerFrm
         TickMarks = tmBoth
         TickStyle = tsNone
         OnMouseUp = FrameTBarMouseUp
-        ExplicitLeft = 123
       end
     end
     object GenCurrMeshBtn: TButton
@@ -180,11 +175,8 @@ object BulbTracerFrm: TBulbTracerFrm
     ActivePage = TabSheet1
     Align = alBottom
     TabOrder = 1
-    ExplicitTop = 358
-    ExplicitWidth = 793
     object TabSheet1: TTabSheet
       Caption = 'Mesh properties'
-      ExplicitWidth = 785
       object Panel7: TPanel
         Left = 0
         Top = 138
@@ -193,7 +185,6 @@ object BulbTracerFrm: TBulbTracerFrm
         Align = alBottom
         BevelOuter = bvNone
         TabOrder = 1
-        ExplicitWidth = 785
         object Label10: TLabel
           Left = 503
           Top = 6
@@ -251,7 +242,6 @@ object BulbTracerFrm: TBulbTracerFrm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitWidth = 785
         object Label7: TLabel
           Left = 4
           Top = 5
@@ -267,12 +257,10 @@ object BulbTracerFrm: TBulbTracerFrm
           Height = 114
           Align = alBottom
           TabOrder = 0
-          ExplicitWidth = 785
           object TPage
             Left = 0
             Top = 0
             Caption = 'Mesh'
-            ExplicitWidth = 785
             object Panel6: TPanel
               Left = 0
               Top = 0
@@ -281,7 +269,6 @@ object BulbTracerFrm: TBulbTracerFrm
               Align = alClient
               BevelOuter = bvNone
               TabOrder = 0
-              ExplicitWidth = 785
               object Label18: TLabel
                 Left = 4
                 Top = 5
@@ -315,6 +302,20 @@ object BulbTracerFrm: TBulbTracerFrm
                 Hint = 'Measure of the distance to the object'#39's surface'
                 Alignment = taRightJustify
                 Caption = 'Surface iso value:'
+                ParentShowHint = False
+                ShowHint = True
+              end
+              object Label12: TLabel
+                Left = 239
+                Top = 54
+                Width = 60
+                Height = 13
+                Hint = 
+                  'Use Jitter to avoid edges, especially on round shapes, works onl' +
+                  'y good at high volumetric resolutions > 1000, may create a lot o' +
+                  'f additional samples'
+                Alignment = taRightJustify
+                Caption = 'Sample jitter:'
                 ParentShowHint = False
                 ShowHint = True
               end
@@ -539,57 +540,58 @@ object BulbTracerFrm: TBulbTracerFrm
                 TabOrder = 7
                 WordWrap = True
               end
-              object MeshSphericalScanCBx: TCheckBox
-                Left = 265
-                Top = 70
-                Width = 104
-                Height = 21
-                Caption = 'Spherical scan'
-                TabOrder = 8
-                WordWrap = True
-              end
-              object Edit2: TEdit
-                Left = 230
-                Top = 16
+              object JitterEdit: TEdit
+                Left = 305
+                Top = 52
                 Width = 46
                 Height = 21
-                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
+                Hint = 
+                  'Use Jitter to avoid edges, especially on round shapes, works onl' +
+                  'y good at high volumetric resolutions > 1000, may create a lot o' +
+                  'f additional samples'
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
                 Font.Height = -11
                 Font.Name = 'MS Sans Serif'
                 Font.Style = []
                 ParentFont = False
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 8
+                Text = '0'
+              end
+              object CalculateNormalsCBx: TCheckBox
+                Left = 113
+                Top = 93
+                Width = 156
+                Height = 17
+                Hint = 
+                  'Computer normals, is not the same as approximating the normals o' +
+                  'n the final mesh'
+                Caption = 'Approximate normals'
                 ParentShowHint = False
                 ShowHint = True
                 TabOrder = 9
-                Text = '0.0'
-                OnChange = Edit1Change
               end
-              object Edit10: TEdit
-                Left = 282
-                Top = 16
-                Width = 46
+              object JitterUpDown12: TUpDown
+                Left = 352
+                Top = 52
+                Width = 17
                 Height = 21
-                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWindowText
-                Font.Height = -11
-                Font.Name = 'MS Sans Serif'
-                Font.Style = []
-                ParentFont = False
-                ParentShowHint = False
-                ShowHint = True
+                Min = -32000
+                Max = 32000
                 TabOrder = 10
-                Text = '0.0'
-                OnChange = Edit1Change
+                OnClick = JitterUpDown12Click
               end
-              object Edit13: TEdit
-                Left = 334
-                Top = 16
+              object Edit2: TEdit
+                Left = 231
+                Top = 24
                 Width = 46
                 Height = 21
-                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
+                Hint = 
+                  'Use Jitter to avoid edges, especially on round shapes, works onl' +
+                  'y good at high volumetric resolutions > 1000, may create a lot o' +
+                  'f additional samples'
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
                 Font.Height = -11
@@ -599,23 +601,37 @@ object BulbTracerFrm: TBulbTracerFrm
                 ParentShowHint = False
                 ShowHint = True
                 TabOrder = 11
-                Text = '0.0'
-                OnChange = Edit1Change
+                Text = '0'
               end
-              object CalculateNormalsCBx: TCheckBox
-                Left = 113
-                Top = 93
-                Width = 156
-                Height = 17
-                Caption = 'Approximate normals'
-                TabOrder = 12
-              end
-              object Edit14: TEdit
-                Left = 230
-                Top = 43
+              object Edit10: TEdit
+                Left = 283
+                Top = 24
                 Width = 46
                 Height = 21
-                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
+                Hint = 
+                  'Use Jitter to avoid edges, especially on round shapes, works onl' +
+                  'y good at high volumetric resolutions > 1000, may create a lot o' +
+                  'f additional samples'
+                Font.Charset = DEFAULT_CHARSET
+                Font.Color = clWindowText
+                Font.Height = -11
+                Font.Name = 'MS Sans Serif'
+                Font.Style = []
+                ParentFont = False
+                ParentShowHint = False
+                ShowHint = True
+                TabOrder = 12
+                Text = '0'
+              end
+              object Edit13: TEdit
+                Left = 333
+                Top = 25
+                Width = 46
+                Height = 21
+                Hint = 
+                  'Use Jitter to avoid edges, especially on round shapes, works onl' +
+                  'y good at high volumetric resolutions > 1000, may create a lot o' +
+                  'f additional samples'
                 Font.Charset = DEFAULT_CHARSET
                 Font.Color = clWindowText
                 Font.Height = -11
@@ -625,44 +641,7 @@ object BulbTracerFrm: TBulbTracerFrm
                 ParentShowHint = False
                 ShowHint = True
                 TabOrder = 13
-                Text = '0.0'
-                OnChange = Edit1Change
-              end
-              object Edit15: TEdit
-                Left = 282
-                Top = 43
-                Width = 46
-                Height = 21
-                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWindowText
-                Font.Height = -11
-                Font.Name = 'MS Sans Serif'
-                Font.Style = []
-                ParentFont = False
-                ParentShowHint = False
-                ShowHint = True
-                TabOrder = 14
-                Text = '0.0'
-                OnChange = Edit1Change
-              end
-              object Edit16: TEdit
-                Left = 334
-                Top = 43
-                Width = 46
-                Height = 21
-                Hint = 'This is a absolute offset in x direction of the rotated bulb.'
-                Font.Charset = DEFAULT_CHARSET
-                Font.Color = clWindowText
-                Font.Height = -11
-                Font.Name = 'MS Sans Serif'
-                Font.Style = []
-                ParentFont = False
-                ParentShowHint = False
-                ShowHint = True
-                TabOrder = 15
-                Text = '0.0'
-                OnChange = Edit1Change
+                Text = '0'
               end
             end
           end
@@ -670,7 +649,6 @@ object BulbTracerFrm: TBulbTracerFrm
             Left = 0
             Top = 0
             Caption = 'Point Cloud'
-            ExplicitWidth = 785
             object Panel5: TPanel
               Left = 0
               Top = 0
@@ -679,7 +657,6 @@ object BulbTracerFrm: TBulbTracerFrm
               Align = alClient
               BevelOuter = bvNone
               TabOrder = 0
-              ExplicitWidth = 785
               object Label17: TLabel
                 Left = 209
                 Top = 21
@@ -755,8 +732,6 @@ object BulbTracerFrm: TBulbTracerFrm
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitWidth = 793
-    ExplicitHeight = 358
     object PageControl2: TPageControl
       Left = 0
       Top = 0
@@ -765,10 +740,8 @@ object BulbTracerFrm: TBulbTracerFrm
       ActivePage = TabSheet2
       Align = alLeft
       TabOrder = 0
-      ExplicitHeight = 358
       object TabSheet2: TTabSheet
         Caption = 'Fractal to trace'
-        ExplicitHeight = 330
         object Panel3: TPanel
           Left = 0
           Top = 0
@@ -778,7 +751,6 @@ object BulbTracerFrm: TBulbTracerFrm
           Alignment = taLeftJustify
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitHeight = 330
           object Label1: TLabel
             Left = 18
             Top = 55
@@ -870,7 +842,7 @@ object BulbTracerFrm: TBulbTracerFrm
             Visible = False
           end
           object Edit1: TEdit
-            Left = 64
+            Left = 63
             Top = 52
             Width = 88
             Height = 21
@@ -1204,12 +1176,8 @@ object BulbTracerFrm: TBulbTracerFrm
       ActivePage = TabSheet3
       Align = alClient
       TabOrder = 1
-      ExplicitWidth = 416
-      ExplicitHeight = 358
       object TabSheet3: TTabSheet
         Caption = 'Trace Preview'
-        ExplicitWidth = 408
-        ExplicitHeight = 330
         object Panel4: TPanel
           Left = 0
           Top = 0
@@ -1218,8 +1186,6 @@ object BulbTracerFrm: TBulbTracerFrm
           Align = alClient
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitWidth = 408
-          ExplicitHeight = 330
           object Image1: TImage
             Left = 12
             Top = 6

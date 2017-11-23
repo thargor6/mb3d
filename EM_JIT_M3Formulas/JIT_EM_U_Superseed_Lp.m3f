@@ -1,0 +1,62 @@
+[OPTIONS]
+.DEScale = 1
+.SIPow = 2
+.Version = 9
+.Double PowerW = 1
+.Double PowerX = 4
+.Double PowerY = 1
+.Double PowerZ = 2
+.Double Sigma = 1
+.Double Strenght_Interpol = 5
+[SOURCE]
+procedure FisheyeTestest(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+
+var
+  temp, divisor, invpower, modulus, x1,y1,z1,w1: double;
+
+begin
+
+
+	//inverse of geometric mean
+	invpower:=power(PowerX *PowerY *PowerZ*PowerW,-0.25);
+
+temp:=  Power( abs(x),PowerX) + Power( abs(y),PowerY) +Power( abs(z),PowerZ)+Power( abs(w),Powerw);
+//superseed shape:
+modulus:= power( temp  ,invpower );
+
+
+// now apophysis fisheye transformation aka sigma function
+divisor:= 1/(Sigma+1);
+temp:= (Sigma + modulus )*divisor;
+x1 := temp*x;
+y1 := temp*y;
+z1 := temp*z; 
+w1 := temp*w; 
+
+
+
+modulus:=1- Strenght_Interpol;
+
+x:=x1*Strenght_Interpol + x*modulus;
+y:=y1*Strenght_Interpol + y*modulus;
+z:=z1*Strenght_Interpol + z*modulus;
+w:=w1*Strenght_Interpol + w*modulus;
+
+end;
+[END]
+Version 1.3
+4D
+
+First it calculates superseed shape iterating sigma function of it. 
+Then interpolates  between unmodified 4D vector (0) and the shape (1)
+
+Used to explore Lp spaces and to visualise superseed shape ( unit circle ). 
+But it can be used as transformation. It does fish eye transformation - sigma, modified according to shape.
+
+If curvatures in all axis is equal:
+curvature = 1 - diamond
+curvature = 2 - ordinary sphere
+curvature = 4 - streemlined cell phone - squircle or superelipse
+
+ * * *
+By Edgar Malinovsky

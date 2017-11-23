@@ -58,7 +58,7 @@ type
   public
     constructor Create;
     function Evaluate( const X, Y, Z: Double ): Boolean; virtual; abstract;
-    procedure AddIndicatorSamples( VertexList, NormalsList, ColorList: TPS3VectorList ); virtual; abstract;
+    procedure AddIndicatorSamples( VertexList: TPS3VectorList; NormalsList, ColorList: TPSMI3VectorList ); virtual; abstract;
     property Mode: TTraceRangeMode read FMode write FMode;
     property IndicatorColorR: Double read FIndicatorColorR write FIndicatorColorR;
     property IndicatorColorG: Double read FIndicatorColorG write FIndicatorColorG;
@@ -73,7 +73,7 @@ type
   public
     constructor Create;
     function Evaluate( const X, Y, Z: Double ): Boolean; override;
-    procedure AddIndicatorSamples( VertexList, NormalsList, ColorList: TPS3VectorList ); override;
+    procedure AddIndicatorSamples( VertexList: TPS3VectorList; NormalsList, ColorList: TPSMI3VectorList ); override;
     property CentreX: Double read FCentreX write FCentreX;
     property CentreY: Double read FCentreY write FCentreY;
     property CentreZ: Double read FCentreZ write FCentreZ;
@@ -91,7 +91,7 @@ type
   public
     constructor Create;
     function Evaluate( const X, Y, Z: Double ): Boolean; override;
-    procedure AddIndicatorSamples( VertexList, NormalsList, ColorList: TPS3VectorList ); override;
+    procedure AddIndicatorSamples( VertexList: TPS3VectorList; NormalsList, ColorList: TPSMI3VectorList ); override;
     property CentreX: Double read FCentreX write FCentreX;
     property CentreY: Double read FCentreY write FCentreY;
     property CentreZ: Double read FCentreZ write FCentreZ;
@@ -113,12 +113,13 @@ type
     FISOValue: Double;
     FSharedWorkList: TList;
     FTraceRanges: TList;
+    FSampleJitter: Double;
     FShowTraceRanges: Boolean;
   public
     constructor Create;
     destructor Destroy; override;
     procedure Clear;
-    procedure AddSampledTraceRanges( VertexList, NormalsList, ColorList: TPS3VectorList );
+    procedure AddSampledTraceRanges( VertexList: TPS3VectorList; NormalsList, ColorList: TPSMI3VectorList );
     property URange: TRange read FURange;
     property VRange: TRange read FVRange;
     property CalcNormals: Boolean read FCalcNormals write FCalcNormals;
@@ -131,6 +132,7 @@ type
     property CalcColors: Boolean read FCalcColors write FCalcColors;
     property ShowTraceRanges: Boolean read FShowTraceRanges write FShowTraceRanges;
     property TraceRanges: TList read FTraceRanges;
+    property SampleJitter: Double read FSampleJitter write FSampleJitter;
   end;
 
 implementation
@@ -160,6 +162,7 @@ begin
     raise Exception.Create('Invalid ThreadId <'+IntToStr(ThreadId)+'>');
 end;
 
+// ThreadId, unfortunately, starts with 1!
 function TRange.CalcStepCount(const ThreadId, ThreadCount: Integer): Integer;
 var
   d, m: Integer;
@@ -167,13 +170,12 @@ begin
   ValidateThreadId(ThreadId, ThreadCount);
   if ThreadCount > 1 then begin
     d := FStepCount div ThreadCount;
-    m := FStepCount mod ThreadCount;
-    if m <> 0 then
-      Inc(d);
-    if (m = 0) or (ThreadId <= m) then
+    if ( FStepCount mod ThreadCount ) <> 0 then
+      Inc( d );
+    if ThreadId < ThreadCount then
       Result := d
     else
-      Result := d - 1;
+      Result := FStepCount - d * ( ThreadCount - 1 );
   end
   else
     Result := FStepCount;
@@ -234,7 +236,7 @@ begin
   FTraceRanges.Clear;
 end;
 
-procedure TVertexGenConfig.AddSampledTraceRanges( VertexList, NormalsList, ColorList: TPS3VectorList );
+procedure TVertexGenConfig.AddSampledTraceRanges( VertexList: TPS3VectorList; NormalsList, ColorList: TPSMI3VectorList );
 var
   I: Integer;
   Range: TTraceRange;
@@ -275,9 +277,9 @@ begin
   end;
 end;
 
-procedure TSphereRange.AddIndicatorSamples( VertexList, NormalsList, ColorList: TPS3VectorList );
+procedure TSphereRange.AddIndicatorSamples( VertexList: TPS3VectorList; NormalsList, ColorList: TPSMI3VectorList );
 const
-  Slices100 = 200;
+  Slices100 = 300;
 var
   I, J, Slices: Integer;
   Theta, DTheta, SinTheta, CosTheta: Double;
@@ -348,7 +350,7 @@ begin
   end;
 end;
 
-procedure TBoxRange.AddIndicatorSamples( VertexList, NormalsList, ColorList: TPS3VectorList );
+procedure TBoxRange.AddIndicatorSamples( VertexList: TPS3VectorList; NormalsList, ColorList: TPSMI3VectorList );
 const
   Slices100 = 80;
 var

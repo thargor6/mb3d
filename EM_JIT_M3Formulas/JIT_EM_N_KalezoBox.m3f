@@ -1,0 +1,178 @@
+[OPTIONS]
+.DEScale = 0.5
+.SIPow = 2
+.Version = 9
+.Double FoldX = 1
+.Double FoldY = 1
+.Double FoldZ = 0.5
+.Double Radius_SI = 1
+.Double Radius_SI_Min = 0.3
+.Double Scale = 3
+.Double sCurvatureX = 2
+.Double sCurvatureY = 2
+.Double sCurvatureZ = 2
+.Double vAddition = 0
+[SOURCE]
+procedure KalezoBox(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+  radius, temp, invpower, contrscale : double;
+intpowerX, intpowerY, intpowerZ : integer;
+
+begin
+
+
+//=====================================(^_^) 
+///folds of different lenght
+// This boxfold is slightly different from AmazingBox / Mabdelbox boxfold. 
+// If not better then at least just different.
+x := x +  abs(x- FoldX) - abs(x+ FoldX)  ; 
+y := y +  abs(y- FoldY) - abs(y+ FoldY)  ;
+z := z +  abs(z- FoldZ) - abs(z+ FoldZ)  ;
+
+
+
+//=================================
+///Addition
+x := x + vAddition ; 
+y := y + vAddition ;
+z := z + vAddition ;
+
+
+
+//=================================================
+// The most advanced part
+// instead of radius:= sqrt (x*x+y+y+z*z);
+/// calculate radius in space where circle is circle (2), square (1) or Iphone shape (4)
+// It is like Lp spaces but different along each axis.
+// Using just int values - mutch faster.
+//Using inverse of geometric mean. arithmetic mean don't works so well here.
+
+intpowerX:=round(sCurvatureX);
+intpowerY:=round(sCurvatureY);
+intpowerZ:=round(sCurvatureZ);
+
+
+
+// blockchain of conditionals used to speed up more basic versions of this.
+//If Curvature X=Y=Z calculate root power without calculating mean value of all
+if intpowerX = intpowerY then
+  begin
+	
+	if intpowerY = intpowerZ then  // all curvatures is equal
+  	begin
+
+		
+		if intpowerX = 1 then  // choice 1. If curvatures is 1 then use fastest formula
+	  	begin
+		radius  := abs(x) + abs(y) + abs(z);
+		end
+		
+		
+  		else if intpowerX = 2 then  // choice2. If curvatures is 2 then use standart formula
+	  	begin
+		radius  := sqrt( x*x + y*y + z*z);
+		end
+	
+		
+		else  //choice 3. else use heavy formulas, equal powers
+		begin
+
+	invpower:= 1/ intPowerX; 
+	temp:=  intPower( abs(x),intPowerX) + intPower( abs(y),intPowerY) +intPower( abs(z),intPowerZ);
+	radius  := power( temp ,invpower);
+
+		end;
+
+	end
+
+  	else  //choice 4 use all heavy operators
+  	begin
+
+	
+	//inverse of geometric mean, calculates necesary root value
+	invpower:= power(intPowerX *intPowerY *intPowerZ,-0.33333333333333333333);
+	temp:=  intPower( abs(x),intPowerX) + intPower( abs(y),intPowerY) +intPower( abs(z),intPowerZ);
+	radius  := power( temp ,invpower);
+
+
+	end;
+end
+
+  else  //choice 4 use all heavy operators
+
+  begin
+
+	
+	//inverse of geometric mean, calculates necesary root value
+	invpower:= power(intPowerX *intPowerY *intPowerZ,-0.33333333333333333333);
+	temp:=  intPower( abs(x),intPowerX) + intPower( abs(y),intPowerY) +intPower( abs(z),intPowerZ);
+	radius  := power( temp ,invpower);
+
+
+end;
+
+//all of this were just to calculate radius
+
+
+//===========================================
+//Sphere Inversion only
+
+///This is part of original spherefold - with only the sphere inversion
+// between two radiuses
+// without fold of temp := scale/min_R;
+// This had cleaner picture
+// and who needs another slightly different abox.
+
+
+ if radius < Radius_SI_Min then
+    begin
+    temp := scale;
+    end
+  else if radius < Radius_SI then
+    begin
+    temp:= radius*radius;
+    temp := scale*Radius_SI*Radius_SI/temp;
+   end
+  else
+    begin
+    temp := scale;
+    end;
+
+// Original spherefold does two transformations at the same time, spherefold and sphere inversion.
+
+
+//========================================
+// C descaled must generate cleaner fractal.
+// as in the next iteration this added C will be scaled.
+// It is important for quaternions, (placed between scaleing and +C) 
+// or else scaling stretches them.
+
+
+contrscale:= 1/scale;
+  x := x*temp + contrscale*PIteration3D^.J1;
+  y := y*temp + contrscale*PIteration3D^.J2;
+  z := z*temp + contrscale*PIteration3D^.J3;
+
+end;
+[END]
+Version 1.3
+ 
+Simplification, correction and then modification of Amazing/mandelBox
+
+Uses sphere inversion between two radiuses.
+
++
+
+Radius of the sphere is calculated in distorted Lp space - maybe superseed shape.
+If curvatures in all axis is equal:
+curvature = 1 - diamond
+curvature = 2 - sphere
+curvature = 4 - streamlined iphone shape - squircle or superelipse.
+
+
+This is "smart" formula so if all curvatures are equal it awoyds some slow functions. Then if it is 2,2,2, or 1,1,1, it uses even less of slow functions.
+Alsou to speed it up space Curvature uses only integer values, 1,2,3...
+
+
+ * * *
+By Edgar Malinovsky

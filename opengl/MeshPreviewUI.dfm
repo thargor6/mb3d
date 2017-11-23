@@ -52,7 +52,7 @@ object MeshPreviewFrm: TMeshPreviewFrm
     object Label18: TLabel
       Left = 7
       Top = 455
-      Width = 132
+      Width = 117
       Height = 13
       Caption = 'DblClick: hide right panel'
       OnClick = NaviPanelDblClick
@@ -94,6 +94,10 @@ object MeshPreviewFrm: TMeshPreviewFrm
         TabOrder = 0
         object MaterialSheet: TTabSheet
           Caption = 'Material'
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Label17: TLabel
             Left = 4
             Top = 8
@@ -452,6 +456,10 @@ object MeshPreviewFrm: TMeshPreviewFrm
         object LightSheet: TTabSheet
           Caption = 'Light'
           ImageIndex = 1
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Label8: TLabel
             Left = 3
             Top = 8

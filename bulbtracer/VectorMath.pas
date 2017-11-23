@@ -44,6 +44,11 @@ type
   end;
   TPS4Vector = ^TS4Vector;
 
+  TSMI3Vector = packed record
+    X, Y, Z: Smallint;
+  end;
+  TPSMI3Vector = ^TSMI3Vector;
+
   TSVectorMath = class
   public
     class procedure Subtract(const A, B, Dest: TPS3Vector);

@@ -458,6 +458,10 @@ object Mand3DForm: TMand3DForm
         Caption = 'Calculation'
         Highlighted = True
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label16: TLabel
           Left = 4
           Top = 125
@@ -709,6 +713,10 @@ object Mand3DForm: TMand3DForm
       object TabSheet4: TTabSheet
         Caption = 'Internal'
         ImageIndex = 3
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label15: TLabel
           Left = 12
           Top = 11
@@ -843,6 +851,10 @@ object Mand3DForm: TMand3DForm
       object TabSheet5: TTabSheet
         Caption = 'Infos'
         ImageIndex = 4
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label29: TLabel
           Left = 9
           Top = 67
@@ -1006,6 +1018,10 @@ object Mand3DForm: TMand3DForm
       object TabSheet8: TTabSheet
         Caption = 'Cutting'
         ImageIndex = 7
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label37: TLabel
           Left = 9
           Top = 66
@@ -1145,6 +1161,10 @@ object Mand3DForm: TMand3DForm
       object TabSheet9: TTabSheet
         Caption = 'Julia Off'
         ImageIndex = 8
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label43: TLabel
           Left = 9
           Top = 80
@@ -1303,6 +1323,10 @@ object Mand3DForm: TMand3DForm
       object TabSheet1: TTabSheet
         Caption = 'Camera'
         ImageIndex = 5
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label21: TLabel
           Left = 24
           Top = 10
@@ -1348,6 +1372,10 @@ object Mand3DForm: TMand3DForm
       object TabSheet3: TTabSheet
         Caption = 'Coloring'
         ImageIndex = 6
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label2: TLabel
           Left = 5
           Top = 132
@@ -1477,6 +1505,10 @@ object Mand3DForm: TMand3DForm
       object TabSheet6: TTabSheet
         Caption = 'Stereo'
         ImageIndex = 7
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Label28: TLabel
           Left = 25
           Top = 62
@@ -2817,6 +2849,10 @@ object Mand3DForm: TMand3DForm
         TabOrder = 1
         object TabSheet7: TTabSheet
           Caption = 'Open'
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Button9: TSpeedButton
             Left = 2
             Top = 3
@@ -2857,6 +2893,10 @@ object Mand3DForm: TMand3DForm
         object TabSheet10: TTabSheet
           Caption = 'Save'
           ImageIndex = 1
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Button8: TSpeedButton
             Left = 2
             Top = 3
@@ -2922,6 +2962,10 @@ object Mand3DForm: TMand3DForm
         object TabSheet12: TTabSheet
           Caption = 'Save pic'
           ImageIndex = 2
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object Button3: TSpeedButton
             Left = 2
             Top = 4
@@ -3025,6 +3069,10 @@ object Mand3DForm: TMand3DForm
         object TabSheet11: TTabSheet
           Caption = 'Tools'
           ImageIndex = 3
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object SpeedButton25: TSpeedButton
             Left = 2
             Top = 4
@@ -3074,6 +3122,10 @@ object Mand3DForm: TMand3DForm
         object TabSheet13: TTabSheet
           Caption = 'Prefs'
           ImageIndex = 4
+          ExplicitLeft = 0
+          ExplicitTop = 0
+          ExplicitWidth = 0
+          ExplicitHeight = 0
           object IniDirsBtn: TSpeedButton
             Left = 2
             Top = 3

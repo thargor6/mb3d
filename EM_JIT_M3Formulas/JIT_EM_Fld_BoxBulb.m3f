@@ -8,7 +8,6 @@
 .Double Scaleing = 2.5
 .Double vAdditionX = 0
 .Double vAdditionY = 0
-
 [SOURCE]
 procedure FoldBoxbulb(var x, y, z, w: Double; PIteration3D: TPIteration3D);
 var
@@ -29,10 +28,16 @@ x:=x* Scaleing;
 y:=y* Scaleing;
 z:=z* Scaleing;
 
+
+//===================================================
 ///Addition, new version - julia set like
 x := x + vAdditionX ; 
 y := y + vAdditionY ;
 z := z + AdditionZ ;
+
+
+//=============================================
+//Now starts bulb
 
 // supermodulus of power 4
 x1:= x*x*x*x;
@@ -43,10 +48,31 @@ z1:= z*z*z*z;
    sq_xz := Power(x1+z1 , 0.25);
 
 
+
+//==================================================================
+// conditionals used to speed up calculation with certain values
+if Power_ = 2 then
+	begin
+	 		
+   r:= sq_r*sq_r;
+
+   theta := arctan2( sq_xz , y) * 2;
+   zangle := arctan2(x,z)  * 2;
+
+	end
+  	else
+	begin
+
+// else calculate in full hard way
+
    r:= power(sq_r, Power_);
 
    theta := arctan2( sq_xz , y) * Power_;
    zangle := arctan2(x,z)  * Power_;
+
+	end;
+
+
 
    x := sin(zangle)*sin(theta)*r ;
    y := cos(theta)            *r ;
@@ -54,7 +80,7 @@ z1:= z*z*z*z;
 
 end;
 [END]
-Formula version 1.2
+Formula version 1.3
 
 Folds pillow like mandelbulb shapes.
-Slow
+Relatively slow

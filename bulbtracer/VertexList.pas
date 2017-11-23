@@ -34,6 +34,22 @@ type
     property Count: Integer read GetCount;
   end;
 
+  TPSMI3VectorList = class
+  private
+    FVertices: TList;
+    function GetCount: Integer;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure Clear;
+    class function FloatToSMI(const Value: Double): Smallint;
+    class function SMIToFloat(const Value: Smallint): Double;
+    procedure AddVertex(const VX, VY, VZ: Double); overload;
+    function GetVertex(const Idx: Integer): TPSMI3Vector;
+    procedure MoveVertices(const Src: TPSMI3VectorList);
+    property Count: Integer read GetCount;
+  end;
+
   TPS4VectorList = class
   private
     FVertices: TList;
@@ -305,6 +321,79 @@ begin
     end;
   end;
 end;
+{ ----------------------------- TPSMI3VectorList ------------------------------- }
+constructor TPSMI3VectorList.Create;
+begin
+  inherited Create;
+  FVertices := TList.Create;
+end;
+
+destructor TPSMI3VectorList.Destroy;
+begin
+  Clear;
+  FVertices.Free;
+  inherited Destroy;
+end;
+
+procedure TPSMI3VectorList.Clear;
+var
+  I: Integer;
+begin
+  for I := 0 to FVertices.Count -1  do begin
+    if FVertices[I] <> nil then
+      FreeMem(FVertices[I]);
+  end;
+  FVertices.Clear;
+end;
+
+class function TPSMI3VectorList.FloatToSMI(const Value: Double): Smallint;
+begin
+  if ( Value < -1.0 ) or ( Value > 1.0 ) then
+    raise Exception.Create('TPSMI3VectorList.FloatToSMI: Invalid value <' + FloatToStr( Value ) + '>');
+  Result := Round( 32767 * Value );
+end;
+
+
+class function TPSMI3VectorList.SMIToFloat(const Value: Smallint): Double;
+begin
+  Result := Value / 32767.0;
+end;
+
+procedure TPSMI3VectorList.AddVertex(const VX, VY, VZ: Double);
+var
+  Vertex: TPS3Vector;
+begin
+  GetMem(Vertex, SizeOf(TSMI3Vector));
+  FVertices.Add(Vertex);
+  Vertex^.X := FloatToSMI( VX );
+  Vertex^.Y := FloatToSMI( VY );
+  Vertex^.Z := FloatToSMI( VZ );
+end;
+
+function TPSMI3VectorList.GetVertex(const Idx: Integer): TPSMI3Vector;
+begin
+  Result := FVertices[Idx];
+end;
+
+function TPSMI3VectorList.GetCount: Integer;
+begin
+  Result := FVertices.Count;
+end;
+
+procedure TPSMI3VectorList.MoveVertices(const Src: TPSMI3VectorList);
+var
+  I: Integer;
+begin
+  if Src <> nil then begin
+    for I := 0 to Src.FVertices.Count - 1 do begin
+      FVertices.Add(Src.FVertices[I]);
+      Src.FVertices[I] := nil;
+    end;
+    Src.FVertices.Clear;
+    Src.Clear;
+  end;
+end;
+
 { ----------------------------- TPS4VectorList ------------------------------- }
 constructor TPS4VectorList.Create;
 begin

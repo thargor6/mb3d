@@ -224,7 +224,7 @@ begin
       TokenLst.StrictDelimiter := True;
       for Line in Lines do begin
         TokenLst.DelimitedText := Line;
-        if ( TokenLst.Count = 4 ) and ( TokenLst[ 0 ] = 'v' ) then begin
+        if ( TokenLst.Count in [4, 7] ) and ( TokenLst[ 0 ] = 'v' ) then begin
           Faces.AddUnvalidatedVertex( StrToFloat( TokenLst[ 1 ], FS ), StrToFloat( TokenLst[ 2 ], FS ), StrToFloat( TokenLst[ 3 ], FS ) );
         end
         else if ( TokenLst.Count = 4 ) and ( TokenLst[ 0 ] = 'f' ) then begin

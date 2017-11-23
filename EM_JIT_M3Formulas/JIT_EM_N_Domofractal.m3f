@@ -79,18 +79,46 @@ z := z + vMengerZ*scale2;
   z := scale *z;
 
 
+//=================================
+// this useless conditional speed up the next one 
+// At least on my AMD PC.  
+// Maybe becouse of weak compiler, some code optimisation or something like that, I hawe no idea why.
+if Thickness = 4 then
+	begin
+	end;
+
+
 //=================================================
 // Unit vector addition. Unit Vector = x,y,z / |x,y,z| 
-radius :=sqrt(x*x+y*y+z*z) ;
 
-x:= x - Thickness * x/radius ;
-y:= y - Thickness * y/radius ;
-z:= z - Thickness * z/radius ;
+
+//==================================================================
+// conditionals used to speed up calculation with certain values
+
+
+if Thickness = 0 then
+	begin
+	 		
+
+
+	end
+  	else
+	begin
+
+// else calculate
+
+radius :=sqrt(x*x+y*y+z*z) ;
+x:= x - Thickness*x/radius ;
+y:= y - Thickness*y/radius ;
+z:= z - Thickness*z/radius ;
+
+	end;	
+
 
 
 end;
 [END]
-Formula version 1.1
+Formula version 1.3
  
 House creator based on folds and Menger Cube
 (Luca GN formula MengerSmt code).

@@ -205,7 +205,6 @@
         </DCCReference>
         <DCCReference Include="ColorOptionForm.pas">
             <Form>FColorOptions</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="uMapCalcWindow.pas">
             <Form>MapCalcWindow</Form>
@@ -215,32 +214,26 @@
         <DCCReference Include="facade\MB3DFacade.pas"/>
         <DCCReference Include="mutagen\MutaGenGUI.pas">
             <Form>MutaGenFrm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="mutagen\MutaGen.pas"/>
         <DCCReference Include="formula\FormulaNames.pas"/>
         <DCCReference Include="maps\MapSequences.pas"/>
         <DCCReference Include="prefs\IniDirsForm.pas">
             <Form>IniDirForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="prefs\VisualThemesGUI.pas">
             <Form>VisualThemesFrm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="formula\JITFormulaEditGUI.pas">
             <Form>JITFormulaEditorForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="formula\JITFormulas.pas"/>
         <DCCReference Include="formula\ParamValueEditGUI.pas">
             <Form>ParamValueEditFrm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="bulbtracer\VertexList.pas"/>
         <DCCReference Include="VoxelExport.pas">
             <Form>FVoxelExport</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="bulbtracer\VectorMath.pas"/>
         <DCCReference Include="bulbtracer\BulbTracer.pas"/>
@@ -257,18 +250,15 @@
         <DCCReference Include="opengl\dglOpenGL.pas"/>
         <DCCReference Include="opengl\MeshPreviewUI.pas">
             <Form>MeshPreviewFrm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="opengl\OpenGLPreviewUtil.pas"/>
         <DCCReference Include="heightmapgen\HeightMapGenPreview.pas"/>
         <DCCReference Include="heightmapgen\HeightMapGenUI.pas">
             <Form>HeightMapGenFrm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="heightmapgen\PNMWriter.pas"/>
         <DCCReference Include="PostProcessForm.pas">
             <Form>PostProForm</Form>
-            <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="heightmapgen\PNMReader.pas"/>
         <DCCReference Include="script\CompilerUtil.pas"/>

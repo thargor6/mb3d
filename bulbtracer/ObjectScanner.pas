@@ -34,9 +34,10 @@ type
 
   TCreatePointCloudRayCaster = class (TRayCaster)
   private
-    FVertexList, FNormalsList, FColorList: TPS3VectorList;
+    FVertexList: TPS3VectorList;
+    FNormalsList, FColorList: TPSMI3VectorList;
   public
-    constructor Create(VertexList, NormalsList, ColorList: TPS3VectorList);
+    constructor Create(VertexList: TPS3VectorList; const NormalsList, ColorList: TPSMI3VectorList);
     procedure CastRay(const FConfig: TObjectScannerConfig; const FromPos, Direction: TD3Vector); override;
   end;
 
@@ -49,11 +50,15 @@ type
     procedure CastRay(const FConfig: TObjectScannerConfig; const FromPos, Direction: TD3Vector); override;
   end;
 
+  TIterationCallback = procedure (const Idx: Integer) of Object;
+
   TObjectScanner = class
   protected
     FConfig: TObjectScannerConfig;
     FUseShuffledWorkList: Boolean;
     FRayCaster: TRayCaster;
+    FIterationIdx: Integer;
+    FIterationCallback: TIterationCallback;
     procedure Init;
 
     procedure ScannerInit; virtual; abstract;
@@ -64,6 +69,8 @@ type
     procedure Scan;
     function GetWorkList: TList; virtual; abstract;
     property UseShuffledWorkList: Boolean read FUseShuffledWorkList;
+    property IterationIdx: Integer read FIterationIdx write FIterationIdx;
+    property IterationCallback: TIterationCallback read FIterationCallback write FIterationCallback;
   end;
 
   TSphericalScanner = class (TObjectScanner)
@@ -102,6 +109,9 @@ type
     function GetWorkList: TList; override;
   end;
 
+const
+  JITTER_MIN = 0.001;
+
 implementation
 
 uses
@@ -121,7 +131,7 @@ begin
     case FVertexGenConfig.MeshType of
       mtPointCloud:
         begin
-          FConfig.FJitter := 0.75;
+          FConfig.FJitter := Max( 0.0, Min( 2.0, VertexGenConfig.SampleJitter ) );
           FUseShuffledWorkList := True;
         end;
       mtMesh:
@@ -163,9 +173,6 @@ begin
   ScannerScan;
 end;
 { ----------------------------- TSphericalScanner ---------------------------- }
-const
-  JITTER_MIN = 0.001;
-
 procedure TSphericalScanner.ScannerInit;
 begin
   with FConfig do begin
@@ -222,15 +229,15 @@ begin
     for I := 0 to FSlicesTheta - 1 do begin
       Sleep(1);
       if FJitter > JITTER_MIN then begin
-        SinCos(Theta + FDTheta * ( 1.0 - Random ) * FJitter, SinTheta, CosTheta);
+        SinCos(Theta + FDTheta * ( 0.5 - Random ) * FJitter, SinTheta, CosTheta);
       end
       else begin
         SinCos(Theta, SinTheta, CosTheta);
       end;
       Phi := FPhiMin;
-      for J := 0 to FSlicesPhi -1 do begin
+      for J := 0 to FSlicesPhi - 1 do begin
         if FJitter > JITTER_MIN then begin
-          SinCos(Phi + FDPhi * ( 1.0 - Random ) * FJitter, SinPhi, CosPhi);
+          SinCos(Phi + FDPhi * ( 0.5 - Random ) * FJitter, SinPhi, CosPhi);
         end
         else begin
           SinCos(Phi, SinPhi, CosPhi);
@@ -333,8 +340,8 @@ begin
         Dir.Z := FStepSize;
 
         if FJitter > JITTER_MIN then begin
-          CurrPos.X := U + FDV * (1.0 - Random) * FJitter;
-          CurrPos.Y := V + FDV * (1.0 - Random) * FJitter;
+          CurrPos.X := U + FDV * ( 0.5 - Random ) * FJitter;
+          CurrPos.Y := V + FDV * ( 0.5 - Random ) * FJitter;
           CurrPos.Z := FZMin;
         end
         else begin
@@ -345,6 +352,9 @@ begin
 
         FRayCaster.CastRay(FConfig, CurrPos, Dir);
         V := V + FDV;
+
+        if Assigned( IterationCallback )  then
+          IterationCallback( IterationIdx );
 
         with FMCTparas do begin
           if PCalcThreadStats.CTrecords[iThreadID].iDEAvrCount < 0 then begin
@@ -442,12 +452,12 @@ var
 
 
         if FJitter > JITTER_MIN then begin
-          CurrPos.X := U + FDV_XY * (1.0 - Random) * FJitter;
-          CurrPos.Y := V + FDV_XY * (1.0 - Random) * FJitter;
+          CurrPos.X := U + FDV_XY * ( 0.5 - Random ) * FJitter;
+          CurrPos.Y := V + FDV_XY * ( 0.5 - Random ) * FJitter;
           if ScanForward then
-            CurrPos.Z := FZMin + FDV_XY * (1.0 - Random) * FJitter
+            CurrPos.Z := FZMin + FDV_XY * ( 0.5 - Random ) * FJitter
           else
-            CurrPos.Z := FZMax - FDV_XY * (1.0 - Random) * FJitter;
+            CurrPos.Z := FZMax - FDV_XY * ( 0.5 - Random ) * FJitter;
 
         end
         else begin
@@ -481,7 +491,7 @@ var
   begin
     with FConfig do begin
       U := TXYZWrapper( FConfig.FVertexGenConfig.SharedWorkList[ Idx ] ).Y;
-      V := FVMin_ZY;
+      V := FVMin_ZY + FDV_ZY / 2.0;
       for J := 0 to FSlicesV - 1 do begin
 
         if ScanForward then
@@ -492,12 +502,12 @@ var
         Dir.Z := 0.0;
 
         if FJitter > JITTER_MIN then begin
-          CurrPos.Y := U + FDV_ZY * (1.0 - Random) * FJitter;
-          CurrPos.Z := V + FDV_ZY * (1.0 - Random) * FJitter;
+          CurrPos.Y := U + FDV_ZY * ( 0.5 - Random ) * FJitter;
+          CurrPos.Z := V + FDV_ZY * ( 0.5 - Random ) * FJitter;
           if ScanForward then
-            CurrPos.X := FXMax + FDV_ZY * (1.0 - Random) * FJitter
+            CurrPos.X := FXMax + FDV_ZY * ( 0.5 - Random ) * FJitter
           else
-            CurrPos.X := FXMin - FDV_ZY * (1.0 - Random) * FJitter;
+            CurrPos.X := FXMin - FDV_ZY * ( 0.5 - Random ) * FJitter;
         end
         else begin
           CurrPos.Y := U;
@@ -530,7 +540,7 @@ var
   begin
     with FConfig do begin
       U := TXYZWrapper( FConfig.FVertexGenConfig.SharedWorkList[ Idx ] ).Z;
-      V := FVMin_XZ;
+      V := FVMin_XZ + FDV_XZ / 2.0;
       for J := 0 to FSlicesV - 1 do begin
 
         Dir.X := 0.0;
@@ -541,12 +551,12 @@ var
         Dir.Z := 0;
 
         if FJitter > JITTER_MIN then begin
-          CurrPos.X := U + FDV_XZ * (1.0 - Random) * FJitter;
-          CurrPos.Z := V + FDV_XZ * (1.0 - Random) * FJitter;
+          CurrPos.X := U + FDV_XZ * ( 0.5 - Random ) * FJitter;
+          CurrPos.Z := V + FDV_XZ * ( 0.5 - Random ) * FJitter;
           if ScanForward then
-            CurrPos.Y := FYMax + FDV_XZ * (1.0 - Random) * FJitter
+            CurrPos.Y := FYMax + FDV_XZ * ( 0.5 - Random ) * FJitter
           else
-            CurrPos.Y := FYMin - FDV_XZ * (1.0 - Random) * FJitter;
+            CurrPos.Y := FYMin - FDV_XZ * ( 0.5 - Random ) * FJitter;
         end
         else begin
           CurrPos.X := U;
@@ -581,11 +591,13 @@ begin
         OutputDebugString(PChar('###################'+IntToStr(Idx)+' '+IntToStr( FUMinIndex ) + ' '+IntToStr(FConfig.FVertexGenConfig.SharedWorkList.Count)));
 
       ScanXY( True );
-      ScanXY( False );
       ScanZY( True );
-      ScanZY( False );
       ScanXZ( True );
-      ScanXZ( False );
+      if FJitter > JITTER_MIN then begin
+        ScanXY( False );
+        ScanZY( False );
+        ScanXZ( False );
+      end;
 
       with FMCTparas do begin
         PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round(I * 100.0 / FSlicesU);
@@ -952,7 +964,7 @@ begin
   Result := True;
 end;
 { ---------------------- TCreatePointCloudRayCaster -------------------------- }
-constructor TCreatePointCloudRayCaster.Create(VertexList, NormalsList, ColorList: TPS3VectorList);
+constructor TCreatePointCloudRayCaster.Create(VertexList: TPS3VectorList; const NormalsList, ColorList: TPSMI3VectorList);
 begin
   inherited Create;
   FVertexList := VertexList;
@@ -1003,11 +1015,10 @@ begin
         if ValidPoint  then begin
           if FConfig.FVertexGenConfig.CalcNormals then begin
             if CalculateNormal(FConfig, Direction, CurrPos, @N, CurrInside) then begin
-              if FConfig.FVertexGenConfig.CalcColors then begin
+              FNormalsList.AddVertex(N.X, N.Y, N.Z);
+              FVertexList.AddVertex(CurrPos);
+              if FConfig.FVertexGenConfig.CalcColors then
                 FColorList.AddVertex(LastInsideR, LastInsideG, LastInsideB);
-                FNormalsList.AddVertex(N);
-                FVertexList.AddVertex(CurrPos);
-              end;
             end;
           end
           else begin

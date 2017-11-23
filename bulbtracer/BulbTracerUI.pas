@@ -10,7 +10,8 @@ uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, ExtCtrls, Buttons, TypeDefinitions, ComCtrls,
   Contnrs, VertexList, BulbTracerConfig, Vcl.Tabs, BulbTracerUITools,
-  JvExStdCtrls, JvGroupBox, TrackBarEx, ObjectScanner, Generics.Collections;
+  JvExStdCtrls, JvGroupBox, TrackBarEx, ObjectScanner, Generics.Collections,
+  SyncObjs;
 
 type
   TFVoxelExportCalcPreviewThread = class(TThread)
@@ -151,15 +152,14 @@ type
     MeshReductionAgressivenessUpDown: TUpDown;
     GenCurrMeshBtn: TButton;
     MeshCalcColorsCBx: TCheckBox;
-    MeshSphericalScanCBx: TCheckBox;
+    JitterEdit: TEdit;
+    CalculateNormalsCBx: TCheckBox;
+    PreviewProgressBar: TProgressBar;
+    Label12: TLabel;
+    JitterUpDown12: TUpDown;
     Edit2: TEdit;
     Edit10: TEdit;
     Edit13: TEdit;
-    CalculateNormalsCBx: TCheckBox;
-    Edit14: TEdit;
-    Edit15: TEdit;
-    Edit16: TEdit;
-    PreviewProgressBar: TProgressBar;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -206,6 +206,7 @@ type
     procedure MeshReductionAgressivenessUpDownClick(Sender: TObject;
       Button: TUDBtnType);
     procedure MeshTypeCmbChange(Sender: TObject);
+    procedure JitterUpDown12Click(Sender: TObject; Button: TUDBtnType);
   private
     { Private-Deklarationen }
   //  PreviewVoxel: array of Cardinal;   //buffer to not calc everything again if shifted position
@@ -216,10 +217,13 @@ type
     CalcPreview{, PrCalcedAll}: LongBool; //to verify if PreviewVoxel array is complete
     VsiLight: array of Cardinal;  //just 0..255 for color
     FThreadVertexLists, FThreadNormalsLists, FThreadColorsLists: TObjectList;
+    FSavePartIdx: Integer;
+    FSaveType: TMeshSaveType;
     FVertexGenConfig: TVertexGenConfig;
     FCalculating, FForceAbort: Boolean;
     FCancelType: TCancelType;
     FRefreshing: Boolean;
+    FSavePartCriticalSection: TCriticalSection;
     procedure PutOutputFolder2record;
     procedure GetOutputFolderFromrecord;
     procedure MakeM3V;
@@ -233,6 +237,7 @@ type
     procedure CalcPreviewSizes;
     procedure UpdateSaveTypeCmb;
     procedure EnableMeshOptionControls;
+    procedure CustomizeUI;
 
     function StartPLYRender: LongBool;
     procedure MergeAndSaveMesh;
@@ -249,7 +254,7 @@ type
     procedure ShowTitle(const Caption: String);
     procedure StartCalc;
     procedure SetExportFilenameExt;
-
+    procedure CheckSavePart(const Idx: Integer);
   protected
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
   public
@@ -274,14 +279,17 @@ type
 
   TPLYExportCalcThread = class(TThread)
   private
+    FOwner: TBulbTracerFrm;
     FPrepared: Boolean;
     FRayCaster: TRayCaster;
     FObjectScanner: TObjectScanner;
     Iteration3Dext: TIteration3Dext;
+    FIterationCallback: TIterationCallback;
   public
     M3Vfile: TM3Vfile;
     MCTparas: TMCTparameter;
-    VertexList, NormalsList, ColorsList: TPS3VectorList;
+    VertexList: TPS3VectorList;
+    NormalsList, ColorsList: TPSMI3VectorList;
     FacesList: TFacesList;
     VertexGenConfig: TVertexGenConfig;
   protected
@@ -544,14 +552,14 @@ procedure TBulbTracerFrm.Timer1Timer(Sender: TObject);   // proof if threads are
 var
   y, ymin, hei, it, il: Integer;
   Progress: Integer;
+  FacesList: TFacesList;
 begin
     Timer1.Enabled := False;
     ymin := 999999;
     hei := M3Vfile.VHeader.Height;
     it := 0;
     Progress := 0;
-    with VCalcThreadStats do
-    begin
+    with VCalcThreadStats do begin
       for y := 1 to iTotalThreadCount do begin
         Progress := Progress + CTrecords[y].iActualYpos;
         if CTrecords[y].isActive <> 0 then Inc(it);
@@ -579,7 +587,6 @@ begin
             StartCalc;
           end;
         end;
-
       end;
     end
     else begin
@@ -601,8 +608,7 @@ end;
 
 procedure TBulbTracerFrm.MakeM3V;
 begin
-    with M3Vfile do
-    begin
+    with M3Vfile do  begin
       Xoff := StrToFloatK(Edit1.Text);
       Yoff := StrToFloatK(Edit3.Text);
       Zoff := StrToFloatK(Edit4.Text);
@@ -675,6 +681,7 @@ begin
   FParamSource := psMain;
   UpdateParamsRange;
   ImportParams;
+  CustomizeUI;
 end;
 
 procedure TBulbTracerFrm.ImportParams(const KeepScaleAndPosition: Boolean = False);
@@ -783,6 +790,7 @@ begin
       end;
       CheckBox3.Checked := True;
     end;
+
 end;
 
 procedure TBulbTracerFrm.FrameEditExit(Sender: TObject);
@@ -831,6 +839,7 @@ var i: Integer;
 begin
   FRefreshing := True;
   try
+    FSavePartCriticalSection := TCriticalSection.Create;
     FParamSource := psMain;
     UpdateParamsRange;
     FThreadVertexLists := TObjectList.Create;
@@ -866,6 +875,7 @@ begin
   FThreadNormalsLists.Free;
   FThreadColorsLists.Free;
   FVertexGenConfig.Free;
+  FSavePartCriticalSection.Free;
 end;
 
 procedure TBulbTracerFrm.CalcPreviewSizes;
@@ -1272,6 +1282,18 @@ begin
     Edit12.Text := FloatToStrSingle(M3Vfile.MinDE);
 end;
 
+procedure TBulbTracerFrm.JitterUpDown12Click(Sender: TObject; Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(JitterEdit.Text, 0.0) + UpDownBtnValue(Button, 0.05);
+  if Value <= 0.0 then
+    Value := 0.0
+  else if Value > 1.0 then
+    Value := 1.0;
+  JitterEdit.Text := FloatToStr(Value);
+end;
+
 procedure TBulbTracerFrm.UpDown1Click(Sender: TObject; Button: TUDBtnType);
 var d: Double;
     t: Integer;
@@ -1355,6 +1377,7 @@ var
   d: Double;
 begin
   try
+    FSavePartIdx := 0;
     FThreadVertexLists.Clear;
     FThreadNormalsLists.Clear;
     FThreadColorsLists.Clear;
@@ -1362,13 +1385,16 @@ begin
   ////
 //   ThreadCount := 1;
   ////
+
+    if FVertexGenConfig.MeshType = mtMesh then
+      FSaveType := TMeshSaveType( SaveTypeCmb.ItemIndex );
+
     M3Vfile.VHeader.TilingOptions := 0;
     bGetMCTPverbose := False;
     MCTparas := getMCTparasFromHeader(M3Vfile.VHeader, False);
     bGetMCTPverbose := True;
     Result := MCTparas.bMCTisValid;
-    if Result then
-    begin
+    if Result then begin
       MCTparas.pSiLight := @Mand3DForm.siLight5[0];
       MCTparas.PCalcThreadStats := @VCalcThreadStats;
       MCTparas.CalcRect := Rect(0, 0, M3Vfile.VHeader.Width - 1, M3Vfile.VHeader.Height - 1);
@@ -1395,6 +1421,7 @@ begin
       VCalcThreadStats.pLBcalcStop := @MCalcStop;
       VCalcThreadStats.pMessageHwnd := Self.Handle;
       for x := 1 to ThreadCount do begin
+
         VCalcThreadStats.CTrecords[x].iActualYpos := -1;
         VCalcThreadStats.CTrecords[x].iActualXpos := 0;
         VCalcThreadStats.CTrecords[x].i64DEsteps  := 0;
@@ -1405,6 +1432,7 @@ begin
         MCTparas.iThreadId := x;
         try
           PLYCalcThreads[x - 1] := TPLYExportCalcThread.Create(True);
+          PLYCalcThreads[x - 1].FOwner := Self;
           PLYCalcThreads[x - 1].FreeOnTerminate := True;
           PLYCalcThreads[x - 1].MCTparas        := MCTparas;
           PLYCalcThreads[x - 1].Priority        := cTPrio[Mand3DForm.ComboBox2.ItemIndex];
@@ -1414,8 +1442,8 @@ begin
             mtPointCloud:
               begin
                 PLYCalcThreads[x - 1].VertexList     := TPS3VectorList.Create;
-                PLYCalcThreads[x - 1].NormalsList    := TPS3VectorList.Create;
-                PLYCalcThreads[x - 1].ColorsList     := TPS3VectorList.Create;
+                PLYCalcThreads[x - 1].NormalsList    := TPSMI3VectorList.Create;
+                PLYCalcThreads[x - 1].ColorsList     := TPSMI3VectorList.Create;
                 FThreadVertexLists.Add(PLYCalcThreads[x - 1].VertexList);
                 FThreadNormalsLists.Add(PLYCalcThreads[x - 1].NormalsList);
                 FThreadColorsLists.Add(PLYCalcThreads[x - 1].ColorsList);
@@ -1469,7 +1497,7 @@ end;
 
 procedure TPLYExportCalcThread.Prepare;
 var
-  I: Integer;
+  I, J: Integer;
   WorkList: TList;
 begin
   case VertexGenConfig.MeshType of
@@ -1485,8 +1513,12 @@ begin
 
         if ( MCTparas.iThreadID = 1 ) and ( FObjectScanner.UseShuffledWorkList  ) then begin
           WorkList := FObjectScanner.GetWorkList;
-          for I := WorkList.Count-1 downto 1 do
-            WorkList.Exchange(i, Random(i+1));
+          for I := WorkList.Count - 1 downto 0 do begin
+            J := I;
+            while J = I do
+              J := Random(  WorkList.Count );
+            WorkList.Move( I, J );
+          end;
           VertexGenConfig.SharedWorkList := WorkList;
         end;
 
@@ -1495,6 +1527,10 @@ begin
       begin
         FRayCaster := TCreateMeshRayCaster.Create(FacesList, VertexGenConfig.ISOValue);
         FObjectScanner := TParallelScanner.Create(VertexGenConfig, MCTparas, M3Vfile, FRayCaster);
+        if FOwner.FSaveType = stUnprocessedMeshData then begin
+          FObjectScanner.IterationIdx := MCTparas.iThreadId - 1;
+          FObjectScanner.IterationCallback := FOwner.CheckSavePart;
+        end;
       end;
   end;
 
@@ -1519,19 +1555,20 @@ end;
 procedure TBulbTracerFrm.SavePointCloud;
 var
   I: Integer;
-  VertexList, NormalsList, ColorsList: TPS3VectorList;
+  VertexList: TPS3VectorList;
+  NormalsList, ColorsList: TPSMI3VectorList;
 begin
   try
     if (not FForceAbort) or (FCancelType = ctCancelAndShowResult) then begin
       VertexList := TPS3VectorList.Create;
       try
         if FVertexGenConfig.CalcNormals then
-          NormalsList := TPS3VectorList.Create
+          NormalsList := TPSMI3VectorList.Create
         else
           NormalsList := nil;
 
         if FVertexGenConfig.CalcColors then
-          ColorsList := TPS3VectorList.Create
+          ColorsList := TPSMI3VectorList.Create
         else
           ColorsList := nil;
 
@@ -1539,16 +1576,16 @@ begin
           for I := 0 to FThreadVertexLists.Count - 1 do begin
             VertexList.MoveVertices(FThreadVertexLists[I] as TPS3VectorList);
             if NormalsList <> nil then
-              NormalsList.MoveVertices(FThreadNormalsLists[I] as TPS3VectorList);
+              NormalsList.MoveVertices(FThreadNormalsLists[I] as TPSMI3VectorList);
             if ColorsList <> nil then
-              ColorsList.MoveVertices(FThreadColorsLists[I] as TPS3VectorList);
+              ColorsList.MoveVertices(FThreadColorsLists[I] as TPSMI3VectorList);
           end;
           if FVertexGenConfig.ShowTraceRanges then
             FVertexGenConfig.AddSampledTraceRanges( VertexList, NormalsList, ColorsList );
           VertexList.DoCenter(0.1);
          // VertexList.RemoveDuplicates;
           if not FForceAbort then begin
-            TPlyFileWriter.SaveToFile(FilenameREd.Text, VertexList, NormalsList, ColorsList)
+            TPlyFileWriter.SaveToFile(MakeMeshSequenceFilename( FilenameREd.Text ), VertexList, NormalsList, ColorsList)
           end;
           FThreadVertexLists.Clear;
 
@@ -1606,14 +1643,20 @@ var
   DoPostProcessing: Boolean;
   TargetFaceCount: Integer;
   Agressiveness: Double;
-  FSaveType: TMeshSaveType;
+  I: Integer;
 begin
   try
     if (not FForceAbort) or (FCancelType = ctCancelAndShowResult) then begin
-      FSaveType := TMeshSaveType( SaveTypeCmb.ItemIndex );
       if( FSaveType = stUnprocessedMeshData ) then begin
         OutputDebugString(PChar('TOTAL: '+IntToStr(DateUtils.MilliSecondsBetween(Now, 0)-T0)+' ms'));
-        TUnprocessedMeshFileWriter.SaveToFile( MakeMeshSequenceFilename( FilenameREd.Text ), FThreadVertexLists);
+        for I := 0 to FThreadVertexLists.Count - 1 do begin
+          FacesList := TFacesList( FThreadVertexLists[ I ] );
+          if FacesList.Count > 0 then begin
+            TUnprocessedMeshFileWriter.SaveToFile( MakeMeshSequenceFilename( FilenameREd.Text ), FacesList, FSavePartIdx);
+            Inc( FSavePartIdx );
+          end;
+          FacesList.Clear;
+        end;
         if not FForceAbort then
           Label13.Caption := 'Elapsed time: ' + IntToStr(Round((DateUtils.MilliSecondsBetween(Now, 0)-T0)/1000.0))+' s';
       end
@@ -1763,18 +1806,28 @@ begin
   FVertexGenConfig.MeshType := TMeshType( MeshTypeCmb.ItemIndex );
   FVertexGenConfig.Oversampling := TOversampling(MeshOversamplingCmb.ItemIndex);
   FVertexGenConfig.ISOValue := StrToFloat(MeshISOValueEdit.Text);
-  FVertexGenConfig.SphericalScan := MeshSphericalScanCBx.Checked;
+  FVertexGenConfig.SphericalScan := False;
   FVertexGenConfig.CalcColors := MeshCalcColorsCBx.Checked;
+  FVertexGenConfig.SampleJitter := Max( 0.0, Min( 1.0, StrToFloat( JitterEdit.Text ) ) ) * 2.0;
 
   VRes := StrToInt( MeshVResolutionEdit.Text );
+  FVertexGenConfig.URange.StepCount := VRes;
+  FVertexGenConfig.VRange.StepCount := VRes;
+
   if ( FVertexGenConfig.MeshType = mtPointCloud ) then begin
     if FVertexGenConfig.SphericalScan then begin
       FVertexGenConfig.URange.StepCount := VRes;
       FVertexGenConfig.VRange.StepCount := VRes;
     end
     else begin
-      FVertexGenConfig.URange.StepCount := Round( VRes / Sqrt( 5.0 ) );
-      FVertexGenConfig.VRange.StepCount := Round( VRes / Sqrt( 5.0 ) );
+      if FVertexGenConfig.SampleJitter > JITTER_MIN then begin
+        FVertexGenConfig.URange.StepCount := Round( VRes * 0.666 );
+        FVertexGenConfig.VRange.StepCount := Round( VRes * 0.666 );
+      end
+      else begin
+        FVertexGenConfig.URange.StepCount := Round( VRes * 0.75 );
+        FVertexGenConfig.VRange.StepCount := Round( VRes * 0.75 );
+      end;
     end;
   end
   else begin
@@ -1782,19 +1835,34 @@ begin
     FVertexGenConfig.VRange.StepCount := VRes;
   end;
 
+(*
+  SphereRange := TSphereRange.Create;
+  SphereRange.Radius := 44.0;
+  SphereRange.Mode := trInclude;
+  SphereRange.CentreX := 47.0;
+  SphereRange.CentreY := 48.0;
+  SphereRange.CentreZ := 60.0;
+  SphereRange.IndicatorColorR := 0.0;
+  SphereRange.IndicatorColorG := 1.0;
+  SphereRange.IndicatorColorB := 1.0;
+  FVertexGenConfig.TraceRanges.Add( SphereRange );
+
 
   SphereRange := TSphereRange.Create;
-  SphereRange.CentreX := StrToFloat(Edit2.Text);
-  SphereRange.CentreY := StrToFloat(Edit10.Text);
-  SphereRange.CentreZ := StrToFloat(Edit13.Text);
   SphereRange.Radius := 20.0;
   SphereRange.Mode := trExclude;
-//  FVertexGenConfig.TraceRanges.Add( SphereRange );
+  SphereRange.CentreX := 47.0;
+  SphereRange.CentreY := 48.0;
+  SphereRange.CentreZ := 80.0;
+  SphereRange.IndicatorColorR := 1.0;
+  SphereRange.IndicatorColorG := 0.0;
+  SphereRange.IndicatorColorB := 0.0;
+  FVertexGenConfig.TraceRanges.Add( SphereRange );
 
+  FVertexGenConfig.ShowTraceRanges := False;
+*)
+(*
   SphereRange := TSphereRange.Create;
-  SphereRange.CentreX := StrToFloat(Edit14.Text);
-  SphereRange.CentreY := StrToFloat(Edit15.Text);
-  SphereRange.CentreZ := StrToFloat(Edit16.Text);
   SphereRange.Radius := 20.0;
   SphereRange.IndicatorColorR := 1.0;
   SphereRange.IndicatorColorG := 0.0;
@@ -1814,6 +1882,7 @@ begin
 //  FVertexGenConfig.TraceRanges.Add( BoxRange );
 
   FVertexGenConfig.ShowTraceRanges := True;
+*)
 end;
 
 procedure TBulbTracerFrm.EnableControls(const Enabled: Boolean);
@@ -1946,18 +2015,49 @@ begin
   MeshISOValueUpDown.Enabled := not IsPointCloud;
   MeshOversamplingCmb.Enabled := not IsPointCloud;
   MeshCalcColorsCBx.Enabled := IsPointCloud;
-  MeshSphericalScanCBx.Enabled := IsPointCloud;
+  JitterEdit.Enabled := IsPointCloud;
+  JitterUpDown12.Enabled := IsPointCloud;
+end;
+
+
+procedure TBulbTracerFrm.CustomizeUI;
+begin
+(*
+  Edit1.Text := FloatToStr(-0.0181483);
+  Edit3.Text := FloatToStr(-0.0318281);
+  Edit4.Text := FloatToStr(0.0164771);
+  Edit5.Text := FloatToStr(1.61051);
+  Edit6.Text := FloatToStr(1.61051);
+  Edit7.Text := FloatToStr(1.61051);
+
+  Edit2.Text := FloatToStr(47);
+  Edit10.Text := FloatToStr(48);
+  Edit13.Text := FloatToStr(60);
+
+  MeshVResolutionEdit.Text := IntToStr(128);
+*)
+end;
+
+procedure TBulbTracerFrm.CheckSavePart(const Idx: Integer);
+const
+  VERTEX_CHUNKSIZE = 500000;
+var
+  FacesList: TFacesList;
+begin
+  FacesList := TFacesList( FThreadVertexLists[ Idx ] );
+  if FacesList.Count > VERTEX_CHUNKSIZE then begin
+    FSavePartCriticalSection.Enter;
+    try
+      TUnprocessedMeshFileWriter.SaveToFile( MakeMeshSequenceFilename( FilenameREd.Text ), FacesList, FSavePartIdx);
+      Inc( FSavePartIdx );
+      FacesList.Clear;
+    finally
+      FSavePartCriticalSection.Leave;
+    end;
+  end;
 end;
 
 
 end.
 
-
-// TODO:
-//   - mesh/point cloud support
-//   - display normals in OpenGL
-//   - normals for point clouds
-//   - openGL point cloud support
-//   - openGL: background gradient colors
-//   - opengl: specular is weird
 

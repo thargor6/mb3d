@@ -50,7 +50,23 @@ z := z + Addition ;
 ///Benesi to Mag / pine transformation
 /// I have no idea how this works, but the effect should be fixed rotation.
 /// Thanks M Benesi for transform.
+
+
+//==================================================================
+// conditionals used to speed up calculation with certain values
+if vBenesiRotation = 0 then
+	begin
+	 		
+// there is nothing to calculate
+
+	end
+  	else
+	begin
+
+// else calculate Benesi to Mag / pine transformation
 // This version is faster than original by about 2 seconds in minute. 
+// As I used more pre-calculated constant values
+
   temp := x * sqt23TOsqt12 - z * sqt13TOsqt12 ;
   z1 := x * sqrt_1_3 + z * sqrt_2_3; 
   y1 := y * sqrt_1_2;
@@ -63,6 +79,11 @@ temp:= (1-vBenesiRotation);
 x:=x1*vBenesiRotation + x*temp;
 y:=y1*vBenesiRotation + y*temp;
 z:=z1*vBenesiRotation + z*temp;
+
+	end;
+
+
+
 
 
 //=====================================(^_^) 
@@ -92,7 +113,7 @@ z := z  + PIteration3D^.J3;
 
 end;
 [END]
-Formula version 1.2
+Formula version 1.3
  
 3D Amazingbox type fractal. This version is more powerfull.
 (^_^) 

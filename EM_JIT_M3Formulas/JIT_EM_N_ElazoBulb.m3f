@@ -1,0 +1,189 @@
+[OPTIONS]
+.DEScale = 0.9
+.SIPow = 2
+.Version = 9
+.Double F1_Power = 4
+.Double F2_Power = -4
+.Double Formula_Ratio = 0.5
+.Double sCurvatureX = 2
+.Double sCurvatureY = 2
+.Double sCurvatureZ = 2
+[SOURCE]
+procedure Elazobulb(var x, y, z, w: Double; PIteration3D: TPIteration3D);
+var
+
+r, rpow, th, ph, th1, ph1, th2 ,ph2: double;
+invpower, x2, y2, z2: double;
+intpowerX, intpowerY, intpowerZ : integer;
+sinph, cosph, sinth, costh, temp, ratio : double;
+
+
+begin
+
+//=================================================
+// The most advanced part
+// instead of radius:= sqrt (x*x+y+y+z*z);
+/// calculate radius in space where circle is circle (2), square (1) or Iphone shape (4)
+// It is like Lp spaces but different along each axis.
+// Using just int values - mutch faster.
+//Using inverse of geometric mean. arithmetic mean don't works so well here.
+
+intpowerX:=round(sCurvatureX);
+intpowerY:=round(sCurvatureY);
+intpowerZ:=round(sCurvatureZ);
+
+
+// blockchain of conditionals used to speed up more basic versions of this.
+//If Curvature X=Y=Z calculate root power without calculating mean value of all
+if intpowerX = intpowerY then
+  begin
+	
+	if intpowerY = intpowerZ then  // all curvatures is equal
+  	begin
+
+		
+		if intpowerX = 1 then  // choice 1. If curvatures is 1 then use fastest formula
+	  	begin
+		r  := abs(x) + abs(y) + abs(z);
+		end
+		
+		
+  		else if intpowerX = 2 then  // choice2. If curvatures is 2 then use standart formula
+	  	begin
+		r  := sqrt( x*x + y*y + z*z);
+		end
+	
+		
+		else  //choice 3. else use heavy formulas, equal powers
+		begin
+
+	invpower:= 1/ intPowerX; 
+	temp:=  intPower( abs(x),intPowerX) + intPower( abs(y),intPowerY) +intPower( abs(z),intPowerZ);
+	r  := power( temp ,invpower);
+
+		end;
+
+	end
+
+  	else  //choice 4 use all heavy operators
+  	begin
+
+	
+	//inverse of geometric mean, calculates necesary root value 
+	invpower:= power(intPowerX *intPowerY *intPowerZ,-0.33333333333333333333);
+	temp:=  intPower( abs(x),intPowerX) + intPower( abs(y),intPowerY) +intPower( abs(z),intPowerZ);
+	r  := power( temp ,invpower);
+
+
+	end;
+end
+
+  else  //choice 4 use all heavy operators
+
+  begin
+
+	
+	//inverse of geometric mean, calculates necesary root value
+	invpower:= power(intPowerX *intPowerY *intPowerZ,-0.33333333333333333333);
+	temp:=  intPower( abs(x),intPowerX) + intPower( abs(y),intPowerY) +intPower( abs(z),intPowerZ);
+	r  := power( temp ,invpower);
+
+
+end;
+
+//all of this were just to calculate the radius
+
+
+
+//===========================================
+
+//same angles for both bulbs;
+th := ArcTan2(y, x);
+ph := ArcSin(z/r);
+
+
+//=====================================
+// mandelbulbs 
+//No 1
+
+th1 := th * F1_Power;
+ph1 := ph * F1_Power;
+rpow  := Power(r, F1_Power);
+
+///calculate sin and cos at once;
+   SinCos(th1, sinth, costh);
+   SinCos(ph1, sinph, cosph);
+
+// If there is no SinCos function just put () around ph and th 
+// and add formula number -> rpow * cos(ph1) * cos(th1);
+
+x  := rpow * cosph * costh;
+y  := rpow * cosph * sinth;
+z  := rpow * sinph;
+
+//=========================================
+// mandelbulb
+// No 2
+
+// if both bulbs is equal recycle values.
+
+if F1_Power = F2_Power then
+	begin
+	x2:=x;
+	y2:=y;
+	z2:=z;   
+	end
+  
+	else
+	begin
+
+// else calculate other bulb, too
+
+th2 := th * F2_Power;
+ph2 := ph * F2_Power;
+rpow  := Power(r, F2_Power);
+
+///calculate sin and cos at once;
+   SinCos(th2, sinth, costh);
+   SinCos(ph2, sinph, cosph);
+
+x2  := rpow * cosph * costh ;
+y2  := rpow * cosph * sinth ;
+z2  := rpow * sinph ; 
+
+	end;
+
+//=========================================
+// interpolate formulas
+// Here is like when on ruler one bulb is on 0 cm another is on 1 cm.
+
+ratio:= (1-Formula_Ratio);
+
+x:=x2*Formula_Ratio + x*ratio + PIteration3D^.J1;
+y:=y2*Formula_Ratio + y*ratio + PIteration3D^.J2;
+z:=z2*Formula_Ratio + z*ratio + PIteration3D^.J3;
+
+
+end;
+[END]
+Version 1.3
+Maybe this is one of the most tehcnologicaly advanced mandelbulbs ever (^_^)
+
+Using idea from GNJ - two real power standart mandelbulbs (F1 , F2) interpolated (ratio) - empty middles.
+
+And my 
+of calculating radius in distorted space - superseed shape:
+curvature = 1 - diamond - angular and stretching (floral) bulb
+curvature = 2 - sphere - ordinary bulb
+curvature = 4 - iphone shape - streamlined - pillow shaped bulb
+
+
+By tehnologicaly advanced I meant that this is "smart" formula: 
+if powers or all curvatures is equal it awoyds some slow functions, and 1 1 1 or 2 2 2 uses faster formulas. 
+
+
+Alsou to speed up space Curvature uses only integer values, 1,2,3...
+Equal curvatures is more noiseless.
+
+ * * *
+By Edgar Malinovsky

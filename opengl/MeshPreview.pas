@@ -47,7 +47,7 @@ type
     constructor Create(const Canvas: TCanvas);
     destructor Destroy; override;
     procedure UpdateMesh(const FacesList: TFacesList); override;
-    procedure UpdateMesh(const VertexList, ColorList: TPS3VectorList); override;
+    procedure UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList); override;
     property MeshAppearance: TMeshAppearance read FMeshAppearance;
   end;
 
@@ -238,7 +238,7 @@ begin
   Sleep(1);
 end;
 
-procedure TOpenGLHelper.UpdateMesh(const VertexList, ColorList: TPS3VectorList);
+procedure TOpenGLHelper.UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList);
 var
   I: Integer;
   T0, T00: Int64;
@@ -248,7 +248,8 @@ var
 
   procedure AddVertex(const Idx: Integer);
   var
-    Vertex, VertexColor: TPS3Vector;
+    Vertex: TPS3Vector;
+    VertexColor: TPSMI3Vector;
   begin
     Vertex := VertexList.GetVertex(Idx);
     if Vertex^.X < FSizeMin.X then
@@ -270,9 +271,9 @@ var
 
     if GLVertexColors <> nil then begin
       VertexColor := ColorList.GetVertex(Idx);
-      GLVertexColor^.X := VertexColor^.X;
-      GLVertexColor^.Y := VertexColor^.Y;
-      GLVertexColor^.Z := VertexColor^.Z;
+      GLVertexColor^.X := TPSMI3VectorList.SMIToFloat( VertexColor^.X );
+      GLVertexColor^.Y := TPSMI3VectorList.SMIToFloat( VertexColor^.Y );
+      GLVertexColor^.Z := TPSMI3VectorList.SMIToFloat( VertexColor^.Z );
       GLVertexColor := Pointer(Longint(GLVertexColor)+SizeOf(TGLVertex));
     end;
   end;

@@ -519,7 +519,7 @@ procedure SaveFormulaBytes;
 
 var
   Mand3DForm: TMand3DForm;
-  M3dVersion: Single = 1.98;
+  M3dVersion: Single = 1.99;
   Testing: LongBool = False;
   TBoostChanged: LongBool = False;
   MCalcStop: LongBool = False;

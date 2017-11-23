@@ -1,3 +1,18 @@
+V1.99
+ - Point-Cloud-export:
+    - major increase of sampling-quality
+    - minor speed-in crease (is compensated by generating more samples)
+    - jitter-option to improve sampling of round shapes, usually gives good results at high
+      volumetric resulutions > 1000
+    - option to generate normal vectors (is not the same as approximating the normals on the final mesh)
+    - display elapsed time
+ - Progressbar for the BulbTracer-preview
+ - renamed the "MeshGen"-button back to "BulbTracer" (which was always the intended name)
+ - updated the huge JIT-formula.pack ("EM_JIT_M3Formulas") from Alef from fractalforums.com
+ - Added the missing formulas to the distribution: JosKn-KleinIFS, JosKn-ModIFS, K-TowerIFS
+ - updated (again) the huge JIT-formula.pack ("EM_JIT_M3Formulas") from Alef from fractalforums.com
+ - NEW RELEASE
+
 V1.98
  - Point-Cloud-export in the BulbTracer-module, which is able to generate very nice
    models in high resolution in a short time, even with color (which is currently
