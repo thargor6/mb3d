@@ -623,8 +623,8 @@ begin
       //projectname := ...?
       if Abs(M3dVersion - BigRenderData.brM3dVersion) > 0.001 then
         ShowMessage('The project was made with M3D program version ' +
-          ProgramVersionStr(BigRenderData.brM3dVersion) + #13#10 +
-          'The actual program version is ' + ProgramVersionStr(M3dVersion) + #13#10 +
+          ProgramVersionStr(BigRenderData.brM3dVersion, M3dSubRevision) + #13#10 +
+          'The actual program version is ' + ProgramVersionStr(M3dVersion, M3dSubRevision) + #13#10 +
           'You should use the same program version to avoid' + #13#10 +
           'color or other changes in newer calculated tiles.');
     end;

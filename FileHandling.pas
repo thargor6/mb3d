@@ -285,7 +285,7 @@ begin
         bVolLightNr := 2 shl 4;
       end;
 
-      if MandId > 35 then Mand3DForm.OutMessage('The parameters were made with program version ' + ProgramVersionStr(sM3dVersion))
+      if MandId > 35 then Mand3DForm.OutMessage('The parameters were made with program version ' + ProgramVersionStr(sM3dVersion, M3dSubRevision))
       else if MandId > actMandId then Mand3DForm.OutMessage('A correct rendering could be not possible.');
       sM3dVersion := M3dVersion;
     end;

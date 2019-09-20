@@ -934,11 +934,11 @@ begin
         IniHeaderPointers;
       end;
       FitImageSize;
-      Label33.Caption := 'Parameters version: ' + ProgramVersionStr(MCparas.sM3dVersion);
+      Label33.Caption := 'Parameters version: ' + ProgramVersionStr(MCparas.sM3dVersion, M3dSubRevision);
       if Abs(M3dVersion - MCparas.sM3dVersion) > 0.0005 then
       begin
         Label33.Caption := Label33.Caption + #13#10 +
-          'Version of this program: ' + ProgramVersionStr(M3dVersion) + #13#10 +
+          'Version of this program: ' + ProgramVersionStr(M3dVersion, M3dSubRevision) + #13#10 +
           'You should use the same program version to avoid' + #13#10 +
           'color or other changes in further calculations!';
         Timer3.Tag := 8;

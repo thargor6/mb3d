@@ -94,7 +94,7 @@ function GetTileSize(Header: TPMandHeader10): TPoint;
 procedure DisableTiling(Header: TPMandHeader10);
 procedure GetPaintTileSizes(Header: TPMandHeader10; var wid, hei, Xplus, Yplus: Integer);
 function SetThreadExecutionState(esFlags: EXECUTION_STATE): EXECUTION_STATE;
-function ProgramVersionStr(sver: Single): String;
+function ProgramVersionStr(const sver: Single;const  subRevision: integer): String;
 function D2ByteToStr(b: Byte): String; //0.00 to 2.50
 function StrToD2Byte(s: String): Byte;
 function DateToStrHistory(dt: TDateTime): String;
@@ -1199,7 +1199,7 @@ begin
     Result := FloatToStrF(s, ffGeneral, 6, 1);
 end;
 
-function ProgramVersionStr(sver: Single): String;
+function ProgramVersionStr(const sver: Single;const  subRevision: integer): String;
 var i: Integer;
     sleft, s: Single;
 begin
@@ -1218,7 +1218,13 @@ begin
       sleft := (sleft - s) * 10;
       Inc(i);
     end;
-    if Result[Length(Result)] = '.' then Delete(Result, Length(Result), 1);
+    if ( Result[Length(Result)] = '.' ) and (subRevision < 1) then
+      Delete(Result, Length(Result), 1);
+    if subRevision >=1 then begin
+      if ( Result[Length(Result)] <> '.' ) then
+        Result := Result + '.';
+      Result := Result + IntToStr( subRevision );
+    end;
 end;
 
 function ShortFloatToStr(sf: ShortFloat): String;
