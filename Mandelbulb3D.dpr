@@ -38,7 +38,7 @@ uses
   Undo in 'Undo.pas',
   CalcSR in 'CalcSR.pas',
   CalcPart in 'CalcPart.pas',
-  BulbTracerUI in 'bulbtracer\BulbTracerUI.pas' {BulbTracerFrm},
+  BulbTracer2UI in 'bulbtracer2\BulbTracer2UI.pas' {BulbTracer2Frm},
   CalcVoxelSliceThread in 'CalcVoxelSliceThread.pas',
   calcBlocky in 'calcBlocky.pas',
   FormulaParser in 'FormulaParser.pas' {FormulaEditor},
@@ -69,16 +69,14 @@ uses
   JITFormulaEditGUI in 'formula\JITFormulaEditGUI.pas' {JITFormulaEditorForm},
   JITFormulas in 'formula\JITFormulas.pas',
   ParamValueEditGUI in 'formula\ParamValueEditGUI.pas' {ParamValueEditFrm},
-  VertexList in 'bulbtracer\VertexList.pas',
   VoxelExport in 'VoxelExport.pas' {FVoxelExport},
   VectorMath in 'bulbtracer\VectorMath.pas',
-  BulbTracer in 'bulbtracer\BulbTracer.pas',
-  ObjectScanner in 'bulbtracer\ObjectScanner.pas',
-  BulbTracerConfig in 'bulbtracer\BulbTracerConfig.pas',
+  BulbTracer2 in 'bulbtracer2\BulbTracer2.pas',
+  ObjectScanner2 in 'bulbtracer2\ObjectScanner2.pas',
+  BulbTracer2Config in 'bulbtracer2\BulbTracer2Config.pas',
   opengl12 in 'opengl\opengl12.pas',
   MeshPreview in 'opengl\MeshPreview.pas',
   BulbTracerUITools in 'bulbtracer\BulbTracerUITools.pas',
-  MeshWriter in 'bulbtracer\MeshWriter.pas',
   MeshReader in 'bulbtracer\MeshReader.pas',
   MeshIOUtil in 'bulbtracer\MeshIOUtil.pas',
   MeshSimplifier in 'bulbtracer\MeshSimplifier.pas',
@@ -92,7 +90,13 @@ uses
   PostProcessForm in 'PostProcessForm.pas' {PostProForm},
   PNMReader in 'heightmapgen\PNMReader.pas',
   CompilerUtil in 'script\CompilerUtil.pas',
-  FormulaCompiler in 'formula\FormulaCompiler.pas';
+  FormulaCompiler in 'formula\FormulaCompiler.pas',
+  BulbTracer in 'bulbtracer\BulbTracer.pas',
+  ObjectScanner in 'bulbtracer\ObjectScanner.pas',
+  BulbTracerConfig in 'bulbtracer\BulbTracerConfig.pas',
+  BulbTracerUI in 'bulbtracer\BulbTracerUI.pas' {BulbTracerFrm},
+  VertexList in 'bulbtracer\VertexList.pas',
+  MeshWriter in 'bulbtracer\MeshWriter.pas';
 
 {$R *.res}
 
@@ -112,7 +116,7 @@ begin
   Application.CreateForm(TFormulaGUIForm, FormulaGUIForm);
   Application.CreateForm(TColorForm, ColorForm);
   Application.CreateForm(TBatchForm1, BatchForm1);
-  Application.CreateForm(TBulbTracerFrm, BulbTracerFrm);
+  Application.CreateForm(TBulbTracer2Frm, BulbTracer2Frm);
   Application.CreateForm(TFormulaEditor, FormulaEditor);
   Application.CreateForm(TTilingForm, TilingForm);
   Application.CreateForm(TMCForm, MCForm);
@@ -130,6 +134,7 @@ begin
   Application.CreateForm(TMeshPreviewFrm, MeshPreviewFrm);
   Application.CreateForm(THeightMapGenFrm, HeightMapGenFrm);
   Application.CreateForm(TPostProForm, PostProForm);
+  Application.CreateForm(TBulbTracerFrm, BulbTracerFrm);
   //SuppressMessageBoxes := True;
   Application.Run;
 end.

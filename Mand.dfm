@@ -2644,8 +2644,8 @@ object Mand3DForm: TMand3DForm
         Top = 5
         Width = 52
         Height = 30
-        Hint = 'Create Meshes or Points Clouds'
-        Caption = 'BTracer'
+        Hint = 'Create Meshes'
+        Caption = 'MeshGen'
         ParentShowHint = False
         ShowHint = True
         OnClick = MeshExportBtnClick
@@ -2845,7 +2845,7 @@ object Mand3DForm: TMand3DForm
         Top = 4
         Width = 268
         Height = 64
-        ActivePage = TabSheet12
+        ActivePage = TabSheet11
         TabOrder = 1
         object TabSheet7: TTabSheet
           Caption = 'Open'

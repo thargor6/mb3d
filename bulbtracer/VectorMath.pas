@@ -34,6 +34,11 @@ type
     class procedure SetValue(const V: TPD3Vector; const X, Y, Z: Double);
   end;
 
+  TD4Vector = packed record
+    X, Y, Z, W: Double;
+  end;
+  TPD4Vector = ^TD4Vector;
+
   TS3Vector = packed record
     X, Y, Z: Single;
   end;

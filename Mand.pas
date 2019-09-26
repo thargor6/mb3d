@@ -520,6 +520,7 @@ procedure SaveFormulaBytes;
 var
   Mand3DForm: TMand3DForm;
   M3dVersion: Single = 1.99;
+  M3dSubRevision: Integer = 1;
   Testing: LongBool = False;
   TBoostChanged: LongBool = False;
   MCalcStop: LongBool = False;
@@ -547,7 +548,7 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
      uMapCalcWindow, FormulaCompiler, MutaGenGUI, VisualThemesGUI, Vcl.Themes,
-     MapSequencesGUI, MapSequences, BulbTracerUI, ScriptUI, HeightMapGenUI;
+     MapSequencesGUI, MapSequences, BulbTracer2UI, ScriptUI, HeightMapGenUI;
 
 {$R *.dfm}
 
@@ -1130,7 +1131,7 @@ begin
       FVoxelExport.Button5.Caption := 'Calculate preview';
     end;
     if bBulbTracerFormCreated then begin
-      BulbTracerFrm.EnableControls(True);
+      BulbTracer2Frm.EnableControls(True);
     end;
 
 
@@ -1225,7 +1226,7 @@ begin
       FVoxelExport.Panel3.Enabled := False;
     end;
     if bBulbTracerFormCreated then begin
-      BulbTracerFrm.EnableControls(False);
+      BulbTracer2Frm.EnableControls(False);
     end;
     if MCFormCreated then MCForm.Button4.Enabled := False;
     Image1.Cursor := crHourGlass;
@@ -2425,7 +2426,6 @@ begin
 end;
 
 procedure TMand3DForm.Button4Click(Sender: TObject);  // save parameter
-var f: file;
 begin
   if SaveDialog2.Execute then
   begin
@@ -2473,8 +2473,8 @@ end;
 
 procedure TMand3DForm.MeshExportBtnClick(Sender: TObject);
 begin
-  BulbTracerFrm.Visible := True;
-  BringToFront2(BulbTracerFrm.Handle);
+  BulbTracer2Frm.Visible := True;
+  BringToFront2(BulbTracer2Frm.Handle);
 end;
 
 procedure TMand3DForm.SetImageCursor;
@@ -3069,7 +3069,7 @@ end;
 procedure TMand3DForm.FirstShowUpdate;  //after light+formula windows were made
 var i: Integer;
 begin
-    Label3.Caption := 'M3D Version ' + ProgramVersionStr(M3dVersion);
+    Label3.Caption := 'M3D Version ' + ProgramVersionStr(M3dVersion, M3dSubRevision);
     RadioGroup2.Hint := 'Panorama mode:' + #13#10 +
                         '- The FOV is choosen automatically' + #13#10 +
 '- Use the 24bit SSAO or DEAO for ambient shadows' + #13#10 +
@@ -3147,7 +3147,7 @@ end;
 
 procedure TMand3DForm.FormShow(Sender: TObject);
 begin
-    Caption := 'Mandelbulb 3D    v' + ProgramVersionStr(M3dVersion);
+    Caption := 'Mandelbulb 3D    v' + ProgramVersionStr(M3dVersion, M3dSubRevision);
     SetM3Dini;
 //SaveFormulaBytes;
 end;

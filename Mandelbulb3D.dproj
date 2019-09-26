@@ -174,8 +174,8 @@
         <DCCReference Include="Undo.pas"/>
         <DCCReference Include="CalcSR.pas"/>
         <DCCReference Include="CalcPart.pas"/>
-        <DCCReference Include="bulbtracer\BulbTracerUI.pas">
-            <Form>BulbTracerFrm</Form>
+        <DCCReference Include="bulbtracer2\BulbTracer2UI.pas">
+            <Form>BulbTracer2Frm</Form>
         </DCCReference>
         <DCCReference Include="CalcVoxelSliceThread.pas"/>
         <DCCReference Include="calcBlocky.pas"/>
@@ -231,18 +231,16 @@
         <DCCReference Include="formula\ParamValueEditGUI.pas">
             <Form>ParamValueEditFrm</Form>
         </DCCReference>
-        <DCCReference Include="bulbtracer\VertexList.pas"/>
         <DCCReference Include="VoxelExport.pas">
             <Form>FVoxelExport</Form>
         </DCCReference>
         <DCCReference Include="bulbtracer\VectorMath.pas"/>
-        <DCCReference Include="bulbtracer\BulbTracer.pas"/>
-        <DCCReference Include="bulbtracer\ObjectScanner.pas"/>
-        <DCCReference Include="bulbtracer\BulbTracerConfig.pas"/>
+        <DCCReference Include="bulbtracer2\BulbTracer2.pas"/>
+        <DCCReference Include="bulbtracer2\ObjectScanner2.pas"/>
+        <DCCReference Include="bulbtracer2\BulbTracer2Config.pas"/>
         <DCCReference Include="opengl\opengl12.pas"/>
         <DCCReference Include="opengl\MeshPreview.pas"/>
         <DCCReference Include="bulbtracer\BulbTracerUITools.pas"/>
-        <DCCReference Include="bulbtracer\MeshWriter.pas"/>
         <DCCReference Include="bulbtracer\MeshReader.pas"/>
         <DCCReference Include="bulbtracer\MeshIOUtil.pas"/>
         <DCCReference Include="bulbtracer\MeshSimplifier.pas"/>
@@ -263,6 +261,15 @@
         <DCCReference Include="heightmapgen\PNMReader.pas"/>
         <DCCReference Include="script\CompilerUtil.pas"/>
         <DCCReference Include="formula\FormulaCompiler.pas"/>
+        <DCCReference Include="bulbtracer\BulbTracer.pas"/>
+        <DCCReference Include="bulbtracer\ObjectScanner.pas"/>
+        <DCCReference Include="bulbtracer\BulbTracerConfig.pas"/>
+        <DCCReference Include="bulbtracer\BulbTracerUI.pas">
+            <Form>BulbTracerFrm</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="bulbtracer\VertexList.pas"/>
+        <DCCReference Include="bulbtracer\MeshWriter.pas"/>
         <None Include="CHANGES.txt"/>
         <None Include=".gitignore"/>
         <BuildConfiguration Include="Debug">
