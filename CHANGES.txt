@@ -1,3 +1,14 @@
+V1.99.1 (unreleased)
+ - new BulbTracer2-module for generating meshes from your fractals (work in progress). It has the following advantages over BulbTracer:
+    -more speed
+    -much cleaner meshes
+    -meshes with color-information (uv-coordinates)
+    -less complicated/confusion options
+    -the option for unlimited mesh resolution (not implemented yet)
+ - introducing subrevision-numbers to be able to release minor updates without bumping version to 2.0. 
+   (To reach version 2.0 using the old code-base just would feel wrong, I think people would expect 64bit features
+    and a complete rewrite)
+
 V1.99
  - Point-Cloud-export:
     - major increase of sampling-quality

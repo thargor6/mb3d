@@ -242,6 +242,9 @@ begin
             CurrPos.Y := CurrPos.Y + FStepSize;
           end;
           CurrPos.X := CurrPos.X + FStepSize;
+          with FMCTparas do begin
+            PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round(I * 50.0 / FSlicesU);
+          end;
         end;
       end;
 
@@ -286,7 +289,7 @@ begin
 
             with FMCTparas do begin
               if PCalcThreadStats.CTrecords[iThreadID].iDEAvrCount < 0 then begin
-                PCalcThreadStats.CTrecords[iThreadID].iActualYpos := FSlicesU;
+                PCalcThreadStats.CTrecords[iThreadID].iActualYpos := FSlicesU div 2 + 50;
                 exit;
               end;
             end;
@@ -294,7 +297,7 @@ begin
           end;
           CurrPos.X := CurrPos.X + FStepSize;
           with FMCTparas do begin
-            PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round(I * 100.0 / FSlicesU);
+            PCalcThreadStats.CTrecords[iThreadID].iActualYpos := 50 + Round(I * 50.0 / FSlicesU);
           end;
         end;
       end;
