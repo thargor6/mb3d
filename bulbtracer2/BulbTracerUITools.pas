@@ -1,17 +1,27 @@
-{ ---------------------------------------------------------------------------- }
-{ BulbTracer for MB3D                                                          }
-{ Copyright (C) 2016-2017 Andreas Maschke                                      }
-{ ---------------------------------------------------------------------------- }
+(*
+  BulbTracer2 for MB3D
+  Copyright (C) 2016-2019 Andreas Maschke
+
+  This is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser
+  General Public License as published by the Free Software Foundation; either version 2.1 of the
+  License, or (at your option) any later version.
+
+  This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+  even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Lesser General Public License for more details.
+  You should have received a copy of the GNU Lesser General Public License along with this software;
+  if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  02110-1301 USA, or see the FSF site: http://www.fsf.org.
+*)
 unit BulbTracerUITools;
 
 interface
 
 uses
-  Vcl.ComCtrls, BulbTracerConfig;
+  Vcl.ComCtrls, BulbTracer2Config;
 
 type
-  TMeshSaveType = (stMeshAsObj, stMeshAsLWO2, stUnprocessedMeshData, stNoSave);
-  TPointCloudSaveType = (pstAsPly, pstNoSave);
+  TMeshSaveType = (stMeshAsObj, (*stRawMeshData,*) stNoSave);
   TCancelType = (ctCancelAndShowResult, ctCancelImmediately);
 
 function Clamp255(i: Integer): Integer;
@@ -23,11 +33,8 @@ procedure Solid8(pc: PCardinal; b1, b2: Integer);
 procedure Solid16(pc: PCardinal; b1, b2: Integer);
 
 function GetDefaultMeshFilename(const Filename: String; const SaveType: TMeshSaveType): String; overload;
-function GetDefaultMeshFilename(const Filename: String; const SaveType: TPointCloudSaveType): String; overload;
 function GetMeshFileExt(const SaveType: TMeshSaveType): String; overload;
-function GetMeshFileExt(const SaveType: TPointCloudSaveType): String; overload;
 function GetMeshFileFilter(const SaveType: TMeshSaveType): String; overload;
-function GetMeshFileFilter(const SaveType: TPointCloudSaveType): String; overload;
 function MakeMeshRawFilename(const Filename: String): String;
 function UpDownBtnValue(const  Button: TUDBtnType; const Scl: Double): Double;
 function StrToFloatSafe(const Str: String; const DfltVal: Double): Double;
@@ -189,35 +196,12 @@ begin
     Result := Filename + NewExt;
 end;
 
-function GetDefaultMeshFilename(const Filename: String; const SaveType: TPointCloudSaveType): String; overload;
-var
-  OldExt, NewExt: String;
-begin
-  OldExt := ExtractFileExt(Filename);
-  NewExt := GetMeshFileExt(SaveType);
-  if NewExt <> '' then
-    NewExt := '.'+ NewExt;
-  if OldExt='' then
-    Result := Copy(Filename, 1, Length(Filename) - Length(OldExt)) + NewExt
-  else
-    Result := Filename + NewExt;
-end;
 
 function GetMeshFileFilter(const SaveType: TMeshSaveType): String; overload;
 begin
   case SaveType of
     stMeshAsObj: Result := 'Wavefront OBJ (*.obj)|*.obj';
-    stMeshAsLWO2: Result := 'Lightwave3D Object (*.lwo)|*.lwo';
-    stUnprocessedMeshData: Result := 'Raw mesh data (*'+cMB3DMeshSegFileExt+')|*.'+cMB3DMeshSegFileExt;
-  else
-    Result := '';
-  end;
-end;
-
-function GetMeshFileFilter(const SaveType: TPointCloudSaveType): String; overload;
-begin
-  case SaveType of
-    pstAsPly: Result := 'Polygon File Format (*.ply)|*.ply';
+    // stRawMeshData: Result := 'Raw mesh data (*'+cRawMeshFileExt+')|*.'+cRawMeshFileExt;
   else
     Result := '';
   end;
@@ -227,17 +211,7 @@ function GetMeshFileExt(const SaveType: TMeshSaveType): String; overload;
 begin
   case SaveType of
     stMeshAsObj: Result := 'obj';
-    stMeshAsLWO2: Result := 'lwo';
-    stUnprocessedMeshData: Result := cMB3DMeshSegFileExt;
-  else
-    Result := '';
-  end;
-end;
-
-function GetMeshFileExt(const SaveType: TPointCloudSaveType): String; overload;
-begin
-  case SaveType of
-    pstAsPly: Result := 'ply';
+    // stRawMeshData: Result := cRawMeshFileExt;
   else
     Result := '';
   end;

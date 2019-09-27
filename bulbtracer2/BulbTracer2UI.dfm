@@ -229,8 +229,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
           OnChange = SaveTypeCmbChange
           Items.Strings = (
             'Mesh as OBJ'
-            'Mesh as Lightwave3d Object'
-            'Unprocessed raw mesh (for huge meshes) '
             'Don'#39't save, only preview')
         end
       end
@@ -366,8 +364,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Alignment = taLeftJustify
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitLeft = 2
-          ExplicitTop = -2
           object Label1: TLabel
             Left = 18
             Top = 55

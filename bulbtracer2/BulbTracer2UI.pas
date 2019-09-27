@@ -1,7 +1,18 @@
-{ ---------------------------------------------------------------------------- }
-{ BulbTracer2 for MB3D                                                          }
-{ Copyright (C) 2016-2019 Andreas Maschke                                      }
-{ ---------------------------------------------------------------------------- }
+(*
+  BulbTracer2 for MB3D
+  Copyright (C) 2016-2019 Andreas Maschke
+
+  This is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser
+  General Public License as published by the Free Software Foundation; either version 2.1 of the
+  License, or (at your option) any later version.
+
+  This software is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without
+  even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+  Lesser General Public License for more details.
+  You should have received a copy of the GNU Lesser General Public License along with this software;
+  if not, write to the Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  02110-1301 USA, or see the FSF site: http://www.fsf.org.
+*)
 unit BulbTracer2UI;
 
 interface
@@ -187,7 +198,6 @@ type
     procedure ShowTitle(const Caption: String);
     procedure StartCalc;
     procedure SetExportFilenameExt;
-    procedure CheckSavePart(const Idx: Integer);
   protected
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
   public
@@ -233,7 +243,7 @@ var
 implementation
 
 uses CalcVoxelSliceThread, FileHandling, Math, Math3D, Calc, DivUtils, Mand,
-  HeaderTrafos, CustomFormulas, ImageProcess, VectorMath, DateUtils, BulbTracer,
+  HeaderTrafos, CustomFormulas, ImageProcess, VectorMath, DateUtils, BulbTracer2,
   MeshPreviewUI, MeshWriter, MeshReader, MeshIOUtil, MeshSimplifier;
 
 {$R *.dfm}
@@ -1274,10 +1284,11 @@ end;
 procedure TPLYExportCalcThread.Prepare;
 begin
   FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, M3Vfile, FacesList, VertexGenConfig.SurfaceSharpness);
-  if FOwner.FSaveType = stUnprocessedMeshData then begin
+  (*
+  if FOwner.FSaveType = stRawMeshData then begin
     FObjectScanner.IterationIdx := MCTparas.iThreadId - 1;
-    FObjectScanner.IterationCallback := FOwner.CheckSavePart;
   end;
+  *)
   FPrepared := True;
 end;
 
@@ -1324,12 +1335,13 @@ var
 begin
   try
     if (not FForceAbort) or (FCancelType = ctCancelAndShowResult) then begin
-      if( FSaveType = stUnprocessedMeshData ) then begin
+      (*if( FSaveType = stRawMeshData ) then begin
         OutputDebugString(PChar('TOTAL: '+IntToStr(DateUtils.MilliSecondsBetween(Now, 0)-T0)+' ms'));
         for I := 0 to FThreadVertexLists.Count - 1 do begin
           FacesList := TFacesList( FThreadVertexLists[ I ] );
           if FacesList.Count > 0 then begin
-            TUnprocessedMeshFileWriter.SaveToFile( MakeMeshSequenceFilename( FilenameREd.Text ), FacesList, FSavePartIdx);
+            // TODO
+            TRawMeshFileWriter.SaveToFile( MakeMeshSequenceFilename( FilenameREd.Text ), FacesList );
             Inc( FSavePartIdx );
           end;
           FacesList.Clear;
@@ -1337,15 +1349,13 @@ begin
         if not FForceAbort then
           Label13.Caption := 'Elapsed time: ' + IntToStr(Round((DateUtils.MilliSecondsBetween(Now, 0)-T0)/1000.0))+' s';
       end
-      else begin
+      else *) begin
         FacesList := TFacesList.MergeFacesLists( FThreadVertexLists );
         try
           FacesList.DoCenter(1.0);
           if not FForceAbort then begin
             if FSaveType = stMeshAsObj then
               TObjFileWriter.SaveToFile(MakeMeshSequenceFilename( FilenameREd.Text ), FacesList)
-            else if FSaveType = stMeshAsLWO2 then
-              TLightwaveObjFileWriter.SaveToFile(MakeMeshSequenceFilename( FilenameREd.Text ), FacesList);
           end;
           FThreadVertexLists.Clear;
           OutputDebugString(PChar('TOTAL: '+IntToStr(DateUtils.MilliSecondsBetween(Now, 0)-T0)+' ms'));
@@ -1366,7 +1376,7 @@ begin
   else
     Label13.Caption := 'Operation cancelled';
 
-  if OpenGLPreviewCBx.Checked and (  FSaveType <> stUnprocessedMeshData ) then
+  if OpenGLPreviewCBx.Checked (* and (  FSaveType <> stRawMeshData ) *) then
     MeshPreviewBtnClick(nil);
 end;
 
@@ -1532,29 +1542,10 @@ begin
   UpdateVertexGenConfig;
   SaveTypeCmb.Items.Clear;
   SaveTypeCmb.Items.Add('Mesh as OBJ');
-  SaveTypeCmb.Items.Add('Mesh as Lightwave3d Object');
-  SaveTypeCmb.Items.Add('Unprocessed raw mesh (for huge meshes)');
+  // TODO
+  //  SaveTypeCmb.Items.Add('Raw mesh data (for huge meshes)');
   SaveTypeCmb.Items.Add('Don''t save, only preview');
   SaveTypeCmb.ItemIndex := 0;
-end;
-
-procedure TBulbTracer2Frm.CheckSavePart(const Idx: Integer);
-const
-  VERTEX_CHUNKSIZE = 500000;
-var
-  FacesList: TFacesList;
-begin
-  FacesList := TFacesList( FThreadVertexLists[ Idx ] );
-  if FacesList.Count > VERTEX_CHUNKSIZE then begin
-    FSavePartCriticalSection.Enter;
-    try
-      TUnprocessedMeshFileWriter.SaveToFile( MakeMeshSequenceFilename( FilenameREd.Text ), FacesList, FSavePartIdx);
-      Inc( FSavePartIdx );
-      FacesList.Clear;
-    finally
-      FSavePartCriticalSection.Leave;
-    end;
-  end;
 end;
 
 

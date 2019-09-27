@@ -587,6 +587,10 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
       object DescriptionSheet: TTabSheet
         Caption = 'Description'
         ImageIndex = 1
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Panel7: TPanel
           Left = 0
           Top = 0
@@ -619,6 +623,10 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
         Caption = 'Preprocessed code'
         ImageIndex = 2
         OnShow = PreprocessedCodeSheetShow
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Panel22: TPanel
           Left = 0
           Top = 0
@@ -651,6 +659,10 @@ object JITFormulaEditorForm: TJITFormulaEditorForm
       object SupportedFunctionsSheet: TTabSheet
         Caption = 'Supported mathematical functions'
         ImageIndex = 3
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object Panel23: TPanel
           Left = 0
           Top = 0

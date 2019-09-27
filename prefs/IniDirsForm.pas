@@ -54,7 +54,7 @@ implementation
 {$R *.dfm}
 
 uses DivUtils, FileHandling, Mand, LightAdjust, Animation, FormulaGUI,
-  Tiling, VoxelExport, MonteCarloForm, BulbTracerUI;
+  Tiling, VoxelExport, MonteCarloForm, BulbTracer2UI;
 
 procedure TIniDirForm.Button1Click(Sender: TObject);
 var i: Integer;
@@ -157,7 +157,7 @@ begin
     end
     else if t = 12 then
     begin
-      SetDialogDirectory(BulbTracerFrm.SaveDialog, IniDirs[12]);
+      SetDialogDirectory(BulbTracer2Frm.SaveDialog, IniDirs[12]);
   //    MCForm.OPDmc.InitialDir := IniDirs[11];
    //   MCForm.SaveDialog3.InitialDir := IniDirs[11];
     end;
