@@ -19,7 +19,7 @@ interface
 
 uses
   SysUtils, Classes, Windows, dglOpenGL, Vcl.Graphics, VertexList, VectorMath,
-  OpenGLPreviewUtil, ShaderUtil;
+  OpenGLPreviewUtil, ShaderUtil, Forms;
 
 type
   TMeshAppearance = class
@@ -50,12 +50,13 @@ type
 
   TOpenGLHelper = class( TBaseOpenGLHelper )
   private
+    FForm: TForm;
     FMeshAppearance: TMeshAppearance;
     procedure SetupLighting;
     procedure DrawBackground; override;
     procedure ApplicationEventsIdle(Sender: TObject; var Done: Boolean); override;
   public
-    constructor Create(const Canvas: TCanvas);
+    constructor Create(const Form: TForm; const Canvas: TCanvas);
     destructor Destroy; override;
     procedure UpdateMesh(const FacesList: TFacesList); override;
     procedure UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList); override;
@@ -65,15 +66,16 @@ type
 implementation
 
 uses
-  Forms, Math, DateUtils;
+  Math, DateUtils;
 
 const
   WindowTitle = 'Mesh Preview';
 
 { ------------------------------ TOpenGLHelper ------------------------------- }
-constructor TOpenGLHelper.Create(const Canvas: TCanvas);
+constructor TOpenGLHelper.Create(const Form: TForm; const Canvas: TCanvas);
 begin
   inherited Create( Canvas );
+  FForm := Form;
   FMeshAppearance := TMeshAppearance.Create;
 end;
 
@@ -125,8 +127,8 @@ var
   Face: TPFace;
   Scl: Double;
 begin
-  if FRC = 0 then Exit;
-  Done := False;
+  if ( FRC = 0 ) or ( FForm = nil ) or (not FForm.Visible) then
+    Exit;
 
   glClearColor(0,0,0,0);
   glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT);
@@ -135,10 +137,10 @@ begin
     DrawBackground();
 
   glLoadIdentity;
-  glTranslatef( FPosition.X,  FPosition.Y,  ZOffset);
+  glTranslatef( FPosition.X,  FPosition.Y,  ZOffset / FScale);
   glRotatef( FAngle.X, 0.0, 1.0, 0.0);
   glRotatef( - FAngle.Y, 1.0, 0.0, 1.0);
-  Scl := FScale * 3.0/FMaxObjectSize;
+  Scl := (*FScale * *) 3.0/FMaxObjectSize;
   glScalef(Scl, Scl, Scl);
   glTranslatef( 0.0,  0.0,  FPosition.Z);
 
@@ -246,7 +248,6 @@ begin
     FStartTick := GetTickCount;
   end;
   SwapBuffers(FCanvas.Handle);
-  Sleep(1);
 end;
 
 procedure TOpenGLHelper.UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList);
@@ -441,15 +442,16 @@ var
   begin
     Face := FacesList.GetFace(Idx);
     FastAddEdge(Face^.Vertex1, Face^.Vertex2);
+
     if (EdgesList.Count mod 2) = 0 then
       FastAddEdge(Face^.Vertex2, Face^.Vertex3)
     else
       FastAddEdge(Face^.Vertex3, Face^.Vertex1);
 (*
-    AddEdge(Face^.Vertex1, Face^.Vertex2);
-    AddEdge(Face^.Vertex2, Face^.Vertex3);
-    AddEdge(Face^.Vertex3, Face^.Vertex1);
-    *)
+    FastAddEdge(Face^.Vertex1, Face^.Vertex2);
+    FastAddEdge(Face^.Vertex2, Face^.Vertex3);
+    FastAddEdge(Face^.Vertex3, Face^.Vertex1);
+*)
   end;
 
 begin
@@ -639,24 +641,18 @@ begin
   TSVectorMath.SetValue(@EdgesColor, 0.2, 0.2, 0.2);
   TSVectorMath.SetValue(@PointsColor, 0.2, 0.7, 0.2);
 
-//  TSVectorMath.SetValue(@MatAmbient, 65.0 / 255.0, 93.0 / 255.0, 144.0 / 255.0);
-  TSVectorMath.SetValue(@MatAmbient, 0.0, 0.0, 0.0);
-  TSVectorMath.SetValue(@MatSpecular, 0.0 / 255.0, 0.0 / 255.0, 0.0 / 255.0);
-  MatShininess := 10.0;
-  TSVectorMath.SetValue(@MatDiffuse, 0.49, 0.49, 0.55);
+  TSVectorMath.SetValue(@MatAmbient, 32.0 / 255.0, 32.0 / 255.0, 36.0 / 255.0);
+  TSVectorMath.SetValue(@MatSpecular, 255.0 / 255.0, 240.0 / 255.0, 230.0 / 255.0);
+  MatShininess := 2.0;
+  TSVectorMath.SetValue(@MatDiffuse, 0.49, 0.49, 0.49);
 
-  TSVectorMath.SetValue(@LightAmbient, 0.36, 0.36, 0.26);
+  TSVectorMath.SetValue(@LightAmbient, 0.36, 0.36, 0.36);
   TSVectorMath.SetValue(@LightDiffuse, 0.8, 0.8, 0.8);
-  TSVectorMath.SetValue(@LightPosition, 1.0, 11.0, 17.0);
+  TSVectorMath.SetValue(@LightPosition, -1.3, 7.4, 17.0);
 
-  (*
-  LightConstantAttenuation := 1.4;
-  LightLinearAttenuation := 0.001;
-  LightQuadraticAttenuation := 0.004;
-    *)
-  LightConstantAttenuation := 0.02;
-  LightLinearAttenuation := 0.00;
-  LightQuadraticAttenuation := 0.00;
+  LightConstantAttenuation := 0.12;
+  LightLinearAttenuation := 0.0025;
+  LightQuadraticAttenuation := 0.00002;
 
   LightingEnabled := True;
 end;

@@ -419,36 +419,24 @@ var
 begin
   with FConfig do begin
     FMCTparas.mPsiLight := TPsiLight5(@psiLight);
+
     FMCTparas.Ystart := TPVec3D(@FM3Vfile.VHeader.dXmid)^;                                   //abs offs!
     mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[0], FM3Vfile.VHeader.Width * -0.5 + FM3Vfile.Xoff / FScale);
     mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[1], FM3Vfile.VHeader.Height * -0.5 + FM3Vfile.Yoff / FScale);
     mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[2], Z - FM3Vfile.Zslices * 0.5 + FM3Vfile.Zoff / FScale);
     mCopyAddVecWeight(@CC, @FMCTparas.Ystart, @FMCTparas.Vgrads[1], Y);
+
     FIteration3Dext.CalcSIT := True;
     mCopyAddVecWeight(@FIteration3Dext.C1, @CC, @FMCTparas.Vgrads[0], X);
 
     de := FMCTparas.CalcDE(@FIteration3Dext, @FMCTparas);
 
-    // inside: 1
-    // outside: 0
-
-    if de <= 0.00001 then begin
-      Distance := 1.0;
-      if FCalcColors then begin
-        CalcSIgradient1;
-        ColorIdx1 := CalcColorsIdx(@iDif, @psiLight, @FLightVals);
-        CalcSIgradient3;
-        ColorIdx2 := CalcColorsIdx(@iDif, @psiLight, @FLightVals);
-      end;
-    end
-    else begin
-      Distance := 1.0 - FSurfaceSharpness * de;
-      if FCalcColors then begin
-        CalcSIgradient1;
-        ColorIdx1 := CalcColorsIdx(@iDif, @psiLight, @FLightVals);
-        CalcSIgradient3;
-        ColorIdx2 := CalcColorsIdx(@iDif, @psiLight, @FLightVals);
-      end;
+    Distance := 1.0 - FSurfaceSharpness * de;
+    if FCalcColors then begin
+      CalcSIgradient1;
+      ColorIdx1 := CalcColorsIdx(@iDif, @psiLight, @FLightVals);
+      CalcSIgradient3;
+      ColorIdx2 := CalcColorsIdx(@iDif, @psiLight, @FLightVals);
     end;
   end;
 end;

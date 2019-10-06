@@ -160,7 +160,7 @@ end;
 
 procedure TMeshPreviewFrm.FormCreate(Sender: TObject);
 begin
-  FOpenGLHelper := TOpenGLHelper.Create(Canvas);
+  FOpenGLHelper := TOpenGLHelper.Create(Self, Canvas);
   FOpenGLHelper.SetWindowCaptionEvent := SetWindowCaption;
   AppearancePageCtrl.ActivePage := MaterialSheet;
   AppearanceToUI;

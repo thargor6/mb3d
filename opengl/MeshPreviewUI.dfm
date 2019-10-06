@@ -32,7 +32,6 @@ object MeshPreviewFrm: TMeshPreviewFrm
     Align = alRight
     TabOrder = 0
     OnDblClick = NaviPanelDblClick
-    ExplicitHeight = 464
     object Label15: TLabel
       Left = 7
       Top = 425
@@ -94,10 +93,6 @@ object MeshPreviewFrm: TMeshPreviewFrm
         TabOrder = 0
         object MaterialSheet: TTabSheet
           Caption = 'Material'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Label17: TLabel
             Left = 4
             Top = 8

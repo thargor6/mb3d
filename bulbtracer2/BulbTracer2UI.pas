@@ -35,16 +35,6 @@ type
   protected
     procedure Execute; override;
   end;
-  TFVoxelExportCalcThread = class(TThread)
-  private
-    { Private-Deklarationen }
-    Iteration3Dext: TIteration3Dext;
-  public
-    { Public-Deklarationen }
-    MCTparas: TMCTparameter;
-  protected
-    procedure Execute; override;
-  end;
 
   TParamSource = (psMain, psSingleFile, psFileSequence);
 
@@ -274,118 +264,46 @@ begin
     Visible := False;
 end;
 
-procedure TFVoxelExportCalcThread.Execute;
-var d: Double;
-    CC: TVec3D;
-    cPsiLight: TPsiLight5;
-    x, y: Integer;
-begin
-    with MCTparas do
-    try
-      IniIt3D(@MCTparas, @Iteration3Dext);
-      y := CalcRect.Top + iThreadId - 1;
-      while y <= CalcRect.Bottom do
-      begin
-        cPsiLight := TPsiLight5(Integer(pSiLight) + (y - CalcRect.Top) * SLoffset);
-        mCopyAddVecWeight(@CC, @Ystart, @Vgrads[1], y);
-        for x := 0 to CalcRect.Right do
-        begin
-          Iteration3Dext.CalcSIT := False;
-          mCopyAddVecWeight(@Iteration3Dext.C1, @CC, @Vgrads[0], x);
-
-          if iSliceCalc = 0 then //on maxits , does not work in DEcomb mode!
-          begin
-            if DEoption > 19 then mMandFunctionDE(@Iteration3Dext.C1)
-                             else mMandFunction(@Iteration3Dext.C1);
-            if bInAndOutside then
-            begin
-              if (Iteration3Dext.ItResultI < iMaxIt) and
-                 (Iteration3Dext.ItResultI >= AOdither) then cPsiLight.SIgradient := 1
-                                                        else cPsiLight.SIgradient := 0;
-            end
-            else
-            begin
-              if Iteration3Dext.ItResultI < iMaxIt then cPsiLight.SIgradient := 0
-                                                   else cPsiLight.SIgradient := 1;
-              if bInsideRendering then cPsiLight.SIgradient := 1 - cPsiLight.SIgradient;
-            end;
-          end
-          else
-          begin
-            d := CalcDE(@Iteration3Dext, @MCTparas);   //in+outside: only if d between dmin and dmax
-            if d < DEstop then
-            begin
-              if bInAndOutside and (d < DEAOmaxL) then cPsiLight.SIgradient := 0
-                                                  else cPsiLight.SIgradient := 1;
-            end
-            else cPsiLight.SIgradient := 0;
-          end;
-          Inc(cPsiLight);
-          if PCalcThreadStats.pLBcalcStop^ then Break;
-        end;
-        PCalcThreadStats.CTrecords[iThreadID].iActualYpos := y;
-        if PCalcThreadStats.pLBcalcStop^ then Break;
-        Inc(y, iThreadCount);
-      end;
-    finally
-      PCalcThreadStats.CTrecords[iThreadID].isActive := 0;
-      if not PCalcThreadStats.pLBcalcStop^ then
-        PCalcThreadStats.CTrecords[iThreadID].iActualYpos := iMandHeight;
-      PostMessage(PCalcThreadStats.pMessageHwnd, WM_ThreadReady, 0, 0);
-    end;
-end;
-
 procedure TFVoxelExportCalcPreviewThread.Execute;
+const
+  AvgDEstop = 0.2;
 var d: Double;
     CC: TVec3D;
     cLi: PCardinal;
     x, y: Integer;
 begin
     with MCTparas do
-    try
+      try
       IniIt3D(@MCTparas, @Iteration3Dext);
       y := CalcRect.Top + iThreadId - 1;
       while y <= CalcRect.Bottom do
       begin
         cLi := PCardinal(Integer(pSiLight) + (y - CalcRect.Top) * SLoffset);
         mCopyAddVecWeight(@CC, @Ystart, @Vgrads[1], y);
-        for x := 0 to CalcRect.Right do
-        begin
-          Iteration3Dext.CalcSIT := False;
-          mCopyAddVecWeight(@Iteration3Dext.C1, @CC, @Vgrads[0], x);
-          if iSliceCalc = 0 then //on maxits , does not work in DEcomb mode!
-          begin
-            if DEoption > 19 then mMandFunctionDE(@Iteration3Dext.C1)
-                             else mMandFunction(@Iteration3Dext.C1);
-            if bInAndOutside then
-            begin
-              if (Iteration3Dext.ItResultI < iMaxIt) and
-                 (Iteration3Dext.ItResultI >= AOdither) then cLi^ := 1 else cLi^ := 0;
-            end                              //minits
-            else
-            begin
-              if Iteration3Dext.ItResultI < iMaxIt then cLi^ := 0 else cLi^ := 1;
-              if bInsideRendering then cLi^ := 1 - cLi^;
-            end;
+        for x := 0 to CalcRect.Right do begin
+          if ((y = CalcRect.Top) or (y=CalcRect.Bottom)) and ((x=0) or (x=CalcRect.Right)) then begin
+            cLi^ := 1
           end
-          else
-          begin
-            d := CalcDE(@Iteration3Dext, @MCTparas);   //in+outside: only if d between dmin and dmax
-            if d < DEstop then
+          else begin
+            Iteration3Dext.CalcSIT := False;
+            mCopyAddVecWeight(@Iteration3Dext.C1, @CC, @Vgrads[0], x);
             begin
-              if bInAndOutside and (d < DEAOmaxL) then cLi^ := 0 else cLi^ := 1;
-            end                        //MinDE
-            else cLi^ := 0;
+              d := CalcDE(@Iteration3Dext, @MCTparas);   //in+outside: only if d between dmin and dmax
+              if d < AvgDEstop then
+                cLi^ := 1
+              else
+                cLi^ := 0;
+            end;
           end;
           Inc(cLi);
-          if PCalcThreadStats.pLBcalcStop^ then Break;
+          if PCalcThreadStats^.pLBcalcStop^ then Break;
         end;
-        if PCalcThreadStats.pLBcalcStop^ then Break;
+        if PCalcThreadStats^.pLBcalcStop^ then Break;
         Inc(y, iThreadCount);
       end;
     finally
-      PCalcThreadStats.CTrecords[iThreadID].isActive := 0;
-      PostMessage(PCalcThreadStats.pMessageHwnd, WM_ThreadReady, 0, 0);
+      PCalcThreadStats^.CTrecords[iThreadID].isActive := 0;
+      PostMessage(PCalcThreadStats^.pMessageHwnd, WM_ThreadReady, 0, 0);
     end;
 end;
 
@@ -395,7 +313,7 @@ var VoxCalcThreads: array of TFVoxelExportCalcPreviewThread;
     MCTparas: TMCTparameter;
     d: Double;
 begin
-  ThreadCount := Min(Mand3DForm.UpDown3.Position, PreviewSize);
+  ThreadCount := Min(Mand3DForm.UpDown3.Position - 1, PreviewSize);
   try
     M3Vfile.VHeader.TilingOptions := 0;
     bGetMCTPverbose := False;
@@ -441,7 +359,7 @@ begin
         VoxCalcThreads[x - 1] := TFVoxelExportCalcPreviewThread.Create(True);
         VoxCalcThreads[x - 1].FreeOnTerminate := True;
         VoxCalcThreads[x - 1].MCTparas        := MCTparas;
-        VoxCalcThreads[x - 1].Priority        := cTPrio[Mand3DForm.ComboBox2.ItemIndex];
+        VoxCalcThreads[x - 1].Priority        := tpHigher; //cTPrio[Mand3DForm.ComboBox2.ItemIndex];
         VCalcThreadStats.CTrecords[x].isActive := 1;
       except
         ThreadCount := x - 1;
@@ -821,7 +739,7 @@ begin
     end
     else begin
       PreviewProgressBar.Position := 0;
-      PreviewProgressBar.Max := CalcPreviewSize;
+      PreviewProgressBar.Max := 10; //CalcPreviewSize;
       MakeM3V;
       CalcPreviewSizes;
     //  Mand3DForm.bCalcTile := False;
@@ -847,8 +765,11 @@ procedure TBulbTracer2Frm.PaintNextPreviewSlice(nr: Integer);
 var x, y, y2, i, j, i2, i3, i4, im, ik: Integer;
     PSLstart, PLoffset, bmpSL, bmpOffset, bmpOffP: Integer;
     PC, PSL: PCardinal;
+    MaxPos: Integer;
 begin
-    PreviewProgressBar.StepIt;
+    //PreviewProgressBar.StepIt;
+    MaxPos := CalcPreviewSize;
+    PreviewProgressBar.Position := Round(10.0 * (CalcPreviewSize - nr + 1) / CalcPreviewSize);
     PSLstart := Integer(@VsiLight[0]);
     PLoffset := PVwid * SizeOf(Cardinal);
     i := Round((165 - (nr / PVdep) * 128) * 1.5);
@@ -957,6 +878,7 @@ end;
 procedure TBulbTracer2Frm.Timer2Timer(Sender: TObject);  //preview threads
 var y, it: Integer;
 begin
+  OutputDebugString(PChar('Timer2 ' + IntToStr(Timer2.Interval)));
     Timer2.Enabled := False;
     it := 0;
     with VCalcThreadStats do
@@ -1520,7 +1442,7 @@ end;
 
 procedure TBulbTracer2Frm.ShowTitle(const Caption: String);
 begin
-  Self.Caption := 'Bulb Tracer [ ' + Caption + ' ]';
+  Self.Caption := 'Bulb Tracer 2 [ ' + Caption + ' ]';
 end;
 
 procedure TBulbTracer2Frm.SetExportFilenameExt;

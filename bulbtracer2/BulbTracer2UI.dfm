@@ -293,7 +293,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Width = 88
           Height = 21
           TabOrder = 2
-          Text = '256'
+          Text = '64'
           OnChange = MeshVResolutionEditChange
         end
         object SurfaceSharpnessEdit: TEdit
@@ -656,7 +656,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
           end
           object Button5: TButton
             Left = 340
-            Top = 292
+            Top = 294
             Width = 61
             Height = 54
             Caption = 'Calculate preview'
@@ -667,28 +667,25 @@ object BulbTracer2Frm: TBulbTracer2Frm
           end
           object RadioGroup2: TRadioGroup
             Left = 340
-            Top = 4
+            Top = 3
             Width = 61
-            Height = 145
+            Height = 174
             Caption = 'Size:'
             ItemIndex = 2
             Items.Strings = (
               '16 '#179
               '32 '#179
               '64 '#179
-              '128 '#179
-              '256 '#179)
+              '128 '#179)
             TabOrder = 1
             OnClick = RadioGroup2Click
           end
           object CheckBox2: TCheckBox
             Left = 340
-            Top = 184
+            Top = 200
             Width = 67
             Height = 39
             Caption = 'Auto update preview'
-            Checked = True
-            State = cbChecked
             TabOrder = 2
             WordWrap = True
           end
