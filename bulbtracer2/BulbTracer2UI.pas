@@ -51,40 +51,6 @@ type
     PageControl1: TPageControl;
     TabSheet1: TTabSheet;
     Panel1: TPanel;
-    PageControl2: TPageControl;
-    TabSheet2: TTabSheet;
-    Panel3: TPanel;
-    Label1: TLabel;
-    Label2: TLabel;
-    Label3: TLabel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label14: TLabel;
-    Edit1: TEdit;
-    Edit3: TEdit;
-    Edit4: TEdit;
-    Edit5: TEdit;
-    Edit6: TEdit;
-    Edit7: TEdit;
-    ImportParamsFromMainBtn: TButton;
-    CheckBox3: TCheckBox;
-    UpDown1: TUpDown;
-    UpDown2: TUpDown;
-    UpDown3: TUpDown;
-    UpDown4: TUpDown;
-    UpDown5: TUpDown;
-    UpDown6: TUpDown;
-    UpDown7: TUpDown;
-    RadioGroup3: TRadioGroup;
-    Button6: TButton;
-    PageControl3: TPageControl;
-    TabSheet3: TTabSheet;
-    Panel4: TPanel;
-    Image1: TImage;
-    Button5: TButton;
-    RadioGroup2: TRadioGroup;
-    CheckBox2: TCheckBox;
     CancelBtn: TButton;
     Panel7: TPanel;
     FilenameREd: TEdit;
@@ -96,7 +62,6 @@ type
     Label10: TLabel;
     OpenGLPreviewCBx: TCheckBox;
     MeshPreviewBtn: TButton;
-    Button2: TButton;
     Panel9: TPanel;
     Label24: TLabel;
     FrameEdit: TEdit;
@@ -104,7 +69,6 @@ type
     FrameTBar: TTrackBarEx;
     OpenDialog1: TOpenDialog;
     GenCurrMeshBtn: TButton;
-    PreviewProgressBar: TProgressBar;
     Label18: TLabel;
     MeshVResolutionEdit: TEdit;
     MeshVResolutionLbl: TLabel;
@@ -113,6 +77,31 @@ type
     Label23: TLabel;
     MeshVResolutionUpDown: TUpDown;
     CalculateColorsCBx: TCheckBox;
+    Button5: TButton;
+    Image1: TImage;
+    RadioGroup2: TRadioGroup;
+    PreviewProgressBar: TProgressBar;
+    CheckBox2: TCheckBox;
+    IncXOffsetBtn: TSpeedButton;
+    DecXOffsetBtn: TSpeedButton;
+    IncYOffsetBtn: TSpeedButton;
+    DecYOffsetBtn: TSpeedButton;
+    IncZOffsetBtn: TSpeedButton;
+    DecZOffsetBtn: TSpeedButton;
+    Edit1: TEdit;
+    Label1: TLabel;
+    Edit3: TEdit;
+    Label2: TLabel;
+    Edit4: TEdit;
+    Label3: TLabel;
+    CheckBox3: TCheckBox;
+    Button6: TButton;
+    ImportParamsFromMainBtn: TButton;
+    Button2: TButton;
+    ScaleDownBtn: TSpeedButton;
+    ScaleUpBtn: TSpeedButton;
+    ScaleEdit: TEdit;
+    Label4: TLabel;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -121,13 +110,11 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure Button5Click(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
-    procedure UpDown4Click(Sender: TObject; Button: TUDBtnType);
     procedure UpDown5Click(Sender: TObject; Button: TUDBtnType);
     procedure UpDown6Click(Sender: TObject; Button: TUDBtnType);
     procedure UpDown7Click(Sender: TObject; Button: TUDBtnType);
     procedure Timer3Timer(Sender: TObject);
     procedure Edit10Change(Sender: TObject);
-    procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
     procedure Button6Click(Sender: TObject);
     procedure CalculateBtnClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -145,6 +132,10 @@ type
     procedure FrameTBarChange(Sender: TObject);
     procedure FrameTBarMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure IncXOffsetBtnClick(Sender: TObject);
+    procedure IncYOffsetBtnClick(Sender: TObject);
+    procedure IncZOffsetBtnClick(Sender: TObject);
+    procedure ScaleDownBtnClick(Sender: TObject);
   private
     { Private-Deklarationen }
   //  PreviewVoxel: array of Cardinal;   //buffer to not calc everything again if shifted position
@@ -281,21 +272,16 @@ begin
         cLi := PCardinal(Integer(pSiLight) + (y - CalcRect.Top) * SLoffset);
         mCopyAddVecWeight(@CC, @Ystart, @Vgrads[1], y);
         for x := 0 to CalcRect.Right do begin
-          if ((y = CalcRect.Top) or (y=CalcRect.Bottom)) and ((x=0) or (x=CalcRect.Right)) then begin
-            cLi^ := 1
-          end
-          else begin
-            Iteration3Dext.CalcSIT := False;
-            mCopyAddVecWeight(@Iteration3Dext.C1, @CC, @Vgrads[0], x);
-            begin
-              d := CalcDE(@Iteration3Dext, @MCTparas);   //in+outside: only if d between dmin and dmax
-              if d < AvgDEstop then
-                cLi^ := 1
-              else
-                cLi^ := 0;
-            end;
+          Iteration3Dext.CalcSIT := False;
+          mCopyAddVecWeight(@Iteration3Dext.C1, @CC, @Vgrads[0], x);
+          begin
+            d := CalcDE(@Iteration3Dext, @MCTparas);   //in+outside: only if d between dmin and dmax
+            if d < AvgDEstop then
+              cLi^ := 1
+            else
+              cLi^ := 0;
           end;
-          Inc(cLi);
+        Inc(cLi);
           if PCalcThreadStats^.pLBcalcStop^ then Break;
         end;
         if PCalcThreadStats^.pLBcalcStop^ then Break;
@@ -313,7 +299,7 @@ var VoxCalcThreads: array of TFVoxelExportCalcPreviewThread;
     MCTparas: TMCTparameter;
     d: Double;
 begin
-  ThreadCount := Min(Mand3DForm.UpDown3.Position - 1, PreviewSize);
+  ThreadCount := Min(Mand3DForm.UpDown3.Position, PreviewSize);
   try
     M3Vfile.VHeader.TilingOptions := 0;
     bGetMCTPverbose := False;
@@ -359,7 +345,7 @@ begin
         VoxCalcThreads[x - 1] := TFVoxelExportCalcPreviewThread.Create(True);
         VoxCalcThreads[x - 1].FreeOnTerminate := True;
         VoxCalcThreads[x - 1].MCTparas        := MCTparas;
-        VoxCalcThreads[x - 1].Priority        := tpHigher; //cTPrio[Mand3DForm.ComboBox2.ItemIndex];
+        VoxCalcThreads[x - 1].Priority        := cTPrio[Mand3DForm.ComboBox2.ItemIndex];
         VCalcThreadStats.CTrecords[x].isActive := 1;
       except
         ThreadCount := x - 1;
@@ -439,9 +425,9 @@ begin
       Xoff := StrToFloatK(Edit1.Text);
       Yoff := StrToFloatK(Edit3.Text);
       Zoff := StrToFloatK(Edit4.Text);
-      Xscale := StrToFloatK(Edit5.Text);
-      Yscale := StrToFloatK(Edit6.Text);
-      Zscale := StrToFloatK(Edit7.Text);
+      Xscale := StrToFloatK(ScaleEdit.Text);
+      Yscale := Xscale;
+      Zscale := Xscale;
       UseDefaultOrientation := CheckBox3.Checked;
       Zslices := 100;
       ObjectD := 1;
@@ -474,11 +460,9 @@ begin
       b := bUserChange;
       bUserChange := False;
       Edit1.Text := FloatToStr(Xoff);
-      Edit5.Text := FloatToStr(Xscale);
+      ScaleEdit.Text := FloatToStr(Xscale);
       Edit3.Text := FloatToStr(Yoff);
-      Edit6.Text := FloatToStr(Yscale);
       Edit4.Text := FloatToStr(Zoff);
-      Edit7.Text := FloatToStr(Zscale);
       GetOutputFolderFromrecord;
       CheckBox3.Checked := UseDefaultOrientation;
       CalcImageSize;
@@ -661,7 +645,7 @@ begin
     Benabled := False;
     for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
     bBulbTracerFormCreated := True;
-    Panel4.DoubleBuffered := True;
+    //Panel4.DoubleBuffered := True;
 
     FCancelType := ctCancelAndShowResult;
     CancelTypeCmb.ItemIndex := Ord(FCancelType);
@@ -738,6 +722,7 @@ begin
   //    Inc(CalcVoxelPreviewIndex);
     end
     else begin
+      MeshPreviewFrm.Visible := False;
       PreviewProgressBar.Position := 0;
       PreviewProgressBar.Max := 10; //CalcPreviewSize;
       MakeM3V;
@@ -898,23 +883,6 @@ begin
     else Timer2.Enabled := True;
 end;
 
-procedure TBulbTracer2Frm.UpDown4Click(Sender: TObject; Button: TUDBtnType);
-var d: Double;
-    b: LongBool;
-begin
-    MakeM3V;
-    if RadioGroup3.ItemIndex = 0 then d := 1.1 else d := 1.01;
-    if Button <> btNext then d := 1 / d;
-    ScaleVectorV(@M3Vfile.Xscale, d);
-    b := bUserChange;
-    bUserChange := False;
-    Edit5.Text := FloatToStrSingle(M3Vfile.Xscale);
-    Edit6.Text := FloatToStrSingle(M3Vfile.Yscale);
-    Edit7.Text := FloatToStrSingle(M3Vfile.Zscale);
-    bUserChange := b;
-    if b then StartNewPreview;
-end;
-
 procedure TBulbTracer2Frm.UpDown5Click(Sender: TObject; Button: TUDBtnType);
 var d: Double;
 begin
@@ -1020,28 +988,13 @@ begin
     end;                     
 end;
 
-procedure TBulbTracer2Frm.UpDown1Click(Sender: TObject; Button: TUDBtnType);
-var d: Double;
-    t: Integer;
-begin
-    MakeM3V;
-    if RadioGroup3.ItemIndex = 0 then d := 1.1 else d := 1.01;
-    if Button <> btNext then d := 1 / d;
-    t := (Sender as TUpDown).Tag;
-    PDouble(Integer(@M3Vfile.Xscale) + t * 8)^ := PDouble(Integer(@M3Vfile.Xscale) + t * 8)^ * d;
-    (FindComponent('Edit'+IntToStr(5 + t)) as TEdit).Text :=
-      FloatToStrSingle(PDouble(Integer(@M3Vfile.Xscale) + t * 8)^);
-end;
-
 procedure TBulbTracer2Frm.Button6Click(Sender: TObject);
 begin
     bUserChange := False;
     Edit1.Text := '0';
     Edit3.Text := '0';
     Edit4.Text := '0';
-    Edit5.Text := '1';
-    Edit6.Text := '1';
-    Edit7.Text := '1';
+    ScaleEdit.Text := '1';
     bUserChange := True;
     Edit1Change(Sender);
 end;
@@ -1235,6 +1188,19 @@ begin
   end;
 end;
 
+procedure TBulbTracer2Frm.ScaleDownBtnClick(Sender: TObject);
+var d: Double;
+    t: Integer;
+begin
+    MakeM3V;
+    d := 1.1;
+    if Sender <> ScaleUpBtn then d := 1 / d;
+    M3Vfile.Xscale := M3Vfile.Xscale * d;
+    M3Vfile.Yscale := M3Vfile.Yscale * d;
+    M3Vfile.Zscale := M3Vfile.Zscale * d;
+    ScaleEdit.Text := FloatToStrSingle( M3Vfile.Xscale );
+end;
+
 function TBulbTracer2Frm.MakeMeshSequenceFilename( const BaseFilename: String ): String;
 var
   I: Integer;
@@ -1372,13 +1338,13 @@ begin
   if Enabled then begin
     ImportParamsFromMainBtn.Enabled := True;
     Button5.Enabled := Benabled;
-    Panel3.Enabled := True;
+    Panel1.Enabled := True;
     Button5.Caption := 'Calculate preview';
   end
   else begin
     ImportParamsFromMainBtn.Enabled := False;
     Button5.Enabled := False;
-    Panel3.Enabled := False;
+    Panel1.Enabled := False;
   end;
   CancelBtn.Enabled := FCalculating;
  // CancelBtn.Visible := CancelBtn.Enabled;
@@ -1443,6 +1409,33 @@ end;
 procedure TBulbTracer2Frm.ShowTitle(const Caption: String);
 begin
   Self.Caption := 'Bulb Tracer 2 [ ' + Caption + ' ]';
+end;
+
+procedure TBulbTracer2Frm.IncZOffsetBtnClick(Sender: TObject);
+var d: Double;
+begin
+    d := 2.2 / (M3Vfile.VHeader.dZoom * M3Vfile.Zscale * Max(1, PVdep - 1));
+    if Sender = IncZOffsetBtn then d := -d;
+    M3Vfile.Zoff := M3Vfile.Zoff + d;
+    Edit4.Text := FloatToStrSingle(M3Vfile.Zoff);
+end;
+
+procedure TBulbTracer2Frm.IncXOffsetBtnClick(Sender: TObject);
+var d: Double;
+begin
+    d := 2.2 / (M3Vfile.VHeader.dZoom * M3Vfile.Zscale * Max(1, PVdep - 1));
+    if Sender = IncXOffsetBtn then d := -d;
+    M3Vfile.Xoff := M3Vfile.Xoff + d;
+    Edit1.Text := FloatToStrSingle(M3Vfile.Xoff);
+end;
+
+procedure TBulbTracer2Frm.IncYOffsetBtnClick(Sender: TObject);
+var d: Double;
+begin
+    d := -2.2 / (M3Vfile.VHeader.dZoom * M3Vfile.Zscale * Max(1, PVdep - 1));
+    if Sender = DecYOffsetBtn then d := -d;
+    M3Vfile.Yoff := M3Vfile.Yoff + d;
+    Edit3.Text := FloatToStrSingle(M3Vfile.Yoff);
 end;
 
 procedure TBulbTracer2Frm.SetExportFilenameExt;

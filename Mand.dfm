@@ -851,10 +851,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet5: TTabSheet
         Caption = 'Infos'
         ImageIndex = 4
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label29: TLabel
           Left = 9
           Top = 67
@@ -3069,10 +3065,6 @@ object Mand3DForm: TMand3DForm
         object TabSheet11: TTabSheet
           Caption = 'Tools'
           ImageIndex = 3
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object SpeedButton25: TSpeedButton
             Left = 2
             Top = 4
