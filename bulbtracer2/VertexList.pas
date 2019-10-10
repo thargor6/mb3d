@@ -102,6 +102,7 @@ type
     procedure AddFace(const Vertex1, Vertex2, Vertex3: TPD4Vector); overload;
     procedure AddFaceWithoutColor(const Vertex1, Vertex2, Vertex3: TPD4Vector);
     function ForceAddVertex(const X, Y, Z: Single): Integer; overload;
+    function ForceAddVertex(const X, Y, Z, ColorIdx: Single): Integer; overload;
     function AddVertex(const X, Y, Z: Single): Integer; overload;
     function AddVertex(const V: TPS3Vector): Integer; overload;
     function AddVertex(const V: TPS3Vector; const ColorIdx: Single): Integer; overload;
@@ -609,6 +610,18 @@ begin
   Key := MakeVertexKey(X, Y, Z);
   Result := FVertices.Count;
   FVertices.AddVertex(X, Y, Z);
+  if not FVertexKeys.ContainsKey(Key) then
+    FVertexKeys.Add(Key, Result);
+end;
+
+function TFacesList.ForceAddVertex(const X, Y, Z, ColorIdx: Single): Integer;
+var
+  Key: String;
+begin
+  Key := MakeVertexKey(X, Y, Z);
+  Result := FVertices.Count;
+  FVertices.AddVertex(X, Y, Z);
+  FVertexColors.Add( ColorIdx );
   if not FVertexKeys.ContainsKey(Key) then
     FVertexKeys.Add(Key, Result);
 end;

@@ -39,71 +39,74 @@ type
   TParamSource = (psMain, psSingleFile, psFileSequence);
 
   TBulbTracer2Frm = class(TForm)
-    Panel2: TPanel;
-    Button1: TButton;
     SaveDialog: TSaveDialog;
     Timer1: TTimer;
-    Label13: TLabel;
     Timer2: TTimer;
     Timer3: TTimer;
-    CalculateBtn: TButton;
-    ProgressBar: TProgressBar;
-    PageControl1: TPageControl;
-    TabSheet1: TTabSheet;
     Panel1: TPanel;
-    CancelBtn: TButton;
-    Panel7: TPanel;
-    FilenameREd: TEdit;
+    OpenDialog1: TOpenDialog;
+    ImportParamsFromMainBtn: TButton;
+    Button2: TButton;
+    GroupBox1: TGroupBox;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Edit1: TEdit;
+    Edit3: TEdit;
+    Edit4: TEdit;
+    CheckBox3: TCheckBox;
+    Button6: TButton;
+    ScaleEdit: TEdit;
+    GroupBox2: TGroupBox;
     Button3: TButton;
-    Panel8: TPanel;
-    Label19: TLabel;
-    CancelTypeCmb: TComboBox;
-    SaveTypeCmb: TComboBox;
-    Label10: TLabel;
+    FilenameREd: TEdit;
+    Label18: TLabel;
+    MeshVResolutionLbl: TLabel;
+    Label23: TLabel;
+    MeshVResolutionEdit: TEdit;
+    SurfaceSharpnessEdit: TEdit;
+    SurfaceSharpnessUpDown: TUpDown;
+    MeshVResolutionUpDown: TUpDown;
+    CalculateColorsCBx: TCheckBox;
+    GroupBox4: TGroupBox;
+    GroupBox5: TGroupBox;
     OpenGLPreviewCBx: TCheckBox;
     MeshPreviewBtn: TButton;
+    Label5: TLabel;
+    MaxVerticeCountEdit: TEdit;
+    GroupBox6: TGroupBox;
+    Panel2: TPanel;
     Panel9: TPanel;
     Label24: TLabel;
     FrameEdit: TEdit;
     FrameUpDown: TUpDown;
     FrameTBar: TTrackBarEx;
-    OpenDialog1: TOpenDialog;
+    ProgressBar: TProgressBar;
+    Button1: TButton;
+    Label13: TLabel;
+    CalculateBtn: TButton;
     GenCurrMeshBtn: TButton;
-    Label18: TLabel;
-    MeshVResolutionEdit: TEdit;
-    MeshVResolutionLbl: TLabel;
-    SurfaceSharpnessEdit: TEdit;
-    SurfaceSharpnessUpDown: TUpDown;
-    Label23: TLabel;
-    MeshVResolutionUpDown: TUpDown;
-    CalculateColorsCBx: TCheckBox;
-    Button5: TButton;
+    CancelTypeCmb: TComboBox;
+    Label19: TLabel;
+    CancelBtn: TButton;
+    SaveTypeCmb: TComboBox;
+    Label10: TLabel;
+    Panel3: TPanel;
     Image1: TImage;
-    RadioGroup2: TRadioGroup;
-    PreviewProgressBar: TProgressBar;
-    CheckBox2: TCheckBox;
     IncXOffsetBtn: TSpeedButton;
     DecXOffsetBtn: TSpeedButton;
     IncYOffsetBtn: TSpeedButton;
     DecYOffsetBtn: TSpeedButton;
     IncZOffsetBtn: TSpeedButton;
     DecZOffsetBtn: TSpeedButton;
-    Edit1: TEdit;
-    Label1: TLabel;
-    Edit3: TEdit;
-    Label2: TLabel;
-    Edit4: TEdit;
-    Label3: TLabel;
-    CheckBox3: TCheckBox;
-    Button6: TButton;
-    ImportParamsFromMainBtn: TButton;
-    Button2: TButton;
     ScaleDownBtn: TSpeedButton;
     ScaleUpBtn: TSpeedButton;
-    ScaleEdit: TEdit;
-    Label4: TLabel;
-    Label5: TLabel;
-    MaxVerticeCountEdit: TEdit;
+    PreviewProgressBar: TProgressBar;
+    RadioGroup2: TRadioGroup;
+    CheckBox2: TCheckBox;
+    Button5: TButton;
+    Label6: TLabel;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -138,6 +141,7 @@ type
     procedure IncYOffsetBtnClick(Sender: TObject);
     procedure IncZOffsetBtnClick(Sender: TObject);
     procedure ScaleDownBtnClick(Sender: TObject);
+    procedure OpenGLPreviewCBxClick(Sender: TObject);
   private
     { Private-Deklarationen }
   //  PreviewVoxel: array of Cardinal;   //buffer to not calc everything again if shifted position
@@ -1304,6 +1308,12 @@ procedure TBulbTracer2Frm.MeshVResolutionEditChange(Sender: TObject);
 begin
   if not FRefreshing then
     MeshVResolutionLbl.Caption := ' x '+MeshVResolutionEdit.Text + ' x '+MeshVResolutionEdit.Text;
+end;
+
+procedure TBulbTracer2Frm.OpenGLPreviewCBxClick(Sender: TObject);
+begin
+  if not OpenGLPreviewCBx.Checked then
+    MeshPreviewFrm.Visible := False;
 end;
 
 procedure TBulbTracer2Frm.WndProc(var Message: TMessage);

@@ -66,7 +66,7 @@ type
 implementation
 
 uses
-  Math, DateUtils;
+  Math, DateUtils, BulbTracer2;
 
 const
   WindowTitle = 'Mesh Preview';
@@ -161,8 +161,14 @@ begin
       dsPoints:
         begin
           glShadeModel(GL_FLAT);
-          glPointSize(5.0);
-          glColor3f(FMeshAppearance.PointsColor.X, FMeshAppearance.PointsColor.Y, FMeshAppearance.PointsColor.Z);
+          glPointSize(2.0);
+          if FVertexColors<>nil then begin
+            glEnableClientState (GL_COLOR_ARRAY);
+            glColorPointer( 3, GL_FLOAT, SizeOf(TGLVertex), FVertexColors);
+          end
+          else begin
+            glColor3f(FMeshAppearance.PointsColor.X, FMeshAppearance.PointsColor.Y, FMeshAppearance.PointsColor.Z);
+          end;
           glDrawElements( GL_POINTS, FFaceCount * 3, GL_UNSIGNED_INT, FFaces );
         end;
       dsWireframe:
@@ -198,7 +204,6 @@ begin
         begin
           SetupLighting;
           glShadeModel(GL_SMOOTH);
-          // TODO: color
           glColor3f(FMeshAppearance.SurfaceColor.X, FMeshAppearance.SurfaceColor.Y, FMeshAppearance.SurfaceColor.Z);
           glDrawElements( GL_TRIANGLES, FFaceCount * 3, GL_UNSIGNED_INT, FFaces );
         end;
@@ -338,7 +343,7 @@ begin
         FFaces := nil;
         FEdges := nil;
       except
-        if GLVertexColors <> nil then 
+        if GLVertexColors <> nil then
            FreeMem( GLVertexColors );
         raise;
       end;
@@ -364,9 +369,11 @@ var
   Vertex: TPS3Vector;
   Face: TPFace;
   Normals: TPS3VectorList;
-
+  WithColors: Boolean;
+  GLVertexColors, GLVertexColor: TPGLVertex;
   FacesList: TFacesList;
   FreeFacesList: boolean;
+  ColorIdx1, ColorIdx2: Single;
 
   procedure AddVertex(const Idx: Integer);
   var
@@ -389,6 +396,21 @@ var
     GLVertex^.Y := -Vertex^.Y;
     GLVertex^.Z := -Vertex^.Z;
     GLVertex := Pointer(Longint(GLVertex)+SizeOf(TGLVertex));
+
+
+    if WithColors then begin
+      TMCCubes.DecodeColorIdx(FacesList.VertexColors[Idx], ColorIdx1, ColorIdx2);
+      if ColorIdx1 < 0.0 then
+        ColorIdx1 := 0.0
+      else if ColorIdx1 > 1.0 then
+        ColorIdx1 := 1.0;
+
+      GLVertexColor^.X := ColorIdx1;
+      GLVertexColor^.Y := 1.0 - ColorIdx1;
+      GLVertexColor^.Z := 0.0;
+      GLVertexColor := Pointer(Longint(GLVertexColor)+SizeOf(TGLVertex));
+    end;
+
   end;
 
   procedure AddNormal(const Idx: Integer);
@@ -471,17 +493,22 @@ begin
   FacesList := nil;
   FreeFacesList := False;
   try
+    WithColors := (NewFacesList.VertexColors.Count > 0) and (NewFacesList.VertexColors.Count = NewFacesList.VertexCount);
     if (MaxVerticeCount > 0) and (NewFacesList.VertexCount > MaxVerticeCount) then begin
       FacesList := TFacesList.Create;
       FreeFacesList := True;
       for I := 0 to MaxVerticeCount - 1 do begin
         Vertex := NewFacesList.GetVertex(I);
-        FacesList.ForceAddVertex(Vertex.X, Vertex.Y, Vertex.Z);
+        if WithColors then
+          FacesList.ForceAddVertex(Vertex.X, Vertex.Y, Vertex.Z, NewFacesList.VertexColors[ I ])
+        else
+          FacesList.ForceAddVertex(Vertex.X, Vertex.Y, Vertex.Z);
       end;
       for I := 0 to NewFacesList.Count - 1 do begin
         Face := NewFacesList.GetFace(I);
-        if ( Face.Vertex1 < MaxVerticeCount ) and (Face.Vertex2 < MaxVerticeCount) and (Face.Vertex3 < MaxVerticeCount) then
+        if ( Face.Vertex1 < MaxVerticeCount ) and (Face.Vertex2 < MaxVerticeCount) and (Face.Vertex3 < MaxVerticeCount) then begin
           FacesList.AddFace(Face.Vertex1, Face.Vertex2, Face.Vertex3);
+        end;
       end;
 ShowDebugInfo('OpenGL.CreateReducesMesh('+IntToStr(MaxVerticeCount)+')', T0);
       T0 := DateUtils.MilliSecondsBetween(Now, 0);
@@ -518,71 +545,85 @@ ShowDebugInfo('OpenGL.AddEdgesPh1('+IntToStr(EdgeCount)+')', T0);
       ShowDebugInfo('OpenGL.AddEdgesPh2', T0);
       T0 := DateUtils.MilliSecondsBetween(Now, 0);
 
+
+      if WithColors then begin
+        GetMem(GLVertexColors, FacesList.VertexCount * SizeOf(TGLVertex));
+        GLVertexColor := GLVertexColors;
+      end
+      else
+        GLVertexColors := nil;
       try
-        GetMem(GLVertices, FacesList.VertexCount * SizeOf(TGLVertex));
+
+
         try
-          GetMem(GLFaces, FacesList.Count * Sizeof(TGLFace));
+          GetMem(GLVertices, FacesList.VertexCount * SizeOf(TGLVertex));
           try
-            GLVertex := GLVertices;
-
-            Vertex := FacesList.GetVertex(0);
-            FSizeMin.X := Vertex^.X;
-            FSizeMax.X := FSizeMin.X;
-            FSizeMin.Y := Vertex^.Y;
-            FSizeMax.Y := FSizeMin.Y;
-            FSizeMin.Z := Vertex^.Z;
-            FSizeMax.Z := FSizeMin.Z;
-            for I := 0 to FacesList.VertexCount - 1 do
-              AddVertex(I);
-    ShowDebugInfo('OpenGL.AddVertices', T0);
-    T0 := DateUtils.MilliSecondsBetween(Now, 0);
-
-            FMaxObjectSize := Max(FSizeMax.X - FSizeMin.X, Max(FSizeMax.Y - FSizeMin.Y, FSizeMax.Z - FSizeMin.Z ));
-            GLFace := GLFaces;
-            for I := 0 to FacesList.Count - 1 do
-              AddFace(I);
-    ShowDebugInfo('OpenGL.AddFaces', T0);
-    T0 := DateUtils.MilliSecondsBetween(Now, 0);
-
-            FFaceCount := FacesList.Count;
-            FFullMeshFaceCount := NewFacesList.Count;
-            FVerticesCount := FacesList.VertexCount;
-            FFullMeshVerticesCount := NewFacesList.VertexCount;
-            FEdgeCount := EdgeCount;
-            FVertices := GLVertices;
-
+            GetMem(GLFaces, FacesList.Count * Sizeof(TGLFace));
             try
-              GetMem(GLNormals, FVerticesCount * SizeOf(TGLVertex));
+              GLVertex := GLVertices;
+
+              Vertex := FacesList.GetVertex(0);
+              FSizeMin.X := Vertex^.X;
+              FSizeMax.X := FSizeMin.X;
+              FSizeMin.Y := Vertex^.Y;
+              FSizeMax.Y := FSizeMin.Y;
+              FSizeMin.Z := Vertex^.Z;
+              FSizeMax.Z := FSizeMin.Z;
+              for I := 0 to FacesList.VertexCount - 1 do
+                AddVertex(I);
+      ShowDebugInfo('OpenGL.AddVertices', T0);
+      T0 := DateUtils.MilliSecondsBetween(Now, 0);
+
+              FMaxObjectSize := Max(FSizeMax.X - FSizeMin.X, Max(FSizeMax.Y - FSizeMin.Y, FSizeMax.Z - FSizeMin.Z ));
+              GLFace := GLFaces;
+              for I := 0 to FacesList.Count - 1 do
+                AddFace(I);
+      ShowDebugInfo('OpenGL.AddFaces', T0);
+      T0 := DateUtils.MilliSecondsBetween(Now, 0);
+
+              FFaceCount := FacesList.Count;
+              FFullMeshFaceCount := NewFacesList.Count;
+              FVerticesCount := FacesList.VertexCount;
+              FFullMeshVerticesCount := NewFacesList.VertexCount;
+              FEdgeCount := EdgeCount;
+              FVertices := GLVertices;
+
               try
-                 GLNormal := GLNormals;
-                 Normals := FacesList.CalculateVertexNormals;
-                 try
-                   if Normals.Count <> FVerticesCount then
-                     raise Exception.Create('Invalid normals');
-                   for I := 0 to Normals.Count - 1 do
-                     AddNormal(I);
-                 finally
-                   Normals.Free;
-                 end;
+                GetMem(GLNormals, FVerticesCount * SizeOf(TGLVertex));
+                try
+                   GLNormal := GLNormals;
+                   Normals := FacesList.CalculateVertexNormals;
+                   try
+                     if Normals.Count <> FVerticesCount then
+                       raise Exception.Create('Invalid normals');
+                     for I := 0 to Normals.Count - 1 do
+                       AddNormal(I);
+                   finally
+                     Normals.Free;
+                   end;
+                except
+                  FreeMem(GLNormals);
+                  raise;
+                end;
               except
-                FreeMem(GLNormals);
-                raise;
+                GLNormals := nil;
+                // Hide error as normals are optional
               end;
+              FNormals := GLNormals;
+              FVertexColors := GLVertexColors;
+              FFaces := GLFaces;
+              FEdges := GLEdges;
             except
-              GLNormals := nil;
-              // Hide error as normals are optional
+              FreeMem(GLFaces);
+              raise;
             end;
-            FNormals := GLNormals;
-
-
-            FFaces := GLFaces;
-            FEdges := GLEdges;
           except
-            FreeMem(GLFaces);
+            FreeMem(GLVertices);
             raise;
           end;
         except
-          FreeMem(GLVertices);
+          if GLVertexColors <> nil then
+             FreeMem( GLVertexColors );
           raise;
         end;
       except
