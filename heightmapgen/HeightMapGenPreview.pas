@@ -32,7 +32,7 @@ type
     procedure SaveAsPNG( const  Width, Height: Integer; const DepthBuffer: PGLfloat; const DepthMin, DepthMax: GLfloat; const Filename: String );
   public
     constructor Create(const Canvas: TCanvas);
-    procedure UpdateMesh( const FacesList: TFacesList ); override;
+    procedure UpdateMesh( const FacesList: TFacesList; const MaxVerticeCount: integer); override;
     procedure SaveHeightMap( const Left, Top, Width, Height: Integer; const Filename: String );
   end;
 
@@ -134,7 +134,7 @@ begin
   Sleep(1);
 end;
 
-procedure TOpenGLHelper.UpdateMesh(const FacesList: TFacesList);
+procedure TOpenGLHelper.UpdateMesh(const FacesList: TFacesList; const MaxVerticeCount: integer);
 var
   T0, T00: Int64;
   I: Integer;

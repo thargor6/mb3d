@@ -102,6 +102,8 @@ type
     ScaleUpBtn: TSpeedButton;
     ScaleEdit: TEdit;
     Label4: TLabel;
+    Label5: TLabel;
+    MaxVerticeCountEdit: TEdit;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -1219,7 +1221,7 @@ end;
 procedure TBulbTracer2Frm.SaveMesh;
 var
   FacesList: TFacesList;
-  I: Integer;
+  I, MaxVerticeCount: Integer;
 begin
   try
     if (not FForceAbort) or (FCancelType = ctCancelAndShowResult) then begin
@@ -1249,8 +1251,14 @@ begin
           OutputDebugString(PChar('TOTAL: '+IntToStr(DateUtils.MilliSecondsBetween(Now, 0)-T0)+' ms'));
           if not FForceAbort then
             Label13.Caption := 'Elapsed time: ' + IntToStr(Round((DateUtils.MilliSecondsBetween(Now, 0)-T0)/1000.0))+' s';
-          if OpenGLPreviewCBx.Checked then
-            MeshPreviewFrm.UpdateMesh(FacesList);
+          if OpenGLPreviewCBx.Checked then begin
+            try
+              MaxVerticeCount := StrToInt(MaxVerticeCountEdit.Text);
+            except
+              MaxVerticeCount := -1;
+            end;
+            MeshPreviewFrm.UpdateMesh(FacesList, MaxVerticeCount);
+          end;
         finally
           FacesList.Free;
         end;

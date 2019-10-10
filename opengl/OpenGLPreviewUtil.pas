@@ -30,6 +30,7 @@ type
     FRC: HGLRC; //OpenGL Rendering Context
     FCanvas: TCanvas;
     FFaces, FVertices, FEdges, FNormals, FVertexColors: Pointer;
+    FFullMeshFaceCount, FFullMeshVerticesCount: Integer;
     FFaceCount, FEdgeCount, FVerticesCount: Integer;
     FDisplayStyle: TDisplayStyle;
     FSetWindowCaptionEvent: TSetCaptionEvent;
@@ -64,7 +65,7 @@ type
     procedure CleanupGL;
     procedure AfterResize(const ClientWidth, ClientHeight: Integer);
     procedure ResetPosition;
-    procedure UpdateMesh(const FacesList: TFacesList); overload; virtual;
+    procedure UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer); overload; virtual;
     procedure UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList); overload; virtual;
     procedure SetDisplayStyle(const DisplayStyle: TDisplayStyle);
     property XPosition: Double read GetXPosition write SetXPosition;
@@ -119,6 +120,9 @@ begin
   FFaceCount := 0;
   FEdgeCount := 0;
   FVerticesCount := 0;
+  FFullMeshFaceCount := 0;
+  FFullMeshVerticesCount := 0;
+
   if FVertices <> nil then begin
     FreeMem(FVertices);
     FVertices := nil;
@@ -280,7 +284,7 @@ begin
 end;
 
 
-procedure TBaseOpenGLHelper.UpdateMesh(const FacesList: TFacesList);
+procedure TBaseOpenGLHelper.UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer);
 begin
   // EMPTY
 end;

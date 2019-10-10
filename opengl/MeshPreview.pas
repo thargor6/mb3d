@@ -58,7 +58,7 @@ type
   public
     constructor Create(const Form: TForm; const Canvas: TCanvas);
     destructor Destroy; override;
-    procedure UpdateMesh(const FacesList: TFacesList); override;
+    procedure UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer); override;
     procedure UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList); override;
     property MeshAppearance: TMeshAppearance read FMeshAppearance;
   end;
@@ -198,6 +198,7 @@ begin
         begin
           SetupLighting;
           glShadeModel(GL_SMOOTH);
+          // TODO: color
           glColor3f(FMeshAppearance.SurfaceColor.X, FMeshAppearance.SurfaceColor.Y, FMeshAppearance.SurfaceColor.Z);
           glDrawElements( GL_TRIANGLES, FFaceCount * 3, GL_UNSIGNED_INT, FFaces );
         end;
@@ -243,7 +244,10 @@ begin
   //Frame Counter
   Inc(FFrames);
   if (GetTickCount - FStartTick >= 500) and (FFrames >= 10) and Assigned(FSetWindowCaptionEvent) then begin
-    FSetWindowCaptionEvent( Format('%s [%f FPS, %d Vertices, %d Faces]', [WindowTitle, FFrames/(GetTickCount - FStartTick)*1000, FVerticesCount, FFaceCount]));
+    if FFullMeshFaceCount <> FFaceCount then
+      FSetWindowCaptionEvent( Format('%s [%f FPS, %d of %d Vertices, %d of %d Faces]', [WindowTitle, FFrames/(GetTickCount - FStartTick)*1000, FVerticesCount, FFullMeshVerticesCount, FFaceCount, FFullMeshFaceCount]))
+    else
+      FSetWindowCaptionEvent( Format('%s [%f FPS, %d Vertices, %d Faces]', [WindowTitle, FFrames/(GetTickCount - FStartTick)*1000, FVerticesCount, FFaceCount]));
     FFrames := 0;
     FStartTick := GetTickCount;
   end;
@@ -324,7 +328,9 @@ begin
   T0 := DateUtils.MilliSecondsBetween(Now, 0);
 
         FFaceCount := 0;
+        FFullMeshFaceCount := 0;
         FVerticesCount := VertexList.Count;
+        FFullMeshVerticesCount := FVerticesCount;
         FEdgeCount := 0;
         FVertices := GLVertices;
         FVertexColors := GLVertexColors;
@@ -344,7 +350,7 @@ begin
   ShowDebugInfo('OpenGL.TOTAL', T00);
 end;
 
-procedure TOpenGLHelper.UpdateMesh(const FacesList: TFacesList);
+procedure TOpenGLHelper.UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer);
 var
   T0, T00: Int64;
   I: Integer;
@@ -356,7 +362,11 @@ var
   EdgesList: TStringList;
   EdgeCount: Integer;
   Vertex: TPS3Vector;
+  Face: TPFace;
   Normals: TPS3VectorList;
+
+  FacesList: TFacesList;
+  FreeFacesList: boolean;
 
   procedure AddVertex(const Idx: Integer);
   var
@@ -455,108 +465,134 @@ var
   end;
 
 begin
-  // TODO downsample
   T0 := DateUtils.MilliSecondsBetween(Now, 0);
   T00 := T0;
-
-  // TODO create data (e.g. edges) only on demand ?
   FreeVertices;
-  if FacesList.Count > 0 then begin
-    EdgesList := TStringList.Create;
-    try
-      EdgesList.Duplicates := dupAccept;
-      EdgesList.Sorted := False;
-      for I := 0 to FacesList.Count - 1 do
-        AddEdgesToList(I);
-      EdgesList.Sorted := True;
+  FacesList := nil;
+  FreeFacesList := False;
+  try
+    if (MaxVerticeCount > 0) and (NewFacesList.VertexCount > MaxVerticeCount) then begin
+      FacesList := TFacesList.Create;
+      FreeFacesList := True;
+      for I := 0 to MaxVerticeCount - 1 do begin
+        Vertex := NewFacesList.GetVertex(I);
+        FacesList.ForceAddVertex(Vertex.X, Vertex.Y, Vertex.Z);
+      end;
+      for I := 0 to NewFacesList.Count - 1 do begin
+        Face := NewFacesList.GetFace(I);
+        if ( Face.Vertex1 < MaxVerticeCount ) and (Face.Vertex2 < MaxVerticeCount) and (Face.Vertex3 < MaxVerticeCount) then
+          FacesList.AddFace(Face.Vertex1, Face.Vertex2, Face.Vertex3);
+      end;
+ShowDebugInfo('OpenGL.CreateReducesMesh('+IntToStr(MaxVerticeCount)+')', T0);
+      T0 := DateUtils.MilliSecondsBetween(Now, 0);
+    end
+    else begin
+      FacesList := NewFacesList;
+      FreeFacesList := False;
+    end;
 
-      EdgeCount := EdgesList.Count;
-    ShowDebugInfo('OpenGL.AddEdgesPh1('+IntToStr(EdgeCount)+')', T0);
-    T0 := DateUtils.MilliSecondsBetween(Now, 0);
-      GetMem(GLEdges, EdgeCount * SizeOf(TGLEdge));
+    if FacesList.Count > 0 then begin
+      EdgesList := TStringList.Create;
       try
-        GLEdge := GLEdges;
-        for I := 0 to EdgeCount - 1 do
-          AddEdgeFromList(I);
+        EdgesList.Duplicates := dupAccept;
+        EdgesList.Sorted := False;
+        for I := 0 to FacesList.Count - 1 do
+          AddEdgesToList(I);
+        EdgesList.Sorted := True;
+
+        EdgeCount := EdgesList.Count;
+ShowDebugInfo('OpenGL.AddEdgesPh1('+IntToStr(EdgeCount)+')', T0);
+      T0 := DateUtils.MilliSecondsBetween(Now, 0);
+        GetMem(GLEdges, EdgeCount * SizeOf(TGLEdge));
+        try
+          GLEdge := GLEdges;
+          for I := 0 to EdgeCount - 1 do
+            AddEdgeFromList(I);
+        except
+          FreeMem(GLEdges);
+          raise;
+        end;
+      finally
+        EdgesList.Free;
+      end;
+      ShowDebugInfo('OpenGL.AddEdgesPh2', T0);
+      T0 := DateUtils.MilliSecondsBetween(Now, 0);
+
+      try
+        GetMem(GLVertices, FacesList.VertexCount * SizeOf(TGLVertex));
+        try
+          GetMem(GLFaces, FacesList.Count * Sizeof(TGLFace));
+          try
+            GLVertex := GLVertices;
+
+            Vertex := FacesList.GetVertex(0);
+            FSizeMin.X := Vertex^.X;
+            FSizeMax.X := FSizeMin.X;
+            FSizeMin.Y := Vertex^.Y;
+            FSizeMax.Y := FSizeMin.Y;
+            FSizeMin.Z := Vertex^.Z;
+            FSizeMax.Z := FSizeMin.Z;
+            for I := 0 to FacesList.VertexCount - 1 do
+              AddVertex(I);
+    ShowDebugInfo('OpenGL.AddVertices', T0);
+    T0 := DateUtils.MilliSecondsBetween(Now, 0);
+
+            FMaxObjectSize := Max(FSizeMax.X - FSizeMin.X, Max(FSizeMax.Y - FSizeMin.Y, FSizeMax.Z - FSizeMin.Z ));
+            GLFace := GLFaces;
+            for I := 0 to FacesList.Count - 1 do
+              AddFace(I);
+    ShowDebugInfo('OpenGL.AddFaces', T0);
+    T0 := DateUtils.MilliSecondsBetween(Now, 0);
+
+            FFaceCount := FacesList.Count;
+            FFullMeshFaceCount := NewFacesList.Count;
+            FVerticesCount := FacesList.VertexCount;
+            FFullMeshVerticesCount := NewFacesList.VertexCount;
+            FEdgeCount := EdgeCount;
+            FVertices := GLVertices;
+
+            try
+              GetMem(GLNormals, FVerticesCount * SizeOf(TGLVertex));
+              try
+                 GLNormal := GLNormals;
+                 Normals := FacesList.CalculateVertexNormals;
+                 try
+                   if Normals.Count <> FVerticesCount then
+                     raise Exception.Create('Invalid normals');
+                   for I := 0 to Normals.Count - 1 do
+                     AddNormal(I);
+                 finally
+                   Normals.Free;
+                 end;
+              except
+                FreeMem(GLNormals);
+                raise;
+              end;
+            except
+              GLNormals := nil;
+              // Hide error as normals are optional
+            end;
+            FNormals := GLNormals;
+
+
+            FFaces := GLFaces;
+            FEdges := GLEdges;
+          except
+            FreeMem(GLFaces);
+            raise;
+          end;
+        except
+          FreeMem(GLVertices);
+          raise;
+        end;
       except
         FreeMem(GLEdges);
         raise;
       end;
-    finally
-      EdgesList.Free;
     end;
-    ShowDebugInfo('OpenGL.AddEdgesPh2', T0);
-    T0 := DateUtils.MilliSecondsBetween(Now, 0);
-
-    try
-      GetMem(GLVertices, FacesList.VertexCount * SizeOf(TGLVertex));
-      try
-        GetMem(GLFaces, FacesList.Count * Sizeof(TGLFace));
-        try
-          GLVertex := GLVertices;
-
-          Vertex := FacesList.GetVertex(0);
-          FSizeMin.X := Vertex^.X;
-          FSizeMax.X := FSizeMin.X;
-          FSizeMin.Y := Vertex^.Y;
-          FSizeMax.Y := FSizeMin.Y;
-          FSizeMin.Z := Vertex^.Z;
-          FSizeMax.Z := FSizeMin.Z;
-          for I := 0 to FacesList.VertexCount - 1 do
-            AddVertex(I);
-  ShowDebugInfo('OpenGL.AddVertices', T0);
-  T0 := DateUtils.MilliSecondsBetween(Now, 0);
-
-          FMaxObjectSize := Max(FSizeMax.X - FSizeMin.X, Max(FSizeMax.Y - FSizeMin.Y, FSizeMax.Z - FSizeMin.Z ));
-          GLFace := GLFaces;
-          for I := 0 to FacesList.Count - 1 do
-            AddFace(I);
-  ShowDebugInfo('OpenGL.AddFaces', T0);
-  T0 := DateUtils.MilliSecondsBetween(Now, 0);
-
-          FFaceCount := FacesList.Count;
-          FVerticesCount := FacesList.VertexCount;
-          FEdgeCount := EdgeCount;
-          FVertices := GLVertices;
-
-          try
-            GetMem(GLNormals, FVerticesCount * SizeOf(TGLVertex));
-            try
-               GLNormal := GLNormals;
-               Normals := FacesList.CalculateVertexNormals;
-               try
-                 if Normals.Count <> FVerticesCount then
-                   raise Exception.Create('Invalid normals');
-                 for I := 0 to Normals.Count - 1 do
-                   AddNormal(I);
-               finally
-                 Normals.Free;
-               end;
-            except
-              FreeMem(GLNormals);
-              raise;
-            end;
-          except
-            GLNormals := nil;
-            // Hide error as normals are optional
-          end;
-          FNormals := GLNormals;
-
-
-          FFaces := GLFaces;
-          FEdges := GLEdges;
-        except
-          FreeMem(GLFaces);
-          raise;
-        end;
-      except
-        FreeMem(GLVertices);
-        raise;
-      end;
-    except
-      FreeMem(GLEdges);
-      raise;
-    end;
+  finally
+    if FreeFacesList and (FacesList <>nil) then
+      FreeAndNil( FacesList );
   end;
   ShowDebugInfo('OpenGL.AddNormals', T0);
   ShowDebugInfo('OpenGL.TOTAL', T00);

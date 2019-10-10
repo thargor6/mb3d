@@ -241,10 +241,10 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitTop = -4
+        ExplicitTop = -3
         object Label18: TLabel
           Left = 7
-          Top = 8
+          Top = 5
           Width = 100
           Height = 13
           Alignment = taRightJustify
@@ -260,7 +260,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         end
         object Label23: TLabel
           Left = 16
-          Top = 35
+          Top = 32
           Width = 91
           Height = 13
           Hint = 'Measure of the sharpness/smoothness of the object'#39's surface'
@@ -269,9 +269,17 @@ object BulbTracer2Frm: TBulbTracer2Frm
           ParentShowHint = False
           ShowHint = True
         end
+        object Label5: TLabel
+          Left = 602
+          Top = 32
+          Width = 64
+          Height = 13
+          Alignment = taRightJustify
+          Caption = 'Max Vertices:'
+        end
         object OpenGLPreviewCBx: TCheckBox
-          Left = 665
-          Top = 37
+          Left = 672
+          Top = 8
           Width = 130
           Height = 19
           Caption = 'OpenGL Preview'
@@ -282,7 +290,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         end
         object MeshPreviewBtn: TButton
           Left = 808
-          Top = 24
+          Top = 2
           Width = 75
           Height = 40
           Caption = 'OpenGL >>'
@@ -335,6 +343,23 @@ object BulbTracer2Frm: TBulbTracer2Frm
           State = cbChecked
           TabOrder = 6
           WordWrap = True
+        end
+        object MaxVerticeCountEdit: TEdit
+          Left = 672
+          Top = 29
+          Width = 88
+          Height = 21
+          Hint = 'Maximum number of vertices which is shown in the preview'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = []
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          TabOrder = 7
+          Text = '500000'
         end
       end
     end
