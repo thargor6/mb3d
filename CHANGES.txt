@@ -1,3 +1,36 @@
+V1.99.7
+-BTracer2:
+  - some minor improvements and final testing
+  - updated CHANGES.txt
+
+V1.99.6 (unreleased)
+ - BTracer2:
+    - preview for vertex-colors (in point-mode)
+    - improved/overhauled UI
+
+V1.99.5 (unreleased)
+ - BTracer2:
+     - option to specify the maximum number of displayed vertices, which helps to increase performance a lot when creating high-res meshes
+
+V1.99.4 (unreleased)
+ - BTracer2:
+    - overhauled/improved UI for
+    - less, but more effective options
+
+V1.99.3 (unreleased)
+ - BTracer2:
+   - general refactoring, many small improvements
+   - OpenGl-Preview:
+      - improved performance
+      - does not affect performance when closed
+      - more gentle looking colors (very subtle change, though)
+      - improved performance of mesh-preview
+
+V1.99.2 (unreleased)
+ -removed the old BTracer module
+ -refactoring
+ -BTracer2 can be cancelled now
+
 V1.99.1 (unreleased)
  - new BulbTracer2-module for generating meshes from your fractals (work in progress). It has the following advantages over BulbTracer:
     -more speed
@@ -8,6 +41,9 @@ V1.99.1 (unreleased)
  - introducing subrevision-numbers to be able to release minor updates without bumping version to 2.0. 
    (To reach version 2.0 using the old code-base just would feel wrong, I think people would expect 64bit features
     and a complete rewrite)
+
+V1.99r2
+ - fixed a bug regarding the generating of filenames when saving *.ply-sequences
 
 V1.99
  - Point-Cloud-export:

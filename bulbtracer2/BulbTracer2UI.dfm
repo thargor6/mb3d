@@ -199,13 +199,15 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Caption = 'x 40 x 40'
       end
       object Label23: TLabel
-        Left = 39
+        Left = 62
         Top = 66
-        Width = 91
+        Width = 68
         Height = 13
-        Hint = 'Measure of the sharpness/smoothness of the object'#39's surface'
+        Hint = 
+          'Measure of the sharpness/smoothness of the object'#39's surface. The' +
+          ' higher the value, the more details'
         Alignment = taRightJustify
-        Caption = 'Surface sharpness:'
+        Caption = 'Surface detail:'
         ParentShowHint = False
         ShowHint = True
       end
@@ -280,11 +282,16 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
       object CalculateColorsCBx: TCheckBox
         Left = 136
-        Top = 88
+        Top = 90
         Width = 130
         Height = 19
+        Hint = 
+          'Approximate vertex colors. The color-information will be saved a' +
+          's uv-coordinates in  the mesh and will increase mesh-size'
         Caption = 'Calculate Colors'
         Checked = True
+        ParentShowHint = False
+        ShowHint = True
         State = cbChecked
         TabOrder = 6
         WordWrap = True
