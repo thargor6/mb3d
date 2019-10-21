@@ -29,8 +29,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitLeft = 1
-    ExplicitHeight = 788
+    ExplicitTop = -1
     object ImportParamsFromMainBtn: TButton
       Left = 8
       Top = 8
@@ -189,7 +188,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Caption = 'Volumetric resolution:'
       end
       object MeshVResolutionLbl: TLabel
-        Left = 237
+        Left = 242
         Top = 29
         Width = 93
         Height = 13
@@ -269,7 +268,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         OnClick = SurfaceSharpnessUpDownClick
       end
       object MeshVResolutionUpDown: TUpDown
-        Left = 218
+        Left = 219
         Top = 26
         Width = 17
         Height = 21
@@ -1085,7 +1084,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
           TabOrder = 0
         end
         object RadioGroup2: TRadioGroup
-          Left = 537
+          Left = 538
           Top = 48
           Width = 80
           Height = 137
@@ -1111,8 +1110,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
           WordWrap = True
         end
         object Button5: TButton
-          Left = 540
-          Top = 383
+          Left = 539
+          Top = 376
           Width = 141
           Height = 40
           Caption = 'Calculate preview'
@@ -1206,7 +1205,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ExplicitLeft = 3
         object Label13: TLabel
           Left = 79
-          Top = 68
+          Top = 69
           Width = 212
           Height = 16
           Alignment = taCenter
@@ -1369,7 +1368,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
     Enabled = False
     Interval = 50
     OnTimer = Timer3Timer
-    Left = 400
+    Left = 401
     Top = 336
   end
   object OpenDialog1: TOpenDialog

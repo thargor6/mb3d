@@ -373,45 +373,45 @@ var
   Progress: Integer;
   FacesList: TFacesList;
 begin
-    Timer1.Enabled := False;
-    ymin := 999999;
-    hei := M3Vfile.VHeader.Height;
-    it := 0;
-    Progress := 0;
-    with VCalcThreadStats do begin
-      for y := 1 to iTotalThreadCount do begin
-        Progress := Progress + CTrecords[y].iActualYpos;
-        if CTrecords[y].isActive <> 0 then Inc(it);
-      end;
+  Application.ProcessMessages;
+  Timer1.Enabled := False;
+  ymin := 999999;
+  hei := M3Vfile.VHeader.Height;
+  it := 0;
+  Progress := 0;
+  with VCalcThreadStats do begin
+    for y := 1 to iTotalThreadCount do begin
+      Progress := Progress + CTrecords[y].iActualYpos;
+      if CTrecords[y].isActive <> 0 then Inc(it);
     end;
-    if it = 0 then begin
-      try
-        if not VCalcThreadStats.pLBcalcStop^ then  begin
-          MergeAndSaveMesh;
-          ProgressBar.Position := ProgressBar.Max;
-        end;
-        Mand3DForm.EnableButtons;
-        Mand3DForm.OutMessage('Finished tracing object.');
-//        Label13.Caption := '';
-      finally
-        FCalculating := False;
-        EnableControls(True);
+  end;
+  if it = 0 then begin
+    try
+      if not VCalcThreadStats.pLBcalcStop^ then  begin
+        MergeAndSaveMesh;
+        ProgressBar.Position := ProgressBar.Max;
+      end;
+      Mand3DForm.EnableButtons;
+      Mand3DForm.OutMessage('Finished tracing object.');
+    finally
+      FCalculating := False;
+      EnableControls(True);
 
-        if ( FParamSource = psFileSequence ) and ( not FSingleFrame ) then begin
-          if ( not FForceAbort ) and  ( FParamSequenceCurrFrame < FParamSequenceTo ) then begin
-            Inc( FParamSequenceCurrFrame );
-            UpdateFrameDisplay( FParamSequenceCurrFrame );
-            ImportParams( True );
-            CancelPreview;
-            StartCalc;
-          end;
+      if ( FParamSource = psFileSequence ) and ( not FSingleFrame ) then begin
+        if ( not FForceAbort ) and  ( FParamSequenceCurrFrame < FParamSequenceTo ) then begin
+          Inc( FParamSequenceCurrFrame );
+          UpdateFrameDisplay( FParamSequenceCurrFrame );
+          ImportParams( True );
+          CancelPreview;
+          StartCalc;
         end;
       end;
-    end
-    else begin
-      ProgressBar.Position := Progress;
-      Timer1.Enabled := True;
     end;
+  end
+  else begin
+    ProgressBar.Position := Progress;
+    Timer1.Enabled := True;
+  end;
 end;
 
 procedure TBulbTracer2Frm.WmThreadReady(var Msg: TMessage);
@@ -1066,12 +1066,7 @@ begin
     FThreadNormalsLists.Clear;
     FThreadColorsLists.Clear;
     ThreadCount := Min(Mand3DForm.UpDown3.Position, M3Vfile.VHeader.Height);
-  ////
-//   ThreadCount := 1;
-  ////
-
     FSaveType := TMeshSaveType( SaveTypeCmb.ItemIndex );
-
     M3Vfile.VHeader.TilingOptions := 0;
     bGetMCTPverbose := False;
     MCTparas := getMCTparasFromHeader(M3Vfile.VHeader, False);
@@ -1164,12 +1159,11 @@ end;
 
 procedure TPLYExportCalcThread.Prepare;
 begin
-  FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, M3Vfile, FacesList, VertexGenConfig.SurfaceSharpness);
-  (*
-  if FOwner.FSaveType = stRawMeshData then begin
+  FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, M3Vfile, FacesList, VertexGenConfig.SurfaceSharpness, FOwner.FSaveType = stBTracer2Data);
+  if FOwner.FSaveType = stBTracer2Data then begin
     FObjectScanner.IterationIdx := MCTparas.iThreadId - 1;
+    FObjectScanner.OutputFilename := FOwner.FilenameREd.Text;
   end;
-  *)
   FPrepared := True;
 end;
 
@@ -1229,21 +1223,13 @@ var
 begin
   try
     if (not FForceAbort) or (FCancelType = ctCancelAndShowResult) then begin
-      (*if( FSaveType = stRawMeshData ) then begin
+      if( FSaveType = stBTracer2Data ) then begin
+        // trace-data is already saved at this point
         OutputDebugString(PChar('TOTAL: '+IntToStr(DateUtils.MilliSecondsBetween(Now, 0)-T0)+' ms'));
-        for I := 0 to FThreadVertexLists.Count - 1 do begin
-          FacesList := TFacesList( FThreadVertexLists[ I ] );
-          if FacesList.Count > 0 then begin
-            // TODO
-            TRawMeshFileWriter.SaveToFile( MakeMeshSequenceFilename( FilenameREd.Text ), FacesList );
-            Inc( FSavePartIdx );
-          end;
-          FacesList.Clear;
-        end;
         if not FForceAbort then
           Label13.Caption := 'Elapsed time: ' + IntToStr(Round((DateUtils.MilliSecondsBetween(Now, 0)-T0)/1000.0))+' s';
       end
-      else *) begin
+      else begin
         FacesList := TFacesList.MergeFacesLists( FThreadVertexLists );
         try
           FacesList.DoCenter(1.0);
@@ -1276,7 +1262,7 @@ begin
   else
     Label13.Caption := 'Operation cancelled';
 
-  if OpenGLPreviewCBx.Checked (* and (  FSaveType <> stRawMeshData ) *) then
+  if OpenGLPreviewCBx.Checked and (  FSaveType <> stBTracer2Data )  then
     MeshPreviewBtnClick(nil);
 end;
 
@@ -1352,22 +1338,48 @@ begin
 end;
 
 procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
+
+  procedure EnableFields;
+  begin
+    Panel3.Enabled := Enabled;
+    ImportParamsFromMainBtn.Enabled := Enabled;
+    Button2.Enabled := Enabled;
+    Edit1.Enabled := Enabled;
+    Edit3.Enabled := Enabled;
+    Edit4.Enabled := Enabled;
+    ScaleEdit.Enabled := Enabled;
+    CheckBox3.Enabled := Enabled;
+    RadioGroup2.Enabled := Enabled;
+    CheckBox2.Enabled := Enabled;
+    Button5.Enabled := Enabled;
+    MeshVResolutionEdit.Enabled := Enabled;
+    MeshVResolutionUpDown.Enabled := Enabled;
+    SurfaceSharpnessEdit.Enabled := Enabled;
+    SurfaceSharpnessUpDown.Enabled := Enabled;
+    CalculateColorsCBx.Enabled := Enabled;
+    SaveTypeCmb.Enabled := Enabled;
+    Button3.Enabled := Enabled;
+    FilenameREd.Enabled := Enabled;
+    OpenGLPreviewCBx.Enabled := Enabled;
+    MeshPreviewBtn.Enabled := Enabled;
+    MaxVerticeCountEdit.Enabled := Enabled;
+    FrameEdit.Enabled := Enabled;
+    FrameUpDown.Enabled := Enabled;
+  end;
+
 begin
   if Enabled then begin
     ImportParamsFromMainBtn.Enabled := True;
     Button5.Enabled := Benabled;
-    Panel1.Enabled := True;
     Button5.Caption := 'Calculate preview';
   end
   else begin
     ImportParamsFromMainBtn.Enabled := False;
     Button5.Enabled := False;
-    Panel1.Enabled := False;
   end;
+  EnableFields;
   CancelBtn.Enabled := FCalculating;
- // CancelBtn.Visible := CancelBtn.Enabled;
   CalculateBtn.Enabled := Benabled and (not FCalculating);
-//  CalculateBtn.Visible := not CancelBtn.Visible;
 end;
 
 procedure TBulbTracer2Frm.UpdateParamsRange;
@@ -1474,9 +1486,8 @@ procedure TBulbTracer2Frm.UpdateSaveTypeCmb;
 begin
   UpdateVertexGenConfig;
   SaveTypeCmb.Items.Clear;
-  SaveTypeCmb.Items.Add('Mesh as OBJ');
-  // TODO
-  //  SaveTypeCmb.Items.Add('Raw mesh data (for huge meshes)');
+  SaveTypeCmb.Items.Add('Mesh (*.obj)');
+  SaveTypeCmb.Items.Add('Trace-data (*.btracer2)');
   SaveTypeCmb.Items.Add('Don''t save, only preview');
   SaveTypeCmb.ItemIndex := 0;
 end;
