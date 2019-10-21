@@ -1087,14 +1087,15 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Left = 538
           Top = 48
           Width = 80
-          Height = 137
+          Height = 152
           Caption = 'Preview size:'
           ItemIndex = 2
           Items.Strings = (
             '16 '#179
             '32 '#179
             '64 '#179
-            '128 '#179)
+            '128 '#179
+            '256 '#179)
           TabOrder = 1
           OnClick = RadioGroup2Click
         end

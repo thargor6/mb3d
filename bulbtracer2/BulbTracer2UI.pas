@@ -263,7 +263,7 @@ end;
 
 procedure TFVoxelExportCalcPreviewThread.Execute;
 const
-  AvgDEstop = 0.2;
+  AvgDEstop = 0.5;
 var d: Double;
     CC: TVec3D;
     cLi: PCardinal;
@@ -328,9 +328,8 @@ begin
         mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[0], PVwid * -0.5 + Xoff / d);
         mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[1], PVhei * -0.5 + Yoff / d);
         mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[2], nr - PVdep * 0.5 + Zoff / d);
-        MCTparas.iSliceCalc := ObjectD;  //modus: on DE or on Its
-        MCTparas.AOdither := MinIts;
-        MCTparas.DEAOmaxL := MinDE;
+        MCTparas.iSliceCalc := 1;
+        MCTparas.DEAOmaxL := 0.75;
       end;
       MCTparas.iMandWidth := PreviewSize;
       SetLength(VoxCalcThreads, ThreadCount);
@@ -856,7 +855,8 @@ begin
         begin
           for x := 0 to PVwid - 1 do
           begin
-            if PSL^ > 0 then PC^ := i2;
+            if PSL^ > 0 then
+              PC^ := i2;
             Inc(PSL);
             Inc(PC);
           end;
