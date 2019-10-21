@@ -4,7 +4,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Bulb Tracer2'
-  ClientHeight = 788
+  ClientHeight = 729
   ClientWidth = 896
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -23,16 +23,14 @@ object BulbTracer2Frm: TBulbTracer2Frm
     Left = 0
     Top = 0
     Width = 896
-    Height = 788
+    Height = 729
     Align = alClient
     BevelOuter = bvNone
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitLeft = -1
-    ExplicitTop = 1
-    ExplicitWidth = 1611
-    ExplicitHeight = 1030
+    ExplicitLeft = 1
+    ExplicitHeight = 788
     object ImportParamsFromMainBtn: TButton
       Left = 8
       Top = 8
@@ -179,28 +177,28 @@ object BulbTracer2Frm: TBulbTracer2Frm
       Left = 8
       Top = 463
       Width = 607
-      Height = 190
+      Height = 140
       Caption = 'Mesh properties'
       TabOrder = 4
       object Label18: TLabel
-        Left = 30
-        Top = 39
+        Left = 24
+        Top = 29
         Width = 100
         Height = 13
         Alignment = taRightJustify
         Caption = 'Volumetric resolution:'
       end
       object MeshVResolutionLbl: TLabel
-        Left = 243
-        Top = 39
+        Left = 237
+        Top = 29
         Width = 93
         Height = 13
         AutoSize = False
         Caption = 'x 40 x 40'
       end
       object Label23: TLabel
-        Left = 62
-        Top = 66
+        Left = 56
+        Top = 56
         Width = 68
         Height = 13
         Hint = 
@@ -212,16 +210,16 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
       end
       object Label10: TLabel
-        Left = 317
-        Top = 155
+        Left = 311
+        Top = 83
         Width = 54
         Height = 13
         AutoSize = False
         Caption = 'Save type:'
       end
       object Button3: TButton
-        Left = 28
-        Top = 125
+        Left = 22
+        Top = 105
         Width = 83
         Height = 25
         Hint = 'Click to choose the output file'
@@ -232,8 +230,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         OnClick = Button3Click
       end
       object FilenameREd: TEdit
-        Left = 117
-        Top = 125
+        Left = 111
+        Top = 106
         Width = 478
         Height = 21
         Font.Charset = DEFAULT_CHARSET
@@ -245,8 +243,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         TabOrder = 1
       end
       object MeshVResolutionEdit: TEdit
-        Left = 136
-        Top = 36
+        Left = 130
+        Top = 26
         Width = 88
         Height = 21
         TabOrder = 2
@@ -254,16 +252,16 @@ object BulbTracer2Frm: TBulbTracer2Frm
         OnChange = MeshVResolutionEditChange
       end
       object SurfaceSharpnessEdit: TEdit
-        Left = 136
-        Top = 63
+        Left = 130
+        Top = 53
         Width = 54
         Height = 21
         TabOrder = 3
         Text = '1.25'
       end
       object SurfaceSharpnessUpDown: TUpDown
-        Left = 189
-        Top = 63
+        Left = 184
+        Top = 53
         Width = 17
         Height = 21
         Max = 32000
@@ -271,8 +269,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         OnClick = SurfaceSharpnessUpDownClick
       end
       object MeshVResolutionUpDown: TUpDown
-        Left = 224
-        Top = 36
+        Left = 218
+        Top = 26
         Width = 17
         Height = 21
         Min = 16
@@ -281,8 +279,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         TabOrder = 5
       end
       object CalculateColorsCBx: TCheckBox
-        Left = 136
-        Top = 90
+        Left = 130
+        Top = 80
         Width = 130
         Height = 19
         Hint = 
@@ -297,8 +295,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         WordWrap = True
       end
       object SaveTypeCmb: TComboBox
-        Left = 377
-        Top = 152
+        Left = 371
+        Top = 79
         Width = 218
         Height = 21
         Style = csDropDownList
@@ -306,7 +304,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         TabOrder = 7
         OnChange = SaveTypeCmbChange
         Items.Strings = (
-          'Mesh as OBJ'
+          'Mesh (*.obj)'
+          'Trace-data (*.btracer2)'
           'Don'#39't save, only preview')
       end
     end
@@ -325,8 +324,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitLeft = 0
-        ExplicitTop = 17
         object Image1: TImage
           Left = 106
           Top = 48
@@ -1130,12 +1127,12 @@ object BulbTracer2Frm: TBulbTracer2Frm
       Left = 621
       Top = 463
       Width = 264
-      Height = 190
+      Height = 140
       Caption = 'OpenGL Preview'
       TabOrder = 5
       object Label5: TLabel
-        Left = 7
-        Top = 128
+        Left = 10
+        Top = 106
         Width = 64
         Height = 13
         Alignment = taRightJustify
@@ -1143,7 +1140,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
       object Label6: TLabel
         Left = 66
-        Top = 64
+        Top = 60
         Width = 185
         Height = 26
         Caption = 
@@ -1153,8 +1150,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
       object OpenGLPreviewCBx: TCheckBox
         Left = 84
-        Top = 29
-        Width = 130
+        Top = 25
+        Width = 85
         Height = 19
         Caption = 'Enabled'
         Checked = True
@@ -1165,7 +1162,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
       object MeshPreviewBtn: TButton
         Left = 175
-        Top = 18
+        Top = 14
         Width = 75
         Height = 40
         Caption = 'OpenGL >>'
@@ -1173,8 +1170,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         OnClick = MeshPreviewBtnClick
       end
       object MaxVerticeCountEdit: TEdit
-        Left = 77
-        Top = 124
+        Left = 80
+        Top = 103
         Width = 88
         Height = 21
         Hint = 'Maximum number of vertices which is shown in the preview'
@@ -1192,7 +1189,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
     end
     object GroupBox6: TGroupBox
       Left = 8
-      Top = 659
+      Top = 604
       Width = 879
       Height = 120
       Caption = 'Generate mesh'
@@ -1206,8 +1203,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         BevelOuter = bvNone
         BorderWidth = 8
         TabOrder = 0
-        ExplicitWidth = 1287
-        ExplicitHeight = 124
+        ExplicitLeft = 3
         object Label13: TLabel
           Left = 79
           Top = 68
@@ -1238,8 +1234,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Align = alTop
           BevelOuter = bvNone
           TabOrder = 0
-          ExplicitTop = 9
-          ExplicitWidth = 1271
           DesignSize = (
             859
             24)
@@ -1285,7 +1279,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
             TickMarks = tmBoth
             TickStyle = tsNone
             OnMouseUp = FrameTBarMouseUp
-            ExplicitLeft = 544
           end
         end
         object ProgressBar: TProgressBar
@@ -1299,9 +1292,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
           SmoothReverse = True
           Step = 1
           TabOrder = 1
-          ExplicitLeft = 1
-          ExplicitTop = 15
-          ExplicitWidth = 1607
         end
         object Button1: TButton
           Left = 8
