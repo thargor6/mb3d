@@ -32,15 +32,30 @@ type
         ByteVal: (Bytes: array[0..SizeOf(Single)-1] of byte);
   end;
 
+  TColorValue = Int16;
+
+  TBTraceData = packed record
+    DE: Single;
+    ColorIdx, ColorR, ColorG, ColorB: TColorValue;
+  end;
+
 function SwapEndianInt32(Value: Int32): Int32;
 function SwapEndianInt16(Value: Int16): Int16;
 procedure SwapBytesSingle( A, B: PEndianCnvSnglRec );
+procedure CreateTraceFile( const OutputFilename: string );
+procedure SaveTraceData( const BTraceData: Array of TBTraceData; const OutputFilename: string; const IterationIdx, CurrFileIdx, BTGraceCount: integer );
+
+function FloatToColorValue( const Value: Single ): TColorValue; overload;
+function FloatToColorValue( const Value: Double ): TColorValue; overload;
+function ColorValueToFloat( const Value: TColorValue ): Single;
 
 const
-  cRawMeshFileExt = 'rawmesh';
-  LW_MAXU2: Int32 = $FF00;
+  cBTracer2FileExt = 'btracer2';
 
 implementation
+
+uses
+  Windows, Math, DateUtils, ShellApi, SysUtils, Classes;
 
 procedure SwapBytesDouble( A, B: PEndianCnvDblRec );
 var
@@ -68,5 +83,99 @@ begin
   Result := Swap( Value );
 end;
 
+procedure CreateTraceFile( const OutputFilename: string );
+
+  procedure DeleteDirectory(const DirName: string);
+  var
+    FileOp: TSHFileOpStruct;
+  begin
+    FillChar(FileOp, SizeOf(FileOp), 0);
+    FileOp.wFunc := FO_DELETE;
+    FileOp.pFrom := PChar(DirName+#0);//double zero-terminated
+    FileOp.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
+    SHFileOperation(FileOp);
+  end;
+
+begin
+ if DirectoryExists( OutputFilename ) then
+   DeleteDirectory( OutputFilename );
+  if not ForceDirectories( OutputFilename ) then
+    raise Exception.Create(Format('Could not create folder <%s>', [OutputFilename]));
+end;
+
+procedure SaveTraceData( const BTraceData: Array of TBTraceData; const OutputFilename: string; const IterationIdx, CurrFileIdx, BTGraceCount: integer );
+var
+  Filename: String;
+  FileStream: TFileStream;
+  MemStream: TMemoryStream;
+  ASRec, BSRec: EndianCnvSnglRec;
+  I: Int32;
+
+  procedure WriteString(const Value: AnsiString);
+  begin
+    MemStream.WriteData(PAnsiChar(Value), Length(Value));
+  end;
+
+  procedure WriteNullTerminatedString(const Value: AnsiString);
+  begin
+    MemStream.WriteData(PAnsiChar(Value), Length(Value));
+    MemStream.WriteData(0, 1);
+  end;
+
+  procedure WriteInt32(const Value: Int32);
+  begin
+    MemStream.WriteData(SwapEndianInt32(Value), 4);
+  end;
+
+  procedure WriteInt16(const Value: Int16);
+  begin
+    MemStream.WriteData(SwapEndianInt16(Value), 2);
+  end;
+
+  procedure WriteSingle(const Value: Single);
+  begin
+    BSRec.EndianVal := Value;
+    SwapBytesSingle( @ASRec, @BSRec );
+    MemStream.WriteData(ASRec.EndianVal, 4);
+  end;
+
+begin
+  Filename := IncludeTrailingBackslash(OutputFilename) + Format('part_%s_%s', [Format('%.*d',[3, IterationIdx]), Format('%.*d',[3, CurrFileIdx])]);
+  FileStream := TFileStream.Create(Filename, fmCreate);
+  try
+    MemStream := TMemoryStream.Create;
+    try
+      WriteString('BTR1');
+      WriteInt32(BTGraceCount);
+      for I:=0 to BTGraceCount - 1 do begin
+        WriteSingle( BTraceData[ I ].DE );
+        WriteInt16( BTraceData[ I ].ColorIdx );
+        WriteInt16( BTraceData[ I ].ColorR );
+        WriteInt16 ( BTraceData[ I ].ColorG );
+        WriteInt16( BTraceData[ I ].ColorB );
+      end;
+      MemStream.SaveToStream(FileStream);
+    finally
+      MemStream.Free;
+    end;
+  finally
+    FileStream.Free;
+  end;
+end;
+
+function FloatToColorValue( const Value: Single ): TColorValue; overload;
+begin
+  Result := Min( Max( Round( 32767.0 * Value ), 0 ), 32767);
+end;
+
+function FloatToColorValue( const Value: Double ): TColorValue; overload;
+begin
+  Result := Min( Max( Round( 32767.0 * Value ), 0 ), 32767);
+end;
+
+function ColorValueToFloat( const Value: TColorValue ): Single;
+begin
+  Result := Min( Max( Value / 32767.0, 0 ), 1.0);
+end;
 
 end.

@@ -1190,7 +1190,6 @@ end;
 
 procedure TBulbTracer2Frm.ScaleDownBtnClick(Sender: TObject);
 var d: Double;
-    t: Integer;
 begin
     MakeM3V;
     d := 1.1;
@@ -1219,7 +1218,7 @@ end;
 procedure TBulbTracer2Frm.SaveMesh;
 var
   FacesList: TFacesList;
-  I, MaxVerticeCount: Integer;
+  MaxVerticeCount: Integer;
 begin
   try
     if (not FForceAbort) or (FCancelType = ctCancelAndShowResult) then begin

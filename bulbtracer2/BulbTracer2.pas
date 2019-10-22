@@ -24,8 +24,7 @@ type
   TMCVertex = packed record
     Position: TD3Vector;
     Weight: Single;
-    ColorIdx1: Single;
-    ColorIdx2: Single;
+    ColorIdx, ColorR, ColorG, ColorB: Single;
   end;
   TPMCVertex = ^TMCVertex;
 
@@ -45,9 +44,6 @@ type
     class procedure InitializeCube(const Cube: TPMCCube; const Position: TPD3Vector; const CubeSize: Double); overload;
     class procedure InitializeCell(const Cube: TPMCCube; const PosX_Y, DirX_Y, PosX1_Y, DirX1_Y, PosX1_Y1, DirX1_Y1, PosX_Y1, DirX_Y1: TPD3Vector); overload;
     class procedure CreateFacesForCube(const Cube: TPMCCube; const RefIsoValue: Single; const Faces: TFacesList; const CalcColors: boolean);
-    class function EncodeColorIdx(const ColorIdx1, ColorIdx2: double): double;
-    class procedure DecodeColorIdx(const Encoded: double; var ColorIdx1, ColorIdx2: double); overload;
-    class procedure DecodeColorIdx(const Encoded: double; var ColorIdx1, ColorIdx2: single); overload;
   end;
 
 implementation
@@ -676,26 +672,6 @@ begin
   end;
 end;
 
-const
-  ENC_PRECISION = 5000.0;
-
-class function TMCCubes.EncodeColorIdx(const ColorIdx1, ColorIdx2: double): double;
-begin
-  Result := Round( ENC_PRECISION * ColorIdx2 ) + ColorIdx1;
-end;
-
-class procedure TMCCubes.DecodeColorIdx(const Encoded: double; var ColorIdx1, ColorIdx2: double);
-begin
-  ColorIdx1 := Frac( Encoded );
-  ColorIdx2 := (Encoded - ColorIdx1) / ENC_PRECISION;
-end;
-
-class procedure TMCCubes.DecodeColorIdx(const Encoded: double; var ColorIdx1, ColorIdx2: single);
-begin
-  ColorIdx1 := Frac( Encoded );
-  ColorIdx2 := (Encoded - ColorIdx1) / ENC_PRECISION;
-end;
-
 class procedure TMCCubes.ComputeEdgePoint(const V1, V2: TPMCVertex; const RefIsoValue: Single; const IVertex: TPD4Vector);
 var
   S: Double;
@@ -708,19 +684,19 @@ begin
     IVertex.X := V1.Position.X + Direction.X;
     IVertex.Y := V1.Position.Y + Direction.Y;
     IVertex.Z := V1.Position.Z + Direction.Z;
-    IVertex.W := EncodeColorIdx( ( V2^.ColorIdx1 - V1^.ColorIdx1 ) * S + V1^.ColorIdx1, ( V2^.ColorIdx2 - V1^.ColorIdx2 ) * S + V1^.ColorIdx2 );
+    IVertex.W := ( V2^.ColorIdx - V1^.ColorIdx ) * S + V1^.ColorIdx;
   end
   else if (S < 0.0) then begin
     IVertex.X := V1^.Position.X;
     IVertex.Y := V1^.Position.Y;
     IVertex.Z := V1^.Position.Z;
-    IVertex.W := EncodeColorIdx( V1^.ColorIdx1, V1^.ColorIdx2 );
+    IVertex.W := V1^.ColorIdx;
   end
   else begin
     IVertex.X := V2^.Position.X;
     IVertex.Y := V2^.Position.Y;
     IVertex.Z := V2^.Position.Z;
-    IVertex.W := EncodeColorIdx( V2^.ColorIdx1, V2^.ColorIdx2 );
+    IVertex.W := V2^.ColorIdx;
   end;
 end;
 

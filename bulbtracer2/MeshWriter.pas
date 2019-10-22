@@ -89,40 +89,14 @@ var
   var
     I: Integer;
     Vertex, N: TPS3Vector;
-    ColorIdx1, MinColorIdx1, MaxColorIdx1, DeltaColorIdx1, MappedColorIdx1: double;
-    ColorIdx2, MinColorIdx2, MaxColorIdx2, DeltaColorIdx2, MappedColorIdx2: double;
   begin
     for I := 0 to Faces.Vertices.Count - 1  do begin
       Vertex := Faces.Vertices.GetVertex(I);
       WriteLn(FOut, 'v '+FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings));
     end;
     if WithColors  then begin
-      MinColorIdx1 := 1.0;
-      MaxColorIdx1 := 0.0;
-      MinColorIdx2 := 1.0;
-      MaxColorIdx2 := 0.0;
       for I := 0 to Faces.Vertices.Count - 1  do begin
-        TMCCubes.DecodeColorIdx( Faces.VertexColors[I], ColorIdx1, ColorIdx2 );
-        if ColorIdx1 < MinColorIdx1 then
-          MinColorIdx1 := ColorIdx1;
-        if ColorIdx1 > MaxColorIdx1 then
-          MaxColorIdx1 := ColorIdx1;
-        if ColorIdx2 < MinColorIdx2 then
-          MinColorIdx2 := ColorIdx2;
-        if ColorIdx2 > MaxColorIdx2 then
-          MaxColorIdx2 := ColorIdx2;
-      end;
-      DeltaColorIdx1 := MaxColorIdx1 - MinColorIdx1;
-      if DeltaColorIdx1 < 0.0001 then
-        DeltaColorIdx1 := 0.0001;
-      DeltaColorIdx2 := MaxColorIdx2 - MinColorIdx2;
-      if DeltaColorIdx2 < 0.0001 then
-        DeltaColorIdx2 := 0.0001;
-      for I := 0 to Faces.Vertices.Count - 1  do begin
-        TMCCubes.DecodeColorIdx( Faces.VertexColors[I], ColorIdx1, ColorIdx2 );
-        MappedColorIdx1 := (ColorIdx1 - MinColorIdx1) / DeltaColorIdx1;
-        MappedColorIdx2 := (ColorIdx2 - MinColorIdx2) / DeltaColorIdx2;
-        WriteLn(FOut, 'vt '+FloatToStr(MappedColorIdx1, FormatSettings)+' '+FloatToStr(MappedColorIdx2, FormatSettings));
+        WriteLn(FOut, 'vt '+FloatToStr(Faces.VertexColors[I], FormatSettings)+' '+FloatToStr(Faces.VertexColors[I], FormatSettings));
       end;
     end;
 

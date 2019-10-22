@@ -373,7 +373,7 @@ var
   GLVertexColors, GLVertexColor: TPGLVertex;
   FacesList: TFacesList;
   FreeFacesList: boolean;
-  ColorIdx1, ColorIdx2: Single;
+  ColorIdx1: Single;
 
   procedure AddVertex(const Idx: Integer);
   var
@@ -399,7 +399,7 @@ var
 
 
     if WithColors then begin
-      TMCCubes.DecodeColorIdx(FacesList.VertexColors[Idx], ColorIdx1, ColorIdx2);
+      ColorIdx1 := FacesList.VertexColors[Idx];
       if ColorIdx1 < 0.0 then
         ColorIdx1 := 0.0
       else if ColorIdx1 > 1.0 then

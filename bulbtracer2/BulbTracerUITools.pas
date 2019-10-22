@@ -21,7 +21,7 @@ uses
   Vcl.ComCtrls, BulbTracer2Config;
 
 type
-  TMeshSaveType = (stMeshAsObj, (*stRawMeshData,*) stNoSave);
+  TMeshSaveType = (stMeshAsObj, stBTracer2Data, stNoSave);
   TCancelType = (ctCancelAndShowResult, ctCancelImmediately);
 
 function Clamp255(i: Integer): Integer;
@@ -201,7 +201,7 @@ function GetMeshFileFilter(const SaveType: TMeshSaveType): String; overload;
 begin
   case SaveType of
     stMeshAsObj: Result := 'Wavefront OBJ (*.obj)|*.obj';
-    // stRawMeshData: Result := 'Raw mesh data (*'+cRawMeshFileExt+')|*.'+cRawMeshFileExt;
+    stBTracer2Data: Result := 'BTracer2 Trace-Data (*'+cBTracer2FileExt+')|*.'+cBTracer2FileExt;
   else
     Result := '';
   end;
@@ -211,7 +211,7 @@ function GetMeshFileExt(const SaveType: TMeshSaveType): String; overload;
 begin
   case SaveType of
     stMeshAsObj: Result := 'obj';
-    // stRawMeshData: Result := cRawMeshFileExt;
+    stBTracer2Data: Result := cBTracer2FileExt;
   else
     Result := '';
   end;
