@@ -358,7 +358,7 @@ procedure TParallelScanner2.ScannerScan1;
   var
     I, J, K, CurrTraceIdx, CurrFileIdx: Integer;
     CurrPos: TD3Vector;
-    BTraceData: Array of TBTraceData;
+    BTraceData: TBTraceDataArray;
     ColorIndex, ColorR, ColorG, ColorB: Single;
   begin
     CreateTraceFile( OutputFilename );
