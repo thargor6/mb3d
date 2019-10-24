@@ -124,7 +124,6 @@ var
   X, Y, Z: Double;
 
   V: TPS3Vector;
-  Face: TPFace;
   Scl: Double;
 begin
   if ( FRC = 0 ) or ( FForm = nil ) or (not FForm.Visible) then
@@ -373,7 +372,7 @@ var
   GLVertexColors, GLVertexColor: TPGLVertex;
   FacesList: TFacesList;
   FreeFacesList: boolean;
-  ColorIdx1: Single;
+  Color: TPVertexColor;
 
   procedure AddVertex(const Idx: Integer);
   var
@@ -399,15 +398,10 @@ var
 
 
     if WithColors then begin
-      ColorIdx1 := FacesList.VertexColors[Idx];
-      if ColorIdx1 < 0.0 then
-        ColorIdx1 := 0.0
-      else if ColorIdx1 > 1.0 then
-        ColorIdx1 := 1.0;
-
-      GLVertexColor^.X := ColorIdx1;
-      GLVertexColor^.Y := 1.0 - ColorIdx1;
-      GLVertexColor^.Z := 0.0;
+      Color := FacesList.VertexColors2.GetVertexColor(Idx);
+      GLVertexColor^.X := ColorValueToFloat( Color.ColorR ); // Color.ColorIdx;
+      GLVertexColor^.Y := ColorValueToFloat( Color.ColorG ); // 1.0 - Color.ColorIdx;
+      GLVertexColor^.Z := ColorValueToFloat( Color.ColorB ); // 0.0;
       GLVertexColor := Pointer(Longint(GLVertexColor)+SizeOf(TGLVertex));
     end;
 
@@ -493,14 +487,16 @@ begin
   FacesList := nil;
   FreeFacesList := False;
   try
-    WithColors := (NewFacesList.VertexColors.Count > 0) and (NewFacesList.VertexColors.Count = NewFacesList.VertexCount);
+    WithColors := (NewFacesList.VertexColors2.Count > 0) and (NewFacesList.VertexColors2.Count = NewFacesList.VertexCount);
     if (MaxVerticeCount > 0) and (NewFacesList.VertexCount > MaxVerticeCount) then begin
       FacesList := TFacesList.Create;
       FreeFacesList := True;
       for I := 0 to MaxVerticeCount - 1 do begin
         Vertex := NewFacesList.GetVertex(I);
-        if WithColors then
-          FacesList.ForceAddVertex(Vertex.X, Vertex.Y, Vertex.Z, NewFacesList.VertexColors[ I ])
+        if WithColors then begin
+          Color := NewFacesList.VertexColors2.GetVertexColor( I );
+          FacesList.ForceAddVertex(Vertex.X, Vertex.Y, Vertex.Z, Color)
+        end
         else
           FacesList.ForceAddVertex(Vertex.X, Vertex.Y, Vertex.Z);
       end;

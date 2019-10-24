@@ -21,16 +21,10 @@ uses
   VectorMath, VertexList;
 
 type
-  TMCVertex = packed record
-    Position: TD3Vector;
-    Weight: Single;
-    ColorIdx, ColorR, ColorG, ColorB: Single;
-  end;
-  TPMCVertex = ^TMCVertex;
 
   TMCCube = packed record
     V: Array[0..7] of TMCVertex;
-    E: Array[0..12] of TD4Vector;
+    E: Array[0..12] of TMCVertex;
   end;
   TPMCCube = ^TMCCube;
 
@@ -38,7 +32,7 @@ type
   private
     class function IsCaseAmbigous(const N: Integer): Boolean;
     class function CalculateCaseNumber(const Cube: TPMCCube; const RefIsoValue: Single): Integer;
-    class procedure ComputeEdgePoint(const V1, V2: TPMCVertex; const RefIsoValue: Single; const IVertex: TPD4Vector);
+    class procedure ComputeEdgePoint(const V1, V2: TPMCVertex; const RefIsoValue: Single; const IVertex: TPMCVertex);
     class procedure ComputeEdgePoints(const Cube: TPMCCube; const RefIsoValue: Single);
   public
     class procedure InitializeCube(const Cube: TPMCCube; const Position: TPD3Vector; const CubeSize: Double); overload;
@@ -672,7 +666,7 @@ begin
   end;
 end;
 
-class procedure TMCCubes.ComputeEdgePoint(const V1, V2: TPMCVertex; const RefIsoValue: Single; const IVertex: TPD4Vector);
+class procedure TMCCubes.ComputeEdgePoint(const V1, V2: TPMCVertex; const RefIsoValue: Single; const IVertex: TPMCVertex);
 var
   S: Double;
   Direction: TD3Vector;
@@ -681,22 +675,31 @@ begin
   if (S >= 0.0) and (S <= 1.0) then begin
     TDVectorMath.Subtract(@(V2^.Position), @(V1^.Position), @Direction);
     TDVectorMath.ScalarMul(S, @Direction, @Direction);
-    IVertex.X := V1.Position.X + Direction.X;
-    IVertex.Y := V1.Position.Y + Direction.Y;
-    IVertex.Z := V1.Position.Z + Direction.Z;
-    IVertex.W := ( V2^.ColorIdx - V1^.ColorIdx ) * S + V1^.ColorIdx;
+    IVertex.Position.X := V1.Position.X + Direction.X;
+    IVertex.Position.Y := V1.Position.Y + Direction.Y;
+    IVertex.Position.Z := V1.Position.Z + Direction.Z;
+    IVertex.ColorIdx := ( V2^.ColorIdx - V1^.ColorIdx ) * S + V1^.ColorIdx;
+    IVertex.ColorR := ( V2^.ColorR - V1^.ColorR ) * S + V1^.ColorR;
+    IVertex.ColorG := ( V2^.ColorG - V1^.ColorG ) * S + V1^.ColorG;
+    IVertex.ColorB := ( V2^.ColorB - V1^.ColorB ) * S + V1^.ColorB;
   end
   else if (S < 0.0) then begin
-    IVertex.X := V1^.Position.X;
-    IVertex.Y := V1^.Position.Y;
-    IVertex.Z := V1^.Position.Z;
-    IVertex.W := V1^.ColorIdx;
+    IVertex.Position.X := V1^.Position.X;
+    IVertex.Position.Y := V1^.Position.Y;
+    IVertex.Position.Z := V1^.Position.Z;
+    IVertex.ColorIdx := V1^.ColorIdx;
+    IVertex.ColorR := V1^.ColorR;
+    IVertex.ColorG := V1^.ColorG;
+    IVertex.ColorB := V1^.ColorB;
   end
   else begin
-    IVertex.X := V2^.Position.X;
-    IVertex.Y := V2^.Position.Y;
-    IVertex.Z := V2^.Position.Z;
-    IVertex.W := V2^.ColorIdx;
+    IVertex.Position.X := V2^.Position.X;
+    IVertex.Position.Y := V2^.Position.Y;
+    IVertex.Position.Z := V2^.Position.Z;
+    IVertex.ColorIdx := V2^.ColorIdx;
+    IVertex.ColorR := V2^.ColorR;
+    IVertex.ColorG := V2^.ColorG;
+    IVertex.ColorB := V2^.ColorB;
   end;
 end;
 
@@ -770,7 +773,7 @@ class procedure TMCCubes.CreateFacesForCube(const Cube: TPMCCube; const RefIsoVa
 var
   I, CaseNumber, Offset: Integer;
   FaceIndexList: TPFacesConfiguration;
-  E1, E2, E3: TPD4Vector;
+  E1, E2, E3: TPMCVertex;
 begin
   ComputeEdgePoints(Cube, RefIsoValue);
   CaseNumber := CalculateCaseNumber(Cube, RefIsoValue);
@@ -785,9 +788,9 @@ begin
       E2 := @(Cube^.E[FaceIndexList[Offset + 0]]);
       E3 := @(Cube^.E[FaceIndexList[Offset + 2]]);
       if CalcColors then
-        Faces.AddFace(E1, E2, E3)
+        Faces.AddFace(E1, E2, E3 )
       else
-        Faces.AddFaceWithoutColor(E1, E2, E3);
+        Faces.AddFaceWithoutColor(E1, E2, E3)
     end;
     Inc(Offset, 3);
   end;

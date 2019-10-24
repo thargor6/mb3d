@@ -89,14 +89,29 @@ var
   var
     I: Integer;
     Vertex, N: TPS3Vector;
+    MinColorIdx, MaxColorIdx, ColorIdx, DeltaColorIdx, MappedColorIdx: double;
   begin
     for I := 0 to Faces.Vertices.Count - 1  do begin
       Vertex := Faces.Vertices.GetVertex(I);
       WriteLn(FOut, 'v '+FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings));
     end;
     if WithColors  then begin
-      for I := 0 to Faces.Vertices.Count - 1  do begin
-        WriteLn(FOut, 'vt '+FloatToStr(Faces.VertexColors[I], FormatSettings)+' '+FloatToStr(Faces.VertexColors[I], FormatSettings));
+       MinColorIdx := 1.0;
+       MaxColorIdx := 0.0;
+       for I := 0 to Faces.Vertices.Count - 1  do begin
+         ColorIdx := ColorValueToFloat( Faces.VertexColors2.GetVertexColor(I)^.ColorIdx );
+         if ColorIdx < MinColorIdx then
+           MinColorIdx := ColorIdx;
+         if ColorIdx > MaxColorIdx then
+           MaxColorIdx := ColorIdx;
+       end;
+       DeltaColorIdx := MaxColorIdx - MinColorIdx;
+       if DeltaColorIdx < 0.0001 then
+         DeltaColorIdx := 0.0001;
+       for I := 0 to Faces.Vertices.Count - 1  do begin
+         ColorIdx := ColorValueToFloat( Faces.VertexColors2.GetVertexColor(I)^.ColorIdx );
+         MappedColorIdx := (ColorIdx - MinColorIdx) / DeltaColorIdx;
+         WriteLn(FOut, 'vt '+FloatToStr(MappedColorIdx, FormatSettings)+' '+FloatToStr(0.0, FormatSettings));
       end;
     end;
 
@@ -140,7 +155,7 @@ var
 begin
   CreateDrawer( Filename );
 
-  WithColors := (Faces.VertexColors<>nil) and (Faces.VertexColors.Count = Faces.Vertices.Count);
+  WithColors := (Faces.VertexColors2<>nil) and (Faces.VertexColors2.Count = Faces.Vertices.Count);
 
   GetLocaleFormatSettings(GetUserDefaultLCID, FormatSettings);
   LastDecimalSeparator := FormatSettings.DecimalSeparator;

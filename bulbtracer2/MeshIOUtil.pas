@@ -17,6 +17,8 @@ unit MeshIOUtil;
 
 interface
 
+uses VertexList;
+
 type
   BytePos = (EndVal, ByteVal);
   PEndianCnvDblRec = ^EndianCnvDblRec;
@@ -32,8 +34,6 @@ type
         ByteVal: (Bytes: array[0..SizeOf(Single)-1] of byte);
   end;
 
-  TColorValue = Int16;
-
   TBTraceData = packed record
     DE: Single;
     ColorIdx, ColorR, ColorG, ColorB: TColorValue;
@@ -48,10 +48,6 @@ procedure CreateTraceFile( const OutputFilename: string );
 
 procedure SaveTraceData( const BTraceData: TBTraceDataArray; const OutputFilename: string; const IterationIdx, CurrFileIdx, BTGraceCount: integer );
 function LoadTraceData( const Filename: string ):  TBTraceDataArray;
-
-function FloatToColorValue( const Value: Single ): TColorValue; overload;
-function FloatToColorValue( const Value: Double ): TColorValue; overload;
-function ColorValueToFloat( const Value: TColorValue ): Single;
 
 const
   cBTracer2FileExt = 'btracer2';
@@ -277,21 +273,6 @@ begin
   finally
     FileStream.Free;
   end;
-end;
-
-function FloatToColorValue( const Value: Single ): TColorValue; overload;
-begin
-  Result := Min( Max( Round( 32767.0 * Value ), 0 ), 32767);
-end;
-
-function FloatToColorValue( const Value: Double ): TColorValue; overload;
-begin
-  Result := Min( Max( Round( 32767.0 * Value ), 0 ), 32767);
-end;
-
-function ColorValueToFloat( const Value: TColorValue ): Single;
-begin
-  Result := Min( Max( Value / 32767.0, 0 ), 1.0);
 end;
 
 end.

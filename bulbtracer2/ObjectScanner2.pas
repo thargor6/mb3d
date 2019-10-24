@@ -247,100 +247,147 @@ procedure TParallelScanner2.ScannerScan1;
     ColorIdx, ColorR, ColorG, ColorB: Single;
     DE: array of array of array of Single;
     ColorIdxs: array of array of array of TColorValue;
+    ColorRs: array of array of array of TColorValue;
+    ColorGs: array of array of array of TColorValue;
+    ColorBs: array of array of array of TColorValue;
   begin
     SetLength(DE, FSlicesU+1, FSlicesV+1, FSlicesV+1);
     try
       SetLength(ColorIdxs, FSlicesU+1, FSlicesV+1, FSlicesV+1);
       try
-        // precalc weights
-        with FConfig do begin
-          CurrPos.X := FUMin;
-          for I := 0 to FSlicesU do begin
-            CurrPos.Y := FVMin;
-            for J := 0 to FSlicesV do begin
-              CurrPos.Z := FZMin;
-              for K := 0 to FSlicesV do begin
-                CalculateDE( @CurrPos, DE[I, J, K], ColorIdx, ColorR, ColorG, ColorB );
-                ColorIdxs[I, J, K] := FloatToColorValue( ColorIdx );
-                // TODO RGB
-                CurrPos.Z := CurrPos.Z + FStepSize;
-              end;
-              CurrPos.Y := CurrPos.Y + FStepSize;
+        SetLength(ColorRs, FSlicesU+1, FSlicesV+1, FSlicesV+1);
+        try
+          SetLength(ColorGs, FSlicesU+1, FSlicesV+1, FSlicesV+1);
+          try
+            SetLength(ColorBs, FSlicesU+1, FSlicesV+1, FSlicesV+1);
+            try
+              // precalc weights
+              with FConfig do begin
+                CurrPos.X := FUMin;
+                for I := 0 to FSlicesU do begin
+                  CurrPos.Y := FVMin;
+                  for J := 0 to FSlicesV do begin
+                    CurrPos.Z := FZMin;
+                    for K := 0 to FSlicesV do begin
+                      CalculateDE( @CurrPos, DE[I, J, K], ColorIdx, ColorR, ColorG, ColorB );
+                      ColorIdxs[I, J, K] := FloatToColorValue( ColorIdx );
+                      ColorRs[I, J, K] := FloatToColorValue( ColorR );
+                      ColorGs[I, J, K] := FloatToColorValue( ColorG );
+                      ColorBs[I, J, K] := FloatToColorValue( ColorB );
+                      CurrPos.Z := CurrPos.Z + FStepSize;
+                    end;
+                    CurrPos.Y := CurrPos.Y + FStepSize;
 
-              with FMCTparas do begin
-                if PCalcThreadStats.CTrecords[iThreadID].iDEAvrCount < 0 then begin
-                  PCalcThreadStats.CTrecords[iThreadID].iActualYpos := FSlicesU div 2 + 50;
-                  exit;
+                    with FMCTparas do begin
+                      if PCalcThreadStats.CTrecords[iThreadID].iDEAvrCount < 0 then begin
+                        PCalcThreadStats.CTrecords[iThreadID].iActualYpos := FSlicesU div 2 + 50;
+                        exit;
+                      end;
+                    end;
+
+                  end;
+                  CurrPos.X := CurrPos.X + FStepSize;
+                  with FMCTparas do begin
+                    PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round(I * 50.0 / FSlicesU);
+                  end;
                 end;
               end;
 
-            end;
-            CurrPos.X := CurrPos.X + FStepSize;
-            with FMCTparas do begin
-              PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round(I * 50.0 / FSlicesU);
-            end;
-          end;
-        end;
+              // trace the object
+              with FConfig do begin
+                CurrPos.X := FUMin;
+                for I := 0 to FSlicesU - 1 do begin
+                  Sleep(1);
 
-        // trace the object
-        with FConfig do begin
-          CurrPos.X := FUMin;
-          for I := 0 to FSlicesU - 1 do begin
-            Sleep(1);
+                  CurrPos.Y := FVMin;
+                  for J := 0 to FSlicesV - 1 do begin
 
-            CurrPos.Y := FVMin;
-            for J := 0 to FSlicesV - 1 do begin
+                    CurrPos.Z := FZMin;
+                    for K := 0 to FSlicesV - 1 do begin
+                      TMCCubes.InitializeCube(@MCCube, @CurrPos, FConfig.FStepSize);
 
-              CurrPos.Z := FZMin;
-              for K := 0 to FSlicesV - 1 do begin
-                TMCCubes.InitializeCube(@MCCube, @CurrPos, FConfig.FStepSize);
+                      MCCube.V[0].Weight := CalcWeight( DE[I, J, K] );
+                      MCCube.V[0].ColorIdx := ColorValueToFloat( ColorIdxs[I, J, K] );
+                      MCCube.V[0].ColorR := ColorValueToFloat( ColorRs[I, J, K] );
+                      MCCube.V[0].ColorG := ColorValueToFloat( ColorGs[I, J, K] );
+                      MCCube.V[0].ColorB := ColorValueToFloat( ColorBs[I, J, K] );
 
-                MCCube.V[0].Weight := CalcWeight( DE[I, J, K] );
-                MCCube.V[0].ColorIdx := ColorValueToFloat( ColorIdxs[I, J, K] );
+                      MCCube.V[1].Weight := CalcWeight( DE[I+1, J, K] );
+                      MCCube.V[1].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J, K] );
+                      MCCube.V[1].ColorR := ColorValueToFloat( ColorRs[I+1, J, K] );
+                      MCCube.V[1].ColorG := ColorValueToFloat( ColorGs[I+1, J, K] );
+                      MCCube.V[1].ColorB := ColorValueToFloat( ColorBs[I+1, J, K] );
 
-                MCCube.V[1].Weight := CalcWeight( DE[I+1, J, K] );
-                MCCube.V[1].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J, K] );
+                      MCCube.V[2].Weight := CalcWeight( DE[I+1, J+1, K] );
+                      MCCube.V[2].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J+1, K] );
+                      MCCube.V[2].ColorR := ColorValueToFloat( ColorRs[I+1, J+1, K] );
+                      MCCube.V[2].ColorG := ColorValueToFloat( ColorGs[I+1, J+1, K] );
+                      MCCube.V[2].ColorB := ColorValueToFloat( ColorBs[I+1, J+1, K] );
 
-                MCCube.V[2].Weight := CalcWeight( DE[I+1, J+1, K] );
-                MCCube.V[2].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J+1, K] );
+                      MCCube.V[3].Weight := CalcWeight( DE[I, J+1, K] );
+                      MCCube.V[3].ColorIdx := ColorValueToFloat( ColorIdxs[I, J+1, K] );
+                      MCCube.V[3].ColorR := ColorValueToFloat( ColorRs[I, J+1, K] );
+                      MCCube.V[3].ColorG := ColorValueToFloat( ColorGs[I, J+1, K] );
+                      MCCube.V[3].ColorB := ColorValueToFloat( ColorBs[I, J+1, K] );
 
-                MCCube.V[3].Weight := CalcWeight( DE[I, J+1, K] );
-                MCCube.V[3].ColorIdx := ColorValueToFloat( ColorIdxs[I, J+1, K] );
+                      MCCube.V[4].Weight := CalcWeight( DE[I, J, K+1] );
+                      MCCube.V[4].ColorIdx := ColorValueToFloat( ColorIdxs[I, J, K+1] );
+                      MCCube.V[4].ColorR := ColorValueToFloat( ColorRs[I, J, K+1] );
+                      MCCube.V[4].ColorG := ColorValueToFloat( ColorGs[I, J, K+1] );
+                      MCCube.V[4].ColorB := ColorValueToFloat( ColorBs[I, J, K+1] );
 
-                MCCube.V[4].Weight := CalcWeight( DE[I, J, K+1] );
-                MCCube.V[4].ColorIdx := ColorValueToFloat( ColorIdxs[I, J, K+1] );
+                      MCCube.V[5].Weight := CalcWeight( DE[I+1, J, K+1] );
+                      MCCube.V[5].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J, K+1] );
+                      MCCube.V[5].ColorR := ColorValueToFloat( ColorRs[I+1, J, K+1] );
+                      MCCube.V[5].ColorG := ColorValueToFloat( ColorGs[I+1, J, K+1] );
+                      MCCube.V[5].ColorB := ColorValueToFloat( ColorBs[I+1, J, K+1] );
 
-                MCCube.V[5].Weight := CalcWeight( DE[I+1, J, K+1] );
-                MCCube.V[5].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J, K+1] );
+                      MCCube.V[6].Weight := CalcWeight( DE[I+1, J+1, K+1] );
+                      MCCube.V[6].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J+1, K+1] );
+                      MCCube.V[6].ColorR := ColorValueToFloat( ColorRs[I+1, J+1, K+1] );
+                      MCCube.V[6].ColorG := ColorValueToFloat( ColorGs[I+1, J+1, K+1] );
+                      MCCube.V[6].ColorB := ColorValueToFloat( ColorBs[I+1, J+1, K+1] );
 
-                MCCube.V[6].Weight := CalcWeight( DE[I+1, J+1, K+1] );
-                MCCube.V[6].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J+1, K+1] );
+                      MCCube.V[7].Weight := CalcWeight( DE[I, J+1, K+1] );
+                      MCCube.V[7].ColorIdx := ColorValueToFloat( ColorIdxs[I, J+1, K+1] );
+                      MCCube.V[7].ColorR := ColorValueToFloat( ColorRs[I, J+1, K+1] );
+                      MCCube.V[7].ColorG := ColorValueToFloat( ColorGs[I, J+1, K+1] );
+                      MCCube.V[7].ColorB := ColorValueToFloat( ColorBs[I, J+1, K+1] );
 
-                MCCube.V[7].Weight := CalcWeight( DE[I, J+1, K+1] );
-                MCCube.V[7].ColorIdx := ColorValueToFloat( ColorIdxs[I, J+1, K+1] );
+                      TMCCubes.CreateFacesForCube(@MCCube, ISO_VALUE, FFacesList, FCalcColors);
+                      CurrPos.Z := CurrPos.Z + FStepSize;
+                    end;
 
-                TMCCubes.CreateFacesForCube(@MCCube, ISO_VALUE, FFacesList, FCalcColors);
-                CurrPos.Z := CurrPos.Z + FStepSize;
-              end;
+                    CurrPos.Y := CurrPos.Y + FStepSize;
 
-              CurrPos.Y := CurrPos.Y + FStepSize;
+                    if Assigned( IterationCallback )  then
+                      IterationCallback( IterationIdx );
 
-              if Assigned( IterationCallback )  then
-                IterationCallback( IterationIdx );
+                    with FMCTparas do begin
+                      if PCalcThreadStats.CTrecords[iThreadID].iDEAvrCount < 0 then begin
+                        PCalcThreadStats.CTrecords[iThreadID].iActualYpos := FSlicesU div 2 + 50;
+                        exit;
+                      end;
+                    end;
 
-              with FMCTparas do begin
-                if PCalcThreadStats.CTrecords[iThreadID].iDEAvrCount < 0 then begin
-                  PCalcThreadStats.CTrecords[iThreadID].iActualYpos := FSlicesU div 2 + 50;
-                  exit;
+                  end;
+                  CurrPos.X := CurrPos.X + FStepSize;
+                  with FMCTparas do begin
+                    PCalcThreadStats.CTrecords[iThreadID].iActualYpos := 50 + Round(I * 50.0 / FSlicesU);
+                  end;
                 end;
               end;
-
+            finally
+              SetLength(ColorBs, 0, 0, 0);
+              ColorBs := nil;
             end;
-            CurrPos.X := CurrPos.X + FStepSize;
-            with FMCTparas do begin
-              PCalcThreadStats.CTrecords[iThreadID].iActualYpos := 50 + Round(I * 50.0 / FSlicesU);
-            end;
+          finally
+            SetLength(ColorGs, 0, 0, 0);
+            ColorGs := nil;
           end;
+        finally
+          SetLength(ColorRs, 0, 0, 0);
+          ColorRs := nil;
         end;
       finally
         SetLength(ColorIdxs, 0, 0, 0);
@@ -559,11 +606,11 @@ begin
 
     if FCalcColors then begin
       CalcSIgradient1;
-      ColorIdx := CalcColorsIdx(@iDif, @psiLight, @FLightVals);
       CalcColors(@iDif, @psiLight, @FLightVals);
       ColorR := iDif[0];
       ColorG := iDif[1];
       ColorB := iDif[2];
+      ColorIdx := CalcColorsIdx(@iDif, @psiLight, @FLightVals);
       // TODO: alternative way
       {
         CalcSIgradient3;

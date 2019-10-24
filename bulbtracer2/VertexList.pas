@@ -27,6 +27,21 @@ type
   TPFace = ^TFace;
   TPSingle = PSingle;
 
+  TMCVertex = packed record
+    Position: TD3Vector;
+    Weight: Single;
+    ColorIdx, ColorR, ColorG, ColorB: Single;
+  end;
+  TPMCVertex = ^TMCVertex;
+
+  TColorValue = Int16;
+
+  TVertexColor = packed record
+    ColorIdx: TColorValue;
+    ColorR, ColorG, ColorB: TColorValue;
+  end;
+  TPVertexColor = ^TVertexColor;
+
   TPS3VectorList = class
   private
     FVertices: TList;
@@ -42,6 +57,21 @@ type
     procedure DoCenter(const MaxSize: Double);
     procedure DoScale(const ScaleX, ScaleY, ScaleZ: Double);
     procedure RemoveDuplicates;
+    property Count: Integer read GetCount;
+  end;
+
+  TPVertexColorList = class
+  private
+    FVertexColors: TList;
+    function GetCount: Integer;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure Clear;
+    procedure AddVertexColor(const ColorIdx, ColorR, ColorG, ColorB: TColorValue); overload;
+    procedure SetVertexColor(const Idx: integer; const ColorIdx, ColorR, ColorG, ColorB: TColorValue);
+    function GetVertexColor(const Idx: Integer): TPVertexColor;
+    procedure MoveVertexColors(const Src: TPVertexColorList);
     property Count: Integer read GetCount;
   end;
 
@@ -81,7 +111,8 @@ type
   private
     FFaces: TList;
     FVertices: TPS3VectorList;
-    FVertexColors: TList<Single>;
+    // TODO rename
+    FVertexColors2: TPVertexColorList;
     FVertexKeys: TDictionary<string, integer>;
     function GetCount: Integer;
     function MakeVertexKey(const X, Y, Z: Double): String; overload;
@@ -99,17 +130,15 @@ type
     property Vertices: TPS3VectorList read FVertices;
     procedure AddFace(const Vertex1, Vertex2, Vertex3: Integer); overload;
     procedure AddFace(const Vertex1, Vertex2, Vertex3: TPD3Vector); overload;
-    procedure AddFace(const Vertex1, Vertex2, Vertex3: TPD4Vector); overload;
-    procedure AddFaceWithoutColor(const Vertex1, Vertex2, Vertex3: TPD4Vector);
+    procedure AddFace(const Vertex1, Vertex2, Vertex3: TPMCVertex); overload;
+    procedure AddFaceWithoutColor(const Vertex1, Vertex2, Vertex3: TPMCVertex);
     function ForceAddVertex(const X, Y, Z: Single): Integer; overload;
-    function ForceAddVertex(const X, Y, Z, ColorIdx: Single): Integer; overload;
+    function ForceAddVertex(const X, Y, Z: Single; const Color: TPVertexColor): Integer; overload;
     function AddVertex(const X, Y, Z: Single): Integer; overload;
     function AddVertex(const V: TPS3Vector): Integer; overload;
-    function AddVertex(const V: TPS3Vector; const ColorIdx: Single): Integer; overload;
-    function AddVertex(const V: TPD4Vector): Integer; overload;
-    function AddVertexWithoutColor(const V: TPD4Vector): Integer;
+    function AddVertex(const V: TPS3Vector; const ColorIdx, ColorR, ColorG, ColorB: TColorValue): Integer; overload;
+    function AddVertex(const V: TPD3Vector; const ColorIdx, ColorR, ColorG, ColorB: TColorValue): Integer; overload;
     function AddVertex(const V: TPS3Vector; const Sync: TCriticalSection ): Integer; overload;
-    function AddVertex(const V: TPS4Vector; const Sync: TCriticalSection ): Integer; overload;
     function AddVertex(const V: TPD3Vector): Integer; overload;
     function GetFace(const Idx: Integer): TPFace;
     function GetVertex(const Idx: Integer): TPS3Vector;
@@ -123,13 +152,11 @@ type
     procedure RecalcVertexKeys;
     procedure AddUnvalidatedVertex(const X, Y, Z: Double);
     procedure AddUnvalidatedFace(const Vertex1, Vertex2, Vertex3: Integer);
-
     function CalculateVertexNormals: TPS3VectorList;
     class function MergeFacesLists(const FacesListsToMerge: TList; const MultiThreaded: boolean = false): TFacesList;
     property Count: Integer read GetCount;
     property VertexCount: Integer read GetVertexCount;
-    property VertexColors: TList<Single> read FVertexColors;
-
+    property VertexColors2: TPVertexColorList read FVertexColors2;
   end;
 
   TNeighboursList = class
@@ -154,6 +181,10 @@ type
   end;
 
   procedure ShowDebugInfo(const Msg: String; const RefTime: Int64);
+
+  function FloatToColorValue( const Value: Single ): TColorValue; overload;
+  function FloatToColorValue( const Value: Double ): TColorValue; overload;
+  function ColorValueToFloat( const Value: TColorValue ): Single;
 
 implementation
 
@@ -343,6 +374,82 @@ begin
     end;
   end;
 end;
+
+{ --------------------------- TPVertexColorList ------------------------------ }
+constructor TPVertexColorList.Create;
+begin
+  inherited Create;
+  FVertexColors := TList.Create;
+end;
+
+destructor TPVertexColorList.Destroy;
+begin
+  Clear;
+  FVertexColors.Free;
+  inherited Destroy;
+end;
+
+procedure TPVertexColorList.Clear;
+var
+  I: Integer;
+begin
+  for I := 0 to FVertexColors.Count -1  do begin
+    if FVertexColors[I] <> nil then
+      FreeMem(FVertexColors[I]);
+  end;
+  FVertexColors.Clear;
+end;
+
+procedure TPVertexColorList.SetVertexColor(const Idx: integer; const ColorIdx, ColorR, ColorG, ColorB: TColorValue);
+var
+  VertexColor: TPVertexColor;
+begin
+  VertexColor := FVertexColors[Idx];
+  if VertexColor = nil then begin
+    GetMem(VertexColor, SizeOf( TVertexColor ) );
+    FVertexColors[Idx] := VertexColor;
+  end;
+  VertexColor^.ColorIdx := ColorIdx;
+  VertexColor^.ColorR := ColorR;
+  VertexColor^.ColorG := ColorG;
+  VertexColor^.ColorB := ColorB;
+end;
+
+procedure TPVertexColorList.AddVertexColor(const ColorIdx, ColorR, ColorG, ColorB: TColorValue);
+var
+  VertexColor: TPVertexColor;
+begin
+  GetMem(VertexColor, SizeOf(TVertexColor));
+  FVertexColors.Add(VertexColor);
+  VertexColor^.ColorIdx := ColorIdx;
+  VertexColor^.ColorR := ColorR;
+  VertexColor^.ColorG := ColorG;
+  VertexColor^.ColorB := ColorB;
+end;
+
+function TPVertexColorList.GetVertexColor(const Idx: Integer): TPVertexColor;
+begin
+  Result := FVertexColors[Idx];
+end;
+
+function TPVertexColorList.GetCount: Integer;
+begin
+  Result := FVertexColors.Count;
+end;
+
+procedure TPVertexColorList.MoveVertexColors(const Src: TPVertexColorList);
+var
+  I: Integer;
+begin
+  if Src <> nil then begin
+    for I := 0 to Src.FVertexColors.Count - 1 do begin
+      FVertexColors.Add(Src.FVertexColors[I]);
+      Src.FVertexColors[I] := nil;
+    end;
+    Src.FVertexColors.Clear;
+    Src.Clear;
+  end;
+end;
 { ----------------------------- TPSMI3VectorList ------------------------------- }
 constructor TPSMI3VectorList.Create;
 begin
@@ -468,8 +575,8 @@ begin
   inherited Create;
   FFaces := TList.Create;
   FVertices := TPS3VectorList.Create;
+  FVertexColors2 := TPVertexColorList.Create;
   FVertexKeys := TDictionary<string,integer>.Create;
-  FVertexColors := TList<Single>.Create;
 end;
 
 destructor TFacesList.Destroy;
@@ -477,8 +584,8 @@ begin
   Clear;
   FFaces.Free;
   FVertices.Free;
+  FVertexColors2.Free;
   FVertexKeys.Free;
-  FVertexColors.Free;
   inherited Destroy;
 end;
 
@@ -492,6 +599,7 @@ begin
   end;
   FFaces.Clear;
   FVertices.Clear;
+  FVertexColors2.Clear;
   FVertexKeys.Clear;
 end;
 
@@ -556,14 +664,16 @@ begin
   AddFace(AddVertex(Vertex1), AddVertex(Vertex2), AddVertex(Vertex3));
 end;
 
-procedure TFacesList.AddFace(const Vertex1, Vertex2, Vertex3: TPD4Vector);
+procedure TFacesList.AddFace(const Vertex1, Vertex2, Vertex3: TPMCVertex);
 begin
-  AddFace(AddVertex(Vertex1), AddVertex(Vertex2), AddVertex(Vertex3));
+  AddFace( AddVertex( TPD3Vector(@Vertex1.Position), FloatToColorValue( Vertex1.ColorIdx ), FloatToColorValue( Vertex1.ColorR ), FloatToColorValue( Vertex1.ColorG ), FloatToColorValue( Vertex1.ColorB ) ),
+           AddVertex( TPD3Vector(@Vertex2.Position), FloatToColorValue( Vertex2.ColorIdx ), FloatToColorValue( Vertex2.ColorR ), FloatToColorValue( Vertex2.ColorG ), FloatToColorValue( Vertex2.ColorB ) ),
+           AddVertex( TPD3Vector(@Vertex3.Position), FloatToColorValue( Vertex3.ColorIdx ), FloatToColorValue( Vertex3.ColorR ), FloatToColorValue( Vertex3.ColorG ), FloatToColorValue( Vertex3.ColorB) ) );
 end;
 
-procedure TFacesList.AddFaceWithoutColor(const Vertex1, Vertex2, Vertex3: TPD4Vector);
+procedure TFacesList.AddFaceWithoutColor(const Vertex1, Vertex2, Vertex3: TPMCVertex);
 begin
-  AddFace(AddVertexWithoutColor(Vertex1), AddVertexWithoutColor(Vertex2), AddVertexWithoutColor(Vertex3));
+  AddFace(AddVertex( TPD3Vector(@Vertex1.Position)), AddVertex(TPD3Vector(@Vertex2.Position)), AddVertex(TPD3Vector(@Vertex3.Position)));
 end;
 
 function TFacesList.MakeVertexKey(const X, Y, Z: Double): String;
@@ -614,14 +724,14 @@ begin
     FVertexKeys.Add(Key, Result);
 end;
 
-function TFacesList.ForceAddVertex(const X, Y, Z, ColorIdx: Single): Integer;
+function TFacesList.ForceAddVertex(const X, Y, Z: Single; const Color: TPVertexColor): Integer;
 var
   Key: String;
 begin
   Key := MakeVertexKey(X, Y, Z);
   Result := FVertices.Count;
   FVertices.AddVertex(X, Y, Z);
-  FVertexColors.Add( ColorIdx );
+  FVertexColors2.AddVertexColor( Color^.ColorIdx, Color^.ColorR, Color^.ColorG, Color^.ColorB );
   if not FVertexKeys.ContainsKey(Key) then
     FVertexKeys.Add(Key, Result);
 end;
@@ -641,52 +751,37 @@ begin
   end;
 end;
 
-function TFacesList.AddVertex(const V: TPS3Vector; const ColorIdx: Single): Integer;
+function TFacesList.AddVertex(const V: TPS3Vector; const ColorIdx, ColorR, ColorG, ColorB: TColorValue): Integer;
 var
   Key: String;
 begin
   Key := MakeVertexKey(V^.X, V^.Y, V^.Z);
   if FVertexKeys.ContainsKey( Key )  then begin
     Result := FVertexKeys.Items[ Key ];
-    FVertexColors[ Result ] := ColorIdx;
+    FVertexColors2.SetVertexColor( Result, ColorIdx, ColorR, ColorG, ColorB );
   end
   else begin
     Result := FVertices.Count;
     FVertices.AddVertex(V^.X, V^.Y, V^.Z);
     FVertexKeys.Add(Key, Result);
-    FVertexColors.Add( ColorIdx );
+    FVertexColors2.AddVertexColor( ColorIdx, ColorR, ColorG, ColorB );
   end;
 end;
 
-function TFacesList.AddVertex(const V: TPD4Vector): Integer;
+function TFacesList.AddVertex(const V: TPD3Vector; const ColorIdx, ColorR, ColorG, ColorB: TColorValue): Integer;
 var
   Key: String;
 begin
   Key := MakeVertexKey(V^.X, V^.Y, V^.Z);
   if FVertexKeys.ContainsKey( Key )  then begin
     Result := FVertexKeys.Items[ Key ];
-    FVertexColors[ Result ] := V^.W;
+    FVertexColors2.SetVertexColor( Result, ColorIdx, ColorR, ColorG, ColorB );
   end
   else begin
     Result := FVertices.Count;
     FVertices.AddVertex(V^.X, V^.Y, V^.Z);
     FVertexKeys.Add(Key, Result);
-    FVertexColors.Add( V^.W );
-  end;
-end;
-
-function TFacesList.AddVertexWithoutColor(const V: TPD4Vector): Integer;
-var
-  Key: String;
-begin
-  Key := MakeVertexKey(V^.X, V^.Y, V^.Z);
-  if FVertexKeys.ContainsKey( Key )  then begin
-    Result := FVertexKeys.Items[ Key ];
-  end
-  else begin
-    Result := FVertices.Count;
-    FVertices.AddVertex(V^.X, V^.Y, V^.Z);
-    FVertexKeys.Add(Key, Result);
+    FVertexColors2.AddVertexColor( ColorIdx, ColorR, ColorG, ColorB );
   end;
 end;
 
@@ -704,28 +799,6 @@ begin
       Result := FVertices.Count;
       FVertices.AddVertex(V^.X, V^.Y, V^.Z);
       FVertexKeys.Add(Key, Result);
-    end;
-  finally
-    Sync.Release;
-  end;
-end;
-
-function TFacesList.AddVertex(const V: TPS4Vector; const Sync: TCriticalSection ): Integer;
-var
-  Key: String;
-begin
-  Key := MakeVertexKey(V^.X, V^.Y, V^.Z);
-  Sync.Acquire;
-  try
-    if FVertexKeys.ContainsKey(Key) then begin
-      Result := FVertexKeys.Items[ Key ];
-      FVertexColors[Result] := V^.W;
-    end
-    else begin
-      Result := FVertices.Count;
-      FVertices.AddVertex(V^.X, V^.Y, V^.Z);
-      FVertexKeys.Add(Key, Result);
-      FVertexColors.Add( V^.W );
     end;
   finally
     Sync.Release;
@@ -757,10 +830,11 @@ var
   I: Integer;
   Face: TPFace;
   V1, V2, V3: TPS3Vector;
+  C1, C2, C3: TPVertexColor;
   WithVertexColors: Boolean;
 begin
   if Src <> nil then begin
-    WithVertexColors := (Src.FVertexColors<> nil) and (Src.FVertexColors.Count = Src.FVertices.Count);
+    WithVertexColors := (Src.FVertexColors2<> nil) and (Src.FVertexColors2.Count = Src.FVertices.Count);
     for I := 0 to Src.FFaces.Count - 1 do begin
       Face := Src.FFaces[I];
       Src.FFaces[I] := nil;
@@ -768,9 +842,12 @@ begin
       V2 := Src.FVertices.GetVertex(Face^.Vertex2);
       V3 := Src.FVertices.GetVertex(Face^.Vertex3);
       if WithVertexColors then begin
-        Face^.Vertex1 := AddVertex(V1, Src.FVertexColors[Face^.Vertex1]);
-        Face^.Vertex2 := AddVertex(V2, Src.FVertexColors[Face^.Vertex2]);
-        Face^.Vertex3 := AddVertex(V3, Src.FVertexColors[Face^.Vertex3]);
+        C1 := Src.FVertexColors2.GetVertexColor(Face^.Vertex1);
+        Face^.Vertex1 := AddVertex(V1, C1^.ColorIdx, C1^.ColorR, C1^.ColorG, C1^.ColorB);
+        C2 := Src.FVertexColors2.GetVertexColor(Face^.Vertex2);
+        Face^.Vertex2 := AddVertex(V2, C2^.ColorIdx, C2^.ColorR, C2^.ColorG, C2^.ColorB);
+        C3 := Src.FVertexColors2.GetVertexColor(Face^.Vertex3);
+        Face^.Vertex3 := AddVertex(V3, C3^.ColorIdx, C3^.ColorR, C3^.ColorG, C3^.ColorB);
       end
       else begin
         Face^.Vertex1 := AddVertex(V1);
@@ -1651,6 +1728,26 @@ begin
     raise;
   end;
   ShowDebugInfo('CreateFaceNeighboursList', T0);
+end;
+
+{ -------------------------------- TColorValue ------------------------------- }
+const
+  RCOLORVAL_PREC = 10000.0; // 32767.0
+
+
+function FloatToColorValue( const Value: Single ): TColorValue; overload;
+begin
+  Result := Min( Max( Round( RCOLORVAL_PREC * Value ), 0 ), 32767);
+end;
+
+function FloatToColorValue( const Value: Double ): TColorValue; overload;
+begin
+  Result := Min( Max( Round( RCOLORVAL_PREC * Value ), 0 ), 32767);
+end;
+
+function ColorValueToFloat( const Value: TColorValue ): Single;
+begin
+  Result := Min( Max( Value / RCOLORVAL_PREC, 0 ), 1.0);
 end;
 
 end.
