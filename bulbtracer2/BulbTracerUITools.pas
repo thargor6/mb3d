@@ -21,7 +21,7 @@ uses
   Vcl.ComCtrls, BulbTracer2Config;
 
 type
-  TMeshSaveType = (stMeshAsObj, stBTracer2Data, stNoSave);
+  TMeshSaveType = (stMeshAsPly, stMeshAsObj, stBTracer2Data, stNoSave);
   TCancelType = (ctCancelAndShowResult, ctCancelImmediately);
 
 function Clamp255(i: Integer): Integer;
@@ -200,6 +200,7 @@ end;
 function GetMeshFileFilter(const SaveType: TMeshSaveType): String; overload;
 begin
   case SaveType of
+    stMeshAsPly: Result := 'Stanford Triangle Format PLY (*.ply)|*.ply';
     stMeshAsObj: Result := 'Wavefront OBJ (*.obj)|*.obj';
     stBTracer2Data: Result := 'BTracer2 Trace-Data (*'+cBTracer2FileExt+')|*.'+cBTracer2FileExt;
   else
@@ -210,6 +211,7 @@ end;
 function GetMeshFileExt(const SaveType: TMeshSaveType): String; overload;
 begin
   case SaveType of
+    stMeshAsPly: Result := 'ply';
     stMeshAsObj: Result := 'obj';
     stBTracer2Data: Result := cBTracer2FileExt;
   else

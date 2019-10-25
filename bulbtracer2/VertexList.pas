@@ -1734,20 +1734,19 @@ end;
 const
   RCOLORVAL_PREC = 10000.0; // 32767.0
 
-
 function FloatToColorValue( const Value: Single ): TColorValue; overload;
 begin
-  Result := Min( Max( Round( RCOLORVAL_PREC * Value ), 0 ), 32767);
+  Result := Min( Max( Round( RCOLORVAL_PREC * Value ), -32767 ), 32767);
 end;
 
 function FloatToColorValue( const Value: Double ): TColorValue; overload;
 begin
-  Result := Min( Max( Round( RCOLORVAL_PREC * Value ), 0 ), 32767);
+  Result := Min( Max( Round( RCOLORVAL_PREC * Value ), -32767 ), 32767);
 end;
 
 function ColorValueToFloat( const Value: TColorValue ): Single;
 begin
-  Result := Min( Max( Value / RCOLORVAL_PREC, 0 ), 1.0);
+  Result := Value / RCOLORVAL_PREC;
 end;
 
 end.

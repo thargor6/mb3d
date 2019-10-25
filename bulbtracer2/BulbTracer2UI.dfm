@@ -29,7 +29,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitTop = -1
     object ImportParamsFromMainBtn: TButton
       Left = 8
       Top = 8
@@ -303,7 +302,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         TabOrder = 7
         OnChange = SaveTypeCmbChange
         Items.Strings = (
-          'Mesh (*.obj)'
+          'Mesh with vertex colors (*.ply)'
+          'Mesh with uv-coordinates (*.obj)'
           'Trace-data (*.btracer2)'
           'Don'#39't save, only preview')
       end
@@ -1203,7 +1203,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
         BevelOuter = bvNone
         BorderWidth = 8
         TabOrder = 0
-        ExplicitLeft = 3
         object Label13: TLabel
           Left = 79
           Top = 69

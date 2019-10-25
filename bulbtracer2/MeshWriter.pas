@@ -31,7 +31,7 @@ type
     class procedure SaveToFile(const Filename: String; const Faces: TFacesList);
   end;
 
-  TRawMeshFileWriter = class( TAbstractFileWriter )
+  TPlyFileWriter = class( TAbstractFileWriter )
   public
     class procedure SaveToFile(const Filename: String; const Faces: TFacesList);
   end;
@@ -197,11 +197,132 @@ begin
   end;
 end;
 
-{ ---------------------------- TRawMeshFileWriter ---------------------------- }
-class procedure TRawMeshFileWriter.SaveToFile(const Filename: String; const Faces: TFacesList);
-begin
-  // TODO
-end;
+{ ------------------------------ TPlyFileWriter ------------------------------ }
+class procedure TPlyFileWriter.SaveToFile(const Filename: String; const Faces: TFacesList);
+const
+  CRLF = #10#13;
+var
+  FOut : TextFile;
+  TmpBuf: Array[word] of Byte;
+  WithColors: Boolean;
+  FormatSettings: TFormatSettings;
+  LastDecimalSeparator: Char;
+  Normals: TPS3VectorList;
 
+  procedure WriteHeader;
+  begin
+    Write(FOut, 'ply'+CRLF);
+    Write(FOut, 'format ascii 1.0'+CRLF);
+    // define vertex
+    Write(FOut, 'element vertex '+IntToStr(Faces.VertexCount)+CRLF);
+    Write(FOut, 'property float x'+CRLF);
+    Write(FOut, 'property float y'+CRLF);
+    Write(FOut, 'property float z'+CRLF);
+    if Normals <> nil then begin
+      Write(FOut, 'property float nx'+CRLF);
+      Write(FOut, 'property float ny'+CRLF);
+      Write(FOut, 'property float nz'+CRLF);
+    end;
+    if WithColors then begin
+      Write(FOut, 'property uchar red'+CRLF);
+      Write(FOut, 'property uchar green'+CRLF);
+      Write(FOut, 'property uchar blue'+CRLF);
+    //  Write(FOut, 'property uchar alpha'+CRLF);
+    end;
+    // define face
+    Write(FOut, 'element face '+IntToStr(Faces.Count)+CRLF);
+    Write(FOut, 'property list uchar uint vertex_indices'+CRLF);
+    Write(FOut, 'end_header'+CRLF);
+  end;
+
+  procedure WriteVertices;
+  var
+    I: Integer;
+    Vertex, N: TPS3Vector;
+    VertexColor: TPVertexColor;
+
+    function RoundColor(const Value: TColorValue): Integer;
+    begin
+      Result := Max(0, Min( 255, Round(255.0 * ColorValueToFloat( Value ) ) ) );
+    end;
+
+  begin
+    for I := 0 to Faces.VertexCount - 1 do begin
+      Vertex := Faces.Vertices.GetVertex(I);
+
+      if WithColors then begin
+        VertexColor := Faces.VertexColors2.GetVertexColor(I);
+        if Normals <> nil then begin
+          N := Normals.GetVertex(I);
+          Write(FOut, FloatToStr(Vertex^.X)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+FloatToStr(N^.X, FormatSettings)+' '+FloatToStr(N^.Y, FormatSettings)+' '+FloatToStr(N^.Z, FormatSettings)+' '+IntToStr(RoundColor(VertexColor.ColorR))+' '+IntToStr(RoundColor(VertexColor.ColorG))+' '+IntToStr(RoundColor(VertexColor.ColorB))+CRLF);
+        end
+        else begin
+          Write(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+IntToStr(RoundColor(VertexColor.ColorR))+' '+IntToStr(RoundColor(VertexColor.ColorG))+' '+IntToStr(RoundColor(VertexColor.ColorB))+CRLF);
+        end;
+      end
+      else begin
+        if Normals <> nil then begin
+          N := Normals.GetVertex(I);
+          Write(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+FloatToStr(N^.X, FormatSettings)+' '+FloatToStr(N^.Y, FormatSettings)+' '+FloatToStr(N^.Z, FormatSettings)+CRLF);
+        end
+        else begin
+          Write(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+CRLF);
+        end;
+      end;
+    end;
+  end;
+
+  procedure WriteFaces;
+  var
+    I: Integer;
+    Face: TPFace;
+  begin
+    for I := 0 to Faces.Count - 1 do begin
+      Face := Faces.GetFace(I);
+      Write(FOut, IntToStr(3) + ' '+ IntToStr(Face.Vertex1) + ' ' + IntToStr(Face.Vertex2) + ' ' + IntToStr(Face.Vertex3)+CRLF);
+    end;
+  end;
+
+begin
+  CreateDrawer( Filename );
+
+  GetLocaleFormatSettings(GetUserDefaultLCID, FormatSettings);
+  LastDecimalSeparator := FormatSettings.DecimalSeparator;
+  try
+    FormatSettings.DecimalSeparator := '.';
+    {$I-}
+    AssignFile(FOut, Filename);
+    ReWrite(FOut);
+    SetTextBuf(FOut,TmpBuf);
+
+    WithColors := ( Faces.VertexColors2 <> nil ) and ( Faces.VertexColors2.Count = Faces.VertexCount );
+
+    Normals := nil;
+    try
+      // Try to calculate normals
+      try
+        Normals := Faces.CalculateVertexNormals;
+      except
+        on E: Exception do begin
+          OutputDebugString(PChar('Error creating normals: '+E.Message));
+        end;
+      end;
+      // The file is written if normal calculation failed (due the lack of memory)
+      WriteHeader;
+      WriteVertices;
+      WriteFaces;
+    finally
+      if Normals <> nil then
+        Normals.Free;
+    end;
+
+    if IOResult<>0 then
+      raise Exception.Create('PlyFileWriter.SaveToFile: Error writing file');
+    CloseFile(fout);
+    {$I+}
+  finally
+    FormatSettings.DecimalSeparator := LastDecimalSeparator;
+  end;
+end;
 
 end.

@@ -1235,6 +1235,8 @@ begin
           if not FForceAbort then begin
             if FSaveType = stMeshAsObj then
               TObjFileWriter.SaveToFile(MakeMeshSequenceFilename( FilenameREd.Text ), FacesList)
+            else if FSaveType = stMeshAsPly then
+              TPlyFileWriter.SaveToFile(MakeMeshSequenceFilename( FilenameREd.Text ), FacesList);
           end;
           FThreadVertexLists.Clear;
           OutputDebugString(PChar('TOTAL: '+IntToStr(DateUtils.MilliSecondsBetween(Now, 0)-T0)+' ms'));
