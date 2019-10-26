@@ -242,7 +242,7 @@ procedure TParallelScanner2.ScannerScan2;
 
   procedure CreateMesh;
   const
-    MaxPreCalcValuesPerBlock = 300 * 300 * 300;
+    MaxPreCalcValuesPerBlock = 257 * 257 * 257;
   var
     I, J, K: Integer;
     CurrUSlice, MaxPrecalcUSlices: Integer;
@@ -296,7 +296,7 @@ procedure TParallelScanner2.ScannerScan2;
                     end;
                     CurrPos.X := CurrPos.X + FStepSize;
                     with FMCTparas do begin
-                      PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round( (CurrUSlice + I * 0.5)  / FSlicesU * 100.0 );
+                      PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round( (CurrUSlice + I * 0.5)  / FSlicesU * 75.0 );
                     end;
                   end;
                 end;
@@ -381,7 +381,7 @@ procedure TParallelScanner2.ScannerScan2;
                     end;
                     CurrPos.X := CurrPos.X + FStepSize;
                     with FMCTparas do begin
-                      PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round( (CurrUSlice + MaxPrecalcUSlices * 0.5 + I * 0.5)  / FSlicesU * 100.0 );
+                      PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round( (CurrUSlice + MaxPrecalcUSlices * 0.5 + I * 0.5)  / FSlicesU * 75.0 );
                     end;
                   end;
                 end;

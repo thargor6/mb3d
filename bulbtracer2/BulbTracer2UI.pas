@@ -1486,11 +1486,6 @@ end;
 procedure TBulbTracer2Frm.UpdateSaveTypeCmb;
 begin
   UpdateVertexGenConfig;
-  SaveTypeCmb.Items.Clear;
-  SaveTypeCmb.Items.Add('Mesh (*.obj)');
-  SaveTypeCmb.Items.Add('Trace-data (*.btracer2)');
-  SaveTypeCmb.Items.Add('Don''t save, only preview');
-  SaveTypeCmb.ItemIndex := 0;
 end;
 
 
