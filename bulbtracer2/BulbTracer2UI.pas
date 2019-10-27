@@ -177,7 +177,6 @@ type
     procedure UpdateVertexGenConfig;
     procedure SaveMesh;
     function  MakeMeshSequenceFilename( const BaseFilename: String ): String;
-    procedure WndProc(var Message: TMessage); override;
     procedure CancelPreview;
     procedure UpdateParamsRange;
     procedure UpdateFrameDisplay( const Frame: Integer );
@@ -186,6 +185,7 @@ type
     procedure StartCalc;
     procedure SetExportFilenameExt;
   protected
+    procedure WndProc(var Message: TMessage); override;
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
   public
     { Public-Deklarationen }
@@ -368,14 +368,11 @@ end;
 
 procedure TBulbTracer2Frm.Timer1Timer(Sender: TObject);   // proof if threads are still calculating
 var
-  y, ymin, hei, it, il: Integer;
+  y, it: Integer;
   Progress: Integer;
-  FacesList: TFacesList;
 begin
   Application.ProcessMessages;
   Timer1.Enabled := False;
-  ymin := 999999;
-  hei := M3Vfile.VHeader.Height;
   it := 0;
   Progress := 0;
   with VCalcThreadStats do begin
@@ -758,7 +755,6 @@ var x, y, y2, i, j, i2, i3, i4, im, ik: Integer;
     MaxPos: Integer;
 begin
     //PreviewProgressBar.StepIt;
-    MaxPos := CalcPreviewSize;
     PreviewProgressBar.Position := Round(10.0 * (CalcPreviewSize - nr + 1) / CalcPreviewSize);
     PSLstart := Integer(@VsiLight[0]);
     PLoffset := PVwid * SizeOf(Cardinal);
