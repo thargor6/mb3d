@@ -468,16 +468,16 @@ var
   begin
     Face := FacesList.GetFace(Idx);
     FastAddEdge(Face^.Vertex1, Face^.Vertex2);
-
+(*
     if (EdgesList.Count mod 2) = 0 then
       FastAddEdge(Face^.Vertex2, Face^.Vertex3)
     else
       FastAddEdge(Face^.Vertex3, Face^.Vertex1);
-(*
+*)
     FastAddEdge(Face^.Vertex1, Face^.Vertex2);
     FastAddEdge(Face^.Vertex2, Face^.Vertex3);
     FastAddEdge(Face^.Vertex3, Face^.Vertex1);
-*)
+
   end;
 
 begin
@@ -519,8 +519,11 @@ ShowDebugInfo('OpenGL.CreateReducesMesh('+IntToStr(MaxVerticeCount)+')', T0);
       try
         EdgesList.Duplicates := dupAccept;
         EdgesList.Sorted := False;
-        for I := 0 to FacesList.Count - 1 do
+        for I := 0 to FacesList.Count - 1 do begin
           AddEdgesToList(I);
+          if EdgesList.Count > 100000 then
+            break;
+        end;
         EdgesList.Sorted := True;
 
         EdgeCount := EdgesList.Count;

@@ -1101,12 +1101,10 @@ object BulbTracer2Frm: TBulbTracer2Frm
         end
         object CheckBox2: TCheckBox
           Left = 537
-          Top = 243
+          Top = 244
           Width = 98
           Height = 39
           Caption = 'Auto update preview'
-          Checked = True
-          State = cbChecked
           TabOrder = 2
           WordWrap = True
         end
@@ -1184,7 +1182,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ParentShowHint = False
         ShowHint = True
         TabOrder = 2
-        Text = '500000'
+        Text = '5000000'
       end
     end
     object GroupBox6: TGroupBox
