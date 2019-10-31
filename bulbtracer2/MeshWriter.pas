@@ -254,7 +254,7 @@ var
         VertexColor := Faces.VertexColors2.GetVertexColor(I);
         if Normals <> nil then begin
           N := Normals.GetVertex(I);
-          Write(FOut, FloatToStr(Vertex^.X)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+FloatToStr(N^.X, FormatSettings)+' '+FloatToStr(N^.Y, FormatSettings)+' '+FloatToStr(N^.Z, FormatSettings)+' '+IntToStr(RoundColor(VertexColor.ColorR))+' '+IntToStr(RoundColor(VertexColor.ColorG))+' '+IntToStr(RoundColor(VertexColor.ColorB))+CRLF);
+          Write(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+FloatToStr(N^.X, FormatSettings)+' '+FloatToStr(N^.Y, FormatSettings)+' '+FloatToStr(N^.Z, FormatSettings)+' '+IntToStr(RoundColor(VertexColor.ColorR))+' '+IntToStr(RoundColor(VertexColor.ColorG))+' '+IntToStr(RoundColor(VertexColor.ColorB))+CRLF);
         end
         else begin
           Write(FOut, FloatToStr(Vertex^.X, FormatSettings)+' '+FloatToStr(Vertex^.Y, FormatSettings)+' '+FloatToStr(Vertex^.Z, FormatSettings)+' '+IntToStr(RoundColor(VertexColor.ColorR))+' '+IntToStr(RoundColor(VertexColor.ColorG))+' '+IntToStr(RoundColor(VertexColor.ColorB))+CRLF);

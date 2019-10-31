@@ -668,29 +668,41 @@ end;
 
 class procedure TMCCubes.ComputeEdgePoint(const V1, V2: TPMCVertex; const RefIsoValue: Single; const IVertex: TPMCVertex);
 var
-  S: Double;
+  S, T: Double;
   Direction: TD3Vector;
 begin
-  S := (RefIsoValue - V1.Weight)/(V2.Weight - V1.Weight);
-  if (S >= 0.0) and (S <= 1.0) then begin
-    TDVectorMath.Subtract(@(V2^.Position), @(V1^.Position), @Direction);
-    TDVectorMath.ScalarMul(S, @Direction, @Direction);
-    IVertex.Position.X := V1.Position.X + Direction.X;
-    IVertex.Position.Y := V1.Position.Y + Direction.Y;
-    IVertex.Position.Z := V1.Position.Z + Direction.Z;
-    IVertex.ColorIdx := ( V2^.ColorIdx - V1^.ColorIdx ) * S + V1^.ColorIdx;
-    IVertex.ColorR := ( V2^.ColorR - V1^.ColorR ) * S + V1^.ColorR;
-    IVertex.ColorG := ( V2^.ColorG - V1^.ColorG ) * S + V1^.ColorG;
-    IVertex.ColorB := ( V2^.ColorB - V1^.ColorB ) * S + V1^.ColorB;
-  end
-  else if (S < 0.0) then begin
-    IVertex.Position.X := V1^.Position.X;
-    IVertex.Position.Y := V1^.Position.Y;
-    IVertex.Position.Z := V1^.Position.Z;
-    IVertex.ColorIdx := V1^.ColorIdx;
-    IVertex.ColorR := V1^.ColorR;
-    IVertex.ColorG := V1^.ColorG;
-    IVertex.ColorB := V1^.ColorB;
+  T := (V2.Weight - V1.Weight);
+  if T <> 0 then begin
+    S := (RefIsoValue - V1.Weight)/T;
+    if (S >= 0.0) and (S <= 1.0) then begin
+      TDVectorMath.Subtract(@(V2^.Position), @(V1^.Position), @Direction);
+      TDVectorMath.ScalarMul(S, @Direction, @Direction);
+      IVertex.Position.X := V1.Position.X + Direction.X;
+      IVertex.Position.Y := V1.Position.Y + Direction.Y;
+      IVertex.Position.Z := V1.Position.Z + Direction.Z;
+      IVertex.ColorIdx := ( V2^.ColorIdx - V1^.ColorIdx ) * S + V1^.ColorIdx;
+      IVertex.ColorR := ( V2^.ColorR - V1^.ColorR ) * S + V1^.ColorR;
+      IVertex.ColorG := ( V2^.ColorG - V1^.ColorG ) * S + V1^.ColorG;
+      IVertex.ColorB := ( V2^.ColorB - V1^.ColorB ) * S + V1^.ColorB;
+    end
+    else if (S < 0.0) then begin
+      IVertex.Position.X := V1^.Position.X;
+      IVertex.Position.Y := V1^.Position.Y;
+      IVertex.Position.Z := V1^.Position.Z;
+      IVertex.ColorIdx := V1^.ColorIdx;
+      IVertex.ColorR := V1^.ColorR;
+      IVertex.ColorG := V1^.ColorG;
+      IVertex.ColorB := V1^.ColorB;
+    end
+    else begin
+      IVertex.Position.X := V2^.Position.X;
+      IVertex.Position.Y := V2^.Position.Y;
+      IVertex.Position.Z := V2^.Position.Z;
+      IVertex.ColorIdx := V2^.ColorIdx;
+      IVertex.ColorR := V2^.ColorR;
+      IVertex.ColorG := V2^.ColorG;
+      IVertex.ColorB := V2^.ColorB;
+    end;
   end
   else begin
     IVertex.Position.X := V2^.Position.X;

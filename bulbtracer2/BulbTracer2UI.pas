@@ -1174,6 +1174,8 @@ begin
 end;
 
 procedure TPLYExportCalcThread.Prepare;
+var
+  PHeader: TPBTraceMainHeader;
 begin
   FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError := False;
   try
@@ -1182,8 +1184,20 @@ begin
     FObjectScanner.ThreadIdx := MCTparas.iThreadId - 1;
     if FOwner.FSaveType = stBTracer2Data then begin
       FObjectScanner.OutputFilename := FOwner.FilenameREd.Text;
-      if FObjectScanner.ThreadIdx = 0 then
-        InitBTraceFile( FObjectScanner.OutputFilename );
+      if FObjectScanner.ThreadIdx = 0 then begin
+        GetMem(PHeader, SizeOf( TBTraceMainHeader ) );
+        try
+          PHeader^.VHeaderWidth := M3Vfile.VHeader.Width;
+          PHeader^.VHeaderHeight := M3Vfile.VHeader.Height;
+          PHeader^.VHeaderZoom := M3Vfile.VHeader.dZoom;
+          PHeader^.VHeaderZScale := M3Vfile.Zscale;
+          PHeader^.VResolution := VertexGenConfig.URange.StepCount;
+          PHeader^.ThreadCount := FOwner.VCalcThreadStats.iTotalThreadCount;
+          InitBTraceFile( FObjectScanner.OutputFilename, PHeader );
+        finally
+          FreeMem(PHeader);
+        end;
+      end;
     end;
     FPrepared := True;
   except

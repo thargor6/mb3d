@@ -34,11 +34,17 @@ type
         ByteVal: (Bytes: array[0..SizeOf(Single)-1] of byte);
   end;
 
+  TBTraceMainHeader = packed record
+    VHeaderWidth, VHeaderHeight: Int32;
+    VHeaderZoom, VHeaderZScale: double;
+    VResolution, ThreadCount: Int32;
+  end;
+  TPBTraceMainHeader = ^TBTraceMainHeader;
+
   TBTraceDataHeader = packed record
     TraceOffset, TraceCount, TraceResolution: Int32;
   end;
   TPBTraceDataHeader = ^TBTraceDataHeader;
-
 
   TBTraceData = packed record
     DE: Single;
@@ -50,7 +56,11 @@ function SwapEndianInt32(Value: Int32): Int32;
 function SwapEndianInt16(Value: Int16): Int16;
 procedure SwapBytesSingle( A, B: PEndianCnvSnglRec );
 
-procedure InitBTraceFile( const OutputFilename: string );
+
+
+procedure InitBTraceFile(const OutputFilename: string; const PHeader: TPBTraceMainHeader);
+procedure LoadMainHeader(const Filename: string; const PHeader: TPBTraceMainHeader );
+
 function TraceDataExists(const Filename: string): boolean;
 
 function CreateTraceFilename(const OutputFilename: string; const ThreadIdx, CurrFileIdx: integer): string;
@@ -96,32 +106,6 @@ begin
 end;
 
 { ------------------------- Creating Trace Files ----------------------------- }
-procedure InitBTraceFile( const OutputFilename: string );
-
-  procedure DeleteDirectory(const DirName: string);
-  var
-    FileOp: TSHFileOpStruct;
-  begin
-    FillChar(FileOp, SizeOf(FileOp), 0);
-    FileOp.wFunc := FO_DELETE;
-    FileOp.pFrom := PChar(DirName+#0);//double zero-terminated
-    FileOp.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
-    if SHFileOperation(FileOp) <> 0 then
-      raise Exception.Create('Error cleaning up directory <'+DirName+'>');
-  end;
-
-begin
- if DirectoryExists( OutputFilename ) then
-   DeleteDirectory( OutputFilename );
-
-
-  if not ForceDirectories( OutputFilename ) then begin
-    // another thread might have created the directory in the meanwhile
-    if not DirectoryExists( OutputFilename ) then    
-      raise Exception.Create(Format('Could not create folder <%s>', [OutputFilename]));
-  end;
-end;
-
 function CreateTraceFilename(const OutputFilename: string; const ThreadIdx, CurrFileIdx: integer): string;
 begin
   Result := IncludeTrailingBackslash(OutputFilename) + Format('part_%s_%s', [Format('%.*d',[3, ThreadIdx]), Format('%.*d',[3, CurrFileIdx])]);
@@ -160,7 +144,7 @@ end;
 
 procedure WriteDouble(const MemStream: TMemoryStream; const Value: Single);
 var
-  ADRec, BDRec: EndianCnvSnglRec;
+  ADRec, BDRec: EndianCnvDblRec;
 begin
   BDRec.EndianVal := Value;
   SwapBytesDouble( @ADRec, @BDRec );
@@ -248,7 +232,7 @@ function ReadDouble(const MemStream: TMemoryStream): Double;
 var
   ReadLen: Integer;
   PBuf: Pointer;
-  ADRec, BDRec: EndianCnvSnglRec;
+  ADRec, BDRec: EndianCnvDblRec;
   EOF: boolean;
 begin
   PBuf := @BDRec.EndianVal;
@@ -433,4 +417,90 @@ begin
   end;
 end;
 
+{ --------------------------- Init Trace Data -------------------------------- }
+function CreateMainHeaderFilename(const OutputFilename: string): string;
+begin
+  Result := IncludeTrailingBackslash(OutputFilename)+'btracer2.h';
+end;
+
+
+procedure InitBTraceFile( const OutputFilename: string; const PHeader: TPBTraceMainHeader );
+var
+  Filename: string;
+  FileStream: TFileStream;
+  MemStream: TMemoryStream;
+
+  procedure DeleteDirectory(const DirName: string);
+  var
+    FileOp: TSHFileOpStruct;
+  begin
+    FillChar(FileOp, SizeOf(FileOp), 0);
+    FileOp.wFunc := FO_DELETE;
+    FileOp.pFrom := PChar(DirName+#0);//double zero-terminated
+    FileOp.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
+    if SHFileOperation(FileOp) <> 0 then
+      raise Exception.Create('Error cleaning up directory <'+DirName+'>');
+  end;
+
+begin
+ if DirectoryExists( OutputFilename ) then
+   DeleteDirectory( OutputFilename );
+  if not ForceDirectories( OutputFilename ) then begin
+    // another thread might have created the directory in the meanwhile
+    if not DirectoryExists( OutputFilename ) then
+      raise Exception.Create(Format('Could not create folder <%s>', [OutputFilename]));
+  end;
+
+  Filename := CreateMainHeaderFilename(OutputFilename);
+  ForceRemoveFile(Filename);
+  FileStream := TFileStream.Create(Filename, fmCreate);
+  try
+    MemStream := TMemoryStream.Create;
+    try
+      WriteString(MemStream, 'BTM1');
+      WriteInt32(MemStream, PHeader^.VHeaderWidth);
+      WriteInt32(MemStream, PHeader^.VHeaderHeight);
+      WriteDouble(MemStream, PHeader^.VHeaderZoom);
+      WriteDouble(MemStream, PHeader^.VHeaderZScale);
+      WriteInt32(MemStream, PHeader^.VResolution);
+      WriteInt32(MemStream, PHeader^.ThreadCount);
+      MemStream.SaveToStream(FileStream);
+    finally
+      MemStream.Free;
+    end;
+  finally
+    FileStream.Free;
+  end;
+  CheckThatExistsFile(Filename);
+end;
+
+
+procedure LoadMainHeader(const Filename: string; const PHeader: TPBTraceMainHeader );
+var
+  MemStream: TMemoryStream;
+  FileStream: TFileStream;
+begin
+  FileStream := TFileStream.Create(CreateMainHeaderFilename(Filename), fmOpenRead);
+  try
+    MemStream := TMemoryStream.Create;
+    try
+      MemStream.LoadFromStream(FileStream);
+      MemStream.Seek(0, soFromBeginning);
+      if ReadString4(MemStream) <> 'BTM1' then
+        raise Exception.Create('Missing <BTM1>-header');
+      PHeader^.VHeaderWidth := ReadInt32(MemStream);
+      PHeader^.VHeaderHeight := ReadInt32(MemStream);
+      PHeader^.VHeaderZoom := ReadDouble(MemStream);
+      PHeader^.VHeaderZScale := ReadDouble(MemStream);
+      PHeader^.VResolution := ReadInt32(MemStream);
+      PHeader^.ThreadCount := ReadInt32(MemStream);
+    finally
+      MemStream.Free;
+    end;
+  finally
+    FileStream.Free;
+  end;
+end;
+
 end.
+
