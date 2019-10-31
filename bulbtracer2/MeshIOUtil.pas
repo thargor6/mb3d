@@ -50,7 +50,7 @@ function SwapEndianInt32(Value: Int32): Int32;
 function SwapEndianInt16(Value: Int16): Int16;
 procedure SwapBytesSingle( A, B: PEndianCnvSnglRec );
 
-procedure InitTraceFile( const OutputFilename: string );
+procedure InitBTraceFile( const OutputFilename: string );
 function TraceDataExists(const Filename: string): boolean;
 
 function CreateTraceFilename(const OutputFilename: string; const ThreadIdx, CurrFileIdx: integer): string;
@@ -96,7 +96,7 @@ begin
 end;
 
 { ------------------------- Creating Trace Files ----------------------------- }
-procedure InitTraceFile( const OutputFilename: string );
+procedure InitBTraceFile( const OutputFilename: string );
 
   procedure DeleteDirectory(const DirName: string);
   var
@@ -106,12 +106,15 @@ procedure InitTraceFile( const OutputFilename: string );
     FileOp.wFunc := FO_DELETE;
     FileOp.pFrom := PChar(DirName+#0);//double zero-terminated
     FileOp.fFlags := FOF_SILENT or FOF_NOERRORUI or FOF_NOCONFIRMATION;
-    SHFileOperation(FileOp);
+    if SHFileOperation(FileOp) <> 0 then
+      raise Exception.Create('Error cleaning up directory <'+DirName+'>');
   end;
 
 begin
  if DirectoryExists( OutputFilename ) then
    DeleteDirectory( OutputFilename );
+
+
   if not ForceDirectories( OutputFilename ) then begin
     // another thread might have created the directory in the meanwhile
     if not DirectoryExists( OutputFilename ) then    
@@ -270,12 +273,46 @@ begin
   Result := BaseFilename+'.d';
 end;
 
+procedure ForceRemoveFile(const Filename: string);
+const
+  MaxRetries = 10;
+var
+  I: Integer;
+begin
+  I := 0;
+  while SysUtils.FileExists(Filename) and (I < MaxRetries ) do begin
+    Sleep(100);
+    SysUtils.DeleteFile( Filename );
+    Inc(I);
+  end;
+  if SysUtils.FileExists(Filename) then
+    raise Exception.Create('Could not delete file <' + Filename +'>');
+end;
+
+procedure CheckThatExistsFile(const Filename: string);
+const
+  MaxRetries = 10;
+var
+  I: Integer;
+begin
+  I := 0;
+  while (not SysUtils.FileExists(Filename)) and (I < MaxRetries ) do begin
+    Sleep(100);
+    Inc(I);
+  end;
+  if not SysUtils.FileExists(Filename) then
+    raise Exception.Create('Could not create file <' + Filename +'>');
+end;
+
 procedure SaveTraceHeader(const BaseFilename: string; const PHeader: TPBTraceDataHeader);
 var
+  Filename: string;
   FileStream: TFileStream;
   MemStream: TMemoryStream;
 begin
-  FileStream := TFileStream.Create(CreateHeaderFilename(BaseFilename), fmCreate);
+  Filename := CreateHeaderFilename(BaseFilename);
+  ForceRemoveFile(Filename);
+  FileStream := TFileStream.Create(Filename, fmCreate);
   try
     MemStream := TMemoryStream.Create;
     try
@@ -290,16 +327,20 @@ begin
   finally
     FileStream.Free;
   end;
+  CheckThatExistsFile(Filename);
 end;
 
 procedure SaveTraceData(const BaseFilename: string; const BTraceData: TPBTraceData; const PHeader: TPBTraceDataHeader);
 var
+  Filename: string;
   CurrBTraceData: TPBTraceData;
-  I, TraceCount: Int32;
+  I: Int32;
   FileStream: TFileStream;
   MemStream: TMemoryStream;
 begin
-  FileStream := TFileStream.Create(CreateDataFilename(BaseFilename), fmCreate);
+  Filename := CreateDataFilename(BaseFilename);
+  ForceRemoveFile(Filename);
+  FileStream := TFileStream.Create(Filename, fmCreate);
   try
     MemStream := TMemoryStream.Create;
     try
@@ -320,6 +361,7 @@ begin
   finally
     FileStream.Free;
   end;
+  CheckThatExistsFile(Filename);
 end;
 
 { --------------------------- Loading Trace Data ----------------------------- }

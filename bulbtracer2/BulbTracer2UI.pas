@@ -38,6 +38,12 @@ type
 
   TParamSource = (psMain, psSingleFile, psFileSequence);
 
+  TThreadErrorStatus = packed record
+    HasError: boolean;
+    ErrorMessage: string;
+  end;
+
+
   TBulbTracer2Frm = class(TForm)
     SaveDialog: TSaveDialog;
     Timer1: TTimer;
@@ -148,6 +154,7 @@ type
     T0: Int64;
     PVwid, PVhei, PVdep: Integer;
     VCalcThreadStats: TCalcThreadStats;
+    ThreadErrorStatus: array[1..64] of TThreadErrorStatus;
     PaintedYsofar, vActiveThreads, PreviewSize: Integer;
     CalcPreview{, PrCalcedAll}: LongBool; //to verify if PreviewVoxel array is complete
     VsiLight: array of Cardinal;  //just 0..255 for color
@@ -231,7 +238,8 @@ implementation
 
 uses CalcVoxelSliceThread, FileHandling, Math, Math3D, Calc, DivUtils, Mand,
   HeaderTrafos, CustomFormulas, ImageProcess, VectorMath, DateUtils, BulbTracer2,
-  MeshPreviewUI, MeshWriter, MeshReader, MeshIOUtil, MeshSimplifier;
+  MeshPreviewUI, MeshWriter, MeshReader, MeshIOUtil, MeshSimplifier,
+  Ole2;
 
 {$R *.dfm}
 
@@ -370,15 +378,27 @@ procedure TBulbTracer2Frm.Timer1Timer(Sender: TObject);   // proof if threads ar
 var
   y, it: Integer;
   Progress: Integer;
+  HasError: boolean;
+  ErrorMessage: string;
 begin
   Application.ProcessMessages;
   Timer1.Enabled := False;
   it := 0;
   Progress := 0;
+  HasError := false;
+  ErrorMessage := 'An error has occured';
   with VCalcThreadStats do begin
     for y := 1 to iTotalThreadCount do begin
       Progress := Progress + CTrecords[y].iActualYpos;
       if CTrecords[y].isActive <> 0 then Inc(it);
+      if ThreadErrorStatus[y].HasError then begin
+        VCalcThreadStats.pLBcalcStop^ := True;
+        HasError := true;
+        if Trim( ThreadErrorStatus[y].ErrorMessage ) <> '' then
+          ErrorMessage := Trim( ThreadErrorStatus[y].ErrorMessage );
+        it := 0;
+        break;
+      end;
     end;
   end;
   if it = 0 then begin
@@ -403,6 +423,8 @@ begin
         end;
       end;
     end;
+    if HasError then
+      raise Exception.Create(ErrorMessage);
   end
   else begin
     ProgressBar.Position := Progress;
@@ -752,7 +774,6 @@ procedure TBulbTracer2Frm.PaintNextPreviewSlice(nr: Integer);
 var x, y, y2, i, j, i2, i3, i4, im, ik: Integer;
     PSLstart, PLoffset, bmpSL, bmpOffset, bmpOffP: Integer;
     PC, PSL: PCardinal;
-    MaxPos: Integer;
 begin
     //PreviewProgressBar.StepIt;
     PreviewProgressBar.Position := Round(10.0 * (CalcPreviewSize - nr + 1) / CalcPreviewSize);
@@ -865,7 +886,6 @@ end;
 procedure TBulbTracer2Frm.Timer2Timer(Sender: TObject);  //preview threads
 var y, it: Integer;
 begin
-  OutputDebugString(PChar('Timer2 ' + IntToStr(Timer2.Interval)));
     Timer2.Enabled := False;
     it := 0;
     with VCalcThreadStats do
@@ -1056,12 +1076,12 @@ var
   MCTparas: TMCTparameter;
   d: Double;
 begin
+  ThreadCount := Min(Mand3DForm.UpDown3.Position, M3Vfile.VHeader.Height);
   try
     FSavePartIdx := 0;
     FThreadVertexLists.Clear;
     FThreadNormalsLists.Clear;
     FThreadColorsLists.Clear;
-    ThreadCount := Min(Mand3DForm.UpDown3.Position, M3Vfile.VHeader.Height);
     FSaveType := TMeshSaveType( SaveTypeCmb.ItemIndex );
     M3Vfile.VHeader.TilingOptions := 0;
     bGetMCTPverbose := False;
@@ -1155,20 +1175,40 @@ end;
 
 procedure TPLYExportCalcThread.Prepare;
 begin
-  FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, M3Vfile, FacesList, VertexGenConfig.SurfaceSharpness, FOwner.FSaveType = stBTracer2Data);
-  if FOwner.FSaveType = stBTracer2Data then begin
-    FObjectScanner.IterationIdx := MCTparas.iThreadId - 1;
-    FObjectScanner.OutputFilename := FOwner.FilenameREd.Text;
+  FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError := False;
+  try
+    CoInitialize(nil);
+    FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, M3Vfile, FacesList, VertexGenConfig.SurfaceSharpness, FOwner.FSaveType = stBTracer2Data, 'D:\GFX\Mandelbulb3D\Meshes\mb3d_mesh.btracer2');
+    FObjectScanner.ThreadIdx := MCTparas.iThreadId - 1;
+    if FOwner.FSaveType = stBTracer2Data then begin
+      FObjectScanner.OutputFilename := FOwner.FilenameREd.Text;
+      if FObjectScanner.ThreadIdx = 0 then
+        InitBTraceFile( FObjectScanner.OutputFilename );
+    end;
+    FPrepared := True;
+  except
+    on E: Exception do begin
+      FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError := True;
+      FOwner.ThreadErrorStatus[MCTparas.iThreadId].ErrorMessage := E.Message;
+    end;
   end;
-  FPrepared := True;
 end;
 
 procedure TPLYExportCalcThread.Execute;
 begin
-  if not FPrepared then
-    raise Exception.Create('Call Prepare First');
   try
-    FObjectScanner.Scan;
+    try
+      if FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError then
+        raise Exception.Create(FOwner.ThreadErrorStatus[MCTparas.iThreadId].ErrorMessage);
+      if not FPrepared then
+        raise Exception.Create('Call Prepare First');
+      FObjectScanner.Scan;
+    except
+      on E: Exception do begin
+        FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError := True;
+        FOwner.ThreadErrorStatus[MCTparas.iThreadId].ErrorMessage := E.Message;
+      end;
+    end;
   finally
     with MCTparas do begin
       PCalcThreadStats.CTrecords[iThreadID].isActive := 0;
