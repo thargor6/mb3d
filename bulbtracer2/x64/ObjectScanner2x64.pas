@@ -18,10 +18,32 @@ unit ObjectScanner2x64;
 interface
 
 uses
-  SysUtils, Classes, Contnrs, VectorMath, BulbTracer2Config,
+  Winapi.Windows, SysUtils, Classes, Contnrs, VectorMath, BulbTracer2Config,
   VertexList, Generics.Collections, MeshIOUtil;
 
 type
+  TCTrecord = packed record   //40 Bytes
+    iItAvrCount, iDEAvrCount: Integer;
+    iActualXpos, iActualYpos: Integer;
+    isActive, MaxIts: Integer;
+    i64Its, i64DEsteps: Int64;
+  end;
+  TPCTrecord = ^TCTrecord;
+  TCalcThreadStats = packed record
+    iProcessingType: Integer;          //0: not calculating, 1: main calculation, 2: hard shadow postcalc, 3: AO1, 4: AO2, 5: AO3, 6: BGshadow, 7: DOF
+    iAllProcessingOptions: Integer;
+    iTotalThreadCount: Integer;
+    pLBcalcStop: PLongBool;
+    pMessageHwnd: HWND;
+    cCalcTime: Cardinal;
+    ctCalcRect: TRect;    //40bytes to here
+    HandleType: Integer;                  //+4   for threadboosting ..put it to iProcessingType?
+    CTSid: Integer;                       //+4   to identify a specific record
+    CTrecords: array[1..64] of TCTrecord; //40*64 bytes  2560
+    CThandles: array[1..64] of Pointer;   //4*64 bytes   256       = 2864 Bytes total
+  end;
+  TPCalcThreadStats = ^TCalcThreadStats;
+
   TObjectScanner2Config = class
   protected
     FPreCalcTraceFilename: string;
@@ -42,13 +64,14 @@ type
     FSurfaceSharpness: Double;
     FFacesList: TFacesList;
     FOutputFilename: string;
+    FCalcThreadStats: TPCalcThreadStats;
     procedure Init;
 
     procedure ScannerInit; virtual; abstract;
     procedure ScannerScan; virtual; abstract;
     function GetWorkList: TList; virtual; abstract;
   public
-    constructor Create(const VertexGenConfig: TVertexGen2Config; const FacesList: TFacesList; const SurfaceSharpness: Double; const PreCalcTraceFilename: String; const PMainHeader: TPBTraceMainHeader; const iThreadId: Integer);
+    constructor Create(const VertexGenConfig: TVertexGen2Config; const FacesList: TFacesList; const SurfaceSharpness: Double; const PreCalcTraceFilename: String; const PMainHeader: TPBTraceMainHeader; const iThreadId: Integer; const CalcThreadStats: TPCalcThreadStats);
     destructor Destroy;override;
     procedure Scan;
     property ThreadIdx: Integer read FThreadIdx write FThreadIdx;
@@ -75,15 +98,16 @@ type
 implementation
 
 uses
-  Windows, Math, BulbTracer2;
+  Math, BulbTracer2;
 
 { ------------------------------ TObjectScanner ------------------------------ }
-constructor TObjectScanner2.Create(const VertexGenConfig: TVertexGen2Config; const FacesList: TFacesList; const SurfaceSharpness: Double; const PreCalcTraceFilename: String; const PMainHeader: TPBTraceMainHeader; const iThreadId: Integer);
+constructor TObjectScanner2.Create(const VertexGenConfig: TVertexGen2Config; const FacesList: TFacesList; const SurfaceSharpness: Double; const PreCalcTraceFilename: String; const PMainHeader: TPBTraceMainHeader; const iThreadId: Integer; const CalcThreadStats: TPCalcThreadStats);
 begin
   inherited Create;
   FConfig := TObjectScanner2Config.Create;
   FMainHeader := PMainHeader;
   FiThreadId := iThreadId;
+  FCalcThreadStats := CalcThreadStats;
   with FConfig do begin
     FVertexGenConfig := VertexGenConfig;
     FPreCalcTraceFilename := PreCalcTraceFilename;
@@ -368,23 +392,14 @@ procedure TParallelScanner2.ScannerScan3;
                         if Assigned( IterationCallback )  then
                           IterationCallback( ThreadIdx );
 
-                        // TODO
-                        (*
-                        with FMCTparas do begin
-                          if PCalcThreadStats.CTrecords[iThreadID].iDEAvrCount < 0 then begin
-                            PCalcThreadStats.CTrecords[iThreadID].iActualYpos := FSlicesU div 2 + 50;
-                            exit;
-                          end;
+                        if FCalcThreadStats^.CTrecords[FiThreadID].iDEAvrCount < 0 then begin
+                          FCalcThreadStats^.CTrecords[FiThreadID].iActualYpos := FSlicesU div 2 + 50;
+                          exit;
                         end;
-                        *)
 
                       end;
                       CurrPos.X := CurrPos.X + FStepSize;
-                      // TODO
-                      (*
-                      with FMCTparas do begin
-                        PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round( (CurrUSlice + MaxPrecalcUSlices * 0.5 + I * 0.5)  / FSlicesU * 75.0 );
-                      end;*)
+                      FCalcThreadStats^.CTrecords[FiThreadID].iActualYpos := Round( (CurrUSlice + MaxPrecalcUSlices * 0.5 + I * 0.5)  / FSlicesU * 75.0 );
                     end;
                   end;
                 finally

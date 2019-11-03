@@ -79,15 +79,6 @@ object BTracer2Frm: TBTracer2Frm
       TabOrder = 3
       OnClick = CancelBtnClick
     end
-    object Button2: TButton
-      Left = 491
-      Top = 31
-      Width = 177
-      Height = 25
-      Caption = 'Generate Mesh'
-      TabOrder = 4
-      OnClick = Button2Click
-    end
   end
   object Panel1: TPanel
     Left = 0
@@ -286,5 +277,11 @@ object BTracer2Frm: TBTracer2Frm
     Options = [fdoPickFolders, fdoForceFileSystem, fdoPathMustExist]
     Left = 607
     Top = 110
+  end
+  object Timer1: TTimer
+    Enabled = False
+    OnTimer = Timer1Timer
+    Left = 617
+    Top = 64
   end
 end

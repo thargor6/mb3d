@@ -4,10 +4,15 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls,
-  JvExStdCtrls, JvGroupBox, Vcl.ExtCtrls, Contnrs, MeshIOUtil, BulbTracer2Config;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ComCtrls, Vcl.StdCtrls, JvExStdCtrls, JvGroupBox, Vcl.ExtCtrls,
+  Contnrs, MeshIOUtil, BulbTracer2Config, ObjectScanner2x64;
 
 type
+  TThreadErrorStatus = packed record
+    HasError: boolean;
+    ErrorMessage: string;
+  end;
+
   TBTracer2Frm = class(TForm)
     Panel2: TPanel;
     Label13: TLabel;
@@ -37,7 +42,7 @@ type
     MeshReductionAgressivenessEdit: TEdit;
     MeshReductionAgressivenessUpDown: TUpDown;
     FileOpenDialog: TFileOpenDialog;
-    Button2: TButton;
+    Timer1: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure CancelBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -49,7 +54,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure CalculateBtnClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    procedure Timer1Timer(Sender: TObject);
   private
     { Private declarations }
     T0: Int64;
@@ -58,7 +63,10 @@ type
     FCurrMainHeader: TBTraceMainHeader;
     FThreadVertexLists, FThreadNormalsLists, FThreadColorsLists: TObjectList;
     FVertexGenConfig: TVertexGen2Config;
-    procedure SaveMesh;
+    FCalcThreadStats: TCalcThreadStats;
+    FThreadErrorStatus: array[1..64] of TThreadErrorStatus;
+    FCalcStop: LongBool;
+    procedure MergeAndSaveMesh;
     procedure UpdateVertexGenConfig;
     procedure AnalyzeTraceData(const Filename: string);
     function GetOutputMeshFilename: string;
@@ -77,8 +85,11 @@ implementation
 
 uses
   BulbTracerUITools, VertexList, DateUtils, Generics.Collections,
-  MeshWriter, MeshReader, MeshSimplifier, IOUtils,
-  ObjectScanner2x64, Ole2;
+  MeshWriter, MeshReader, MeshSimplifier, IOUtils, Ole2;
+
+const
+  WM_ThreadReady = WM_USER + 1;
+  WM_ThreadStat = WM_USER + 2;
 
 type
   TPLYExportCalcThread = class(TThread)
@@ -135,12 +146,23 @@ begin
 end;
 
 procedure TBTracer2Frm.CancelBtnClick(Sender: TObject);
+var
+  I: Integer;
 begin
-  if FCalculating and (MessageDlg('Do you want to cancel?', mtConfirmation, mbYesNo, 0)=mrOK) then begin
+// Dialog sucks
+//  if FCalculating and (MessageDlg('Do you want to cancel?', mtConfirmation, mbYesNo, 0)=mrOK) then begin
     if FCalculating then begin
-      FForceAbort := True;
+      try
+        FForceAbort := True;
+        with FCalcThreadStats do  begin
+          for I := 1 to iTotalThreadCount do
+            CTrecords[I].iDEAvrCount := -1;
+        end;
+      except
+        // Hide error
+      end;
     end;
-  end;
+//  end;
 end;
 
 procedure TBTracer2Frm.EnableControls;
@@ -153,6 +175,8 @@ end;
 
 procedure TBTracer2Frm.FormCreate(Sender: TObject);
 begin
+  FCalcThreadStats.pLBcalcStop := @FCalcStop;
+
   FThreadVertexLists := TObjectList.Create;
   FThreadNormalsLists := TObjectList.Create;
   FThreadColorsLists := TObjectList.Create;
@@ -214,6 +238,53 @@ begin
   TaubinSmoothPassesEdit.Text := IntToStr(Round(Value));
 end;
 
+procedure TBTracer2Frm.Timer1Timer(Sender: TObject);
+var
+  y, it: Integer;
+  Progress: Integer;
+  HasError: boolean;
+  ErrorMessage: string;
+begin
+  Application.ProcessMessages;
+  Timer1.Enabled := False;
+  it := 0;
+  Progress := 0;
+  HasError := false;
+  ErrorMessage := 'An error has occured';
+  with FCalcThreadStats do begin
+    for y := 1 to iTotalThreadCount do begin
+      Progress := Progress + CTrecords[y].iActualYpos;
+      if CTrecords[y].isActive <> 0 then Inc(it);
+      if FThreadErrorStatus[y].HasError then begin
+        FCalcThreadStats.pLBcalcStop^ := True;
+        HasError := true;
+        if Trim( FThreadErrorStatus[y].ErrorMessage ) <> '' then
+          ErrorMessage := Trim( FThreadErrorStatus[y].ErrorMessage );
+        it := 0;
+        break;
+      end;
+    end;
+  end;
+  if it = 0 then begin
+    try
+      if not FCalcThreadStats.pLBcalcStop^ then  begin
+        MergeAndSaveMesh;
+        ProgressBar.Position := ProgressBar.Max;
+      end;
+      // OutMessage('Finished tracing object.');
+    finally
+      FCalculating := False;
+      EnableControls;
+    end;
+    if HasError then
+      raise Exception.Create(ErrorMessage);
+  end
+  else begin
+    ProgressBar.Position := Progress;
+    Timer1.Enabled := True;
+  end;
+end;
+
 procedure TBTracer2Frm.AnalyzeTraceData(const Filename: string);
 var
   I, J : Integer;
@@ -231,6 +302,9 @@ var
   x, ThreadCount: Integer;
   d: Double;
 begin
+  if FCalculating then
+    exit;
+  FForceAbort := False;
   T0 := DateUtils.MilliSecondsBetween(Now, 0);
   // TODO
   UpdateVertexGenConfig;
@@ -242,18 +316,15 @@ begin
   // FSaveType := TMeshSaveType( SaveTypeCmb.ItemIndex );
 
   SetLength(PLYCalcThreads, ThreadCount);
-  //VCalcThreadStats.ctCalcRect := MCTparas.CalcRect;
-  //VCalcThreadStats.pLBcalcStop := @MCalcStop;
-  //VCalcThreadStats.pMessageHwnd := Self.Handle;
+  FCalcThreadStats.pMessageHwnd := Self.Handle;
   for x := 1 to ThreadCount do begin
-    //VCalcThreadStats.CTrecords[x].iActualYpos := -1;
-    //VCalcThreadStats.CTrecords[x].iActualXpos := 0;
-    //VCalcThreadStats.CTrecords[x].i64DEsteps  := 0;
-    //VCalcThreadStats.CTrecords[x].iDEAvrCount := 0;
-    //VCalcThreadStats.CTrecords[x].i64Its      := 0;
-    //VCalcThreadStats.CTrecords[x].iItAvrCount := 0;
-    //VCalcThreadStats.CTrecords[x].MaxIts      := 0;
-    //MCTparas.iThreadId := x;
+    FCalcThreadStats.CTrecords[x].iActualYpos := -1;
+    FCalcThreadStats.CTrecords[x].iActualXpos := 0;
+    FCalcThreadStats.CTrecords[x].i64DEsteps  := 0;
+    FCalcThreadStats.CTrecords[x].iDEAvrCount := 0;
+    FCalcThreadStats.CTrecords[x].i64Its      := 0;
+    FCalcThreadStats.CTrecords[x].iItAvrCount := 0;
+    FCalcThreadStats.CTrecords[x].MaxIts      := 0;
     PLYCalcThreads[x - 1] := TPLYExportCalcThread.Create(True);
     PLYCalcThreads[x - 1].FOwner := Self;
     PLYCalcThreads[x - 1].FreeOnTerminate := True;
@@ -262,22 +333,22 @@ begin
     PLYCalcThreads[x - 1].FacesList      := TFacesList.Create;
     PLYCalcThreads[x - 1].FiThreadId := x;
     FThreadVertexLists.Add(PLYCalcThreads[x - 1].FacesList);
-    // VCalcThreadStats.CTrecords[x].isActive := 1;
+    FCalcThreadStats.CTrecords[x].isActive := 1;
   end;
-  // VCalcThreadStats.HandleType := 0;
+  FCalcThreadStats.HandleType := 0;
   ProgressBar.Min := 0;
   ProgressBar.Position := 0;
   ProgressBar.Max := ThreadCount * 100;
-  //VCalcThreadStats.iTotalThreadCount := ThreadCount;
-  //VCalcThreadStats.cCalcTime         := GetTickCount;
+  FCalcThreadStats.iTotalThreadCount := ThreadCount;
+  FCalcThreadStats.cCalcTime         := GetTickCount;
   //vActiveThreads := ThreadCount;
   //PaintedYsofar := 0;
   for x := 0 to ThreadCount - 1 do PLYCalcThreads[x].Prepare;
   for x := 0 to ThreadCount - 1 do PLYCalcThreads[x].Start;
-  //Mand3DForm.DisableButtons;
   Label13.Caption := 'Tracing object...';
-  //Timer1.Interval := 200;
-  //Timer1.Enabled := True;
+  FCalculating := True;
+  Timer1.Interval := 200;
+  Timer1.Enabled := True;
 end;
 
 destructor TPLYExportCalcThread.Destroy;
@@ -289,16 +360,16 @@ end;
 
 procedure TPLYExportCalcThread.Prepare;
 begin
- // FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError := False;
+  FOwner.FThreadErrorStatus[FiThreadId].HasError := False;
   try
     CoInitialize(nil);
-    FObjectScanner := TParallelScanner2.Create(VertexGenConfig, FacesList, VertexGenConfig.SurfaceSharpness, 'D:\GFX\Mandelbulb3D\Meshes\mb3d_mesh.btracer2', @(FOwner.FCurrMainHeader), FiThreadId);
+    FObjectScanner := TParallelScanner2.Create(VertexGenConfig, FacesList, VertexGenConfig.SurfaceSharpness, 'D:\GFX\Mandelbulb3D\Meshes\mb3d_mesh.btracer2', @(FOwner.FCurrMainHeader), FiThreadId, @FOwner.FCalcThreadStats);
     FObjectScanner.ThreadIdx := FiThreadId - 1;
     FPrepared := True;
   except
     on E: Exception do begin
-   //   FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError := True;
-   //   FOwner.ThreadErrorStatus[MCTparas.iThreadId].ErrorMessage := E.Message;
+      FOwner.FThreadErrorStatus[FiThreadId].HasError := True;
+      FOwner.FThreadErrorStatus[FiThreadId].ErrorMessage := E.Message;
     end;
   end;
 end;
@@ -307,23 +378,21 @@ procedure TPLYExportCalcThread.Execute;
 begin
   try
     try
-     // if FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError then
-     //   raise Exception.Create(FOwner.ThreadErrorStatus[MCTparas.iThreadId].ErrorMessage);
+      if FOwner.FThreadErrorStatus[FiThreadId].HasError then
+        raise Exception.Create(FOwner.FThreadErrorStatus[FiThreadId].ErrorMessage);
       if not FPrepared then
         raise Exception.Create('Call Prepare First');
       FObjectScanner.Scan;
     except
       on E: Exception do begin
-     //   FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError := True;
-     //   FOwner.ThreadErrorStatus[MCTparas.iThreadId].ErrorMessage := E.Message;
+        FOwner.FThreadErrorStatus[FiThreadId].HasError := True;
+        FOwner.FThreadErrorStatus[FiThreadId].ErrorMessage := E.Message;
         raise;
       end;
     end;
   finally
-//    with MCTparas do begin
-//      PCalcThreadStats.CTrecords[iThreadID].isActive := 0;
- //     PostMessage(PCalcThreadStats.pMessageHwnd, WM_ThreadReady, 0, 0);
- //   end;
+    FOwner.FCalcThreadStats.CTrecords[FiThreadID].isActive := 0;
+    PostMessage(FOwner.FCalcThreadStats.pMessageHwnd, WM_ThreadReady, 0, 0);
   end;
 end;
 
@@ -335,7 +404,7 @@ begin
 
   FVertexGenConfig.RemoveDuplicates := True;
 
-  FVertexGenConfig.SurfaceSharpness := 0.25; // StrToFloat(SurfaceSharpnessEdit.Text);
+  FVertexGenConfig.SurfaceSharpness := 1.25; // StrToFloat(SurfaceSharpnessEdit.Text);
   FVertexGenConfig.CalcColors := True; // CalculateColorsCBx.Checked;
 
   VRes := FCurrMainHeader.VResolution ;
@@ -346,7 +415,7 @@ begin
   FVertexGenConfig.VRange.StepCount := VRes;
 end;
 
-procedure TBTracer2Frm.SaveMesh;
+procedure TBTracer2Frm.MergeAndSaveMesh;
 const
   MergeRatio = 0.25;
 var
@@ -358,7 +427,7 @@ begin
       FacesList := TFacesList.MergeFacesLists( FThreadVertexLists );
       try
         FacesList.DoCenter(1.0);
-
+        (*
         MaxFaces := Round( FacesList.Count * MergeRatio );
         if FacesList.Count > MaxFaces then begin
           with TMeshSimplifier.Create(FacesList) do try
@@ -367,6 +436,14 @@ begin
             Free;
           end;
         end;
+          *)
+
+          with TMeshSimplifier.Create(FacesList) do try
+            SimplifyMeshLossless(0.00001);
+          finally
+            Free;
+          end;
+
 
         if not FForceAbort then begin
           TPlyFileWriter.SaveToFile('D:\GFX\Mandelbulb3D\Meshes\mb3d_mesh2_x64.ply', FacesList);
@@ -394,11 +471,6 @@ begin
     Label13.Caption := 'Operation cancelled';
 end;
 
-
-procedure TBTracer2Frm.Button2Click(Sender: TObject);
-begin
-  SaveMesh;
-end;
 
 end.
 
