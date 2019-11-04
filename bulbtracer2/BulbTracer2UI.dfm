@@ -48,10 +48,10 @@ object BulbTracer2Frm: TBulbTracer2Frm
       OnClick = Button2Click
     end
     object GroupBox1: TGroupBox
-      Left = 8
+      Left = 12
       Top = 123
       Width = 167
-      Height = 206
+      Height = 316
       Caption = 'Offset and scale'
       TabOrder = 2
       object Label1: TLabel
@@ -86,7 +86,31 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Alignment = taRightJustify
         Caption = 'Scale:'
       end
-      object Edit1: TEdit
+      object Label7: TLabel
+        Left = 15
+        Top = 213
+        Width = 39
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'Z offset:'
+      end
+      object Label8: TLabel
+        Left = 16
+        Top = 186
+        Width = 39
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'Y angle:'
+      end
+      object Label9: TLabel
+        Left = 16
+        Top = 159
+        Width = 39
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'X angle:'
+      end
+      object XOffsetEdit: TEdit
         Left = 62
         Top = 25
         Width = 88
@@ -102,9 +126,9 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
         TabOrder = 0
         Text = '0.0'
-        OnChange = Edit1Change
+        OnChange = XOffsetEditChange
       end
-      object Edit3: TEdit
+      object YOffsetEdit: TEdit
         Left = 62
         Top = 52
         Width = 88
@@ -120,9 +144,9 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
         TabOrder = 1
         Text = '0.0'
-        OnChange = Edit1Change
+        OnChange = XOffsetEditChange
       end
-      object Edit4: TEdit
+      object ZOffsetEdit: TEdit
         Left = 61
         Top = 79
         Width = 88
@@ -138,7 +162,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
         TabOrder = 2
         Text = '0.0'
-        OnChange = Edit1Change
+        OnChange = XOffsetEditChange
       end
       object CheckBox3: TCheckBox
         Left = 21
@@ -149,16 +173,16 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Caption = 'Use default orientation'
         Checked = True
         State = cbChecked
-        TabOrder = 3
-        OnClick = Edit1Change
+        TabOrder = 4
+        OnClick = XOffsetEditChange
       end
       object Button6: TButton
-        Left = 16
-        Top = 156
+        Left = 20
+        Top = 259
         Width = 133
         Height = 40
         Caption = 'Reset offset+scale'
-        TabOrder = 4
+        TabOrder = 8
         OnClick = Button6Click
       end
       object ScaleEdit: TEdit
@@ -166,9 +190,63 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Top = 106
         Width = 87
         Height = 21
-        TabOrder = 5
+        TabOrder = 3
         Text = '1.0'
-        OnChange = Edit1Change
+        OnChange = XOffsetEditChange
+      end
+      object XRotateEdit: TEdit
+        Left = 61
+        Top = 156
+        Width = 88
+        Height = 21
+        Hint = 'Rotation angle around x-axis in degrees'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 5
+        Text = '0.0'
+        OnChange = XOffsetEditChange
+      end
+      object YRotateEdit: TEdit
+        Left = 61
+        Top = 183
+        Width = 88
+        Height = 21
+        Hint = 'Rotation angle around y-axis in degrees'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 6
+        Text = '0.0'
+        OnChange = XOffsetEditChange
+      end
+      object ZRotateEdit: TEdit
+        Left = 60
+        Top = 210
+        Width = 88
+        Height = 21
+        Hint = 'Rotation angle around z-axis in degrees'
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -11
+        Font.Name = 'MS Sans Serif'
+        Font.Style = []
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
+        TabOrder = 7
+        Text = '0.0'
+        OnChange = XOffsetEditChange
       end
     end
     object GroupBox2: TGroupBox
@@ -323,6 +401,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitLeft = 0
+        ExplicitTop = 14
         object Image1: TImage
           Left = 106
           Top = 48
@@ -1071,6 +1151,14 @@ object BulbTracer2Frm: TBulbTracer2Frm
           ShowHint = True
           OnClick = ScaleDownBtnClick
         end
+        object Label11: TLabel
+          Left = 46
+          Top = 8
+          Width = 54
+          Height = 13
+          AutoSize = False
+          Caption = 'Edit mode:'
+        end
         object PreviewProgressBar: TProgressBar
           Left = 667
           Top = 48
@@ -1084,7 +1172,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
           TabOrder = 0
         end
         object RadioGroup2: TRadioGroup
-          Left = 538
+          Left = 537
           Top = 48
           Width = 80
           Height = 152
@@ -1109,7 +1197,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
           WordWrap = True
         end
         object Button5: TButton
-          Left = 539
+          Left = 538
           Top = 376
           Width = 141
           Height = 40
@@ -1118,6 +1206,20 @@ object BulbTracer2Frm: TBulbTracer2Frm
           TabOrder = 3
           WordWrap = True
           OnClick = Button5Click
+        end
+        object EditModeCmb: TComboBox
+          Left = 106
+          Top = 5
+          Width = 80
+          Height = 21
+          Style = csDropDownList
+          DropDownCount = 32
+          ItemIndex = 0
+          TabOrder = 4
+          Text = 'Move'
+          Items.Strings = (
+            'Move'
+            'Rotate')
         end
       end
     end

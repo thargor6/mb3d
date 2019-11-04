@@ -117,6 +117,8 @@ type
     FSharedWorkList: TList;
     FTraceRanges: TList;
     FShowTraceRanges: Boolean;
+    FTraceZMin: double;
+    FTraceZMax: double;
   public
     constructor Create;
     destructor Destroy; override;
@@ -130,6 +132,8 @@ type
     property CalcColors: Boolean read FCalcColors write FCalcColors;
     property ShowTraceRanges: Boolean read FShowTraceRanges write FShowTraceRanges;
     property TraceRanges: TList read FTraceRanges;
+    property TraceZMin: double read FTraceZMin write FTraceZMin;
+    property TraceZMax: double read FTraceZMax write FTraceZMax;
   end;
 
 implementation
@@ -214,8 +218,9 @@ begin
   FURange := TRange.Create;
   FVRange := TRange.Create;
   FTraceRanges := TObjectList.Create;
-
   RemoveDuplicates := True;
+  FTraceZMin := 0.0;
+  FTraceZMax := 100.0;
 end;
 
 destructor TVertexGen2Config.Destroy;

@@ -235,6 +235,8 @@ begin
 end;
 
 procedure TParallelScanner2.ScannerScan3;
+var
+  TraceZMin, TraceZMax: double;
 
   procedure CalculateDE( const Position: TPD3Vector; var DE, ColorIndex, ColorR, ColorG, ColorB: Single );
   begin
@@ -387,6 +389,8 @@ procedure TParallelScanner2.ScannerScan3;
   begin
     CurrUSlice := 0;
     PreCalcHeaderList := nil;
+    TraceZMin := FConfig.FVertexGenConfig.TraceZMin;
+    TraceZMax := FConfig.FVertexGenConfig.TraceZMax;
     try
       MaxPrecalcUSlices := Min(Max(MaxPreCalcValuesPerBlock div ((FSlicesV+1) * (FSlicesV+1)), 1), FSlicesU+1);
       while CurrUSlice < FSlicesU do begin
@@ -415,57 +419,59 @@ procedure TParallelScanner2.ScannerScan3;
 
                         CurrPos.Z := FZMin;
                         for K := 0 to FSlicesV - 1 do begin
-                          TMCCubes.InitializeCube(@MCCube, @CurrPos, FConfig.FStepSize);
+                          if (CurrPos.Z >= TraceZMin) and (CurrPos.Z <= TraceZMax) then begin
+                            TMCCubes.InitializeCube(@MCCube, @CurrPos, FConfig.FStepSize);
 
-                          MCCube.V[0].Weight := CalcWeight( DE[I, J, K] );
-                          MCCube.V[0].ColorIdx := ColorValueToFloat( ColorIdxs[I, J, K] );
-                          MCCube.V[0].ColorR := ColorValueToFloat( ColorRs[I, J, K] );
-                          MCCube.V[0].ColorG := ColorValueToFloat( ColorGs[I, J, K] );
-                          MCCube.V[0].ColorB := ColorValueToFloat( ColorBs[I, J, K] );
+                            MCCube.V[0].Weight := CalcWeight( DE[I, J, K] );
+                            MCCube.V[0].ColorIdx := ColorValueToFloat( ColorIdxs[I, J, K] );
+                            MCCube.V[0].ColorR := ColorValueToFloat( ColorRs[I, J, K] );
+                            MCCube.V[0].ColorG := ColorValueToFloat( ColorGs[I, J, K] );
+                            MCCube.V[0].ColorB := ColorValueToFloat( ColorBs[I, J, K] );
 
-                          MCCube.V[1].Weight := CalcWeight( DE[I+1, J, K] );
-                          MCCube.V[1].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J, K] );
-                          MCCube.V[1].ColorR := ColorValueToFloat( ColorRs[I+1, J, K] );
-                          MCCube.V[1].ColorG := ColorValueToFloat( ColorGs[I+1, J, K] );
-                          MCCube.V[1].ColorB := ColorValueToFloat( ColorBs[I+1, J, K] );
+                            MCCube.V[1].Weight := CalcWeight( DE[I+1, J, K] );
+                            MCCube.V[1].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J, K] );
+                            MCCube.V[1].ColorR := ColorValueToFloat( ColorRs[I+1, J, K] );
+                            MCCube.V[1].ColorG := ColorValueToFloat( ColorGs[I+1, J, K] );
+                            MCCube.V[1].ColorB := ColorValueToFloat( ColorBs[I+1, J, K] );
 
-                          MCCube.V[2].Weight := CalcWeight( DE[I+1, J+1, K] );
-                          MCCube.V[2].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J+1, K] );
-                          MCCube.V[2].ColorR := ColorValueToFloat( ColorRs[I+1, J+1, K] );
-                          MCCube.V[2].ColorG := ColorValueToFloat( ColorGs[I+1, J+1, K] );
-                          MCCube.V[2].ColorB := ColorValueToFloat( ColorBs[I+1, J+1, K] );
-                          MCCube.V[3].ColorIdx := ColorValueToFloat( ColorIdxs[I, J+1, K] );
-                          MCCube.V[3].ColorR := ColorValueToFloat( ColorRs[I, J+1, K] );
-                          MCCube.V[3].ColorG := ColorValueToFloat( ColorGs[I, J+1, K] );
-                          MCCube.V[3].ColorB := ColorValueToFloat( ColorBs[I, J+1, K] );
+                            MCCube.V[2].Weight := CalcWeight( DE[I+1, J+1, K] );
+                            MCCube.V[2].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J+1, K] );
+                            MCCube.V[2].ColorR := ColorValueToFloat( ColorRs[I+1, J+1, K] );
+                            MCCube.V[2].ColorG := ColorValueToFloat( ColorGs[I+1, J+1, K] );
+                            MCCube.V[2].ColorB := ColorValueToFloat( ColorBs[I+1, J+1, K] );
+                            MCCube.V[3].ColorIdx := ColorValueToFloat( ColorIdxs[I, J+1, K] );
+                            MCCube.V[3].ColorR := ColorValueToFloat( ColorRs[I, J+1, K] );
+                            MCCube.V[3].ColorG := ColorValueToFloat( ColorGs[I, J+1, K] );
+                            MCCube.V[3].ColorB := ColorValueToFloat( ColorBs[I, J+1, K] );
 
 
-                          MCCube.V[3].Weight := CalcWeight( DE[I, J+1, K] );
-                          MCCube.V[4].Weight := CalcWeight( DE[I, J, K+1] );
-                          MCCube.V[4].ColorIdx := ColorValueToFloat( ColorIdxs[I, J, K+1] );
-                          MCCube.V[4].ColorR := ColorValueToFloat( ColorRs[I, J, K+1] );
-                          MCCube.V[4].ColorG := ColorValueToFloat( ColorGs[I, J, K+1] );
-                          MCCube.V[4].ColorB := ColorValueToFloat( ColorBs[I, J, K+1] );
+                            MCCube.V[3].Weight := CalcWeight( DE[I, J+1, K] );
+                            MCCube.V[4].Weight := CalcWeight( DE[I, J, K+1] );
+                            MCCube.V[4].ColorIdx := ColorValueToFloat( ColorIdxs[I, J, K+1] );
+                            MCCube.V[4].ColorR := ColorValueToFloat( ColorRs[I, J, K+1] );
+                            MCCube.V[4].ColorG := ColorValueToFloat( ColorGs[I, J, K+1] );
+                            MCCube.V[4].ColorB := ColorValueToFloat( ColorBs[I, J, K+1] );
 
-                          MCCube.V[5].Weight := CalcWeight( DE[I+1, J, K+1] );
-                          MCCube.V[5].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J, K+1] );
-                          MCCube.V[5].ColorR := ColorValueToFloat( ColorRs[I+1, J, K+1] );
-                          MCCube.V[5].ColorG := ColorValueToFloat( ColorGs[I+1, J, K+1] );
-                          MCCube.V[5].ColorB := ColorValueToFloat( ColorBs[I+1, J, K+1] );
+                            MCCube.V[5].Weight := CalcWeight( DE[I+1, J, K+1] );
+                            MCCube.V[5].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J, K+1] );
+                            MCCube.V[5].ColorR := ColorValueToFloat( ColorRs[I+1, J, K+1] );
+                            MCCube.V[5].ColorG := ColorValueToFloat( ColorGs[I+1, J, K+1] );
+                            MCCube.V[5].ColorB := ColorValueToFloat( ColorBs[I+1, J, K+1] );
 
-                          MCCube.V[6].Weight := CalcWeight( DE[I+1, J+1, K+1] );
-                          MCCube.V[6].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J+1, K+1] );
-                          MCCube.V[6].ColorR := ColorValueToFloat( ColorRs[I+1, J+1, K+1] );
-                          MCCube.V[6].ColorG := ColorValueToFloat( ColorGs[I+1, J+1, K+1] );
-                          MCCube.V[6].ColorB := ColorValueToFloat( ColorBs[I+1, J+1, K+1] );
+                            MCCube.V[6].Weight := CalcWeight( DE[I+1, J+1, K+1] );
+                            MCCube.V[6].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J+1, K+1] );
+                            MCCube.V[6].ColorR := ColorValueToFloat( ColorRs[I+1, J+1, K+1] );
+                            MCCube.V[6].ColorG := ColorValueToFloat( ColorGs[I+1, J+1, K+1] );
+                            MCCube.V[6].ColorB := ColorValueToFloat( ColorBs[I+1, J+1, K+1] );
 
-                          MCCube.V[7].Weight := CalcWeight( DE[I, J+1, K+1] );
-                          MCCube.V[7].ColorIdx := ColorValueToFloat( ColorIdxs[I, J+1, K+1] );
-                          MCCube.V[7].ColorR := ColorValueToFloat( ColorRs[I, J+1, K+1] );
-                          MCCube.V[7].ColorG := ColorValueToFloat( ColorGs[I, J+1, K+1] );
-                          MCCube.V[7].ColorB := ColorValueToFloat( ColorBs[I, J+1, K+1] );
+                            MCCube.V[7].Weight := CalcWeight( DE[I, J+1, K+1] );
+                            MCCube.V[7].ColorIdx := ColorValueToFloat( ColorIdxs[I, J+1, K+1] );
+                            MCCube.V[7].ColorR := ColorValueToFloat( ColorRs[I, J+1, K+1] );
+                            MCCube.V[7].ColorG := ColorValueToFloat( ColorGs[I, J+1, K+1] );
+                            MCCube.V[7].ColorB := ColorValueToFloat( ColorBs[I, J+1, K+1] );
 
-                          TMCCubes.CreateFacesForCube(@MCCube, ISO_VALUE, FFacesList, FCalcColors);
+                            TMCCubes.CreateFacesForCube(@MCCube, ISO_VALUE, FFacesList, FCalcColors);
+                          end;
                           CurrPos.Z := CurrPos.Z + FStepSize;
                         end;
 
@@ -755,6 +761,7 @@ begin
     end;
   end;
 end;
+
 
 end.
 
