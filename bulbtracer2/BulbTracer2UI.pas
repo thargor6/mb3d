@@ -1216,6 +1216,7 @@ begin
           PHeader^.VHeaderZScale := M3Vfile.Zscale;
           PHeader^.VResolution := VertexGenConfig.URange.StepCount;
           PHeader^.ThreadCount := FOwner.VCalcThreadStats.iTotalThreadCount;
+          PHeader^.WithColors := Ord(VertexGenConfig.CalcColors);
           InitBTraceFile( FObjectScanner.OutputFilename, PHeader );
         finally
           FreeMem(PHeader);

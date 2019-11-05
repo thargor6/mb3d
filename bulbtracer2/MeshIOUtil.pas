@@ -38,11 +38,15 @@ type
     VHeaderWidth, VHeaderHeight: Int32;
     VHeaderZoom, VHeaderZScale: double;
     VResolution, ThreadCount: Int32;
+    WithColors: Int32;
   end;
   TPBTraceMainHeader = ^TBTraceMainHeader;
 
   TBTraceDataHeader = packed record
-    TraceOffset, TraceCount, TraceResolution: Int32;
+    TraceOffset: Int32;
+    TraceCount: Int32;
+    TraceResolution: Int32;
+    WithColors: Int32;
   end;
   TPBTraceDataHeader = ^TBTraceDataHeader;
 
@@ -108,7 +112,7 @@ end;
 { ------------------------- Creating Trace Files ----------------------------- }
 function CreateTraceFilename(const OutputFilename: string; const ThreadIdx, CurrFileIdx: integer): string;
 begin
-  Result := IncludeTrailingBackslash(OutputFilename) + Format('part_%s_%s', [Format('%.*d',[3, ThreadIdx]), Format('%.*d',[3, CurrFileIdx])]);
+  Result := IncludeTrailingBackslash(OutputFilename) + Format('part_%s_%s', [Format('%.*d',[2, ThreadIdx]), Format('%.*d',[4, CurrFileIdx])]);
 end;
 
 { ----------------------- Writing  of primitive types ------------------------ }
@@ -304,6 +308,7 @@ begin
       WriteInt32(MemStream, PHeader^.TraceOffset);
       WriteInt32(MemStream, PHeader^.TraceCount);
       WriteInt32(MemStream, PHeader^.TraceResolution);
+      WriteInt32(MemStream, PHeader^.WithColors);
       MemStream.SaveToStream(FileStream);
     finally
       MemStream.Free;
@@ -332,10 +337,12 @@ begin
       CurrBTraceData := BTraceData;
       for I:=0 to PHeader^.TraceCount - 1 do begin
         WriteSingle(MemStream, CurrBTraceData^.DE );
-        WriteInt16(MemStream, CurrBTraceData^.ColorIdx );
-        WriteInt16(MemStream, CurrBTraceData^.ColorR );
-        WriteInt16(MemStream, CurrBTraceData^.ColorG );
-        WriteInt16(MemStream, CurrBTraceData^.ColorB );
+        if PHeader^.WithColors = Ord(True) then begin
+          WriteInt16(MemStream, CurrBTraceData^.ColorIdx );
+          WriteInt16(MemStream, CurrBTraceData^.ColorR );
+          WriteInt16(MemStream, CurrBTraceData^.ColorG );
+          WriteInt16(MemStream, CurrBTraceData^.ColorB );
+        end;
         Inc(CurrBTraceData);
       end;
       MemStream.SaveToStream(FileStream);
@@ -370,6 +377,7 @@ begin
       PHeader^.TraceOffset := ReadInt32(MemStream);
       PHeader^.TraceCount := ReadInt32(MemStream);
       PHeader^.TraceResolution := ReadInt32(MemStream);
+      PHeader^.WithColors := ReadInt32(MemStream);
     finally
       MemStream.Free;
     end;
@@ -399,10 +407,18 @@ begin
       try
         for I:=0 to PHeader^.TraceCount - 1 do begin
           CurrBTraceData^.DE := ReadSingle(MemStream);
-          CurrBTraceData^.ColorIdx := ReadInt16(MemStream);
-          CurrBTraceData^.ColorR := ReadInt16(MemStream);
-          CurrBTraceData^.ColorG := ReadInt16(MemStream);
-          CurrBTraceData^.ColorB := ReadInt16(MemStream);
+          if PHeader^.WithColors = Ord(True) then begin
+            CurrBTraceData^.ColorIdx := ReadInt16(MemStream);
+            CurrBTraceData^.ColorR := ReadInt16(MemStream);
+            CurrBTraceData^.ColorG := ReadInt16(MemStream);
+            CurrBTraceData^.ColorB := ReadInt16(MemStream);
+          end
+          else begin
+            CurrBTraceData^.ColorIdx := 0;
+            CurrBTraceData^.ColorR := 0;
+            CurrBTraceData^.ColorG := 0;
+            CurrBTraceData^.ColorB := 0;
+          end;
           Inc(CurrBTraceData);
         end;
       except
@@ -464,6 +480,7 @@ begin
       WriteDouble(MemStream, PHeader^.VHeaderZScale);
       WriteInt32(MemStream, PHeader^.VResolution);
       WriteInt32(MemStream, PHeader^.ThreadCount);
+      WriteInt32(MemStream, PHeader^.WithColors);
       MemStream.SaveToStream(FileStream);
     finally
       MemStream.Free;
@@ -494,6 +511,7 @@ begin
       PHeader^.VHeaderZScale := ReadDouble(MemStream);
       PHeader^.VResolution := ReadInt32(MemStream);
       PHeader^.ThreadCount := ReadInt32(MemStream);
+      PHeader^.WithColors := ReadInt32(MemStream);
     finally
       MemStream.Free;
     end;

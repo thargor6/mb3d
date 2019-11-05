@@ -401,8 +401,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitLeft = 0
-        ExplicitTop = 14
         object Image1: TImage
           Left = 106
           Top = 48

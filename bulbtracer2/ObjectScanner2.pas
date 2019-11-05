@@ -535,11 +535,11 @@ var
     GetMem(BTraceData, MaxTracesPerFile * SizeOf(TBTraceData));
     try
       CurrFileIdx := 0;
-
       with FConfig do begin
         Header.TraceOffset := 0;
         Header.TraceCount := 0;
         Header.TraceResolution := FSlicesV;
+        Header.WithColors := Ord(FCalcColors);
 
         CurrPos.X := FUMin;
         for I := 0 to FSlicesU + 3 do begin
