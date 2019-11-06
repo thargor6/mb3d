@@ -1203,7 +1203,7 @@ begin
   FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError := False;
   try
     CoInitialize(nil);
-    FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, M3Vfile, FacesList, VertexGenConfig.SurfaceSharpness, FOwner.FSaveType = stBTracer2Data, (* 'D:\GFX\Mandelbulb3D\Meshes\mb3d_mesh.btracer2' *) '');
+    FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, M3Vfile, FacesList, VertexGenConfig.SurfaceSharpness, FOwner.FSaveType = stBTracer2Data, '' );
     FObjectScanner.ThreadIdx := MCTparas.iThreadId - 1;
     if FOwner.FSaveType = stBTracer2Data then begin
       FObjectScanner.OutputFilename := FOwner.FilenameREd.Text;

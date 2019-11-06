@@ -245,9 +245,7 @@ var
 
   procedure CreateMesh;
   const
-    // TODO
-    // MaxPreCalcValuesPerBlock = 257 * 257 * 257;
-    MaxPreCalcValuesPerBlock = 100 * 100 * 100;
+    MaxPreCalcValuesPerBlock = 257 * 257 * 257;
   var
     I, J, K: Integer;
     CurrUSlice, MaxPrecalcUSlices: Integer;
@@ -350,12 +348,13 @@ var
       XFromIdx := CurrUSlice;
       XToIdx := XFromIdx + MaxPrecalcUSlices + 1;
       FromOffset := XFromIdx * (FSlicesV+1) * (FSlicesV+1);
-      ToOffset := XToIdx * (FSlicesV+1) * (FSlicesV+1);
+      ToOffset :=  XToIdx * (FSlicesV+1) * (FSlicesV+1);
 
       for HIdx := 0 to PreCalcHeaderList.Count - 1 do begin
         PHeader := PreCalcHeaderList[HIdx];
-        if ( (PHeader^.TraceOffset >= FromOffset ) and (PHeader^.TraceOffset <= ToOffset) ) or
-           ( (PHeader^.TraceOffset + PHeader^.TraceCount >= FromOffset) and (PHeader^.TraceOffset + PHeader^.TraceCount <= ToOffset )) then begin
+        if ( (PHeader^.TraceOffset >= FromOffset ) and (PHeader^.TraceOffset < ToOffset) ) or
+           ( (PHeader^.TraceOffset + PHeader^.TraceCount >= FromOffset) and (PHeader^.TraceOffset + PHeader^.TraceCount < ToOffset ) ) or
+           ( (PHeader^.TraceOffset < FromOffset) and (PHeader^.TraceOffset + PHeader^.TraceCount > ToOffset ) ) then begin
 
           TraceFilename := CreateTraceFilename( FConfig.FPreCalcTraceFilename, ThreadIdx, HIdx );
           OutputDebugString(PChar('Loading Trace('+IntToStr(ThreadIdx)+'): '+TraceFilename));
@@ -392,8 +391,10 @@ var
     TraceZMin := FConfig.FVertexGenConfig.TraceZMin;
     TraceZMax := FConfig.FVertexGenConfig.TraceZMax;
     try
-      MaxPrecalcUSlices := Min(Max(MaxPreCalcValuesPerBlock div ((FSlicesV+1) * (FSlicesV+1)), 1), FSlicesU+1);
+      MaxPrecalcUSlices :=  Min(Max(MaxPreCalcValuesPerBlock div ((FSlicesV+1) * (FSlicesV+1)), 1), FSlicesU+1);
       while CurrUSlice < FSlicesU do begin
+        if CurrUSlice + MaxPrecalcUSlices > FSlicesU then
+          MaxPrecalcUSlices := FSlicesU - CurrUSlice;
         SetLength(DE, MaxPrecalcUSlices+1, FSlicesV+1, FSlicesV+1);
         try
           SetLength(ColorIdxs, MaxPrecalcUSlices+1, FSlicesV+1, FSlicesV+1);
@@ -411,7 +412,7 @@ var
                    // trace the object
                   with FConfig do begin
                     CurrPos.X := FUMin + CurrUSlice * FStepSize;
-                    for I := 0 to MaxPrecalcUSlices-1 do begin
+                    for I := 0 to MaxPrecalcUSlices - 1 do begin
                       Sleep(1);
 
                       CurrPos.Y := FVMin;
@@ -522,16 +523,19 @@ var
   end;
 
   procedure CreateAndSaveTraceData;
-  const
-    MaxTracesPerFile = 500000;
   var
-    I, J, K, CurrFileIdx: Integer;
+    I, J, K, CurrFileIdx, MaxTracesPerFile: Integer;
     TraceFilename: string;
     CurrPos: TD3Vector;
     BTraceData, CurrBTraceData: TPBTraceData;
     DE, ColorIndex, ColorR, ColorG, ColorB: Single;
     Header: TBTraceDataHeader;
   begin
+    if FCalcColors then
+      MaxTracesPerFile := 2000000
+    else
+      MaxTracesPerFile := 6000000;
+
     GetMem(BTraceData, MaxTracesPerFile * SizeOf(TBTraceData));
     try
       CurrFileIdx := 0;
@@ -540,9 +544,8 @@ var
         Header.TraceCount := 0;
         Header.TraceResolution := FSlicesV;
         Header.WithColors := Ord(FCalcColors);
-
         CurrPos.X := FUMin;
-        for I := 0 to FSlicesU + 3 do begin
+        for I := 0 to FSlicesU + 1 do begin
           CurrPos.Y := FVMin;
           for J := 0 to FSlicesV do begin
             CurrPos.Z := FZMin;
@@ -563,7 +566,6 @@ var
                 TraceFilename := CreateTraceFilename(OutputFilename, ThreadIdx, CurrFileIdx);
                 SaveTraceHeader( TraceFilename, @Header );
                 SaveTraceData( TraceFilename, BTraceData, @Header );
-
                 Inc(Header.TraceOffset, Header.TraceCount);
                 Header.TraceCount := 0;
                 Inc( CurrFileIdx );
