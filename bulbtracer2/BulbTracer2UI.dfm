@@ -370,7 +370,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Items.Strings = (
           'Mesh with vertex colors (*.ply)'
           'Mesh with uv-coordinates (*.obj)'
-          'Trace-data (*.btracer2)'
+          'BTracer2-cache (*.btracer2)'
           'Don'#39't save, only preview')
       end
     end
@@ -1191,6 +1191,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Width = 100
           Height = 39
           Caption = 'Auto update preview'
+          Checked = True
+          State = cbChecked
           TabOrder = 2
           WordWrap = True
         end

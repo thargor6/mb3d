@@ -116,9 +116,14 @@ begin
 end;
 
 { ----------------------- Writing  of primitive types ------------------------ }
-procedure WriteString(const MemStream: TMemoryStream; const Value: AnsiString);
+procedure WriteAnsiString(const MemStream: TMemoryStream; const Value: AnsiString);
 begin
   MemStream.WriteData(PAnsiChar(Value), Length(Value));
+end;
+
+procedure WriteString(const MemStream: TMemoryStream; const Value: String);
+begin
+  MemStream.WriteData(PChar(Value), Length(Value) * SizeOf(Char));
 end;
 
 procedure WriteNullTerminatedString(const MemStream: TMemoryStream; const Value: AnsiString);
@@ -156,7 +161,7 @@ begin
 end;
 
 { ----------------------- Reading  of primitive types ------------------------ }
-function ReadString4(const MemStream: TMemoryStream): AnsiString;
+function ReadAnsiString4(const MemStream: TStream): AnsiString;
 var
   Byte5: Array [0..4] of Byte;
   // EOF: boolean;  ReadLen: Integer;
@@ -168,7 +173,16 @@ begin
   // EOF := ReadLen < 4;
 end;
 
-procedure SkipBytes(const MemStream: TMemoryStream; const Length: Integer);
+function ReadString4(const MemStream: TStream): String;
+var
+  Char5: Array [0..4] of Char;
+begin
+  Char5[4] := #0;
+  MemStream.Read(Char5[0], 4 * SizeOf(Char));
+  Result := PChar(@Char5[0]);
+end;
+
+procedure SkipBytes(const MemStream: TStream; const Length: Integer);
 var
   I, ReadLen: Integer;
   Byte5: Array [0..4] of Byte;
@@ -182,7 +196,7 @@ begin
   end;
 end;
 
-function ReadInt32(const MemStream: TMemoryStream): Int32;
+function ReadInt32(const MemStream: TStream): Int32;
 var
   Buf: Int32;
   PBuf: Pointer;
@@ -198,7 +212,7 @@ begin
     Result := 0;
 end;
 
-function ReadInt16(const MemStream: TMemoryStream): Int16;
+function ReadInt16(const MemStream: TStream): Int16;
 var
   Buf: Int16;
   PBuf: Pointer;
@@ -253,12 +267,12 @@ end;
 { --------------------------- Saving Trace Data ------------------------------ }
 function CreateHeaderFilename(const BaseFilename: string): string;
 begin
-  Result := BaseFilename+'.h';
+  Result := BaseFilename;
 end;
 
 function CreateDataFilename(const BaseFilename: string): string;
 begin
-  Result := BaseFilename+'.d';
+  Result := BaseFilename;
 end;
 
 procedure ForceRemoveFile(const Filename: string);
@@ -294,6 +308,7 @@ end;
 
 procedure SaveTraceHeader(const BaseFilename: string; const PHeader: TPBTraceDataHeader);
 var
+  I: Integer;
   Filename: string;
   FileStream: TFileStream;
   MemStream: TMemoryStream;
@@ -304,11 +319,14 @@ begin
   try
     MemStream := TMemoryStream.Create;
     try
-      WriteString(MemStream, 'BTH1');
+      WriteAnsiString(MemStream, 'BTH1');
       WriteInt32(MemStream, PHeader^.TraceOffset);
       WriteInt32(MemStream, PHeader^.TraceCount);
       WriteInt32(MemStream, PHeader^.TraceResolution);
       WriteInt32(MemStream, PHeader^.WithColors);
+      // for future additions
+      for I := 0 to 11 do
+        WriteInt32(MemStream, 0);
       MemStream.SaveToStream(FileStream);
     finally
       MemStream.Free;
@@ -328,12 +346,14 @@ var
   MemStream: TMemoryStream;
 begin
   Filename := CreateDataFilename(BaseFilename);
-  ForceRemoveFile(Filename);
-  FileStream := TFileStream.Create(Filename, fmCreate);
+  // ForceRemoveFile(Filename);
+  // appending to the header
+  FileStream := TFileStream.Create(Filename, fmOpenReadWrite);
   try
+    FileStream.Seek(0, soFromEnd);
     MemStream := TMemoryStream.Create;
     try
-      WriteString(MemStream, 'BTD1');
+      WriteAnsiString(MemStream, 'BTD1');
       CurrBTraceData := BTraceData;
       for I:=0 to PHeader^.TraceCount - 1 do begin
         WriteSingle(MemStream, CurrBTraceData^.DE );
@@ -352,7 +372,7 @@ begin
   finally
     FileStream.Free;
   end;
-  CheckThatExistsFile(Filename);
+  // CheckThatExistsFile(Filename);
 end;
 
 { --------------------------- Loading Trace Data ----------------------------- }
@@ -363,24 +383,16 @@ end;
 
 procedure LoadTraceHeader(const Filename: string; const PHeader: TPBTraceDataHeader );
 var
-  MemStream: TMemoryStream;
   FileStream: TFileStream;
 begin
   FileStream := TFileStream.Create(CreateHeaderFilename(Filename), fmOpenRead);
   try
-    MemStream := TMemoryStream.Create;
-    try
-      MemStream.LoadFromStream(FileStream);
-      MemStream.Seek(0, soFromBeginning);
-      if ReadString4(MemStream) <> 'BTH1' then
-        raise Exception.Create('Missing <BTH1>-header');
-      PHeader^.TraceOffset := ReadInt32(MemStream);
-      PHeader^.TraceCount := ReadInt32(MemStream);
-      PHeader^.TraceResolution := ReadInt32(MemStream);
-      PHeader^.WithColors := ReadInt32(MemStream);
-    finally
-      MemStream.Free;
-    end;
+    if ReadAnsiString4(FileStream) <> 'BTH1' then
+      raise Exception.Create('Missing <BTH1>-header');
+    PHeader^.TraceOffset := ReadInt32(FileStream);
+    PHeader^.TraceCount := ReadInt32(FileStream);
+    PHeader^.TraceResolution := ReadInt32(FileStream);
+    PHeader^.WithColors := ReadInt32(FileStream);
   finally
     FileStream.Free;
   end;
@@ -388,19 +400,28 @@ end;
 
 procedure LoadTraceData(const Filename: string; var BTraceData: TPBTraceData; const PHeader: TPBTraceDataHeader);
 var
-  I: Int32;
+  I, HeaderLen: Int32;
   CurrBTraceData: TPBTraceData;
   MemStream: TMemoryStream;
   FileStream: TFileStream;
 begin
+  //    WriteAnsiString(MemStream, 'BTH1');
+  //    WriteInt32(MemStream, PHeader^.TraceOffset);
+  //    WriteInt32(MemStream, PHeader^.TraceCount);
+  //    WriteInt32(MemStream, PHeader^.TraceResolution);
+  //    WriteInt32(MemStream, PHeader^.WithColors);
+  //    for I := 0 to 11 do
+  //      WriteInt32(MemStream, 0);
+  HeaderLen := 4 *SizeOf(Byte) + 4 * SizeOf(Int32) + 12 * SizeOf(Int32);
+
   FileStream := TFileStream.Create(CreateDataFilename(Filename), fmOpenRead);
   try
     MemStream := TMemoryStream.Create;
     try
       MemStream.LoadFromStream(FileStream);
-      MemStream.Seek(0, soFromBeginning);
+      MemStream.Seek(HeaderLen, soFromBeginning);
 
-      if ReadString4(MemStream) <> 'BTD1' then
+      if ReadAnsiString4(MemStream) <> 'BTD1' then
         raise Exception.Create('Missing <BTD1>-header');
       GetMem( BTraceData, PHeader^.TraceCount * SizeOf( TBTraceData ) );
       CurrBTraceData := BTraceData;
@@ -442,6 +463,7 @@ end;
 
 procedure InitBTraceFile( const OutputFilename: string; const PHeader: TPBTraceMainHeader );
 var
+  I: Integer;
   Filename: string;
   FileStream: TFileStream;
   MemStream: TMemoryStream;
@@ -466,14 +488,13 @@ begin
     if not DirectoryExists( OutputFilename ) then
       raise Exception.Create(Format('Could not create folder <%s>', [OutputFilename]));
   end;
-
   Filename := CreateMainHeaderFilename(OutputFilename);
   ForceRemoveFile(Filename);
   FileStream := TFileStream.Create(Filename, fmCreate);
   try
     MemStream := TMemoryStream.Create;
     try
-      WriteString(MemStream, 'BTM1');
+      WriteAnsiString(MemStream, 'BTM1');
       WriteInt32(MemStream, PHeader^.VHeaderWidth);
       WriteInt32(MemStream, PHeader^.VHeaderHeight);
       WriteDouble(MemStream, PHeader^.VHeaderZoom);
@@ -481,6 +502,9 @@ begin
       WriteInt32(MemStream, PHeader^.VResolution);
       WriteInt32(MemStream, PHeader^.ThreadCount);
       WriteInt32(MemStream, PHeader^.WithColors);
+      // for future additions
+      for I := 0 to 11 do
+        WriteInt32(MemStream, 0);
       MemStream.SaveToStream(FileStream);
     finally
       MemStream.Free;
@@ -503,7 +527,7 @@ begin
     try
       MemStream.LoadFromStream(FileStream);
       MemStream.Seek(0, soFromBeginning);
-      if ReadString4(MemStream) <> 'BTM1' then
+      if ReadAnsiString4(MemStream) <> 'BTM1' then
         raise Exception.Create('Missing <BTM1>-header');
       PHeader^.VHeaderWidth := ReadInt32(MemStream);
       PHeader^.VHeaderHeight := ReadInt32(MemStream);
