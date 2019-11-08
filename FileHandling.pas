@@ -55,6 +55,7 @@ procedure SetDialogName(OpenPicDialog: TOpenPictureDialog; Name: String);  overl
 procedure SetDialogDirectory(SaveDialog: TSaveDialog; FDir: String);  overload;
 procedure SetDialogDirectory(OpenDialog: TOpenDialog; FDir: String);  overload;
 procedure SetDialogDirectory(OpenPicDialog: TOpenPictureDialog; FDir: String);  overload;
+function MakeTextparas(para: TPMandHeader10; Titel: String): AnsiString;
 
 var IniVal: array[0..37] of String = ('81','5','20','5','30','30','60','50','10', '3','0','0:0','','0','1','1','0','','',
       'No','No','Auto','','No','65 100','779 671','844 100','844 100','844 100','-1','No','Yes','','','0','Glossy' (*'Windows'*), '100%' , '');

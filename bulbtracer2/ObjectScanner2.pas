@@ -28,7 +28,8 @@ type
     FIteration3Dext: TIteration3Dext;
     FVertexGenConfig: TVertexGen2Config;
     FMCTparas: TMCTparameter;
-    FM3Vfile: TM3Vfile;
+    FVHeader: TMandHeader10;
+    FBTracer2Header: TBTracer2Header;
     FLightVals: TLightVals;
     FXMin, FXMax, FYMin, FYMax, FZMin, FZMax, FCentreX, FCentreY, FCentreZ: Double;
     FStepSize, FScale: Double;
@@ -51,7 +52,7 @@ type
     procedure ScannerScan; virtual; abstract;
     function GetWorkList: TList; virtual; abstract;
   public
-    constructor Create(const VertexGenConfig: TVertexGen2Config; const MCTparas: TMCTparameter; const M3Vfile: TM3Vfile; const FacesList: TFacesList; const SurfaceSharpness: Double; const TraceOnly: boolean; const PreCalcTraceFilename: String);
+    constructor Create(const VertexGenConfig: TVertexGen2Config; const MCTparas: TMCTparameter; const BTracer2Header: TBTracer2Header; const VHeader: TMandHeader10; const FacesList: TFacesList; const SurfaceSharpness: Double; const TraceOnly: boolean; const PreCalcTraceFilename: String);
     destructor Destroy;override;
     procedure Scan;
     property ThreadIdx: Integer read FThreadIdx write FThreadIdx;
@@ -82,8 +83,11 @@ implementation
 uses
   Windows, Math, Math3D, Calc, BulbTracer2, DivUtils, HeaderTrafos, MeshIOUtil;
 
+const
+  Zslices = 100;
+
 { ------------------------------ TObjectScanner ------------------------------ }
-constructor TObjectScanner2.Create(const VertexGenConfig: TVertexGen2Config; const MCTparas: TMCTparameter; const M3Vfile: TM3Vfile; const FacesList: TFacesList; const SurfaceSharpness: Double; const TraceOnly: boolean; const PreCalcTraceFilename: String);
+constructor TObjectScanner2.Create(const VertexGenConfig: TVertexGen2Config; const MCTparas: TMCTparameter; const BTracer2Header: TBTracer2Header; const VHeader: TMandHeader10; const FacesList: TFacesList; const SurfaceSharpness: Double; const TraceOnly: boolean; const PreCalcTraceFilename: String);
 begin
   inherited Create;
   FConfig := TObjectScanner2Config.Create;
@@ -91,10 +95,11 @@ begin
   with FConfig do begin
     FVertexGenConfig := VertexGenConfig;
     FMCTparas := MCTparas;
-    FM3Vfile := M3Vfile;
+    FBTracer2Header := BTracer2Header;
+    FVHeader := VHeader;
     FPreCalcTraceFilename := PreCalcTraceFilename;
     IniIt3D(@FMCTparas, @FIteration3Dext);
-    MakeLightValsFromHeaderLight(@FM3Vfile.VHeader, @FLightVals, 1, FM3Vfile.VHeader.bStereoMode);
+    MakeLightValsFromHeaderLight(@VHeader, @FLightVals, 1, VHeader.bStereoMode);
   end;
   FFacesList := FacesList;
   FSurfaceSharpness := SurfaceSharpness;
@@ -110,7 +115,7 @@ procedure TObjectScanner2.Init;
 begin
   with FConfig do begin
     FXMin := 0.0;
-    FXMax := Max(FM3Vfile.VHeader.Width, FM3Vfile.VHeader.Height);
+    FXMax := Max(FVHeader.Width, FVHeader.Height);
     FCentreX := FXMin + (FXMax - FXMin) * 0.5;
     FYMin := 0.0;
     FYMax := FXMax;
@@ -118,7 +123,7 @@ begin
     FZMin := 0.0;
     FZMax := FXMax;
     FCentreZ := FZMin + (FZMax - FZMin) * 0.5;
-    FScale := 2.2 / (FM3Vfile.VHeader.dZoom * FM3Vfile.Zscale * (FZMax - 1)); //new stepwidth
+    FScale := 2.2 / (FVHeader.dZoom * FBTracer2Header.Scale * (FZMax - 1)); //new stepwidth
   end;
   ScannerInit;
 end;
@@ -733,10 +738,10 @@ begin
   with FConfig do begin
     FMCTparas.mPsiLight := TPsiLight5(@psiLight);
 
-    FMCTparas.Ystart := TPVec3D(@FM3Vfile.VHeader.dXmid)^;                                   //abs offs!
-    mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[0], FM3Vfile.VHeader.Width * -0.5 + FM3Vfile.Xoff / FScale);
-    mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[1], FM3Vfile.VHeader.Height * -0.5 + FM3Vfile.Yoff / FScale);
-    mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[2], Z - FM3Vfile.Zslices * 0.5 + FM3Vfile.Zoff / FScale);
+    FMCTparas.Ystart := TPVec3D(@FVHeader.dXmid)^;                                   //abs offs!
+    mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[0], FVHeader.Width * -0.5 + FBTracer2Header.XOff / FScale);
+    mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[1], FVHeader.Height * -0.5 + FBTracer2Header.YOff / FScale);
+    mAddVecWeight(@FMCTparas.Ystart, @FMCTparas.Vgrads[2], Z - Zslices * 0.5 + FBTracer2Header.ZOff / FScale);
     mCopyAddVecWeight(@CC, @FMCTparas.Ystart, @FMCTparas.Vgrads[1], Y);
 
     FIteration3Dext.CalcSIT := True;

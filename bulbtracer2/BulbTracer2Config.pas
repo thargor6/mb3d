@@ -21,6 +21,25 @@ uses
   SysUtils, Classes, Generics.Collections, VertexList;
 
 type
+
+  TBTracer2Header = packed record
+    XOff, YOff, ZOff: Double;
+    Scale: Double;
+    XAngle, YAngle, ZAngle: Double;
+    SurfaceDetail: Double;
+    VResolution: Int32;
+    WithColors: boolean;
+    SaveTypeIndex: Int32;
+    MaxPreviewVertices: Int32;
+    MandParamsAsString: AnsiString;
+    WithOpenGlPreview: boolean;
+    PreviewDEstop: double;
+    PreviewSizeIdx: Int32;
+    WithAutoPreview: boolean;
+    OutputFilename: string;
+  end;
+
+
   TDoubleWrapper = class
   private
     FValue: Double;

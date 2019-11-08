@@ -39,7 +39,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
       OnClick = ImportParamsFromMainBtnClick
     end
     object Button2: TButton
-      Left = 8
+      Left = 10
       Top = 54
       Width = 171
       Height = 40
@@ -164,25 +164,13 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Text = '0.0'
         OnChange = XOffsetEditChange
       end
-      object CheckBox3: TCheckBox
-        Left = 21
-        Top = 133
-        Width = 129
-        Height = 17
-        Alignment = taLeftJustify
-        Caption = 'Use default orientation'
-        Checked = True
-        State = cbChecked
-        TabOrder = 4
-        OnClick = XOffsetEditChange
-      end
       object Button6: TButton
         Left = 20
-        Top = 259
+        Top = 260
         Width = 133
         Height = 40
         Caption = 'Reset offset+scale'
-        TabOrder = 8
+        TabOrder = 7
         OnClick = Button6Click
       end
       object ScaleEdit: TEdit
@@ -208,7 +196,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ParentFont = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 5
+        TabOrder = 4
         Text = '0.0'
         OnChange = XOffsetEditChange
       end
@@ -226,7 +214,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ParentFont = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 6
+        TabOrder = 5
         Text = '0.0'
         OnChange = XOffsetEditChange
       end
@@ -244,7 +232,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ParentFont = False
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 7
+        TabOrder = 6
         Text = '0.0'
         OnChange = XOffsetEditChange
       end
@@ -401,6 +389,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitTop = 14
         object Image1: TImage
           Left = 106
           Top = 48
@@ -1157,6 +1146,17 @@ object BulbTracer2Frm: TBulbTracer2Frm
           AutoSize = False
           Caption = 'Edit mode:'
         end
+        object Label12: TLabel
+          Left = 536
+          Top = 220
+          Width = 41
+          Height = 13
+          Hint = 'Adjusts the DE for render preview'
+          Alignment = taRightJustify
+          Caption = 'DE stop:'
+          ParentShowHint = False
+          ShowHint = True
+        end
         object PreviewProgressBar: TProgressBar
           Left = 667
           Top = 48
@@ -1170,9 +1170,9 @@ object BulbTracer2Frm: TBulbTracer2Frm
           TabOrder = 0
         end
         object RadioGroup2: TRadioGroup
-          Left = 537
+          Left = 536
           Top = 48
-          Width = 80
+          Width = 101
           Height = 152
           Caption = 'Preview size:'
           ItemIndex = 2
@@ -1187,8 +1187,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         end
         object CheckBox2: TCheckBox
           Left = 537
-          Top = 244
-          Width = 98
+          Top = 274
+          Width = 100
           Height = 39
           Caption = 'Auto update preview'
           TabOrder = 2
@@ -1218,6 +1218,24 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Items.Strings = (
             'Move'
             'Rotate')
+        end
+        object PreviewDEAdjust: TEdit
+          Left = 583
+          Top = 217
+          Width = 54
+          Height = 21
+          TabOrder = 5
+          Text = '0.5'
+          OnChange = XOffsetEditChange
+        end
+        object UpDown1: TUpDown
+          Left = 639
+          Top = 217
+          Width = 17
+          Height = 21
+          Max = 32000
+          TabOrder = 6
+          OnClick = UpDown1Click
         end
       end
     end

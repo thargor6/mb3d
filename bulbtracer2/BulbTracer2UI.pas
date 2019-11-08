@@ -50,7 +50,6 @@ type
     XOffsetEdit: TEdit;
     YOffsetEdit: TEdit;
     ZOffsetEdit: TEdit;
-    CheckBox3: TCheckBox;
     Button6: TButton;
     ScaleEdit: TEdit;
     GroupBox2: TGroupBox;
@@ -110,6 +109,9 @@ type
     Label9: TLabel;
     Label11: TLabel;
     EditModeCmb: TComboBox;
+    PreviewDEAdjust: TEdit;
+    Label12: TLabel;
+    UpDown1: TUpDown;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -145,6 +147,7 @@ type
     procedure IncZOffsetBtnClick(Sender: TObject);
     procedure ScaleDownBtnClick(Sender: TObject);
     procedure OpenGLPreviewCBxClick(Sender: TObject);
+    procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
   private
     { Private-Deklarationen }
   //  PreviewVoxel: array of Cardinal;   //buffer to not calc everything again if shifted position
@@ -163,10 +166,9 @@ type
     FCancelType: TCancelType;
     FRefreshing: Boolean;
     FSavePartCriticalSection: TCriticalSection;
-    procedure PutOutputFolder2record;
-    procedure GetOutputFolderFromrecord;
-    procedure MakeM3V;
-    procedure SetFromM3V;
+    FCurrParamsAsString: AnsiString;
+    procedure UpdateBTracer2HeaderFromUI;
+    procedure UpdateUIFromBTracer2Header;
     procedure CalcImageSize;
     function StartSlicePreview(nr: Integer): LongBool;
     procedure PaintNextPreviewSlice(nr: Integer);
@@ -202,7 +204,9 @@ type
     FParamSequenceFrom: Integer;
     FParamSequenceTo: Integer;
     FParamSequenceCurrFrame: Integer;
-    M3Vfile: TM3Vfile;
+    VHeader: TMandHeader10;
+    VHAddon: THeaderCustomAddon;
+    BTracer2Header: TBTracer2Header;
     bUserChange, bFirstShow, Benabled: LongBool;
     OutputFolder, VProjectName: String;
     FileNumber: Integer;
@@ -233,7 +237,7 @@ type
     procedure Prepare;
     procedure Execute; override;
   public
-    M3Vfile: TM3Vfile;
+    BTracer2Header: TBTracer2Header;
     MCTparas: TMCTparameter;
     FacesList: TFacesList;
     VertexGenConfig: TVertexGen2Config;
@@ -253,26 +257,8 @@ uses CalcVoxelSliceThread, FileHandling, Math, Math3D, Calc, DivUtils, Mand,
 
 {$R *.dfm}
 
-procedure TBulbTracer2Frm.PutOutputFolder2record;
-var i, l: Integer;
-begin
-    l := Min(1023, Length(OutputFolder));
-    for i := 1 to l do M3Vfile.OutputFolderC[i - 1] := Ord(OutputFolder[i]);
-    M3Vfile.OutputFolderC[l] := 0;
-end;
-
-procedure TBulbTracer2Frm.GetOutputFolderFromrecord;
-var b: Byte;
-    i: Integer;
-begin
-    OutputFolder := '';
-    i := 0;
-    repeat
-      b := M3Vfile.OutputFolderC[i];
-      if b > 0 then OutputFolder := OutputFolder + Chr(b);
-      Inc(i);
-    until (i > 1023) or (b = 0);
-end;
+const
+  ZSlices = 100;
 
 procedure TBulbTracer2Frm.Button1Click(Sender: TObject);
 begin
@@ -286,7 +272,7 @@ var d: Double;
     x, y: Integer;
     AvgDEstop: double;
 begin
-    AvgDEstop := 0.5 * (FOwner.CalcPreviewSize / 8.0);
+    AvgDEstop := FOwner.BTracer2Header.PreviewDEstop;
     with MCTparas do
       try
       IniIt3D(@MCTparas, @Iteration3Dext);
@@ -322,39 +308,28 @@ var VoxCalcThreads: array of TFVoxelExportCalcPreviewThread;
     x, ThreadCount: Integer;
     MCTparas: TMCTparameter;
     d: Double;
-    alpha, beta, gamma: double;
 begin
   ThreadCount := Min(Mand3DForm.UpDown3.Position, PreviewSize);
   try
-    M3Vfile.VHeader.TilingOptions := 0;
+    VHeader.TilingOptions := 0;
     bGetMCTPverbose := False;
-    MCTparas := getMCTparasFromHeader(M3Vfile.VHeader, False);
+    MCTparas := getMCTparasFromHeader(VHeader, False);
     bGetMCTPverbose := True;
     Result := MCTparas.bMCTisValid;
-    if Result then
-    begin
+    if Result then begin
       MCTparas.pSiLight := @VsiLight[0];
       MCTparas.SLoffset := PVwid * SizeOf(Cardinal);
       MCTparas.PCalcThreadStats := @VCalcThreadStats;
-
-      alpha := DegToRad( StrToFloatK(XRotateEdit.Text));
-      beta := DegToRad( StrToFloatK(YRotateEdit.Text));
-      gamma := DegToRad(StrToFloatK(ZRotateEdit.Text));
-
-      with M3Vfile do
-      begin
-        if UseDefaultOrientation then BuildRotMatrix(alpha, beta, gamma, @MCTparas.VGrads);
-        MCTparas.CalcRect := Rect(0, 0, PVwid - 1, PVhei - 1);
-        d := 2.2 / (VHeader.dZoom * Zscale * Max(1, PVdep - 1));
-        MCTparas.VGrads := NormaliseMatrixTo(d, @MCTparas.VGrads);
-    //    d := (PVwid - 1) / 64;
-        MCTparas.Ystart := TPVec3D(@VHeader.dXmid)^;
-        mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[0], PVwid * -0.5 + Xoff / d);
-        mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[1], PVhei * -0.5 + Yoff / d);
-        mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[2], nr - PVdep * 0.5 + Zoff / d);
-        MCTparas.iSliceCalc := 1;
-        MCTparas.DEAOmaxL := 0.75;
-      end;
+      BuildRotMatrix(DegToRad(BTracer2Header.XAngle), DegToRad(BTracer2Header.YAngle), DegToRad(BTracer2Header.ZAngle), @MCTparas.VGrads);
+      MCTparas.CalcRect := Rect(0, 0, PVwid - 1, PVhei - 1);
+      d := 2.2 / (VHeader.dZoom * BTracer2Header.Scale * Max(1, PVdep - 1));
+      MCTparas.VGrads := NormaliseMatrixTo(d, @MCTparas.VGrads);
+      MCTparas.Ystart := TPVec3D(@VHeader.dXmid)^;
+      mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[0], PVwid * -0.5 + BTracer2Header.XOff / d);
+      mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[1], PVhei * -0.5 + BTracer2Header.YOff / d);
+      mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[2], nr - PVdep * 0.5 + BTracer2Header.ZOff / d);
+      MCTparas.iSliceCalc := 1;
+      MCTparas.DEAOmaxL := 0.75;
       MCTparas.iMandWidth := PreviewSize;
       SetLength(VoxCalcThreads, ThreadCount);
     end;
@@ -460,58 +435,72 @@ begin
     end;
 end;
 
-procedure TBulbTracer2Frm.MakeM3V;
+procedure TBulbTracer2Frm.UpdateBTracer2HeaderFromUI;
 begin
-    with M3Vfile do  begin
-      Xoff := StrToFloatK(XOffsetEdit.Text);
-      Yoff := StrToFloatK(YOffsetEdit.Text);
-      Zoff := StrToFloatK(ZOffsetEdit.Text);
-      Xscale := StrToFloatK(ScaleEdit.Text);
-      Yscale := Xscale;
-      Zscale := Xscale;
-      UseDefaultOrientation := CheckBox3.Checked;
-      Zslices := 100;
-      ObjectD := 1;
-
-      VoxelVersion := iVoxelVersion;
-      FillChar(PlaceForFuturePars, SizeOf(PlaceForFuturePars), 0);
-      OutputFolder := '';
-      PutOutputFolder2record;
-      VHAddon.bOptions2 := (VHAddon.bOptions2 and $F9) or (0 shl 1);
-    end;
+  with BTracer2Header do begin
+    XOff := StrToFloatK(XOffsetEdit.Text);
+    YOff := StrToFloatK(YOffsetEdit.Text);
+    ZOff := StrToFloatK(ZOffsetEdit.Text);
+    Scale := StrToFloatK(ScaleEdit.Text);
+    XAngle := StrToFloatK(XRotateEdit.Text);
+    YAngle := StrToFloatK(YRotateEdit.Text);
+    ZAngle := StrToFloatK(ZRotateEdit.Text);
+    SurfaceDetail := StrToFloatK(SurfaceSharpnessEdit.Text);
+    VResolution := StrToInt(MeshVResolutionEdit.Text);
+    WithColors := CalculateColorsCBx.Checked;
+    SaveTypeIndex := SaveTypeCmb.ItemIndex;
+    MaxPreviewVertices := StrToInt(MaxVerticeCountEdit.Text);
+    MandParamsAsString := FCurrParamsAsString;
+    WithOpenGlPreview := OpenGLPreviewCBx.Checked;
+    PreviewDEstop := StrToFloatK(PreviewDEAdjust.Text);
+    PreviewSizeIdx := RadioGroup2.ItemIndex;
+    WithAutoPreview := CheckBox2.Checked;
+    OutputFilename := FilenameREd.Text;
+  end;
 end;
 
 procedure TBulbTracer2Frm.CalcImageSize;
 var d: Double;
 begin
-    with M3Vfile do
+    with BTracer2Header do
     begin
-      d := Zslices / MaxCD(1e-40, Zscale);
-      VHeader.Width := Round(Xscale * d);
-      VHeader.Height := Round(Yscale * d);
+      d := Zslices / MaxCD(1e-40, Scale);
+      VHeader.Width := Round(Scale * d);
+      VHeader.Height := Round(Scale * d);
     end;
 end;
 
-procedure TBulbTracer2Frm.SetFromM3V;
+procedure TBulbTracer2Frm.UpdateUIFromBTracer2Header;
 var b: LongBool;
     i: Integer;
 begin
-    with M3Vfile do
-    begin
+    with BTracer2Header do  begin
       b := bUserChange;
       bUserChange := False;
-      XOffsetEdit.Text := FloatToStr(Xoff);
-      ScaleEdit.Text := FloatToStr(Xscale);
-      YOffsetEdit.Text := FloatToStr(Yoff);
-      ZOffsetEdit.Text := FloatToStr(Zoff);
-      GetOutputFolderFromrecord;
-      CheckBox3.Checked := UseDefaultOrientation;
+
+      XOffsetEdit.Text := FloatToStr(XOff);
+      ScaleEdit.Text := FloatToStr(Scale);
+      YOffsetEdit.Text := FloatToStr(YOff);
+      ZOffsetEdit.Text := FloatToStr(ZOff);
+      XRotateEdit.Text := FloatToStr(XAngle);
+      YRotateEdit.Text := FloatToStr(YAngle);
+      ZRotateEdit.Text := FloatToStr(ZAngle);
+      SurfaceSharpnessEdit.Text := FloatToStr(SurfaceDetail);
+      MeshVResolutionEdit.Text := IntToStr(VResolution);
+      CalculateColorsCBx.Checked := WithColors;
+      SaveTypeCmb.ItemIndex := SaveTypeIndex;
+      MaxVerticeCountEdit.Text := IntToStr(MaxPreviewVertices);
+      OpenGLPreviewCBx.Checked := WithOpenGlPreview;
+      PreviewDEAdjust.Text := FloatToStr(PreviewDEstop);
+      RadioGroup2.ItemIndex := PreviewSizeIdx;
+      CheckBox2.Checked := WithAutoPreview;
+      FilenameREd.Text := OutputFilename;
+
       CalcImageSize;
-      // Label12.Caption := IntToStr(VHeader.Width) + ' x ' + IntToStr(VHeader.Height);
       bUserChange := b;
-      VHeader.PCFAddon := @VHAddon;
-      for i := 0 to 5 do VHeader.PHCustomF[i] := @HybridCustoms[i];
     end;
+    VHeader.PCFAddon := @VHAddon;
+    for i := 0 to 5 do VHeader.PHCustomF[i] := @HybridCustoms[i];
 end;
 
 procedure TBulbTracer2Frm.SetProjectName(FileName: String);
@@ -528,7 +517,6 @@ end;
 
 procedure TBulbTracer2Frm.ImportParams(const KeepScaleAndPosition: Boolean = False);
 var i: Integer;
-    d: Double;
     CurrFilename: String;
 
     procedure LoadParamFromFile(const ParamFilename: String);
@@ -547,64 +535,50 @@ var i: Integer;
 begin
     CancelPreview;
 
-    with M3Vfile do
-    begin
-      VHeader.PCFAddon := @VHAddon;
-      for i := 0 to 5 do VHeader.PHCustomF[i] := @HybridCustoms[i];
-      for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
+    VHeader.PCFAddon := @VHAddon;
+    for i := 0 to 5 do VHeader.PHCustomF[i] := @HybridCustoms[i];
+    for i := 0 to 5 do IniCustomF(@HybridCustoms[i]);
 
-      if FParamSource = psMain then begin
-        Mand3DForm.MakeHeader;
-        AssignHeader(@VHeader, @Mand3DForm.MHeader);
-        ShowTitle( 'Imported from Main' );
-      end
-      else if FParamSource = psSingleFile then begin
-        LoadParamFromFile( FParamFilename );
-        Mand3DForm.ParasChanged;
-        Mand3DForm.ClearScreen;
-        Mand3DForm.MakeHeader;
-        AssignHeader(@VHeader, @Mand3DForm.MHeader);
-        ShowTitle( ExtractFilename( FParamFilename ) );
-      end
-      else if FParamSource = psFileSequence then begin
-        CurrFilename := GetSequenceFilename(
-          FParamSequenceBaseFilename, FParamSequenceFileExt, FParamSequencePatternLength, FParamSequenceCurrFrame );
-        LoadParamFromFile( CurrFilename );
-        Mand3DForm.ParasChanged;
-        Mand3DForm.ClearScreen;
-        Mand3DForm.MakeHeader;
-        AssignHeader(@VHeader, @Mand3DForm.MHeader);
-        ShowTitle( ExtractFilename( CurrFilename ) );
-      end;
+    if FParamSource = psMain then begin
+      Mand3DForm.MakeHeader;
+      AssignHeader(@VHeader, @Mand3DForm.MHeader);
+      ShowTitle( 'Imported from Main' );
+    end
+    else if FParamSource = psSingleFile then begin
+      LoadParamFromFile( FParamFilename );
+      Mand3DForm.ParasChanged;
+      Mand3DForm.ClearScreen;
+      Mand3DForm.MakeHeader;
+      AssignHeader(@VHeader, @Mand3DForm.MHeader);
+      ShowTitle( ExtractFilename( FParamFilename ) );
+    end
+    else if FParamSource = psFileSequence then begin
+      CurrFilename := GetSequenceFilename(
+        FParamSequenceBaseFilename, FParamSequenceFileExt, FParamSequencePatternLength, FParamSequenceCurrFrame );
+      LoadParamFromFile( CurrFilename );
+      Mand3DForm.ParasChanged;
+      Mand3DForm.ClearScreen;
+      Mand3DForm.MakeHeader;
+      AssignHeader(@VHeader, @Mand3DForm.MHeader);
+      ShowTitle( ExtractFilename( CurrFilename ) );
+    end;
 
-      DisableTiling(@VHeader);
-      VHeader.TilingOptions := 0;
+    FCurrParamsAsString := MakeTextparas(@Mand3DForm.MHeader, Mand3DForm.Caption);
 
-      if not KeepScaleAndPosition then begin
-        Xoff := 0;
-        Yoff := 0;
-        Zoff := 0;
-        Xscale := 1;
-        Yscale := 1;
-        Zscale := 1;
-      end;
+    DisableTiling(@VHeader);
+    VHeader.TilingOptions := 0;
 
-      Zslices := 100;
-      ObjectD := 1;
-      OrigWidth := VHeader.Width;
-      MaxIts := VHeader.Iterations;
-      MinIts := MaxIts div 2;
-      UseDefaultOrientation := True;
-      if VHeader.bVaryDEstopOnFOV > 0 then    //calc DE @ Zmid when VaryDEstopOnFOV
-        d := (1 + 0.3 / VHeader.sDEStop) * Max(0, VHeader.dFOVy * Pid180) *
-             (VHeader.dZoom * VHeader.Width) / (VHeader.Height * 2.1345)
-      else d := 0;
-      DE := Max(0.2, VHeader.sDEstop * (1 + (VHeader.dZmid - VHeader.dZstart) * d) * Zslices / VHeader.Width);
-      MinDE := DE * 0.254;
-      FillChar(PlaceForFuturePars, SizeOf(PlaceForFuturePars), 0);
+    if not KeepScaleAndPosition then with BTracer2Header do begin
+      Xoff := 0;
+      Yoff := 0;
+      Zoff := 0;
+      Scale := 1;
+      XAngle := 0;
+      YAngle := 0;
+      ZAngle := 0;
     end;
     SetProjectName('new');
-    SetFromM3V;
+    UpdateUIFromBTracer2Header;
     Benabled := True;
     EnableControls(True);
     StartNewPreview;
@@ -618,14 +592,14 @@ begin
       SaveDialog.InitialDir := IniDirs[12];
       bFirstShow := False;
       OutputFolder := IniDirs[12];
-      PutOutputFolder2record;
       VProjectName := 'new';
 
       SaveTypeCmb.ItemIndex := 0;
       if(OutputFolder<>'') then begin
         FilenameREd.Text := IncludeTrailingPathDelimiter(OutputFolder)+GetDefaultMeshFilename('mb3d_mesh', TMeshSaveType(SaveTypeCmb.ItemIndex));
       end;
-      CheckBox3.Checked := True;
+
+      UpdateBTracer2HeaderFromUI;
     end;
 end;
 
@@ -661,11 +635,9 @@ end;
 
 procedure TBulbTracer2Frm.XOffsetEditChange(Sender: TObject);
 begin
-    if bUserChange then
-    begin
-      MakeM3V;
+    if bUserChange then begin
+      UpdateBTracer2HeaderFromUI;
       CalcImageSize;
-      // Label12.Caption := IntToStr(M3Vfile.VHeader.Width) + ' x ' + IntToStr(M3Vfile.VHeader.Height);
       StartNewPreview;
     end;
 end;
@@ -707,13 +679,12 @@ end;
 procedure TBulbTracer2Frm.CalcPreviewSizes;
 var d: Double;
 begin
-    with M3Vfile do
-    begin
+    with BTracer2Header do begin
       PreviewSize := CalcPreviewSize;
-      d := 1 / MaxCD(MaxCD(Zscale, Yscale), Xscale);
-      PVwid := Round(PreviewSize * Xscale * d);
-      PVhei := Round(PreviewSize * Yscale * d);
-      PVdep := Round(PreviewSize * Zscale * d);
+      d := 1.0 / Scale;
+      PVwid := Round(PreviewSize * Scale * d);
+      PVhei := Round(PreviewSize * Scale * d);
+      PVdep := Round(PreviewSize * Scale * d);
     end;
 end;
 
@@ -766,7 +737,7 @@ begin
       MeshPreviewFrm.Visible := False;
       PreviewProgressBar.Position := 0;
       PreviewProgressBar.Max := 10; //CalcPreviewSize;
-      MakeM3V;
+      UpdateBTracer2HeaderFromUI;
       CalcPreviewSizes;
     //  Mand3DForm.bCalcTile := False;
       FileNumber := PVdep;
@@ -775,9 +746,6 @@ begin
       Image1.Canvas.Brush.Color := $203040;
       Image1.Canvas.FillRect(Image1.Canvas.ClipRect);
       Image1.Picture.Bitmap.PixelFormat := pf32bit;
-      M3Vfile.VHeader.sDEstop := M3Vfile.DE * PVwid / M3Vfile.VHeader.Width;
-      M3Vfile.VHeader.Iterations := M3Vfile.MaxIts;
-      M3Vfile.VHeader.TilingOptions := 0;
       MCalcStop := False;  //because only in DisableButtons else, to late for first filenumber
       if StartSlicePreview(FileNumber) then
       begin
@@ -922,31 +890,42 @@ begin
     else Timer2.Enabled := True;
 end;
 
+procedure TBulbTracer2Frm.UpDown1Click(Sender: TObject; Button: TUDBtnType);
+var d: Double;
+begin
+  d := 0.05;
+  if Button = btPrev then d := -d;
+  BTracer2Header.PreviewDEstop := BTracer2Header.PreviewDEstop + d;
+  if BTracer2Header.PreviewDEstop < 0.05 then
+    BTracer2Header.PreviewDEstop := 0.05;
+  PreviewDEAdjust.Text := FloatToStrSingle(BTracer2Header.PreviewDEstop);
+end;
+
 procedure TBulbTracer2Frm.UpDown5Click(Sender: TObject; Button: TUDBtnType);
 var d: Double;
 begin
-    d := 2.2 / (M3Vfile.VHeader.dZoom * M3Vfile.Zscale * Max(1, PVdep - 1));
+    d := 2.2 / (VHeader.dZoom * BTracer2Header.Scale * Max(1, PVdep - 1));
     if Button = btNext then d := -d;
-    M3Vfile.Xoff := M3Vfile.Xoff + d;
-    XOffsetEdit.Text := FloatToStrSingle(M3Vfile.Xoff);
+    BTracer2Header.XOff := BTracer2Header.XOff + d;
+    XOffsetEdit.Text := FloatToStrSingle(BTracer2Header.XOff);
 end;
 
 procedure TBulbTracer2Frm.UpDown6Click(Sender: TObject; Button: TUDBtnType);
 var d: Double;
 begin
-    d := -2.2 / (M3Vfile.VHeader.dZoom * M3Vfile.Zscale * Max(1, PVdep - 1));
+    d := -2.2 / (VHeader.dZoom * BTracer2Header.Scale * Max(1, PVdep - 1));
     if Button = btNext then d := -d;
-    M3Vfile.Yoff := M3Vfile.Yoff + d;
-    YOffsetEdit.Text := FloatToStrSingle(M3Vfile.Yoff);
+    BTracer2Header.YOff := BTracer2Header.YOff + d;
+    YOffsetEdit.Text := FloatToStrSingle(BTracer2Header.YOff);
 end;
 
 procedure TBulbTracer2Frm.UpDown7Click(Sender: TObject; Button: TUDBtnType);
 var d: Double;
 begin
-    d := 2.2 / (M3Vfile.VHeader.dZoom * M3Vfile.Zscale * Max(1, PVdep - 1));
+    d := 2.2 / (VHeader.dZoom * BTracer2Header.Scale * Max(1, PVdep - 1));
     if Button = btNext then d := -d;
-    M3Vfile.Zoff := M3Vfile.Zoff + d;
-    ZOffsetEdit.Text := FloatToStrSingle(M3Vfile.Zoff);
+    BTracer2Header.ZOff := BTracer2Header.ZOff + d;
+    ZOffsetEdit.Text := FloatToStrSingle(BTracer2Header.ZOff);
 end;
 
 procedure TBulbTracer2Frm.StartNewPreview;
@@ -1017,13 +996,12 @@ begin
   end;
 end;
 
-procedure TBulbTracer2Frm.Edit10Change(Sender: TObject);  //Zslices
+procedure TBulbTracer2Frm.Edit10Change(Sender: TObject);
 begin
     if bUserChange then
     begin
-      MakeM3V;
+      UpdateBTracer2HeaderFromUI;
       CalcImageSize;
-      // Label12.Caption := IntToStr(M3Vfile.VHeader.Width) + ' x ' + IntToStr(M3Vfile.VHeader.Height);
     end;                     
 end;
 
@@ -1034,6 +1012,9 @@ begin
     YOffsetEdit.Text := '0';
     ZOffsetEdit.Text := '0';
     ScaleEdit.Text := '1';
+    XRotateEdit.Text := '0';
+    YRotateEdit.Text := '0';
+    ZRotateEdit.Text := '0';
     bUserChange := True;
     XOffsetEditChange(Sender);
 end;
@@ -1070,17 +1051,14 @@ begin
   FCalculating := True;
   CancelPreview;
   EnableControls(True);
-  MakeM3V;
-//   Mand3DForm.bCalcTile := False;
+  UpdateBTracer2HeaderFromUI;
   ImageScale := 1;
-  SetLength(Mand3DForm.siLight5, M3Vfile.VHeader.Width * M3Vfile.VHeader.Height);
-  Mand3DForm.mSLoffset := M3Vfile.VHeader.Width * SizeOf(TsiLight5);
-  Mand3DForm.MHeader.Width := M3Vfile.VHeader.Width;
-  Mand3DForm.MHeader.Height := M3Vfile.VHeader.Height;
+  SetLength(Mand3DForm.siLight5, VHeader.Width * VHeader.Height);
+  Mand3DForm.mSLoffset := VHeader.Width * SizeOf(TsiLight5);
+  Mand3DForm.MHeader.Width := VHeader.Width;
+  Mand3DForm.MHeader.Height := VHeader.Height;
   SetImageSize;
   CalcPreview := False;
-  M3Vfile.VHeader.sDEstop := M3Vfile.DE;
-  M3Vfile.VHeader.Iterations := M3Vfile.MaxIts;
   UpdateVertexGenConfig;
   T0 := DateUtils.MilliSecondsBetween(Now, 0);
   StartPLYRender;
@@ -1091,42 +1069,31 @@ var
   PLYCalcThreads: array of TPLYExportCalcThread;
   x, ThreadCount: Integer;
   MCTparas: TMCTparameter;
-  alpha, beta, gamma, d: Double;
+  d: double;
 begin
-  ThreadCount := Min(Mand3DForm.UpDown3.Position, M3Vfile.VHeader.Height);
+  ThreadCount := Min(Mand3DForm.UpDown3.Position, VHeader.Height);
   try
     FSavePartIdx := 0;
     FThreadVertexLists.Clear;
     FThreadNormalsLists.Clear;
     FThreadColorsLists.Clear;
     FSaveType := TMeshSaveType( SaveTypeCmb.ItemIndex );
-    M3Vfile.VHeader.TilingOptions := 0;
+    VHeader.TilingOptions := 0;
     bGetMCTPverbose := False;
-    MCTparas := getMCTparasFromHeader(M3Vfile.VHeader, False);
+    MCTparas := getMCTparasFromHeader(VHeader, False);
     bGetMCTPverbose := True;
     Result := MCTparas.bMCTisValid;
     if Result then begin
       MCTparas.pSiLight := @Mand3DForm.siLight5[0];
       MCTparas.PCalcThreadStats := @VCalcThreadStats;
-      MCTparas.CalcRect := Rect(0, 0, M3Vfile.VHeader.Width - 1, M3Vfile.VHeader.Height - 1);
-      //calc VGrads to get the desired slice:
-
-      alpha := DegToRad( StrToFloatK(XRotateEdit.Text));
-      beta := DegToRad( StrToFloatK(YRotateEdit.Text));
-      gamma := DegToRad(StrToFloatK(ZRotateEdit.Text));
-
-
-      if M3Vfile.UseDefaultOrientation then BuildRotMatrix(alpha, beta, gamma, @MCTparas.VGrads);
-      d := 2.2 / (M3Vfile.VHeader.dZoom * M3Vfile.Zscale * (M3Vfile.Zslices - 1)); //new stepwidth
+      MCTparas.CalcRect := Rect(0, 0, VHeader.Width - 1, VHeader.Height - 1);
+      BuildRotMatrix(DegToRad(BTracer2Header.XAngle), DegToRad(BTracer2Header.YAngle), DegToRad(BTracer2Header.ZAngle), @MCTparas.VGrads);
+      d := 2.2 / (VHeader.dZoom * BTracer2Header.Scale * (ZSlices - 1)); //new stepwidth
       MCTparas.VGrads := NormaliseMatrixTo(d, @MCTparas.VGrads);
-  //    d := (M3Vfile.VHeader.Width - 1) / 64;
-      MCTparas.Ystart := TPVec3D(@M3Vfile.VHeader.dXmid)^;                                   //abs offs!
-      mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[0], M3Vfile.VHeader.Width * -0.5 + M3Vfile.Xoff / d);
-      mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[1], M3Vfile.VHeader.Height * -0.5 + M3Vfile.Yoff / d);
-      mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[2], M3Vfile.Zslices * -0.5 + M3Vfile.Zoff / d);
-      MCTparas.iSliceCalc := M3Vfile.ObjectD;
-      MCTparas.AOdither := M3Vfile.MinIts;
-      MCTparas.DEAOmaxL := M3Vfile.MinDE;
+      MCTparas.Ystart := TPVec3D(@VHeader.dXmid)^;                                   //abs offs!
+      mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[0], VHeader.Width * -0.5 + BTracer2Header.XOff / d);
+      mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[1], VHeader.Height * -0.5 + BTracer2Header.YOff / d);
+      mAddVecWeight(@MCTparas.Ystart, @MCTparas.Vgrads[2], Zslices * -0.5 + BTracer2Header.ZOff / d);
       SetLength(PLYCalcThreads, ThreadCount);
     end;
   except
@@ -1153,7 +1120,7 @@ begin
           PLYCalcThreads[x - 1].FreeOnTerminate := True;
           PLYCalcThreads[x - 1].MCTparas        := MCTparas;
           PLYCalcThreads[x - 1].Priority        := cTPrio[Mand3DForm.ComboBox2.ItemIndex];
-          PLYCalcThreads[x - 1].M3Vfile         := M3Vfile;
+          PLYCalcThreads[x - 1].BTracer2Header  := BTracer2Header;
           PLYCalcThreads[x - 1].VertexGenConfig := FVertexGenConfig;
           PLYCalcThreads[x - 1].FacesList      := TFacesList.Create;
           FThreadVertexLists.Add(PLYCalcThreads[x - 1].FacesList);
@@ -1203,17 +1170,17 @@ begin
   FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError := False;
   try
     CoInitialize(nil);
-    FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, M3Vfile, FacesList, VertexGenConfig.SurfaceSharpness, FOwner.FSaveType = stBTracer2Data, '' );
+    FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, BTracer2Header, FOwner.VHeader, FacesList, VertexGenConfig.SurfaceSharpness, FOwner.FSaveType = stBTracer2Data, '' );
     FObjectScanner.ThreadIdx := MCTparas.iThreadId - 1;
     if FOwner.FSaveType = stBTracer2Data then begin
       FObjectScanner.OutputFilename := FOwner.FilenameREd.Text;
       if FObjectScanner.ThreadIdx = 0 then begin
         GetMem(PHeader, SizeOf( TBTraceMainHeader ) );
         try
-          PHeader^.VHeaderWidth := M3Vfile.VHeader.Width;
-          PHeader^.VHeaderHeight := M3Vfile.VHeader.Height;
-          PHeader^.VHeaderZoom := M3Vfile.VHeader.dZoom;
-          PHeader^.VHeaderZScale := M3Vfile.Zscale;
+          PHeader^.VHeaderWidth := FOwner.VHeader.Width;
+          PHeader^.VHeaderHeight := FOwner.VHeader.Height;
+          PHeader^.VHeaderZoom := FOwner.VHeader.dZoom;
+          PHeader^.VHeaderZScale := BTracer2Header.Scale;
           PHeader^.VResolution := VertexGenConfig.URange.StepCount;
           PHeader^.ThreadCount := FOwner.VCalcThreadStats.iTotalThreadCount;
           PHeader^.WithColors := Ord(VertexGenConfig.CalcColors);
@@ -1265,13 +1232,11 @@ end;
 procedure TBulbTracer2Frm.ScaleDownBtnClick(Sender: TObject);
 var d: Double;
 begin
-    MakeM3V;
+    UpdateBTracer2HeaderFromUI;
     d := 1.1;
     if Sender <> ScaleUpBtn then d := 1 / d;
-    M3Vfile.Xscale := M3Vfile.Xscale * d;
-    M3Vfile.Yscale := M3Vfile.Yscale * d;
-    M3Vfile.Zscale := M3Vfile.Zscale * d;
-    ScaleEdit.Text := FloatToStrSingle( M3Vfile.Xscale );
+    BTracer2Header.Scale := BTracer2Header.Scale * d;
+    ScaleEdit.Text := FloatToStrSingle( BTracer2Header.Scale );
 end;
 
 function TBulbTracer2Frm.MakeMeshSequenceFilename( const BaseFilename: String ): String;
@@ -1423,7 +1388,6 @@ procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
     YOffsetEdit.Enabled := Enabled;
     ZOffsetEdit.Enabled := Enabled;
     ScaleEdit.Enabled := Enabled;
-    CheckBox3.Enabled := Enabled;
     RadioGroup2.Enabled := Enabled;
     CheckBox2.Enabled := Enabled;
     Button5.Enabled := Enabled;
@@ -1520,10 +1484,10 @@ procedure TBulbTracer2Frm.IncZOffsetBtnClick(Sender: TObject);
 var d: Double;
 begin
   if EditModeCmb.ItemIndex = 0 then begin
-    d := 2.2 / (M3Vfile.VHeader.dZoom * M3Vfile.Zscale * Max(1, PVdep - 1));
+    d := 2.2 / (VHeader.dZoom * BTracer2Header.Scale * Max(1, PVdep - 1));
     if Sender = IncZOffsetBtn then d := -d;
-    M3Vfile.Zoff := M3Vfile.Zoff + d;
-    ZOffsetEdit.Text := FloatToStrSingle(M3Vfile.Zoff);
+    BTracer2Header.ZOff := BTracer2Header.ZOff + d;
+    ZOffsetEdit.Text := FloatToStrSingle(BTracer2Header.ZOff);
   end
   else begin
     d := 5.0;
@@ -1536,10 +1500,10 @@ procedure TBulbTracer2Frm.IncXOffsetBtnClick(Sender: TObject);
 var d: Double;
 begin
   if EditModeCmb.ItemIndex = 0 then begin
-    d := 2.2 / (M3Vfile.VHeader.dZoom * M3Vfile.Zscale * Max(1, PVdep - 1));
+    d := 2.2 / (VHeader.dZoom * BTracer2Header.Scale * Max(1, PVdep - 1));
     if Sender = IncXOffsetBtn then d := -d;
-    M3Vfile.Xoff := M3Vfile.Xoff + d;
-    XOffsetEdit.Text := FloatToStrSingle(M3Vfile.Xoff);
+    BTracer2Header.XOff := BTracer2Header.XOff + d;
+    XOffsetEdit.Text := FloatToStrSingle(BTracer2Header.XOff);
   end
   else begin
     d := 5.0;
@@ -1552,10 +1516,10 @@ procedure TBulbTracer2Frm.IncYOffsetBtnClick(Sender: TObject);
 var d: Double;
 begin
   if EditModeCmb.ItemIndex = 0 then begin
-    d := -2.2 / (M3Vfile.VHeader.dZoom * M3Vfile.Zscale * Max(1, PVdep - 1));
+    d := -2.2 / (VHeader.dZoom * BTracer2Header.Scale * Max(1, PVdep - 1));
     if Sender = DecYOffsetBtn then d := -d;
-    M3Vfile.Yoff := M3Vfile.Yoff + d;
-    YOffsetEdit.Text := FloatToStrSingle(M3Vfile.Yoff);
+    BTracer2Header.YOff := BTracer2Header.YOff + d;
+    YOffsetEdit.Text := FloatToStrSingle(BTracer2Header.YOff);
   end
   else begin
     d := 5.0;
