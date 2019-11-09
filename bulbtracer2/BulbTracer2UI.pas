@@ -22,7 +22,7 @@ uses
   Dialogs, StdCtrls, ExtCtrls, Buttons, TypeDefinitions, ComCtrls,
   Contnrs, VertexList, BulbTracer2Config, Vcl.Tabs, BulbTracerUITools,
   JvExStdCtrls, JvGroupBox, TrackBarEx, ObjectScanner2, Generics.Collections,
-  SyncObjs;
+  SyncObjs, MeshIOUtil;
 
 type
   TParamSource = (psMain, psSingleFile, psFileSequence);
@@ -39,7 +39,7 @@ type
     Timer2: TTimer;
     Timer3: TTimer;
     Panel1: TPanel;
-    OpenDialog1: TOpenDialog;
+    BTracer2FileOpenDialog: TOpenDialog;
     ImportParamsFromMainBtn: TButton;
     Button2: TButton;
     GroupBox1: TGroupBox;
@@ -112,6 +112,14 @@ type
     PreviewDEAdjust: TEdit;
     Label12: TLabel;
     UpDown1: TUpDown;
+    TraceZMaxEdit: TEdit;
+    Label14: TLabel;
+    TraceZMinEdit: TEdit;
+    Label15: TLabel;
+    LoadBTracer2FileBtn: TButton;
+    SaveBTracer2FileBtn: TButton;
+    OpenDialog2: TOpenDialog;
+    BTracer2FileSaveDialog: TSaveDialog;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -148,6 +156,8 @@ type
     procedure ScaleDownBtnClick(Sender: TObject);
     procedure OpenGLPreviewCBxClick(Sender: TObject);
     procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
+    procedure SaveBTracer2FileBtnClick(Sender: TObject);
+    procedure LoadBTracer2FileBtnClick(Sender: TObject);
   private
     { Private-Deklarationen }
   //  PreviewVoxel: array of Cardinal;   //buffer to not calc everything again if shifted position
@@ -166,7 +176,6 @@ type
     FCancelType: TCancelType;
     FRefreshing: Boolean;
     FSavePartCriticalSection: TCriticalSection;
-    FCurrParamsAsString: AnsiString;
     procedure UpdateBTracer2HeaderFromUI;
     procedure UpdateUIFromBTracer2Header;
     procedure CalcImageSize;
@@ -252,13 +261,9 @@ implementation
 
 uses CalcVoxelSliceThread, FileHandling, Math, Math3D, Calc, DivUtils, Mand,
   HeaderTrafos, CustomFormulas, ImageProcess, VectorMath, DateUtils, BulbTracer2,
-  MeshPreviewUI, MeshWriter, MeshReader, MeshIOUtil, MeshSimplifier,
-  Ole2;
+  MeshPreviewUI, MeshWriter, MeshReader, Ole2, Clipbrd;
 
 {$R *.dfm}
-
-const
-  ZSlices = 100;
 
 procedure TBulbTracer2Frm.Button1Click(Sender: TObject);
 begin
@@ -450,11 +455,12 @@ begin
     WithColors := CalculateColorsCBx.Checked;
     SaveTypeIndex := SaveTypeCmb.ItemIndex;
     MaxPreviewVertices := StrToInt(MaxVerticeCountEdit.Text);
-    MandParamsAsString := FCurrParamsAsString;
     WithOpenGlPreview := OpenGLPreviewCBx.Checked;
     PreviewDEstop := StrToFloatK(PreviewDEAdjust.Text);
     PreviewSizeIdx := RadioGroup2.ItemIndex;
     WithAutoPreview := CheckBox2.Checked;
+    TraceZMin := StrToFloatK(TraceZMinEdit.Text);
+    TraceZMax := StrToFloatK(TraceZMaxEdit.Text);
     OutputFilename := FilenameREd.Text;
   end;
 end;
@@ -495,6 +501,8 @@ begin
       RadioGroup2.ItemIndex := PreviewSizeIdx;
       CheckBox2.Checked := WithAutoPreview;
       FilenameREd.Text := OutputFilename;
+      TraceZMinEdit.Text := FloatToStr(TraceZMin);
+      TraceZMaxEdit.Text := FloatToStr(TraceZMax);
 
       CalcImageSize;
       bUserChange := b;
@@ -563,7 +571,7 @@ begin
       ShowTitle( ExtractFilename( CurrFilename ) );
     end;
 
-    FCurrParamsAsString := MakeTextparas(@Mand3DForm.MHeader, Mand3DForm.Caption);
+    BTracer2Header.MandParamsAsString := MakeTextparas(@Mand3DForm.MHeader, Mand3DForm.Caption);
 
     DisableTiling(@VHeader);
     VHeader.TilingOptions := 0;
@@ -695,8 +703,8 @@ end;
 
 procedure TBulbTracer2Frm.Button2Click(Sender: TObject);
 begin
-  if OpenDialog1.Execute then begin
-    if GuessSequence( OpenDialog1.FileName, FParamSequenceBaseFilename, FParamSequenceFileExt,
+  if OpenDialog2.Execute then begin
+    if GuessSequence( OpenDialog2.FileName, FParamSequenceBaseFilename, FParamSequenceFileExt,
       FParamSequencePatternLength, FParamSequenceFrom, FParamSequenceTo, FParamSequenceCurrFrame ) then begin
       FParamSource := psFileSequence;
       UpdateParamsRange;
@@ -704,7 +712,7 @@ begin
     end
     else begin
       FParamSource := psSingleFile;
-      FParamFilename := OpenDialog1.FileName;
+      FParamFilename := OpenDialog2.FileName;
       UpdateParamsRange;
       ImportParams;
     end;
@@ -1017,6 +1025,14 @@ begin
     ZRotateEdit.Text := '0';
     bUserChange := True;
     XOffsetEditChange(Sender);
+end;
+
+procedure TBulbTracer2Frm.SaveBTracer2FileBtnClick(Sender: TObject);
+begin
+  if BTracer2FileSaveDialog.Execute then begin
+    UpdateBTracer2HeaderFromUI;
+    SaveBTracer2Header(BTracer2FileSaveDialog.Filename, @BTracer2Header);
+  end;
 end;
 
 procedure TBulbTracer2Frm.CalculateBtnClick(Sender: TObject);
@@ -1375,6 +1391,9 @@ begin
 
   FVertexGenConfig.URange.StepCount := VRes;
   FVertexGenConfig.VRange.StepCount := VRes;
+
+  FVertexGenConfig.TraceZMin := BTracer2Header.TraceZMin;
+  FVertexGenConfig.TraceZMax := BTracer2Header.TraceZMax;
 end;
 
 procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
@@ -1493,6 +1512,29 @@ begin
     d := 5.0;
     if Sender = IncZOffsetBtn then d := -d;
     ZRotateEdit.Text := FloatToStrSingle( StrToFloatK(ZRotateEdit.Text) + d );
+  end;
+end;
+
+procedure TBulbTracer2Frm.LoadBTracer2FileBtnClick(Sender: TObject);
+var
+  ParamError: boolean;
+begin
+  if BTracer2FileOpenDialog.Execute then begin
+    LoadBTracer2Header(BTracer2FileOpenDialog.Filename, @BTracer2Header);
+    ParamError := False;
+    if BTracer2Header.MandParamsAsString <> '' then begin
+      try
+        Clipboard.SetTextBuf(PWideChar(String(BTracer2Header.MandParamsAsString)));
+        Mand3DForm.SpeedButton8Click(nil);
+        ImportParamsFromMainBtnClick(nil);
+      except
+        ParamError := True;
+      end;
+    end;
+    LoadBTracer2Header(BTracer2FileOpenDialog.Filename, @BTracer2Header);
+    UpdateUIFromBTracer2Header;
+    if ParamError then
+      MessageDlg('Failed to import fractal parameters. All other settings where imported?', mtWarning, [mbOK], 0);
   end;
 end;
 

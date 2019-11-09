@@ -19,7 +19,7 @@ interface
 
 uses
   SysUtils, Classes, Contnrs, VectorMath, TypeDefinitions, BulbTracer2Config,
-  VertexList, Generics.Collections;
+  VertexList, Generics.Collections, MeshIOUtil;
 
 type
   TObjectScanner2Config = class
@@ -81,10 +81,7 @@ type
 implementation
 
 uses
-  Windows, Math, Math3D, Calc, BulbTracer2, DivUtils, HeaderTrafos, MeshIOUtil;
-
-const
-  Zslices = 100;
+  Windows, Math, Math3D, Calc, BulbTracer2, DivUtils, HeaderTrafos;
 
 { ------------------------------ TObjectScanner ------------------------------ }
 constructor TObjectScanner2.Create(const VertexGenConfig: TVertexGen2Config; const MCTparas: TMCTparameter; const BTracer2Header: TBTracer2Header; const VHeader: TMandHeader10; const FacesList: TFacesList; const SurfaceSharpness: Double; const TraceOnly: boolean; const PreCalcTraceFilename: String);

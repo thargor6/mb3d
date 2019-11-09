@@ -202,7 +202,7 @@ begin
   case SaveType of
     stMeshAsPly: Result := 'Stanford Triangle Format PLY (*.ply)|*.ply';
     stMeshAsObj: Result := 'Wavefront OBJ (*.obj)|*.obj';
-    stBTracer2Data: Result := 'BTracer2 Trace-Data (*'+cBTracer2FileExt+')|*.'+cBTracer2FileExt;
+    stBTracer2Data: Result := 'BTracer2 Cache (*'+cBTracer2CacheFileExt+')|*.'+cBTracer2CacheFileExt;
   else
     Result := '';
   end;
@@ -213,7 +213,7 @@ begin
   case SaveType of
     stMeshAsPly: Result := 'ply';
     stMeshAsObj: Result := 'obj';
-    stBTracer2Data: Result := cBTracer2FileExt;
+    stBTracer2Data: Result := cBTracer2CacheFileExt;
   else
     Result := '';
   end;

@@ -29,29 +29,30 @@ object BulbTracer2Frm: TBulbTracer2Frm
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
+    ExplicitTop = 1
     object ImportParamsFromMainBtn: TButton
-      Left = 8
+      Left = 10
       Top = 8
-      Width = 171
+      Width = 182
       Height = 40
-      Caption = 'Import parameter from main:'
+      Caption = 'Import parameter from main'
       TabOrder = 0
       OnClick = ImportParamsFromMainBtnClick
     end
     object Button2: TButton
-      Left = 10
+      Left = 12
       Top = 54
-      Width = 171
+      Width = 182
       Height = 40
-      Caption = 'Load m3p (single file or sequence)'
+      Caption = 'Load m3p...'
       TabOrder = 1
       OnClick = Button2Click
     end
     object GroupBox1: TGroupBox
       Left = 12
-      Top = 123
+      Top = 164
       Width = 167
-      Height = 316
+      Height = 293
       Caption = 'Offset and scale'
       TabOrder = 2
       object Label1: TLabel
@@ -165,8 +166,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         OnChange = XOffsetEditChange
       end
       object Button6: TButton
-        Left = 20
-        Top = 260
+        Left = 16
+        Top = 237
         Width = 133
         Height = 40
         Caption = 'Reset offset+scale'
@@ -281,9 +282,35 @@ object BulbTracer2Frm: TBulbTracer2Frm
         AutoSize = False
         Caption = 'Save type:'
       end
+      object Label14: TLabel
+        Left = 468
+        Top = 55
+        Width = 61
+        Height = 13
+        Hint = 
+          'Remaining faces (1.0 = no reduction, 0.0 = max reduction = no re' +
+          'mainig faces )'
+        Alignment = taRightJustify
+        Caption = 'Trace ZMax:'
+        ParentShowHint = False
+        ShowHint = True
+      end
+      object Label15: TLabel
+        Left = 471
+        Top = 29
+        Width = 58
+        Height = 13
+        Hint = 
+          'Remaining faces (1.0 = no reduction, 0.0 = max reduction = no re' +
+          'mainig faces )'
+        Alignment = taRightJustify
+        Caption = 'Trace ZMin:'
+        ParentShowHint = False
+        ShowHint = True
+      end
       object Button3: TButton
-        Left = 22
-        Top = 105
+        Left = 21
+        Top = 104
         Width = 83
         Height = 25
         Hint = 'Click to choose the output file'
@@ -370,26 +397,43 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Items.Strings = (
           'Mesh with vertex colors (*.ply)'
           'Mesh with uv-coordinates (*.obj)'
-          'BTracer2-cache (*.btracer2)'
+          'BTracer2 cache (*.btr2cache)'
           'Don'#39't save, only preview')
+      end
+      object TraceZMaxEdit: TEdit
+        Left = 535
+        Top = 52
+        Width = 54
+        Height = 21
+        TabOrder = 8
+        Text = '100'
+      end
+      object TraceZMinEdit: TEdit
+        Left = 535
+        Top = 26
+        Width = 54
+        Height = 21
+        TabOrder = 9
+        Text = '0'
       end
     end
     object GroupBox4: TGroupBox
-      Left = 185
+      Left = 198
       Top = 8
-      Width = 696
+      Width = 683
       Height = 449
       Caption = 'Scan Preview'
       TabOrder = 3
       object Panel3: TPanel
         Left = 2
         Top = 15
-        Width = 692
+        Width = 679
         Height = 432
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitTop = 14
+        ExplicitLeft = 1
+        ExplicitTop = 17
         object Image1: TImage
           Left = 106
           Top = 48
@@ -1462,6 +1506,26 @@ object BulbTracer2Frm: TBulbTracer2Frm
         end
       end
     end
+    object LoadBTracer2FileBtn: TButton
+      Left = 12
+      Top = 100
+      Width = 87
+      Height = 40
+      Hint = 'Load settings from *.btrace2-file'
+      Caption = 'Load btrace2...'
+      TabOrder = 7
+      OnClick = LoadBTracer2FileBtnClick
+    end
+    object SaveBTracer2FileBtn: TButton
+      Left = 105
+      Top = 100
+      Width = 87
+      Height = 40
+      Hint = 'Save all current settings as *.btrace2-file'
+      Caption = 'Save btrace2...'
+      TabOrder = 8
+      OnClick = SaveBTracer2FileBtnClick
+    end
   end
   object SaveDialog: TSaveDialog
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
@@ -1489,10 +1553,23 @@ object BulbTracer2Frm: TBulbTracer2Frm
     Left = 401
     Top = 336
   end
-  object OpenDialog1: TOpenDialog
+  object BTracer2FileOpenDialog: TOpenDialog
+    DefaultExt = 'btrace2'
+    Filter = 'BTracer2 settings (*.btrace2)|*.btrace2'
+    Left = 235
+    Top = 132
+  end
+  object OpenDialog2: TOpenDialog
     DefaultExt = 'm3p'
     Filter = 'M3D parameter (*.m3p)|*.m3p'
-    Left = 384
-    Top = 32
+    Left = 249
+    Top = 84
+  end
+  object BTracer2FileSaveDialog: TSaveDialog
+    DefaultExt = 'btrace2'
+    Filter = 'BTracer2 settings (*.btrace2)|*.btrace2'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    Left = 227
+    Top = 202
   end
 end

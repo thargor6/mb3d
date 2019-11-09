@@ -56,9 +56,29 @@ type
   end;
   TPBTraceData = ^TBTraceData;
 
+  TBTracer2Header = packed record
+    XOff, YOff, ZOff: Double;
+    Scale: Double;
+    XAngle, YAngle, ZAngle: Double;
+    SurfaceDetail: Double;
+    VResolution: Int32;
+    WithColors: boolean;
+    SaveTypeIndex: Int32;
+    MaxPreviewVertices: Int32;
+    MandParamsAsString: AnsiString;
+    WithOpenGlPreview: boolean;
+    PreviewDEstop: double;
+    PreviewSizeIdx: Int32;
+    WithAutoPreview: boolean;
+    OutputFilename: string;
+    TraceZMin, TraceZMax: double;
+  end;
+  TPBTracer2Header = ^TBTracer2Header;
+
 function SwapEndianInt32(Value: Int32): Int32;
 function SwapEndianInt16(Value: Int16): Int16;
 procedure SwapBytesSingle( A, B: PEndianCnvSnglRec );
+
 
 
 
@@ -75,8 +95,12 @@ procedure SaveTraceData(const BaseFilename: string; const BTraceData: TPBTraceDa
 procedure LoadTraceHeader(const Filename: string; const PHeader: TPBTraceDataHeader );
 procedure LoadTraceData(const Filename: string; var BTraceData: TPBTraceData; const PHeader: TPBTraceDataHeader );
 
+procedure SaveBTracer2Header(const Filename: string; const PHeader: TPBTracer2Header);
+procedure LoadBTracer2Header(const Filename: string; const PHeader: TPBTracer2Header );
+
 const
-  cBTracer2FileExt = 'btracer2';
+  cBTracer2CacheFileExt = 'btr2cache';
+  cBTracer2FileExt = 'btrace2';
 
 implementation
 
@@ -164,13 +188,26 @@ end;
 function ReadAnsiString4(const MemStream: TStream): AnsiString;
 var
   Byte5: Array [0..4] of Byte;
-  // EOF: boolean;  ReadLen: Integer;
 begin
-  // ReadLen := MemStream.Read(Byte5[0], 4);
   Byte5[4] := 0;
   MemStream.Read(Byte5[0], 4);
   Result := PAnsiChar(@Byte5[0]);
-  // EOF := ReadLen < 4;
+end;
+
+function ReadAnsiString(const MemStream: TStream; const Len: Integer): AnsiString;
+var
+  Bytes: Array of Byte;
+begin
+  if Len > 0  then begin
+    SetLength(Bytes, Len+1);
+    Bytes[Len] := 0;
+    MemStream.Read(Bytes[0], Len);
+    Result := PAnsiChar(@Bytes[0]);
+    SetLength(Bytes, 0);
+  end
+  else begin
+    Result := PAnsiChar('');
+  end;
 end;
 
 function ReadString4(const MemStream: TStream): String;
@@ -180,6 +217,22 @@ begin
   Char5[4] := #0;
   MemStream.Read(Char5[0], 4 * SizeOf(Char));
   Result := PChar(@Char5[0]);
+end;
+
+function ReadString(const MemStream: TStream;const Len: Integer): String;
+var
+  Chars: Array of Char;
+begin
+  if Len > 0  then begin
+    SetLength(Chars, Len+1);
+    Chars[Len] := #0;
+    MemStream.Read(Chars[0], Len * SizeOf(Char));
+    Result := PChar(@Chars[0]);
+    SetLength(Chars, 0);
+  end
+  else begin
+    Result := '';
+  end;
 end;
 
 procedure SkipBytes(const MemStream: TStream; const Length: Integer);
@@ -308,7 +361,6 @@ end;
 
 procedure SaveTraceHeader(const BaseFilename: string; const PHeader: TPBTraceDataHeader);
 var
-  I: Integer;
   Filename: string;
   FileStream: TFileStream;
   MemStream: TMemoryStream;
@@ -324,9 +376,6 @@ begin
       WriteInt32(MemStream, PHeader^.TraceCount);
       WriteInt32(MemStream, PHeader^.TraceResolution);
       WriteInt32(MemStream, PHeader^.WithColors);
-      // for future additions
-      for I := 0 to 11 do
-        WriteInt32(MemStream, 0);
       MemStream.SaveToStream(FileStream);
     finally
       MemStream.Free;
@@ -410,9 +459,7 @@ begin
   //    WriteInt32(MemStream, PHeader^.TraceCount);
   //    WriteInt32(MemStream, PHeader^.TraceResolution);
   //    WriteInt32(MemStream, PHeader^.WithColors);
-  //    for I := 0 to 11 do
-  //      WriteInt32(MemStream, 0);
-  HeaderLen := 4 *SizeOf(Byte) + 4 * SizeOf(Int32) + 12 * SizeOf(Int32);
+  HeaderLen := 4 *SizeOf(Byte) + 4 * SizeOf(Int32);
 
   FileStream := TFileStream.Create(CreateDataFilename(Filename), fmOpenRead);
   try
@@ -463,7 +510,6 @@ end;
 
 procedure InitBTraceFile( const OutputFilename: string; const PHeader: TPBTraceMainHeader );
 var
-  I: Integer;
   Filename: string;
   FileStream: TFileStream;
   MemStream: TMemoryStream;
@@ -502,9 +548,6 @@ begin
       WriteInt32(MemStream, PHeader^.VResolution);
       WriteInt32(MemStream, PHeader^.ThreadCount);
       WriteInt32(MemStream, PHeader^.WithColors);
-      // for future additions
-      for I := 0 to 11 do
-        WriteInt32(MemStream, 0);
       MemStream.SaveToStream(FileStream);
     finally
       MemStream.Free;
@@ -543,6 +586,97 @@ begin
     FileStream.Free;
   end;
 end;
+
+{ -------------------------- Load/Save BTracer2Header ------------------------ }
+procedure SaveBTracer2Header(const Filename: string; const PHeader: TPBTracer2Header);
+var
+  FileStream: TFileStream;
+  MemStream: TMemoryStream;
+begin
+  ForceRemoveFile(Filename);
+  FileStream := TFileStream.Create(Filename, fmCreate);
+  try
+    MemStream := TMemoryStream.Create;
+    try
+      WriteAnsiString(MemStream, 'BTR1');
+      WriteDouble(MemStream, PHeader^.XOff);
+      WriteDouble(MemStream, PHeader^.YOff);
+      WriteDouble(MemStream, PHeader^.ZOff);
+      WriteDouble(MemStream, PHeader^.Scale);
+      WriteDouble(MemStream, PHeader^.XAngle);
+      WriteDouble(MemStream, PHeader^.YAngle);
+      WriteDouble(MemStream, PHeader^.ZAngle);
+      WriteDouble(MemStream, PHeader^.SurfaceDetail);
+      WriteInt32(MemStream, PHeader^.VResolution);
+      WriteInt32(MemStream, Ord(PHeader^.WithColors));
+      WriteInt32(MemStream, PHeader^.SaveTypeIndex);
+      WriteInt32(MemStream, PHeader^.MaxPreviewVertices);
+      WriteInt32(MemStream, Length(PHeader^.MandParamsAsString));
+      if Length(PHeader^.MandParamsAsString) > 0 then
+        WriteAnsiString(MemStream, PHeader^.MandParamsAsString);
+      WriteInt32(MemStream, Ord(PHeader^.WithOpenGlPreview));
+      WriteDouble(MemStream, PHeader^.PreviewDEstop);
+      WriteInt32(MemStream, PHeader^.PreviewSizeIdx);
+      WriteInt32(MemStream, Ord(PHeader^.WithAutoPreview));
+      WriteInt32(MemStream, Length(PHeader^.OutputFilename));
+      if Length(PHeader^.OutputFilename) > 0 then
+        WriteString(MemStream, PHeader^.OutputFilename);
+      WriteDouble(MemStream, PHeader^.TraceZMin);
+      WriteDouble(MemStream, PHeader^.TraceZMax);
+      MemStream.SaveToStream(FileStream);
+    finally
+      MemStream.Free;
+    end;
+  finally
+    FileStream.Free;
+  end;
+  CheckThatExistsFile(Filename);
+end;
+
+procedure LoadBTracer2Header(const Filename: string; const PHeader: TPBTracer2Header );
+var
+  StrLen: Int32;
+  MemStream: TMemoryStream;
+  FileStream: TFileStream;
+begin
+  FileStream := TFileStream.Create(Filename, fmOpenRead);
+  try
+    MemStream := TMemoryStream.Create;
+    try
+      MemStream.LoadFromStream(FileStream);
+      MemStream.Seek(0, soFromBeginning);
+      if ReadAnsiString4(MemStream) <> 'BTR1' then
+        raise Exception.Create('Missing <BTR1>-header');
+      PHeader^.XOff := ReadDouble(MemStream);
+      PHeader^.YOff := ReadDouble(MemStream);
+      PHeader^.ZOff := ReadDouble(MemStream);
+      PHeader^.Scale := ReadDouble(MemStream);
+      PHeader^.XAngle := ReadDouble(MemStream);
+      PHeader^.YAngle := ReadDouble(MemStream);
+      PHeader^.ZAngle := ReadDouble(MemStream);
+      PHeader^.SurfaceDetail := ReadDouble(MemStream);
+      PHeader^.VResolution := ReadInt32(MemStream);
+      PHeader^.WithColors := Boolean(ReadInt32(MemStream));
+      PHeader^.SaveTypeIndex := ReadInt32(MemStream);
+      PHeader^.MaxPreviewVertices := ReadInt32(MemStream);
+      StrLen := ReadInt32(MemStream);
+      PHeader^.MandParamsAsString := ReadAnsiString(MemStream, StrLen);
+      PHeader^.WithOpenGlPreview := Boolean(ReadInt32(MemStream));
+      PHeader^.PreviewDEstop := ReadDouble(MemStream);
+      PHeader^.PreviewSizeIdx := ReadInt32(MemStream);
+      PHeader^.WithAutoPreview := Boolean(ReadInt32(MemStream));
+      StrLen := ReadInt32(MemStream);
+      PHeader^.OutputFilename := ReadString(MemStream, StrLen);
+      PHeader^.TraceZMin := ReadDouble(MemStream);
+      PHeader^.TraceZMax := ReadDouble(MemStream);
+    finally
+      MemStream.Free;
+    end;
+  finally
+    FileStream.Free;
+  end;
+end;
+
 
 end.
 
