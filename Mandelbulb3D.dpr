@@ -79,7 +79,6 @@ uses
   BulbTracerUITools in 'bulbtracer2\BulbTracerUITools.pas',
   MeshReader in 'bulbtracer2\MeshReader.pas',
   MeshIOUtil in 'bulbtracer2\MeshIOUtil.pas',
-  MeshSimplifier in 'bulbtracer2\MeshSimplifier.pas',
   ShaderUtil in 'opengl\ShaderUtil.pas',
   dglOpenGL in 'opengl\dglOpenGL.pas',
   MeshPreviewUI in 'opengl\MeshPreviewUI.pas' {MeshPreviewFrm},

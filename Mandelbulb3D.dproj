@@ -243,7 +243,6 @@
         <DCCReference Include="bulbtracer2\BulbTracerUITools.pas"/>
         <DCCReference Include="bulbtracer2\MeshReader.pas"/>
         <DCCReference Include="bulbtracer2\MeshIOUtil.pas"/>
-        <DCCReference Include="bulbtracer2\MeshSimplifier.pas"/>
         <DCCReference Include="opengl\ShaderUtil.pas"/>
         <DCCReference Include="opengl\dglOpenGL.pas"/>
         <DCCReference Include="opengl\MeshPreviewUI.pas">
