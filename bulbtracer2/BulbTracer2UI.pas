@@ -53,7 +53,7 @@ type
     Button6: TButton;
     ScaleEdit: TEdit;
     GroupBox2: TGroupBox;
-    Button3: TButton;
+    SelectOutputFilenameBtn: TButton;
     FilenameREd: TEdit;
     Label18: TLabel;
     MeshVResolutionLbl: TLabel;
@@ -112,14 +112,19 @@ type
     PreviewDEAdjust: TEdit;
     Label12: TLabel;
     UpDown1: TUpDown;
-    TraceZMaxEdit: TEdit;
+    TraceXMaxEdit: TEdit;
     Label14: TLabel;
-    TraceZMinEdit: TEdit;
+    TraceXMinEdit: TEdit;
     Label15: TLabel;
     LoadBTracer2FileBtn: TButton;
     SaveBTracer2FileBtn: TButton;
     OpenDialog2: TOpenDialog;
     BTracer2FileSaveDialog: TSaveDialog;
+    TraceYMinEdit: TEdit;
+    TraceYMaxEdit: TEdit;
+    TraceZMinEdit: TEdit;
+    TraceZMaxEdit: TEdit;
+    Label16: TLabel;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -142,7 +147,7 @@ type
     procedure SaveTypeCmbChange(Sender: TObject);
     procedure CancelTypeCmbChange(Sender: TObject);
     procedure MeshVResolutionEditChange(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
+    procedure SelectOutputFilenameBtnClick(Sender: TObject);
     procedure SurfaceSharpnessUpDownClick(Sender: TObject; Button: TUDBtnType);
     procedure Button2Click(Sender: TObject);
     procedure FrameUpDownClick(Sender: TObject; Button: TUDBtnType);
@@ -459,6 +464,10 @@ begin
     PreviewDEstop := StrToFloatK(PreviewDEAdjust.Text);
     PreviewSizeIdx := RadioGroup2.ItemIndex;
     WithAutoPreview := CheckBox2.Checked;
+    TraceXMin := StrToFloatK(TraceXMinEdit.Text);
+    TraceXMax := StrToFloatK(TraceXMaxEdit.Text);
+    TraceYMin := StrToFloatK(TraceYMinEdit.Text);
+    TraceYMax := StrToFloatK(TraceYMaxEdit.Text);
     TraceZMin := StrToFloatK(TraceZMinEdit.Text);
     TraceZMax := StrToFloatK(TraceZMaxEdit.Text);
     OutputFilename := FilenameREd.Text;
@@ -501,6 +510,10 @@ begin
       RadioGroup2.ItemIndex := PreviewSizeIdx;
       CheckBox2.Checked := WithAutoPreview;
       FilenameREd.Text := OutputFilename;
+      TraceXMinEdit.Text := FloatToStr(TraceXMin);
+      TraceXMaxEdit.Text := FloatToStr(TraceXMax);
+      TraceYMinEdit.Text := FloatToStr(TraceYMin);
+      TraceYMaxEdit.Text := FloatToStr(TraceYMax);
       TraceZMinEdit.Text := FloatToStr(TraceZMin);
       TraceZMaxEdit.Text := FloatToStr(TraceZMax);
 
@@ -719,7 +732,7 @@ begin
   end;
 end;
 
-procedure TBulbTracer2Frm.Button3Click(Sender: TObject);
+procedure TBulbTracer2Frm.SelectOutputFilenameBtnClick(Sender: TObject);
 begin
   try
     UpdateSaveTypeCmb;
@@ -1043,7 +1056,7 @@ begin
     DoSave := ( ( TMeshSaveType(SaveTypeCmb.ItemIndex) <> stNoSave ) );
 
     if DoSave and (FilenameREd.Text = '') then begin
-      Button3Click(Sender);
+      SelectOutputFilenameBtnClick(Sender);
       if FilenameREd.Text = '' then
         Exit;
     end;
@@ -1200,6 +1213,13 @@ begin
           PHeader^.VResolution := VertexGenConfig.URange.StepCount;
           PHeader^.ThreadCount := FOwner.VCalcThreadStats.iTotalThreadCount;
           PHeader^.WithColors := Ord(VertexGenConfig.CalcColors);
+          PHeader^.SurfaceDetail := VertexGenConfig.SurfaceSharpness;
+          PHeader^.TraceXMin := VertexGenConfig.TraceXMin;
+          PHeader^.TraceXMax := VertexGenConfig.TraceXMax;
+          PHeader^.TraceYMin := VertexGenConfig.TraceYMin;
+          PHeader^.TraceYMax := VertexGenConfig.TraceYMax;
+          PHeader^.TraceZMin := VertexGenConfig.TraceZMin;
+          PHeader^.TraceZMax := VertexGenConfig.TraceZMax;
           InitBTraceFile( FObjectScanner.OutputFilename, PHeader );
         finally
           FreeMem(PHeader);
@@ -1392,6 +1412,10 @@ begin
   FVertexGenConfig.URange.StepCount := VRes;
   FVertexGenConfig.VRange.StepCount := VRes;
 
+  FVertexGenConfig.TraceXMin := BTracer2Header.TraceXMin;
+  FVertexGenConfig.TraceXMax := BTracer2Header.TraceXMax;
+  FVertexGenConfig.TraceYMin := BTracer2Header.TraceYMin;
+  FVertexGenConfig.TraceYMax := BTracer2Header.TraceYMax;
   FVertexGenConfig.TraceZMin := BTracer2Header.TraceZMin;
   FVertexGenConfig.TraceZMax := BTracer2Header.TraceZMax;
 end;
@@ -1416,7 +1440,7 @@ procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
     SurfaceSharpnessUpDown.Enabled := Enabled;
     CalculateColorsCBx.Enabled := Enabled;
     SaveTypeCmb.Enabled := Enabled;
-    Button3.Enabled := Enabled;
+    SelectOutputFilenameBtn.Enabled := Enabled;
     FilenameREd.Enabled := Enabled;
     OpenGLPreviewCBx.Enabled := Enabled;
     MeshPreviewBtn.Enabled := Enabled;

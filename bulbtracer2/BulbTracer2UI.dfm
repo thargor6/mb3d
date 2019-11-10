@@ -29,7 +29,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
-    ExplicitTop = 1
     object ImportParamsFromMainBtn: TButton
       Left = 10
       Top = 8
@@ -255,7 +254,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
       object MeshVResolutionLbl: TLabel
         Left = 242
-        Top = 29
+        Top = 30
         Width = 93
         Height = 13
         AutoSize = False
@@ -276,40 +275,50 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
       object Label10: TLabel
         Left = 311
-        Top = 83
+        Top = 85
         Width = 54
         Height = 13
         AutoSize = False
         Caption = 'Save type:'
       end
       object Label14: TLabel
-        Left = 468
-        Top = 55
-        Width = 61
+        Left = 398
+        Top = 38
+        Width = 71
         Height = 13
         Hint = 
           'Remaining faces (1.0 = no reduction, 0.0 = max reduction = no re' +
           'mainig faces )'
         Alignment = taRightJustify
-        Caption = 'Trace ZMax:'
+        Caption = 'Trace range Y:'
         ParentShowHint = False
         ShowHint = True
       end
       object Label15: TLabel
-        Left = 471
-        Top = 29
-        Width = 58
+        Left = 398
+        Top = 16
+        Width = 71
+        Height = 13
+        Alignment = taRightJustify
+        Caption = 'Trace range X:'
+        ParentShowHint = False
+        ShowHint = True
+      end
+      object Label16: TLabel
+        Left = 398
+        Top = 61
+        Width = 71
         Height = 13
         Hint = 
           'Remaining faces (1.0 = no reduction, 0.0 = max reduction = no re' +
           'mainig faces )'
         Alignment = taRightJustify
-        Caption = 'Trace ZMin:'
+        Caption = 'Trace range Z:'
         ParentShowHint = False
         ShowHint = True
       end
-      object Button3: TButton
-        Left = 21
+      object SelectOutputFilenameBtn: TButton
+        Left = 8
         Top = 104
         Width = 83
         Height = 25
@@ -317,13 +326,13 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Caption = 'Output file:'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 0
-        OnClick = Button3Click
+        TabOrder = 12
+        OnClick = SelectOutputFilenameBtnClick
       end
       object FilenameREd: TEdit
-        Left = 111
+        Left = 97
         Top = 106
-        Width = 478
+        Width = 492
         Height = 21
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
@@ -331,14 +340,14 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         ParentFont = False
-        TabOrder = 1
+        TabOrder = 13
       end
       object MeshVResolutionEdit: TEdit
         Left = 130
         Top = 26
         Width = 88
         Height = 21
-        TabOrder = 2
+        TabOrder = 0
         Text = '64'
         OnChange = MeshVResolutionEditChange
       end
@@ -347,7 +356,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Top = 53
         Width = 54
         Height = 21
-        TabOrder = 3
+        TabOrder = 2
         Text = '1.25'
       end
       object SurfaceSharpnessUpDown: TUpDown
@@ -356,7 +365,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Width = 17
         Height = 21
         Max = 32000
-        TabOrder = 4
+        TabOrder = 3
         OnClick = SurfaceSharpnessUpDownClick
       end
       object MeshVResolutionUpDown: TUpDown
@@ -367,11 +376,11 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Min = 16
         Max = 4096
         Position = 256
-        TabOrder = 5
+        TabOrder = 1
       end
       object CalculateColorsCBx: TCheckBox
         Left = 130
-        Top = 80
+        Top = 82
         Width = 130
         Height = 19
         Hint = 
@@ -382,17 +391,17 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ParentShowHint = False
         ShowHint = True
         State = cbChecked
-        TabOrder = 6
+        TabOrder = 4
         WordWrap = True
       end
       object SaveTypeCmb: TComboBox
         Left = 371
-        Top = 79
+        Top = 81
         Width = 218
         Height = 21
         Style = csDropDownList
         DropDownCount = 32
-        TabOrder = 7
+        TabOrder = 11
         OnChange = SaveTypeCmbChange
         Items.Strings = (
           'Mesh with vertex colors (*.ply)'
@@ -400,21 +409,53 @@ object BulbTracer2Frm: TBulbTracer2Frm
           'BTracer2 cache (*.btr2cache)'
           'Don'#39't save, only preview')
       end
-      object TraceZMaxEdit: TEdit
+      object TraceXMaxEdit: TEdit
         Left = 535
-        Top = 52
+        Top = 12
+        Width = 54
+        Height = 21
+        TabOrder = 6
+        Text = '100'
+      end
+      object TraceXMinEdit: TEdit
+        Left = 475
+        Top = 12
+        Width = 54
+        Height = 21
+        TabOrder = 5
+        Text = '0'
+      end
+      object TraceYMinEdit: TEdit
+        Left = 475
+        Top = 35
+        Width = 54
+        Height = 21
+        TabOrder = 7
+        Text = '0'
+      end
+      object TraceYMaxEdit: TEdit
+        Left = 535
+        Top = 35
         Width = 54
         Height = 21
         TabOrder = 8
         Text = '100'
       end
       object TraceZMinEdit: TEdit
-        Left = 535
-        Top = 26
+        Left = 475
+        Top = 57
         Width = 54
         Height = 21
         TabOrder = 9
         Text = '0'
+      end
+      object TraceZMaxEdit: TEdit
+        Left = 535
+        Top = 57
+        Width = 54
+        Height = 21
+        TabOrder = 10
+        Text = '100'
       end
     end
     object GroupBox4: TGroupBox
@@ -432,8 +473,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitLeft = 1
-        ExplicitTop = 17
+        ExplicitTop = 14
         object Image1: TImage
           Left = 106
           Top = 48
@@ -1271,7 +1311,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Width = 54
           Height = 21
           TabOrder = 5
-          Text = '0.5'
+          Text = '1.5'
           OnChange = XOffsetEditChange
         end
         object UpDown1: TUpDown

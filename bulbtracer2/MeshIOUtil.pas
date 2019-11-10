@@ -39,6 +39,10 @@ type
     VHeaderZoom, VHeaderZScale: double;
     VResolution, ThreadCount: Int32;
     WithColors: Int32;
+    SurfaceDetail: Double;
+    TraceXMin, TraceXMax: double;
+    TraceYMin, TraceYMax: double;
+    TraceZMin, TraceZMax: double;
   end;
   TPBTraceMainHeader = ^TBTraceMainHeader;
 
@@ -71,6 +75,8 @@ type
     PreviewSizeIdx: Int32;
     WithAutoPreview: boolean;
     OutputFilename: string;
+    TraceXMin, TraceXMax: double;
+    TraceYMin, TraceYMax: double;
     TraceZMin, TraceZMax: double;
   end;
   TPBTracer2Header = ^TBTracer2Header;
@@ -548,6 +554,13 @@ begin
       WriteInt32(MemStream, PHeader^.VResolution);
       WriteInt32(MemStream, PHeader^.ThreadCount);
       WriteInt32(MemStream, PHeader^.WithColors);
+      WriteDouble(MemStream, PHeader^.SurfaceDetail);
+      WriteDouble(MemStream, PHeader^.TraceXMin);
+      WriteDouble(MemStream, PHeader^.TraceXMax);
+      WriteDouble(MemStream, PHeader^.TraceYMin);
+      WriteDouble(MemStream, PHeader^.TraceYMax);
+      WriteDouble(MemStream, PHeader^.TraceZMin);
+      WriteDouble(MemStream, PHeader^.TraceZMax);
       MemStream.SaveToStream(FileStream);
     finally
       MemStream.Free;
@@ -579,6 +592,13 @@ begin
       PHeader^.VResolution := ReadInt32(MemStream);
       PHeader^.ThreadCount := ReadInt32(MemStream);
       PHeader^.WithColors := ReadInt32(MemStream);
+      PHeader^.SurfaceDetail := ReadDouble(MemStream);
+      PHeader^.TraceXMin := ReadDouble(MemStream);
+      PHeader^.TraceXMax := ReadDouble(MemStream);
+      PHeader^.TraceYMin := ReadDouble(MemStream);
+      PHeader^.TraceYMax := ReadDouble(MemStream);
+      PHeader^.TraceZMin := ReadDouble(MemStream);
+      PHeader^.TraceZMax := ReadDouble(MemStream);
     finally
       MemStream.Free;
     end;
@@ -621,6 +641,10 @@ begin
       WriteInt32(MemStream, Length(PHeader^.OutputFilename));
       if Length(PHeader^.OutputFilename) > 0 then
         WriteString(MemStream, PHeader^.OutputFilename);
+      WriteDouble(MemStream, PHeader^.TraceXMin);
+      WriteDouble(MemStream, PHeader^.TraceXMax);
+      WriteDouble(MemStream, PHeader^.TraceYMin);
+      WriteDouble(MemStream, PHeader^.TraceYMax);
       WriteDouble(MemStream, PHeader^.TraceZMin);
       WriteDouble(MemStream, PHeader^.TraceZMax);
       MemStream.SaveToStream(FileStream);
@@ -667,6 +691,10 @@ begin
       PHeader^.WithAutoPreview := Boolean(ReadInt32(MemStream));
       StrLen := ReadInt32(MemStream);
       PHeader^.OutputFilename := ReadString(MemStream, StrLen);
+      PHeader^.TraceXMin := ReadDouble(MemStream);
+      PHeader^.TraceXMax := ReadDouble(MemStream);
+      PHeader^.TraceYMin := ReadDouble(MemStream);
+      PHeader^.TraceYMax := ReadDouble(MemStream);
       PHeader^.TraceZMin := ReadDouble(MemStream);
       PHeader^.TraceZMax := ReadDouble(MemStream);
     finally

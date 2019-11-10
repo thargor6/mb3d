@@ -238,6 +238,8 @@ end;
 
 procedure TParallelScanner2.ScannerScan3;
 var
+  TraceXMin, TraceXMax: double;
+  TraceYMin, TraceYMax: double;
   TraceZMin, TraceZMax: double;
 
   procedure CalculateDE( const Position: TPD3Vector; var DE, ColorIndex, ColorR, ColorG, ColorB: Single );
@@ -390,6 +392,10 @@ var
   begin
     CurrUSlice := 0;
     PreCalcHeaderList := nil;
+    TraceXMin := FConfig.FVertexGenConfig.TraceXMin;
+    TraceXMax := FConfig.FVertexGenConfig.TraceXMax;
+    TraceYMin := FConfig.FVertexGenConfig.TraceYMin;
+    TraceYMax := FConfig.FVertexGenConfig.TraceYMax;
     TraceZMin := FConfig.FVertexGenConfig.TraceZMin;
     TraceZMax := FConfig.FVertexGenConfig.TraceZMax;
     try
@@ -422,7 +428,9 @@ var
 
                         CurrPos.Z := FZMin;
                         for K := 0 to FSlicesV - 1 do begin
-                          if (CurrPos.Z >= TraceZMin) and (CurrPos.Z <= TraceZMax) then begin
+                          if (CurrPos.X >= TraceXMin) and (CurrPos.X <= TraceXMax) and
+                             (CurrPos.Y >= TraceYMin) and (CurrPos.Y <= TraceYMax) and
+                             (CurrPos.Z >= TraceZMin) and (CurrPos.Z <= TraceZMax) then begin
                             TMCCubes.InitializeCube(@MCCube, @CurrPos, FConfig.FStepSize);
 
                             MCCube.V[0].Weight := CalcWeight( DE[I, J, K] );

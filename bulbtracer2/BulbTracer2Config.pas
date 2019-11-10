@@ -120,6 +120,10 @@ type
     FSharedWorkList: TList;
     FTraceRanges: TList;
     FShowTraceRanges: Boolean;
+    FTraceXMin: double;
+    FTraceXMax: double;
+    FTraceYMin: double;
+    FTraceYMax: double;
     FTraceZMin: double;
     FTraceZMax: double;
   public
@@ -135,6 +139,10 @@ type
     property CalcColors: Boolean read FCalcColors write FCalcColors;
     property ShowTraceRanges: Boolean read FShowTraceRanges write FShowTraceRanges;
     property TraceRanges: TList read FTraceRanges;
+    property TraceXMin: double read FTraceXMin write FTraceXMin;
+    property TraceXMax: double read FTraceXMax write FTraceXMax;
+    property TraceYMin: double read FTraceYMin write FTraceYMin;
+    property TraceYMax: double read FTraceYMax write FTraceYMax;
     property TraceZMin: double read FTraceZMin write FTraceZMin;
     property TraceZMax: double read FTraceZMax write FTraceZMax;
   end;
@@ -222,6 +230,10 @@ begin
   FVRange := TRange.Create;
   FTraceRanges := TObjectList.Create;
   RemoveDuplicates := True;
+  FTraceXMin := 0.0;
+  FTraceXMax := 100.0;
+  FTraceYMin := 0.0;
+  FTraceYMax := 100.0;
   FTraceZMin := 0.0;
   FTraceZMax := 100.0;
 end;
