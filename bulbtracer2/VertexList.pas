@@ -35,6 +35,7 @@ type
   TPMCVertex = ^TMCVertex;
 
   TColorValue = Int16;
+  TPColorValue = ^TColorValue;
 
   TVertexColor = packed record
     ColorIdx: TColorValue;
