@@ -125,6 +125,7 @@ type
     TraceZMinEdit: TEdit;
     TraceZMaxEdit: TEdit;
     Label16: TLabel;
+    CloseMeshCheckbox: TCheckBox;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -225,6 +226,7 @@ type
     OutputFolder, VProjectName: String;
     FileNumber: Integer;
     HybridCustoms: array[0..5] of TCustomFormula;
+    FLogger: TAbstractLogger;
     procedure EnableControls(const Enabled: Boolean);
     procedure ImportParams(const KeepScaleAndPosition: Boolean = False);
   end;
@@ -470,6 +472,7 @@ begin
     TraceYMax := StrToFloatK(TraceYMaxEdit.Text);
     TraceZMin := StrToFloatK(TraceZMinEdit.Text);
     TraceZMax := StrToFloatK(TraceZMaxEdit.Text);
+    CloseMesh := CloseMeshCheckbox.Checked;
     OutputFilename := FilenameREd.Text;
   end;
 end;
@@ -516,6 +519,7 @@ begin
       TraceYMaxEdit.Text := FloatToStr(TraceYMax);
       TraceZMinEdit.Text := FloatToStr(TraceZMin);
       TraceZMaxEdit.Text := FloatToStr(TraceZMax);
+      CloseMeshCheckbox.Checked := CloseMesh;
 
       CalcImageSize;
       bUserChange := b;
@@ -666,6 +670,7 @@ end;
 procedure TBulbTracer2Frm.FormCreate(Sender: TObject);
 var i: Integer;
 begin
+  FLogger := TDebugStringLogger.Create;
   FRefreshing := True;
   try
     FSavePartCriticalSection := TCriticalSection.Create;
@@ -695,6 +700,7 @@ begin
   FThreadColorsLists.Free;
   FVertexGenConfig.Free;
   FSavePartCriticalSection.Free;
+  FLogger.Free;
 end;
 
 procedure TBulbTracer2Frm.CalcPreviewSizes;
@@ -1199,7 +1205,7 @@ begin
   FOwner.ThreadErrorStatus[MCTparas.iThreadId].HasError := False;
   try
     CoInitialize(nil);
-    FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, BTracer2Header, FOwner.VHeader, FacesList, VertexGenConfig.SurfaceSharpness, FOwner.FSaveType = stBTracer2Data, '' );
+    FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, BTracer2Header, FOwner.VHeader, FacesList, VertexGenConfig.SurfaceSharpness, FOwner.FSaveType = stBTracer2Data, '', FOwner.FLogger );
     FObjectScanner.ThreadIdx := MCTparas.iThreadId - 1;
     if FOwner.FSaveType = stBTracer2Data then begin
       FObjectScanner.OutputFilename := FOwner.FilenameREd.Text;
@@ -1220,6 +1226,7 @@ begin
           PHeader^.TraceYMax := VertexGenConfig.TraceYMax;
           PHeader^.TraceZMin := VertexGenConfig.TraceZMin;
           PHeader^.TraceZMax := VertexGenConfig.TraceZMax;
+          PHeader^.CloseMesh := Ord(VertexGenConfig.CloseMesh);
           InitBTraceFile( FObjectScanner.OutputFilename, PHeader );
         finally
           FreeMem(PHeader);
@@ -1418,6 +1425,8 @@ begin
   FVertexGenConfig.TraceYMax := BTracer2Header.TraceYMax;
   FVertexGenConfig.TraceZMin := BTracer2Header.TraceZMin;
   FVertexGenConfig.TraceZMax := BTracer2Header.TraceZMax;
+  FVertexGenConfig.CloseMesh := BTracer2Header.CloseMesh;
+
 end;
 
 procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
@@ -1447,6 +1456,14 @@ procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
     MaxVerticeCountEdit.Enabled := Enabled;
     FrameEdit.Enabled := Enabled;
     FrameUpDown.Enabled := Enabled;
+    CloseMeshCheckbox.Enabled := Enabled;
+    EditModeCmb.Enabled := Enabled;
+    TraceXMinEdit.Enabled := Enabled;
+    TraceXMaxEdit.Enabled := Enabled;
+    TraceYMinEdit.Enabled := Enabled;
+    TraceYMaxEdit.Enabled := Enabled;
+    TraceZMinEdit.Enabled := Enabled;
+    TraceZMaxEdit.Enabled := Enabled;
   end;
 
 begin

@@ -245,7 +245,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
       Caption = 'Mesh properties'
       TabOrder = 4
       object Label18: TLabel
-        Left = 24
+        Left = 8
         Top = 29
         Width = 100
         Height = 13
@@ -253,7 +253,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Caption = 'Volumetric resolution:'
       end
       object MeshVResolutionLbl: TLabel
-        Left = 242
+        Left = 226
         Top = 30
         Width = 93
         Height = 13
@@ -261,7 +261,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Caption = 'x 40 x 40'
       end
       object Label23: TLabel
-        Left = 56
+        Left = 40
         Top = 56
         Width = 68
         Height = 13
@@ -274,8 +274,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
       end
       object Label10: TLabel
-        Left = 311
-        Top = 85
+        Left = 338
+        Top = 84
         Width = 54
         Height = 13
         AutoSize = False
@@ -326,7 +326,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Caption = 'Output file:'
         ParentShowHint = False
         ShowHint = True
-        TabOrder = 12
+        TabOrder = 13
         OnClick = SelectOutputFilenameBtnClick
       end
       object FilenameREd: TEdit
@@ -340,10 +340,10 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Font.Name = 'MS Sans Serif'
         Font.Style = []
         ParentFont = False
-        TabOrder = 13
+        TabOrder = 14
       end
       object MeshVResolutionEdit: TEdit
-        Left = 130
+        Left = 114
         Top = 26
         Width = 88
         Height = 21
@@ -352,7 +352,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         OnChange = MeshVResolutionEditChange
       end
       object SurfaceSharpnessEdit: TEdit
-        Left = 130
+        Left = 114
         Top = 53
         Width = 54
         Height = 21
@@ -360,7 +360,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Text = '1.25'
       end
       object SurfaceSharpnessUpDown: TUpDown
-        Left = 184
+        Left = 168
         Top = 53
         Width = 17
         Height = 21
@@ -369,7 +369,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         OnClick = SurfaceSharpnessUpDownClick
       end
       object MeshVResolutionUpDown: TUpDown
-        Left = 219
+        Left = 203
         Top = 26
         Width = 17
         Height = 21
@@ -379,9 +379,9 @@ object BulbTracer2Frm: TBulbTracer2Frm
         TabOrder = 1
       end
       object CalculateColorsCBx: TCheckBox
-        Left = 130
+        Left = 114
         Top = 82
-        Width = 130
+        Width = 106
         Height = 19
         Hint = 
           'Approximate vertex colors. The color-information will be saved a' +
@@ -395,13 +395,13 @@ object BulbTracer2Frm: TBulbTracer2Frm
         WordWrap = True
       end
       object SaveTypeCmb: TComboBox
-        Left = 371
-        Top = 81
-        Width = 218
+        Left = 398
+        Top = 80
+        Width = 191
         Height = 21
         Style = csDropDownList
         DropDownCount = 32
-        TabOrder = 11
+        TabOrder = 12
         OnChange = SaveTypeCmbChange
         Items.Strings = (
           'Mesh with vertex colors (*.ply)'
@@ -414,7 +414,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Top = 12
         Width = 54
         Height = 21
-        TabOrder = 6
+        TabOrder = 7
         Text = '100'
       end
       object TraceXMinEdit: TEdit
@@ -422,7 +422,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Top = 12
         Width = 54
         Height = 21
-        TabOrder = 5
+        TabOrder = 6
         Text = '0'
       end
       object TraceYMinEdit: TEdit
@@ -430,7 +430,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Top = 35
         Width = 54
         Height = 21
-        TabOrder = 7
+        TabOrder = 8
         Text = '0'
       end
       object TraceYMaxEdit: TEdit
@@ -438,7 +438,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Top = 35
         Width = 54
         Height = 21
-        TabOrder = 8
+        TabOrder = 9
         Text = '100'
       end
       object TraceZMinEdit: TEdit
@@ -446,7 +446,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Top = 57
         Width = 54
         Height = 21
-        TabOrder = 9
+        TabOrder = 10
         Text = '0'
       end
       object TraceZMaxEdit: TEdit
@@ -454,8 +454,22 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Top = 57
         Width = 54
         Height = 21
-        TabOrder = 10
+        TabOrder = 11
         Text = '100'
+      end
+      object CloseMeshCheckbox: TCheckBox
+        Left = 226
+        Top = 81
+        Width = 106
+        Height = 19
+        Hint = 'Close the mesh at the borders'
+        Caption = 'Close Mesh'
+        Checked = True
+        ParentShowHint = False
+        ShowHint = True
+        State = cbChecked
+        TabOrder = 5
+        WordWrap = True
       end
     end
     object GroupBox4: TGroupBox
@@ -473,7 +487,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitTop = 14
         object Image1: TImage
           Left = 106
           Top = 48

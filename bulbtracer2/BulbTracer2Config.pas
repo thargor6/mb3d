@@ -24,6 +24,16 @@ const
   ZSlices = 100;
 
 type
+  TAbstractLogger = class
+  public
+    procedure LogMessage( const Msg: String ); virtual; abstract;
+  end;
+
+  TDebugStringLogger = class(TAbstractLogger)
+  public
+    procedure LogMessage( const Msg: String ); override;
+  end;
+
   TDoubleWrapper = class
   private
     FValue: Double;
@@ -126,6 +136,7 @@ type
     FTraceYMax: double;
     FTraceZMin: double;
     FTraceZMax: double;
+    FCloseMesh: boolean;
   public
     constructor Create;
     destructor Destroy; override;
@@ -145,11 +156,12 @@ type
     property TraceYMax: double read FTraceYMax write FTraceYMax;
     property TraceZMin: double read FTraceZMin write FTraceZMin;
     property TraceZMax: double read FTraceZMax write FTraceZMax;
+    property CloseMesh: boolean read FCloseMesh write FCloseMesh;
   end;
 
 implementation
 
-uses Contnrs, System.Math;
+uses Contnrs, System.Math, Windows;
 
 { --------------------------------- TRange ----------------------------------- }
 constructor TRange.Create;
@@ -177,7 +189,7 @@ end;
 // ThreadId, unfortunately, starts with 1!
 function TRange.CalcStepCount(const ThreadId, ThreadCount: Integer): Integer;
 var
-  d, m: Integer;
+  d: Integer;
 begin
   ValidateThreadId(ThreadId, ThreadCount);
   if ThreadCount > 1 then begin
@@ -456,6 +468,13 @@ begin
   FY := PY;
   FZ := PZ;
 end;
+
+{ ----------------------------- TDebugStringLogger --------------------------- }
+procedure TDebugStringLogger.LogMessage( const Msg: String );
+begin
+  OutputDebugString(PChar(Msg));
+end;
+
 
 end.
 

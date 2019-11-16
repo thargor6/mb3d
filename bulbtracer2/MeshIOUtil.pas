@@ -43,6 +43,7 @@ type
     TraceXMin, TraceXMax: double;
     TraceYMin, TraceYMax: double;
     TraceZMin, TraceZMax: double;
+    CloseMesh: Int32;
   end;
   TPBTraceMainHeader = ^TBTraceMainHeader;
 
@@ -78,6 +79,7 @@ type
     TraceXMin, TraceXMax: double;
     TraceYMin, TraceYMax: double;
     TraceZMin, TraceZMax: double;
+    CloseMesh: boolean;
   end;
   TPBTracer2Header = ^TBTracer2Header;
 
@@ -546,7 +548,7 @@ begin
   try
     MemStream := TMemoryStream.Create;
     try
-      WriteAnsiString(MemStream, 'BTM1');
+      WriteAnsiString(MemStream, 'BTM2');
       WriteInt32(MemStream, PHeader^.VHeaderWidth);
       WriteInt32(MemStream, PHeader^.VHeaderHeight);
       WriteDouble(MemStream, PHeader^.VHeaderZoom);
@@ -561,6 +563,7 @@ begin
       WriteDouble(MemStream, PHeader^.TraceYMax);
       WriteDouble(MemStream, PHeader^.TraceZMin);
       WriteDouble(MemStream, PHeader^.TraceZMax);
+      WriteInt32(MemStream, Ord(PHeader^.CloseMesh));
       MemStream.SaveToStream(FileStream);
     finally
       MemStream.Free;
@@ -574,6 +577,7 @@ end;
 
 procedure LoadMainHeader(const Filename: string; const PHeader: TPBTraceMainHeader );
 var
+  HeaderId: AnsiString;
   MemStream: TMemoryStream;
   FileStream: TFileStream;
 begin
@@ -583,8 +587,9 @@ begin
     try
       MemStream.LoadFromStream(FileStream);
       MemStream.Seek(0, soFromBeginning);
-      if ReadAnsiString4(MemStream) <> 'BTM1' then
-        raise Exception.Create('Missing <BTM1>-header');
+      HeaderId := ReadAnsiString4(MemStream);
+      if ( HeaderId <> 'BTM1' ) and ( HeaderId <> 'BTM2' ) then
+        raise Exception.Create('Missing <BTM1/2>-header');
       PHeader^.VHeaderWidth := ReadInt32(MemStream);
       PHeader^.VHeaderHeight := ReadInt32(MemStream);
       PHeader^.VHeaderZoom := ReadDouble(MemStream);
@@ -599,6 +604,10 @@ begin
       PHeader^.TraceYMax := ReadDouble(MemStream);
       PHeader^.TraceZMin := ReadDouble(MemStream);
       PHeader^.TraceZMax := ReadDouble(MemStream);
+      if HeaderId = 'BTM2' then
+        PHeader^.CloseMesh := ReadInt32( MemStream )
+      else
+        PHeader^.CloseMesh := 0;
     finally
       MemStream.Free;
     end;
@@ -618,7 +627,7 @@ begin
   try
     MemStream := TMemoryStream.Create;
     try
-      WriteAnsiString(MemStream, 'BTR1');
+      WriteAnsiString(MemStream, 'BTR2');
       WriteDouble(MemStream, PHeader^.XOff);
       WriteDouble(MemStream, PHeader^.YOff);
       WriteDouble(MemStream, PHeader^.ZOff);
@@ -647,6 +656,7 @@ begin
       WriteDouble(MemStream, PHeader^.TraceYMax);
       WriteDouble(MemStream, PHeader^.TraceZMin);
       WriteDouble(MemStream, PHeader^.TraceZMax);
+      WriteInt32(MemStream, Ord(PHeader^.CloseMesh));
       MemStream.SaveToStream(FileStream);
     finally
       MemStream.Free;
@@ -660,6 +670,7 @@ end;
 procedure LoadBTracer2Header(const Filename: string; const PHeader: TPBTracer2Header );
 var
   StrLen: Int32;
+  HeaderId: AnsiString;
   MemStream: TMemoryStream;
   FileStream: TFileStream;
 begin
@@ -669,8 +680,9 @@ begin
     try
       MemStream.LoadFromStream(FileStream);
       MemStream.Seek(0, soFromBeginning);
-      if ReadAnsiString4(MemStream) <> 'BTR1' then
-        raise Exception.Create('Missing <BTR1>-header');
+      HeaderId := ReadAnsiString4(MemStream);
+      if  ( HeaderId <> 'BTR1' ) and ( HeaderId <> 'BTR2' ) then
+        raise Exception.Create('Missing <BTR1/2>-header');
       PHeader^.XOff := ReadDouble(MemStream);
       PHeader^.YOff := ReadDouble(MemStream);
       PHeader^.ZOff := ReadDouble(MemStream);
@@ -697,6 +709,10 @@ begin
       PHeader^.TraceYMax := ReadDouble(MemStream);
       PHeader^.TraceZMin := ReadDouble(MemStream);
       PHeader^.TraceZMax := ReadDouble(MemStream);
+      if HeaderId = 'BTR2'  then
+        PHeader^.CloseMesh := Boolean( ReadInt32( MemStream ) )
+      else
+        PHeader^.CloseMesh := False;
     finally
       MemStream.Free;
     end;

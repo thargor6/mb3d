@@ -46,13 +46,14 @@ type
     FFacesList: TFacesList;
     FTraceOnly: Boolean;
     FOutputFilename: string;
+    FLogger: TAbstractLogger;
     procedure Init;
 
     procedure ScannerInit; virtual; abstract;
     procedure ScannerScan; virtual; abstract;
     function GetWorkList: TList; virtual; abstract;
   public
-    constructor Create(const VertexGenConfig: TVertexGen2Config; const MCTparas: TMCTparameter; const BTracer2Header: TBTracer2Header; const VHeader: TMandHeader10; const FacesList: TFacesList; const SurfaceSharpness: Double; const TraceOnly: boolean; const PreCalcTraceFilename: String);
+    constructor Create(const VertexGenConfig: TVertexGen2Config; const MCTparas: TMCTparameter; const BTracer2Header: TBTracer2Header; const VHeader: TMandHeader10; const FacesList: TFacesList; const SurfaceSharpness: Double; const TraceOnly: boolean; const PreCalcTraceFilename: String; const Logger: TAbstractLogger);
     destructor Destroy;override;
     procedure Scan;
     property ThreadIdx: Integer read FThreadIdx write FThreadIdx;
@@ -62,6 +63,7 @@ type
 
   TParallelScanner2 = class (TObjectScanner2)
   private
+    FFirstSegment, FLastSegment: boolean;
     FSurfaceSharpness: double;
     FCalcColors: boolean;
     function CalcWeight( const DE: Single ): Single;
@@ -84,9 +86,10 @@ uses
   Windows, Math, Math3D, Calc, BulbTracer2, DivUtils, HeaderTrafos;
 
 { ------------------------------ TObjectScanner ------------------------------ }
-constructor TObjectScanner2.Create(const VertexGenConfig: TVertexGen2Config; const MCTparas: TMCTparameter; const BTracer2Header: TBTracer2Header; const VHeader: TMandHeader10; const FacesList: TFacesList; const SurfaceSharpness: Double; const TraceOnly: boolean; const PreCalcTraceFilename: String);
+constructor TObjectScanner2.Create(const VertexGenConfig: TVertexGen2Config; const MCTparas: TMCTparameter; const BTracer2Header: TBTracer2Header; const VHeader: TMandHeader10; const FacesList: TFacesList; const SurfaceSharpness: Double; const TraceOnly: boolean; const PreCalcTraceFilename: String; const Logger: TAbstractLogger);
 begin
   inherited Create;
+  FLogger := Logger;
   FConfig := TObjectScanner2Config.Create;
   FTraceOnly := TraceOnly;
   with FConfig do begin
@@ -142,6 +145,10 @@ begin
   with FConfig do begin
     with FVertexGenConfig.URange, FMCTparas do begin
       FSlicesU := CalcStepCount(iThreadID, PCalcThreadStats.iTotalThreadCount);
+
+      FFirstSegment := (PCalcThreadStats.iTotalThreadCount <= 1) or (iThreadID = 1);
+      FLastSegment := (PCalcThreadStats.iTotalThreadCount <= 1) or (iThreadID = PCalcThreadStats.iTotalThreadCount);
+
       if FSlicesU < 1 then
         exit;
       FUMin :=  FXMin + CalcRangeMin(iThreadID, PCalcThreadStats.iTotalThreadCount) * (FXMax - FXMin);
@@ -241,6 +248,8 @@ var
   TraceXMin, TraceXMax: double;
   TraceYMin, TraceYMax: double;
   TraceZMin, TraceZMax: double;
+  DoCloseMesh: boolean;
+  DeltaDECloseMesh: double;
 
   procedure CalculateDE( const Position: TPD3Vector; var DE, ColorIndex, ColorR, ColorG, ColorB: Single );
   begin
@@ -257,50 +266,13 @@ var
     CurrPos: TD3Vector;
     MCCube: TMCCube;
     ColorIdx, ColorR, ColorG, ColorB: Single;
-    DE: array of array of array of Single;
-    ColorIdxs: array of array of array of TColorValue;
-    ColorRs: array of array of array of TColorValue;
-    ColorGs: array of array of array of TColorValue;
-    ColorBs: array of array of array of TColorValue;
+    DEBuf: PSingle;
+    ColorIdxsBuf: TPColorValue;
+    ColorRsBuf: TPColorValue;
+    ColorGsBuf: TPColorValue;
+    ColorBsBuf: TPColorValue;
 
     PreCalcHeaderList: TList;
-
-    procedure PreCalcWeights;
-    var
-      I, J, K: Integer;
-    begin
-      // precalc weights
-      with FConfig do begin
-        CurrPos.X := FUMin + CurrUSlice * FStepSize;
-        for I := 0 to MaxPrecalcUSlices do begin
-          CurrPos.Y := FVMin;
-          for J := 0 to FSlicesV do begin
-            CurrPos.Z := FZMin;
-            for K := 0 to FSlicesV do begin
-              CalculateDE( @CurrPos, DE[I, J, K], ColorIdx, ColorR, ColorG, ColorB );
-              ColorIdxs[I, J, K] := FloatToColorValue( ColorIdx );
-              ColorRs[I, J, K] := FloatToColorValue( ColorR );
-              ColorGs[I, J, K] := FloatToColorValue( ColorG );
-              ColorBs[I, J, K] := FloatToColorValue( ColorB );
-              CurrPos.Z := CurrPos.Z + FStepSize;
-            end;
-            CurrPos.Y := CurrPos.Y + FStepSize;
-
-            with FMCTparas do begin
-              if PCalcThreadStats.CTrecords[iThreadID].iDEAvrCount < 0 then begin
-                PCalcThreadStats.CTrecords[iThreadID].iActualYpos := FSlicesU div 2 + 50;
-                exit;
-              end;
-            end;
-
-          end;
-          CurrPos.X := CurrPos.X + FStepSize;
-          with FMCTparas do begin
-            PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round( (CurrUSlice + I * 0.5)  / FSlicesU * 75.0 );
-          end;
-        end;
-      end;
-    end;
 
     procedure FreePreCalcHeaderList;
     var
@@ -339,6 +311,73 @@ var
       end;
     end;
 
+    function DE(const I, J, K: Integer): PSingle;
+    begin
+      Result := DEBuf;
+      Inc(Result, I * (FSlicesV+1)* (FSlicesV+1) + J * (FSlicesV+1) + K );
+    end;
+
+    function ColorIdxs(const I, J, K: Integer): TPColorValue;
+    begin
+      Result := ColorIdxsBuf;
+      Inc(Result, I * (FSlicesV+1)* (FSlicesV+1) + J * (FSlicesV+1) + K );
+    end;
+
+    function ColorRs(const I, J, K: Integer): TPColorValue;
+    begin
+      Result := ColorRsBuf;
+      Inc(Result, I * (FSlicesV+1)* (FSlicesV+1) + J * (FSlicesV+1) + K );
+    end;
+
+    function ColorGs(const I, J, K: Integer): TPColorValue;
+    begin
+      Result := ColorRsBuf;
+      Inc(Result, I * (FSlicesV+1)* (FSlicesV+1) + J * (FSlicesV+1) + K );
+    end;
+
+    function ColorBs(const I, J, K: Integer): TPColorValue;
+    begin
+      Result := ColorRsBuf;
+      Inc(Result, I * (FSlicesV+1)* (FSlicesV+1) + J * (FSlicesV+1) + K );
+    end;
+
+    procedure PreCalcWeights;
+    var
+      I, J, K: Integer;
+    begin
+      // precalc weights
+      with FConfig do begin
+        CurrPos.X := FUMin + CurrUSlice * FStepSize;
+        for I := 0 to MaxPrecalcUSlices do begin
+          CurrPos.Y := FVMin;
+          for J := 0 to FSlicesV do begin
+            CurrPos.Z := FZMin;
+            for K := 0 to FSlicesV do begin
+              CalculateDE( @CurrPos, DE(I, J, K)^, ColorIdx, ColorR, ColorG, ColorB );
+              ColorIdxs(I, J, K)^ := FloatToColorValue( ColorIdx );
+              ColorRs(I, J, K)^ := FloatToColorValue( ColorR );
+              ColorGs(I, J, K)^ := FloatToColorValue( ColorG );
+              ColorBs(I, J, K)^ := FloatToColorValue( ColorB );
+              CurrPos.Z := CurrPos.Z + FStepSize;
+            end;
+            CurrPos.Y := CurrPos.Y + FStepSize;
+
+            with FMCTparas do begin
+              if PCalcThreadStats.CTrecords[iThreadID].iDEAvrCount < 0 then begin
+                PCalcThreadStats.CTrecords[iThreadID].iActualYpos := FSlicesU div 2 + 50;
+                exit;
+              end;
+            end;
+
+          end;
+          CurrPos.X := CurrPos.X + FStepSize;
+          with FMCTparas do begin
+            PCalcThreadStats.CTrecords[iThreadID].iActualYpos := Round( (CurrUSlice + I * 0.5)  / FSlicesU * 75.0 );
+          end;
+        end;
+      end;
+    end;
+
     procedure PreLoadWeights;
     var
       I, J, K, HIdx, TraceIdx: integer;
@@ -361,7 +400,7 @@ var
            ( (PHeader^.TraceOffset < FromOffset) and (PHeader^.TraceOffset + PHeader^.TraceCount > ToOffset ) ) then begin
 
           TraceFilename := CreateTraceFilename( FConfig.FPreCalcTraceFilename, ThreadIdx, HIdx );
-          OutputDebugString(PChar('Loading Trace('+IntToStr(ThreadIdx)+'): '+TraceFilename));
+          FLogger.LogMessage('Loading Trace('+IntToStr(ThreadIdx)+'): '+TraceFilename);
           LoadTraceData(TraceFilename, PData, PHeader);
           try
             TraceIdx := CurrUSlice *(FSlicesV+1)*(FSlicesV+1);
@@ -372,11 +411,11 @@ var
                     CurrDataRecord := PData;
                     Inc(CurrDataRecord, TraceIdx-PHeader.TraceOffset);
 
-                    DE[I, J, K] := CurrDataRecord^.DE;
-                    ColorIdxs[I, J, K] := CurrDataRecord^.ColorIdx;
-                    ColorRs[I, J, K] := CurrDataRecord^.ColorR;
-                    ColorGs[I, J, K] := CurrDataRecord^.ColorG;
-                    ColorBs[I, J, K] := CurrDataRecord^.ColorB;
+                    DE(I, J, K)^ := CurrDataRecord^.DE;
+                    ColorIdxs(I, J, K)^ := CurrDataRecord^.ColorIdx;
+                    ColorRs(I, J, K)^ := CurrDataRecord^.ColorR;
+                    ColorGs(I, J, K)^ := CurrDataRecord^.ColorG;
+                    ColorBs(I, J, K)^ := CurrDataRecord^.ColorB;
                   end;
                   Inc(TraceIdx);
                 end;
@@ -390,6 +429,8 @@ var
     end;
 
   begin
+    DoCloseMesh := FConfig.FVertexGenConfig.CloseMesh;
+    DeltaDECloseMesh := 100.0;
     CurrUSlice := 0;
     PreCalcHeaderList := nil;
     TraceXMin := FConfig.FVertexGenConfig.TraceXMin;
@@ -403,15 +444,15 @@ var
       while CurrUSlice < FSlicesU do begin
         if CurrUSlice + MaxPrecalcUSlices > FSlicesU then
           MaxPrecalcUSlices := FSlicesU - CurrUSlice;
-        SetLength(DE, MaxPrecalcUSlices+1, FSlicesV+1, FSlicesV+1);
+        GetMem(DEBuf, (MaxPrecalcUSlices+1) * (FSlicesV+1)* (FSlicesV+1) * SizeOf(Single));
         try
-          SetLength(ColorIdxs, MaxPrecalcUSlices+1, FSlicesV+1, FSlicesV+1);
+          GetMem(ColorIdxsBuf, (MaxPrecalcUSlices+1) * (FSlicesV+1) * (FSlicesV+1) * SizeOf(TColorValue));
           try
-            SetLength(ColorRs, MaxPrecalcUSlices+1, FSlicesV+1, FSlicesV+1);
+            GetMem(ColorRsBuf, (MaxPrecalcUSlices+1) * (FSlicesV+1) * (FSlicesV+1) * SizeOf(TColorValue));
             try
-              SetLength(ColorGs, MaxPrecalcUSlices+1, FSlicesV+1, FSlicesV+1);
+              GetMem(ColorGsBuf, (MaxPrecalcUSlices+1) * (FSlicesV+1) * (FSlicesV+1) * SizeOf(TColorValue));
               try
-                SetLength(ColorBs, MaxPrecalcUSlices+1, FSlicesV+1, FSlicesV+1);
+                GetMem(ColorBsBuf, (MaxPrecalcUSlices+1) * (FSlicesV+1) * (FSlicesV+1) * SizeOf(TColorValue));
                 try
                   if FConfig.FPreCalcTraceFilename = '' then
                     PreCalcWeights
@@ -428,58 +469,123 @@ var
 
                         CurrPos.Z := FZMin;
                         for K := 0 to FSlicesV - 1 do begin
-                          if (CurrPos.X >= TraceXMin) and (CurrPos.X <= TraceXMax) and
-                             (CurrPos.Y >= TraceYMin) and (CurrPos.Y <= TraceYMax) and
-                             (CurrPos.Z >= TraceZMin) and (CurrPos.Z <= TraceZMax) then begin
+                          if ( CurrPos.X >= TraceXMin ) and ( CurrPos.X <= TraceXMax ) and
+                             ( CurrPos.Y >= TraceYMin ) and ( CurrPos.Y <= TraceYMax ) and
+                             ( CurrPos.Z >= TraceZMin ) and ( CurrPos.Z <= TraceZMax ) then begin
+
                             TMCCubes.InitializeCube(@MCCube, @CurrPos, FConfig.FStepSize);
 
-                            MCCube.V[0].Weight := CalcWeight( DE[I, J, K] );
-                            MCCube.V[0].ColorIdx := ColorValueToFloat( ColorIdxs[I, J, K] );
-                            MCCube.V[0].ColorR := ColorValueToFloat( ColorRs[I, J, K] );
-                            MCCube.V[0].ColorG := ColorValueToFloat( ColorGs[I, J, K] );
-                            MCCube.V[0].ColorB := ColorValueToFloat( ColorBs[I, J, K] );
-
-                            MCCube.V[1].Weight := CalcWeight( DE[I+1, J, K] );
-                            MCCube.V[1].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J, K] );
-                            MCCube.V[1].ColorR := ColorValueToFloat( ColorRs[I+1, J, K] );
-                            MCCube.V[1].ColorG := ColorValueToFloat( ColorGs[I+1, J, K] );
-                            MCCube.V[1].ColorB := ColorValueToFloat( ColorBs[I+1, J, K] );
-
-                            MCCube.V[2].Weight := CalcWeight( DE[I+1, J+1, K] );
-                            MCCube.V[2].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J+1, K] );
-                            MCCube.V[2].ColorR := ColorValueToFloat( ColorRs[I+1, J+1, K] );
-                            MCCube.V[2].ColorG := ColorValueToFloat( ColorGs[I+1, J+1, K] );
-                            MCCube.V[2].ColorB := ColorValueToFloat( ColorBs[I+1, J+1, K] );
-                            MCCube.V[3].ColorIdx := ColorValueToFloat( ColorIdxs[I, J+1, K] );
-                            MCCube.V[3].ColorR := ColorValueToFloat( ColorRs[I, J+1, K] );
-                            MCCube.V[3].ColorG := ColorValueToFloat( ColorGs[I, J+1, K] );
-                            MCCube.V[3].ColorB := ColorValueToFloat( ColorBs[I, J+1, K] );
+                            if DoCloseMesh and ( TraceXMin > CurrPos.X - FStepSize ) and ( TraceXMin <= CurrPos.X ) then
+                              MCCube.V[0].Weight := CalcWeight( DE(I + 1, J, K)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceYMin > CurrPos.Y - FStepSize ) and ( TraceYMin <= CurrPos.Y ) then
+                              MCCube.V[0].Weight := CalcWeight( DE(I, J + 1, K)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceZMin > CurrPos.Z - FStepSize ) and ( TraceZMin <= CurrPos.Z ) then
+                              MCCube.V[0].Weight := CalcWeight( DE(I, J, K + 1)^) - DeltaDECloseMesh
+                            else
+                              MCCube.V[0].Weight := CalcWeight( DE(I, J, K)^ );
+                            MCCube.V[0].ColorIdx := ColorValueToFloat( ColorIdxs(I, J, K)^ );
+                            MCCube.V[0].ColorR := ColorValueToFloat( ColorRs(I, J, K)^ );
+                            MCCube.V[0].ColorG := ColorValueToFloat( ColorGs(I, J, K)^ );
+                            MCCube.V[0].ColorB := ColorValueToFloat( ColorBs(I, J, K)^ );
 
 
-                            MCCube.V[3].Weight := CalcWeight( DE[I, J+1, K] );
-                            MCCube.V[4].Weight := CalcWeight( DE[I, J, K+1] );
-                            MCCube.V[4].ColorIdx := ColorValueToFloat( ColorIdxs[I, J, K+1] );
-                            MCCube.V[4].ColorR := ColorValueToFloat( ColorRs[I, J, K+1] );
-                            MCCube.V[4].ColorG := ColorValueToFloat( ColorGs[I, J, K+1] );
-                            MCCube.V[4].ColorB := ColorValueToFloat( ColorBs[I, J, K+1] );
+                            if DoCloseMesh and ( TraceXMax >= CurrPos.X ) and ( TraceXMax < CurrPos.X + FStepSize ) then
+                              MCCube.V[1].Weight := CalcWeight( DE(I, J, K)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceYMin > CurrPos.Y - FStepSize ) and ( TraceYMin <= CurrPos.Y ) then
+                              MCCube.V[1].Weight := CalcWeight( DE(I + 1, J + 1, K)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceZMin > CurrPos.Z - FStepSize ) and ( TraceZMin <= CurrPos.Z ) then
+                              MCCube.V[1].Weight := CalcWeight( DE(I + 1, J, K + 1)^) - DeltaDECloseMesh
+                            else
+                              MCCube.V[1].Weight := CalcWeight( DE(I+1, J, K)^ );
+                            MCCube.V[1].ColorIdx := ColorValueToFloat( ColorIdxs(I+1, J, K)^ );
+                            MCCube.V[1].ColorR := ColorValueToFloat( ColorRs(I+1, J, K)^ );
+                            MCCube.V[1].ColorG := ColorValueToFloat( ColorGs(I+1, J, K)^ );
+                            MCCube.V[1].ColorB := ColorValueToFloat( ColorBs(I+1, J, K)^ );
 
-                            MCCube.V[5].Weight := CalcWeight( DE[I+1, J, K+1] );
-                            MCCube.V[5].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J, K+1] );
-                            MCCube.V[5].ColorR := ColorValueToFloat( ColorRs[I+1, J, K+1] );
-                            MCCube.V[5].ColorG := ColorValueToFloat( ColorGs[I+1, J, K+1] );
-                            MCCube.V[5].ColorB := ColorValueToFloat( ColorBs[I+1, J, K+1] );
 
-                            MCCube.V[6].Weight := CalcWeight( DE[I+1, J+1, K+1] );
-                            MCCube.V[6].ColorIdx := ColorValueToFloat( ColorIdxs[I+1, J+1, K+1] );
-                            MCCube.V[6].ColorR := ColorValueToFloat( ColorRs[I+1, J+1, K+1] );
-                            MCCube.V[6].ColorG := ColorValueToFloat( ColorGs[I+1, J+1, K+1] );
-                            MCCube.V[6].ColorB := ColorValueToFloat( ColorBs[I+1, J+1, K+1] );
+                            if DoCloseMesh and ( TraceXMax >= CurrPos.X ) and ( TraceXMax < CurrPos.X + FStepSize ) then
+                              MCCube.V[2].Weight := CalcWeight( DE(I, J+1, K)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceYMax >= CurrPos.Y ) and ( TraceYMax < CurrPos.Y + FStepSize ) then
+                              MCCube.V[2].Weight := CalcWeight( DE(I+1, J, K)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceZMin > CurrPos.Z - FStepSize ) and ( TraceZMin <= CurrPos.Z ) then
+                              MCCube.V[2].Weight := CalcWeight( DE(I+1, J+1, K + 1)^) - DeltaDECloseMesh
+                            else
+                              MCCube.V[2].Weight := CalcWeight( DE(I+1, J+1, K)^ );
+                            MCCube.V[2].ColorIdx := ColorValueToFloat( ColorIdxs(I+1, J+1, K)^ );
+                            MCCube.V[2].ColorR := ColorValueToFloat( ColorRs(I+1, J+1, K)^ );
+                            MCCube.V[2].ColorG := ColorValueToFloat( ColorGs(I+1, J+1, K)^ );
+                            MCCube.V[2].ColorB := ColorValueToFloat( ColorBs(I+1, J+1, K)^ );
 
-                            MCCube.V[7].Weight := CalcWeight( DE[I, J+1, K+1] );
-                            MCCube.V[7].ColorIdx := ColorValueToFloat( ColorIdxs[I, J+1, K+1] );
-                            MCCube.V[7].ColorR := ColorValueToFloat( ColorRs[I, J+1, K+1] );
-                            MCCube.V[7].ColorG := ColorValueToFloat( ColorGs[I, J+1, K+1] );
-                            MCCube.V[7].ColorB := ColorValueToFloat( ColorBs[I, J+1, K+1] );
+
+                            if DoCloseMesh and ( TraceXMin > CurrPos.X - FStepSize ) and ( TraceXMin <= CurrPos.X ) then
+                              MCCube.V[3].Weight := CalcWeight( DE(I+1, J+1, K)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceYMax >= CurrPos.Y ) and ( TraceYMax < CurrPos.Y + FStepSize ) then
+                              MCCube.V[3].Weight := CalcWeight( DE(I, J, K)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceZMin > CurrPos.Z - FStepSize ) and ( TraceZMin <= CurrPos.Z ) then
+                              MCCube.V[3].Weight := CalcWeight( DE(I, J+1, K+1)^) - DeltaDECloseMesh
+                            else
+                              MCCube.V[3].Weight := CalcWeight( DE(I, J+1, K)^ );
+                            MCCube.V[3].ColorIdx := ColorValueToFloat( ColorIdxs(I, J+1, K)^ );
+                            MCCube.V[3].ColorR := ColorValueToFloat( ColorRs(I, J+1, K)^ );
+                            MCCube.V[3].ColorG := ColorValueToFloat( ColorGs(I, J+1, K)^ );
+                            MCCube.V[3].ColorB := ColorValueToFloat( ColorBs(I, J+1, K)^ );
+
+
+                            if DoCloseMesh and ( TraceXMin > CurrPos.X - FStepSize ) and ( TraceXMin <= CurrPos.X ) then
+                              MCCube.V[4].Weight := CalcWeight( DE(I+1, J, K+1)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceYMin > CurrPos.Y - FStepSize ) and ( TraceYMin <= CurrPos.Y ) then
+                              MCCube.V[4].Weight := CalcWeight( DE(I, J+1, K+1)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceZMax >= CurrPos.Z ) and ( TraceZMax < CurrPos.Z + FStepSize ) then
+                              MCCube.V[4].Weight := CalcWeight( DE(I, J, K)^) - DeltaDECloseMesh
+                            else
+                              MCCube.V[4].Weight := CalcWeight( DE(I, J, K+1)^ );
+                            MCCube.V[4].ColorIdx := ColorValueToFloat( ColorIdxs(I, J, K+1)^ );
+                            MCCube.V[4].ColorR := ColorValueToFloat( ColorRs(I, J, K+1)^ );
+                            MCCube.V[4].ColorG := ColorValueToFloat( ColorGs(I, J, K+1)^ );
+                            MCCube.V[4].ColorB := ColorValueToFloat( ColorBs(I, J, K+1)^ );
+
+
+                            if DoCloseMesh and ( TraceXMax >= CurrPos.X ) and ( TraceXMax < CurrPos.X + FStepSize ) then
+                              MCCube.V[5].Weight := CalcWeight( DE(I, J, K+1)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceYMin > CurrPos.Y - FStepSize ) and ( TraceYMin <= CurrPos.Y ) then
+                              MCCube.V[5].Weight := CalcWeight( DE(I+1, J, K+1)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceZMax >= CurrPos.Z ) and ( TraceZMax < CurrPos.Z + FStepSize ) then
+                              MCCube.V[5].Weight := CalcWeight( DE(I+1, J, K)^) - DeltaDECloseMesh
+                            else
+                              MCCube.V[5].Weight := CalcWeight( DE(I+1, J, K+1)^ );
+                            MCCube.V[5].ColorIdx := ColorValueToFloat( ColorIdxs(I+1, J, K+1)^ );
+                            MCCube.V[5].ColorR := ColorValueToFloat( ColorRs(I+1, J, K+1)^ );
+                            MCCube.V[5].ColorG := ColorValueToFloat( ColorGs(I+1, J, K+1)^ );
+                            MCCube.V[5].ColorB := ColorValueToFloat( ColorBs(I+1, J, K+1)^ );
+
+
+                            if DoCloseMesh and ( TraceXMax >= CurrPos.X ) and ( TraceXMax < CurrPos.X + FStepSize ) then
+                              MCCube.V[6].Weight := CalcWeight( DE(I, J+1, K+1)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceYMax >= CurrPos.Y ) and ( TraceYMax < CurrPos.Y + FStepSize ) then
+                              MCCube.V[6].Weight := CalcWeight( DE(I+1, J, K+1)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceZMax >= CurrPos.Z ) and ( TraceZMax < CurrPos.Z + FStepSize ) then
+                              MCCube.V[6].Weight := CalcWeight( DE(I+1, J+1, K)^) - DeltaDECloseMesh
+                            else
+                              MCCube.V[6].Weight := CalcWeight( DE(I+1, J+1, K+1)^ );
+                            MCCube.V[6].ColorIdx := ColorValueToFloat( ColorIdxs(I+1, J+1, K+1)^ );
+                            MCCube.V[6].ColorR := ColorValueToFloat( ColorRs(I+1, J+1, K+1)^ );
+                            MCCube.V[6].ColorG := ColorValueToFloat( ColorGs(I+1, J+1, K+1)^ );
+                            MCCube.V[6].ColorB := ColorValueToFloat( ColorBs(I+1, J+1, K+1)^ );
+
+
+                            if DoCloseMesh and ( TraceXMin > CurrPos.X - FStepSize ) and ( TraceXMin <= CurrPos.X ) then
+                              MCCube.V[7].Weight := CalcWeight( DE(I+1, J+1, K+1)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceYMax >= CurrPos.Y ) and ( TraceYMax < CurrPos.Y + FStepSize ) then
+                              MCCube.V[7].Weight := CalcWeight( DE(I, J, K+1)^) - DeltaDECloseMesh
+                            else if DoCloseMesh and ( TraceZMax >= CurrPos.Z ) and ( TraceZMax < CurrPos.Z + FStepSize ) then
+                              MCCube.V[7].Weight := CalcWeight( DE(I, J+1, K)^) - DeltaDECloseMesh
+                            else
+                              MCCube.V[7].Weight := CalcWeight( DE(I, J+1, K+1)^ );
+                            MCCube.V[7].ColorIdx := ColorValueToFloat( ColorIdxs(I, J+1, K+1)^ );
+                            MCCube.V[7].ColorR := ColorValueToFloat( ColorRs(I, J+1, K+1)^ );
+                            MCCube.V[7].ColorG := ColorValueToFloat( ColorGs(I, J+1, K+1)^ );
+                            MCCube.V[7].ColorB := ColorValueToFloat( ColorBs(I, J+1, K+1)^ );
+
 
                             TMCCubes.CreateFacesForCube(@MCCube, ISO_VALUE, FFacesList, FCalcColors);
                           end;
@@ -506,24 +612,19 @@ var
                     end;
                   end;
                 finally
-                  SetLength(ColorBs, 0, 0, 0);
-                  ColorBs := nil;
+                  FreeMem(ColorBsBuf, (MaxPrecalcUSlices+1) * (FSlicesV+1) * (FSlicesV+1) * SizeOf(TColorValue));
                 end;
               finally
-                SetLength(ColorGs, 0, 0, 0);
-                ColorGs := nil;
+                FreeMem(ColorGsBuf, (MaxPrecalcUSlices+1) * (FSlicesV+1) * (FSlicesV+1) * SizeOf(TColorValue));
               end;
             finally
-              SetLength(ColorRs, 0, 0, 0);
-              ColorRs := nil;
+              FreeMem(ColorRsBuf, (MaxPrecalcUSlices+1) * (FSlicesV+1) * (FSlicesV+1) * SizeOf(TColorValue));
             end;
           finally
-            SetLength(ColorIdxs, 0, 0, 0);
-            ColorIdxs := nil;
+            FreeMem(ColorIdxsBuf, (MaxPrecalcUSlices+1) * (FSlicesV+1) * (FSlicesV+1) * SizeOf(TColorValue));
           end;
         finally
-          SetLength(DE, 0, 0, 0);
-          DE := nil;
+          FreeMem(DEBuf, (MaxPrecalcUSlices+1) * (FSlicesV+1)* (FSlicesV+1) * SizeOf(Single));
         end;
         CurrUSlice := CurrUSlice + MaxPrecalcUSlices;
       end;
@@ -542,9 +643,9 @@ var
     Header: TBTraceDataHeader;
   begin
     if FCalcColors then
-      MaxTracesPerFile := 2000000
+      MaxTracesPerFile := 1000000
     else
-      MaxTracesPerFile := 6000000;
+      MaxTracesPerFile := 3000000;
 
     GetMem(BTraceData, MaxTracesPerFile * SizeOf(TBTraceData));
     try
@@ -603,7 +704,7 @@ var
         SaveTraceData( TraceFilename, BTraceData, @Header );
       end;
     finally
-      FreeMem(BTraceData);
+      FreeMem(BTraceData, MaxTracesPerFile * SizeOf(TBTraceData));
     end;
   end;
 
