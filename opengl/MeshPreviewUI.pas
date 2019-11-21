@@ -116,7 +116,7 @@ type
     procedure UIToAppearance;
   public
     { Public declarations }
-    procedure UpdateMesh(const FacesList: TFacesList; const MaxVerticeCount: integer); overload;
+    procedure UpdateMesh(const FacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges: boolean); overload;
     procedure UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList); overload;
   end;
 
@@ -317,9 +317,9 @@ begin
   UIToAppearance;
 end;
 
-procedure TMeshPreviewFrm.UpdateMesh(const FacesList: TFacesList; const MaxVerticeCount: integer);
+procedure TMeshPreviewFrm.UpdateMesh(const FacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges: boolean);
 begin
-  FOpenGLHelper.UpdateMesh(FacesList, MaxVerticeCount);
+  FOpenGLHelper.UpdateMesh(FacesList, MaxVerticeCount, NoEdges);
 end;
 
 procedure TMeshPreviewFrm.UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList);

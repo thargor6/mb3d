@@ -58,7 +58,7 @@ type
   public
     constructor Create(const Form: TForm; const Canvas: TCanvas);
     destructor Destroy; override;
-    procedure UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer); override;
+    procedure UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges: boolean); override;
     procedure UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList); override;
     property MeshAppearance: TMeshAppearance read FMeshAppearance;
   end;
@@ -354,7 +354,7 @@ begin
   ShowDebugInfo('OpenGL.TOTAL', T00);
 end;
 
-procedure TOpenGLHelper.UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer);
+procedure TOpenGLHelper.UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges: boolean);
 var
   T0, T00: Int64;
   I: Integer;
@@ -519,12 +519,14 @@ ShowDebugInfo('OpenGL.CreateReducesMesh('+IntToStr(MaxVerticeCount)+')', T0);
       try
         EdgesList.Duplicates := dupAccept;
         EdgesList.Sorted := False;
-        for I := 0 to FacesList.Count - 1 do begin
-          AddEdgesToList(I);
-          if EdgesList.Count > 100000 then
-            break;
+        if not NoEdges then begin
+          for I := 0 to FacesList.Count - 1 do begin
+            AddEdgesToList(I);
+            if EdgesList.Count > 100000 then
+              break;
+          end;
+          EdgesList.Sorted := True;
         end;
-        EdgesList.Sorted := True;
 
         EdgeCount := EdgesList.Count;
 ShowDebugInfo('OpenGL.AddEdgesPh1('+IntToStr(EdgeCount)+')', T0);

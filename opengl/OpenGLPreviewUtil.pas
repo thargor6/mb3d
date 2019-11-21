@@ -65,7 +65,7 @@ type
     procedure CleanupGL;
     procedure AfterResize(const ClientWidth, ClientHeight: Integer);
     procedure ResetPosition;
-    procedure UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer); overload; virtual;
+    procedure UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges: boolean); overload; virtual;
     procedure UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList); overload; virtual;
     procedure SetDisplayStyle(const DisplayStyle: TDisplayStyle);
     property XPosition: Double read GetXPosition write SetXPosition;
@@ -284,7 +284,7 @@ begin
 end;
 
 
-procedure TBaseOpenGLHelper.UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer);
+procedure TBaseOpenGLHelper.UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges: boolean);
 begin
   // EMPTY
 end;

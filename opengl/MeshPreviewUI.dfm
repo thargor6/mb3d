@@ -3,8 +3,8 @@ object MeshPreviewFrm: TMeshPreviewFrm
   Top = 0
   BorderStyle = bsSizeToolWin
   Caption = 'MeshPreviewFrm'
-  ClientHeight = 469
-  ClientWidth = 683
+  ClientHeight = 618
+  ClientWidth = 824
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -25,13 +25,15 @@ object MeshPreviewFrm: TMeshPreviewFrm
   PixelsPerInch = 96
   TextHeight = 13
   object NaviPanel: TPanel
-    Left = 525
+    Left = 666
     Top = 0
     Width = 158
-    Height = 469
+    Height = 618
     Align = alRight
     TabOrder = 0
     OnDblClick = NaviPanelDblClick
+    ExplicitLeft = 525
+    ExplicitHeight = 469
     object Label15: TLabel
       Left = 7
       Top = 425
