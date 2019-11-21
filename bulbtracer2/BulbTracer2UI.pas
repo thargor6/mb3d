@@ -25,7 +25,7 @@ uses
   SyncObjs, MeshIOUtil;
 
 type
-  TParamSource = (psMain, psSingleFile, psFileSequence);
+  TParamSource = (psMain, psSingleFile);
 
   TThreadErrorStatus = packed record
     HasError: boolean;
@@ -50,7 +50,7 @@ type
     XOffsetEdit: TEdit;
     YOffsetEdit: TEdit;
     ZOffsetEdit: TEdit;
-    Button6: TButton;
+    ResetOffsetAndScaleBtn: TButton;
     ScaleEdit: TEdit;
     GroupBox2: TGroupBox;
     SelectOutputFilenameBtn: TButton;
@@ -71,16 +71,10 @@ type
     MaxVerticeCountEdit: TEdit;
     GroupBox6: TGroupBox;
     Panel2: TPanel;
-    Panel9: TPanel;
-    Label24: TLabel;
-    FrameEdit: TEdit;
-    FrameUpDown: TUpDown;
-    FrameTBar: TTrackBarEx;
     ProgressBar: TProgressBar;
-    Button1: TButton;
+    CloseButton: TButton;
     Label13: TLabel;
     CalculateBtn: TButton;
-    GenCurrMeshBtn: TButton;
     CancelTypeCmb: TComboBox;
     Label19: TLabel;
     CancelBtn: TButton;
@@ -97,7 +91,7 @@ type
     ScaleDownBtn: TSpeedButton;
     ScaleUpBtn: TSpeedButton;
     PreviewProgressBar: TProgressBar;
-    RadioGroup2: TRadioGroup;
+    VoxelPreviewSizeGrp: TRadioGroup;
     AutoCalcPreviewCbx: TCheckBox;
     RefreshPreviewBtn: TButton;
     Label6: TLabel;
@@ -111,7 +105,7 @@ type
     EditModeCmb: TComboBox;
     PreviewDEAdjust: TEdit;
     Label12: TLabel;
-    UpDown1: TUpDown;
+    PreviewDEAdjustUpDown: TUpDown;
     TraceXMaxEdit: TEdit;
     Label14: TLabel;
     TraceXMinEdit: TEdit;
@@ -128,7 +122,9 @@ type
     CloseMeshCheckbox: TCheckBox;
     OpenGLPreviewCheckbox: TCheckBox;
     PreviewTimer: TTimer;
-    procedure Button1Click(Sender: TObject);
+    OpenGLPreviewTimer: TTimer;
+    OpenGLPreviewSizeGrp: TRadioGroup;
+    procedure CloseButtonClick(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure XOffsetEditChange(Sender: TObject);
@@ -141,11 +137,11 @@ type
     procedure UpDown7Click(Sender: TObject; Button: TUDBtnType);
     procedure Timer3Timer(Sender: TObject);
     procedure Edit10Change(Sender: TObject);
-    procedure Button6Click(Sender: TObject);
+    procedure ResetOffsetAndScaleBtnClick(Sender: TObject);
     procedure CalculateBtnClick(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure MeshPreviewBtnClick(Sender: TObject);
-    procedure RadioGroup2Click(Sender: TObject);
+    procedure VoxelPreviewSizeGrpClick(Sender: TObject);
     procedure CancelBtnClick(Sender: TObject);
     procedure SaveTypeCmbChange(Sender: TObject);
     procedure CancelTypeCmbChange(Sender: TObject);
@@ -153,17 +149,12 @@ type
     procedure SelectOutputFilenameBtnClick(Sender: TObject);
     procedure SurfaceSharpnessUpDownClick(Sender: TObject; Button: TUDBtnType);
     procedure Button2Click(Sender: TObject);
-    procedure FrameUpDownClick(Sender: TObject; Button: TUDBtnType);
-    procedure FrameEditExit(Sender: TObject);
-    procedure FrameTBarChange(Sender: TObject);
-    procedure FrameTBarMouseUp(Sender: TObject; Button: TMouseButton;
-      Shift: TShiftState; X, Y: Integer);
     procedure IncXOffsetBtnClick(Sender: TObject);
     procedure IncYOffsetBtnClick(Sender: TObject);
     procedure IncZOffsetBtnClick(Sender: TObject);
     procedure ScaleDownBtnClick(Sender: TObject);
     procedure OpenGLPreviewCBxClick(Sender: TObject);
-    procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
+    procedure PreviewDEAdjustUpDownClick(Sender: TObject; Button: TUDBtnType);
     procedure SaveBTracer2FileBtnClick(Sender: TObject);
     procedure LoadBTracer2FileBtnClick(Sender: TObject);
     procedure OpenGLPreviewCheckboxClick(Sender: TObject);
@@ -175,6 +166,8 @@ type
     procedure TraceYMaxEditExit(Sender: TObject);
     procedure TraceZMaxEditExit(Sender: TObject);
     procedure CloseMeshCheckboxClick(Sender: TObject);
+    procedure OpenGLPreviewTimerTimer(Sender: TObject);
+    procedure TraceZMinEditExit(Sender: TObject);
   private
     { Private-Deklarationen }
   //  PreviewVoxel: array of Cardinal;   //buffer to not calc everything again if shifted position
@@ -189,10 +182,12 @@ type
     FSavePartIdx: Integer;
     FSaveType: TMeshSaveType;
     FVertexGenConfig: TVertexGen2Config;
-    FCalculating, FForceAbort: Boolean;
+    FCalculating, FForceAbort, FCalculatingPreview: Boolean;
     FCancelType: TCancelType;
     FRefreshing: Boolean;
     FSavePartCriticalSection: TCriticalSection;
+    FOpenGLPreviewIndicator: integer;
+    procedure ClearClassicPreview;
     procedure UpdateBTracer2HeaderFromUI;
     procedure UpdateUIFromBTracer2Header;
     procedure CalcImageSize;
@@ -200,19 +195,16 @@ type
     procedure PaintNextPreviewSlice(nr: Integer);
     procedure SetProjectName(FileName: String);
     procedure StartNewPreview;
-    function  CalcPreviewSize: Integer;
-    procedure CalcPreviewSizes;
+    function  CalcVoxelPreviewSize: Integer;
+    procedure CalcVoxelPreviewSizes;
+    function  CalcOpenGLPreviewSize: Integer;
 
     function StartPLYRender(const ForPreview: boolean): LongBool;
     procedure MergeAndSaveMesh;
     procedure UpdateVertexGenConfig;
     procedure SaveMesh;
     procedure ShowPreviewMesh;
-    function  MakeMeshSequenceFilename( const BaseFilename: String ): String;
     procedure CancelPreview;
-    procedure UpdateParamsRange;
-    procedure UpdateFrameDisplay( const Frame: Integer );
-    procedure ChangeFrame;
     procedure ShowTitle(const Caption: String);
     procedure StartCalc(const ForPreview: boolean);
     procedure SetExportFilenameExt;
@@ -222,7 +214,6 @@ type
   public
     { Public-Deklarationen }
     FParamSource: TParamSource;
-    FSingleFrame: Boolean;
     FParamFilename: String;
     FParamSequenceBaseFilename: String;
     FParamSequenceFileExt: String;
@@ -238,6 +229,7 @@ type
     FileNumber: Integer;
     HybridCustoms: array[0..5] of TCustomFormula;
     FLogger: TAbstractLogger;
+    procedure UpdatePreviewSizeGrp;
     procedure EnableControls(const Enabled: Boolean);
     procedure ImportParams(const KeepScaleAndPosition: Boolean = False);
   end;
@@ -261,7 +253,7 @@ type
     FPrepared: Boolean;
     FObjectScanner: TObjectScanner2;
   protected
-    procedure Prepare;
+    procedure Prepare(const ForPreview: boolean);
     procedure Execute; override;
   public
     BTracer2Header: TBTracer2Header;
@@ -283,7 +275,7 @@ uses CalcVoxelSliceThread, FileHandling, Math, Math3D, Calc, DivUtils, Mand,
 
 {$R *.dfm}
 
-procedure TBulbTracer2Frm.Button1Click(Sender: TObject);
+procedure TBulbTracer2Frm.CloseButtonClick(Sender: TObject);
 begin
     Visible := False;
 end;
@@ -427,16 +419,6 @@ begin
     finally
       FCalculating := False;
       EnableControls(True);
-
-      if ( FParamSource = psFileSequence ) and ( not FSingleFrame ) then begin
-        if ( not FForceAbort ) and  ( FParamSequenceCurrFrame < FParamSequenceTo ) then begin
-          Inc( FParamSequenceCurrFrame );
-          UpdateFrameDisplay( FParamSequenceCurrFrame );
-          ImportParams( True );
-          CancelPreview;
-          StartCalc(False);
-        end;
-      end;
     end;
     if HasError then
       raise Exception.Create(ErrorMessage);
@@ -475,8 +457,10 @@ begin
     MaxPreviewVertices := StrToInt(MaxVerticeCountEdit.Text);
     WithOpenGlPreview := OpenGLPreviewCBx.Checked;
     PreviewDEstop := StrToFloatK(PreviewDEAdjust.Text);
-    PreviewSizeIdx := RadioGroup2.ItemIndex;
+    VoxelPreviewSizeIdx := VoxelPreviewSizeGrp.ItemIndex;
+    OpenGLPreviewSizeIdx := OpenGLPreviewSizeGrp.ItemIndex;
     WithAutoPreview := AutoCalcPreviewCbx.Checked;
+    UseOpenGLForAutoPreview := OpenGLPreviewCheckbox.Checked;
     TraceXMin := StrToFloatK(TraceXMinEdit.Text);
     TraceXMax := StrToFloatK(TraceXMaxEdit.Text);
     TraceYMin := StrToFloatK(TraceYMinEdit.Text);
@@ -521,8 +505,10 @@ begin
       MaxVerticeCountEdit.Text := IntToStr(MaxPreviewVertices);
       OpenGLPreviewCBx.Checked := WithOpenGlPreview;
       PreviewDEAdjust.Text := FloatToStr(PreviewDEstop);
-      RadioGroup2.ItemIndex := PreviewSizeIdx;
+      VoxelPreviewSizeGrp.ItemIndex := VoxelPreviewSizeIdx;
+      OpenGLPreviewSizeGrp.ItemIndex := OpenGLPreviewSizeIdx;
       AutoCalcPreviewCbx.Checked := WithAutoPreview;
+      OpenGLPreviewCheckbox.Checked := UseOpenGLForAutoPreview;
       FilenameREd.Text := OutputFilename;
       TraceXMinEdit.Text := FloatToStr(TraceXMin);
       TraceXMaxEdit.Text := FloatToStr(TraceXMax);
@@ -532,11 +518,19 @@ begin
       TraceZMaxEdit.Text := FloatToStr(TraceZMax);
       CloseMeshCheckbox.Checked := CloseMesh;
 
+      UpdatePreviewSizeGrp;
+
       CalcImageSize;
       bUserChange := b;
     end;
     VHeader.PCFAddon := @VHAddon;
     for i := 0 to 5 do VHeader.PHCustomF[i] := @HybridCustoms[i];
+end;
+
+procedure TBulbTracer2Frm.UpdatePreviewSizeGrp;
+begin
+  VoxelPreviewSizeGrp.Visible := not OpenGLPreviewCheckbox.Checked;
+  OpenGLPreviewSizeGrp.Visible := not VoxelPreviewSizeGrp.Visible;
 end;
 
 procedure TBulbTracer2Frm.SetProjectName(FileName: String);
@@ -547,7 +541,6 @@ end;
 procedure TBulbTracer2Frm.ImportParamsFromMainBtnClick(Sender: TObject);
 begin
   FParamSource := psMain;
-  UpdateParamsRange;
   ImportParams;
 end;
 
@@ -571,7 +564,7 @@ var i: Integer;
 begin
     CancelPreview;
 
-    OpenGLPreviewCheckbox.Checked := False;
+   // OpenGLPreviewCheckbox.Checked := False;
 
     VHeader.PCFAddon := @VHAddon;
     for i := 0 to 5 do VHeader.PHCustomF[i] := @HybridCustoms[i];
@@ -589,16 +582,6 @@ begin
       Mand3DForm.MakeHeader;
       AssignHeader(@VHeader, @Mand3DForm.MHeader);
       ShowTitle( ExtractFilename( FParamFilename ) );
-    end
-    else if FParamSource = psFileSequence then begin
-      CurrFilename := GetSequenceFilename(
-        FParamSequenceBaseFilename, FParamSequenceFileExt, FParamSequencePatternLength, FParamSequenceCurrFrame );
-      LoadParamFromFile( CurrFilename );
-      Mand3DForm.ParasChanged;
-      Mand3DForm.ClearScreen;
-      Mand3DForm.MakeHeader;
-      AssignHeader(@VHeader, @Mand3DForm.MHeader);
-      ShowTitle( ExtractFilename( CurrFilename ) );
     end;
 
     BTracer2Header.MandParamsAsString := MakeTextparas(@Mand3DForm.MHeader, Mand3DForm.Caption);
@@ -619,6 +602,11 @@ begin
     UpdateUIFromBTracer2Header;
     Benabled := True;
     EnableControls(True);
+
+    BringToFront2(Self.Handle);
+    if MeshPreviewFrm.Visible then
+      BringToFront2(MeshPreviewFrm.Handle);
+
     StartNewPreview;
 end;
 
@@ -639,36 +627,7 @@ begin
 
       UpdateBTracer2HeaderFromUI;
     end;
-end;
-
-procedure TBulbTracer2Frm.FrameEditExit(Sender: TObject);
-begin
-  ChangeFrame;
-end;
-
-procedure TBulbTracer2Frm.FrameTBarChange(Sender: TObject);
-begin
-  FrameEdit.Text := IntToStr( FrameTBar.Position );
-  ChangeFrame;
-end;
-
-procedure TBulbTracer2Frm.FrameTBarMouseUp(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-begin
-  FrameTBarChange( Sender );
-end;
-
-procedure TBulbTracer2Frm.FrameUpDownClick(Sender: TObject; Button: TUDBtnType);
-var
-  Value: Double;
-begin
-  Value := StrToFloatSafe(FrameEdit.Text, 0.0) + UpDownBtnValue(Button, 1);
-  if Value < FParamSequenceFrom then
-    Value := FParamSequenceFrom;
-  if Value > FParamSequenceTo then
-    Value := FParamSequenceTo;
-  FrameEdit.Text := IntToStr(Round(Value));
-  ChangeFrame;
+  UpdatePreviewSizeGrp;
 end;
 
 procedure TBulbTracer2Frm.XOffsetEditChange(Sender: TObject);
@@ -688,7 +647,6 @@ begin
   try
     FSavePartCriticalSection := TCriticalSection.Create;
     FParamSource := psMain;
-    UpdateParamsRange;
     FThreadVertexLists := TObjectList.Create;
     FThreadNormalsLists := TObjectList.Create;
     FThreadColorsLists := TObjectList.Create;
@@ -716,11 +674,11 @@ begin
   FLogger.Free;
 end;
 
-procedure TBulbTracer2Frm.CalcPreviewSizes;
+procedure TBulbTracer2Frm.CalcVoxelPreviewSizes;
 var d: Double;
 begin
     with BTracer2Header do begin
-      PreviewSize := CalcPreviewSize;
+      PreviewSize := CalcVoxelPreviewSize;
       d := 1.0 / Scale;
       PVwid := Round(PreviewSize * Scale * d);
       PVhei := Round(PreviewSize * Scale * d);
@@ -728,26 +686,25 @@ begin
     end;
 end;
 
-function TBulbTracer2Frm.CalcPreviewSize: Integer;
+function TBulbTracer2Frm.CalcVoxelPreviewSize: Integer;
 begin
-  Result := 16 shl RadioGroup2.ItemIndex;
+  Result := 16 shl VoxelPreviewSizeGrp.ItemIndex;
+end;
+
+function TBulbTracer2Frm.CalcOpenGLPreviewSize: Integer;
+var
+  SizeStr: String;
+begin
+  SizeStr := OpenGLPreviewSizeGrp.Items[OpenGLPreviewSizeGrp.ItemIndex];
+  Result := StrToInt(Copy(SizeStr, 1, Length(SizeStr)-2));
 end;
 
 procedure TBulbTracer2Frm.Button2Click(Sender: TObject);
 begin
   if OpenDialog2.Execute then begin
-    if GuessSequence( OpenDialog2.FileName, FParamSequenceBaseFilename, FParamSequenceFileExt,
-      FParamSequencePatternLength, FParamSequenceFrom, FParamSequenceTo, FParamSequenceCurrFrame ) then begin
-      FParamSource := psFileSequence;
-      UpdateParamsRange;
-      ImportParams;
-    end
-    else begin
-      FParamSource := psSingleFile;
-      FParamFilename := OpenDialog2.FileName;
-      UpdateParamsRange;
-      ImportParams;
-    end;
+    FParamSource := psSingleFile;
+    FParamFilename := OpenDialog2.FileName;
+    ImportParams;
   end;
 end;
 
@@ -765,15 +722,38 @@ begin
   end;
 end;
 
+procedure TBulbTracer2Frm.ClearClassicPreview;
+begin
+  Image1.Canvas.Brush.Color := $222222;
+  Image1.Canvas.FillRect(Image1.Canvas.ClipRect);
+  Image1.Picture.Bitmap.PixelFormat := pf32bit;
+end;
+
+procedure TBulbTracer2Frm.OpenGLPreviewTimerTimer(Sender: TObject);
+begin
+  Inc(FOpenGLPreviewIndicator);
+  if (FOpenGLPreviewIndicator mod 5) =0 then begin
+    ClearClassicPreview;
+  end
+  else begin
+    Image1.Canvas.Brush.Color := $666666;
+    Image1.Canvas.TextOut(Image1.Canvas.ClipRect.Width div 2 - 32, Image1.Canvas.ClipRect.Height div 2 - 16, 'Calculating... >>');
+  end;
+end;
+
 procedure TBulbTracer2Frm.RefreshPreviewBtnClick(Sender: TObject);  //calc preview
 begin
   if OpenGLPreviewCheckbox.Checked then begin
-    MeshPreviewFrm.Visible := True;
-    StartCalc(True);
+    if not FCalculatingPreview then begin
+      ClearClassicPreview;
+      MeshPreviewFrm.Visible := True;
+      FOpenGLPreviewIndicator := 0;
+      OpenGLPreviewTimer.Enabled := True;
+      StartCalc(True);
+    end;
   end
   else begin
-    if RefreshPreviewBtn.Caption = 'Stop' then
-    begin
+    if RefreshPreviewBtn.Caption = 'Stop' then begin
       MCalcStop := True;
   //    Inc(CalcVoxelPreviewIndex);
     end
@@ -782,7 +762,7 @@ begin
       PreviewProgressBar.Position := 0;
       PreviewProgressBar.Max := 10; //CalcPreviewSize;
       UpdateBTracer2HeaderFromUI;
-      CalcPreviewSizes;
+      CalcVoxelPreviewSizes;
     //  Mand3DForm.bCalcTile := False;
       FileNumber := PVdep;
       SetLength(VsiLight, PreviewSize * PreviewSize);
@@ -806,7 +786,7 @@ var x, y, y2, i, j, i2, i3, i4, im, ik: Integer;
     PC, PSL: PCardinal;
 begin
     //PreviewProgressBar.StepIt;
-    PreviewProgressBar.Position := Round(10.0 * (CalcPreviewSize - nr + 1) / CalcPreviewSize);
+    PreviewProgressBar.Position := Round(10.0 * (CalcVoxelPreviewSize - nr + 1) / CalcVoxelPreviewSize);
     PSLstart := Integer(@VsiLight[0]);
     PLoffset := PVwid * SizeOf(Cardinal);
     i := Round((165 - (nr / PVdep) * 128) * 1.5);
@@ -941,6 +921,7 @@ begin
     end;
   end;
   if it = 0 then begin
+    OpenGLPreviewTimer.Enabled := False;
     try
       if not VCalcThreadStats.pLBcalcStop^ then  begin
         ShowPreviewMesh;
@@ -948,8 +929,10 @@ begin
       Mand3DForm.EnableButtons;
       Mand3DForm.OutMessage('Finished tracing object.');
     finally
+      FCalculatingPreview := False;
       FCalculating := False;
       EnableControls(True);
+      ClearClassicPreview;
     end;
     if HasError then
       raise Exception.Create(ErrorMessage);
@@ -981,7 +964,7 @@ begin
     else Timer2.Enabled := True;
 end;
 
-procedure TBulbTracer2Frm.UpDown1Click(Sender: TObject; Button: TUDBtnType);
+procedure TBulbTracer2Frm.PreviewDEAdjustUpDownClick(Sender: TObject; Button: TUDBtnType);
 var d: Double;
 begin
   d := 0.05;
@@ -1071,6 +1054,11 @@ begin
   XOffsetEditChange(nil);
 end;
 
+procedure TBulbTracer2Frm.TraceZMinEditExit(Sender: TObject);
+begin
+  XOffsetEditChange(nil);
+end;
+
 procedure TBulbTracer2Frm.CancelBtnClick(Sender: TObject);
 var
   I: Integer;
@@ -1104,7 +1092,7 @@ begin
     FCancelType := TCancelType(CancelTypeCmb.ItemIndex);
 end;
 
-procedure TBulbTracer2Frm.RadioGroup2Click(Sender: TObject);
+procedure TBulbTracer2Frm.VoxelPreviewSizeGrpClick(Sender: TObject);
 begin
   if AutoCalcPreviewCbx.Checked then begin
     CancelPreview;
@@ -1121,7 +1109,7 @@ begin
     end;
 end;
 
-procedure TBulbTracer2Frm.Button6Click(Sender: TObject);
+procedure TBulbTracer2Frm.ResetOffsetAndScaleBtnClick(Sender: TObject);
 begin
     bUserChange := False;
     XOffsetEdit.Text := '0';
@@ -1147,22 +1135,13 @@ procedure TBulbTracer2Frm.CalculateBtnClick(Sender: TObject);
 var
   DoSave: boolean;
 begin
-  if not FCalculating then begin
+  if (not FCalculating) and (not FCalculatingPreview) then begin
     DoSave := ( ( TMeshSaveType(SaveTypeCmb.ItemIndex) <> stNoSave ) );
 
     if DoSave and (FilenameREd.Text = '') then begin
       SelectOutputFilenameBtnClick(Sender);
       if FilenameREd.Text = '' then
         Exit;
-    end;
-
-    FSingleFrame := Sender = GenCurrMeshBtn;
-
-    if ( FParamSource = psFileSequence ) and ( Sender <> GenCurrMeshBtn ) then begin
-      FParamSequenceCurrFrame := FParamSequenceFrom;
-      UpdateFrameDisplay( FParamSequenceCurrFrame );
-      ImportParams( True );
-      CancelPreview;
     end;
 
     StartCalc(False);
@@ -1179,8 +1158,8 @@ begin
   end;
   UpdateBTracer2HeaderFromUI;
   if ForPreview then begin
-    BTracer2Header.VResolution := CalcPreviewSize;
-    BTracer2Header.WithColors := False;
+    BTracer2Header.VResolution := CalcOpenGLPreviewSize;
+//    BTracer2Header.WithColors := False;
     BTracer2Header.SaveTypeIndex := 3;
   end;
   ImageScale := 1;
@@ -1208,7 +1187,7 @@ begin
     FThreadVertexLists.Clear;
     FThreadNormalsLists.Clear;
     FThreadColorsLists.Clear;
-    FSaveType := TMeshSaveType( SaveTypeCmb.ItemIndex );
+    FSaveType := TMeshSaveType( BTracer2Header.SaveTypeIndex );
     VHeader.TilingOptions := 0;
     bGetMCTPverbose := False;
     MCTparas := getMCTparasFromHeader(VHeader, False);
@@ -1270,14 +1249,19 @@ begin
       VCalcThreadStats.cCalcTime         := GetTickCount;
       vActiveThreads := ThreadCount;
       PaintedYsofar := 0;
-      for x := 0 to ThreadCount - 1 do PLYCalcThreads[x].Prepare;
+      for x := 0 to ThreadCount - 1 do PLYCalcThreads[x].Prepare(ForPreview);
       for x := 0 to ThreadCount - 1 do PLYCalcThreads[x].Start;
-      Mand3DForm.DisableButtons;
+
+
+
       if ForPreview then begin
+        FCalculatingPreview := True;
+        Mand.MCalcStop := False;
         PreviewTimer.Interval := 20;
         PreviewTimer.Enabled := True;
       end
       else begin
+        Mand3DForm.DisableButtons;
         Label13.Caption := 'Tracing object...';
         Timer1.Interval := 200;
         Timer1.Enabled := True;
@@ -1300,7 +1284,7 @@ begin
   inherited Destroy;
 end;
 
-procedure TPLYExportCalcThread.Prepare;
+procedure TPLYExportCalcThread.Prepare(const ForPreview: boolean);
 var
   PHeader: TPBTraceMainHeader;
 begin
@@ -1309,7 +1293,7 @@ begin
     CoInitialize(nil);
     FObjectScanner := TParallelScanner2.Create(VertexGenConfig, MCTparas, BTracer2Header, FOwner.VHeader, FacesList, VertexGenConfig.SurfaceSharpness, FOwner.FSaveType = stBTracer2Data, '', FOwner.FLogger );
     FObjectScanner.ThreadIdx := MCTparas.iThreadId - 1;
-    if FOwner.FSaveType = stBTracer2Data then begin
+    if (not ForPreview) and (FOwner.FSaveType = stBTracer2Data) then begin
       FObjectScanner.OutputFilename := FOwner.FilenameREd.Text;
       if FObjectScanner.ThreadIdx = 0 then begin
         GetMem(PHeader, SizeOf( TBTraceMainHeader ) );
@@ -1384,21 +1368,6 @@ begin
     ScaleEdit.Text := FloatToStrSingle( BTracer2Header.Scale );
 end;
 
-function TBulbTracer2Frm.MakeMeshSequenceFilename( const BaseFilename: String ): String;
-var
-  I: Integer;
-begin
-  Result := BaseFilename;
-  if FParamSource = psFileSequence then begin
-    for I := Length( BaseFilename ) downto 1 do begin
-      if BaseFilename[I] = '.' then begin
-        Result := Copy( BaseFilename, 1, I - 1 ) + '_' + Format('%.5d', [ FParamSequenceCurrFrame ] ) + Copy( BaseFilename, I, Length( BaseFilename ) - I + 1) ;
-        break;
-      end;
-    end;
-  end;
-end;
-
 procedure TBulbTracer2Frm.SaveMesh;
 var
   FacesList: TFacesList;
@@ -1418,9 +1387,9 @@ begin
           FacesList.DoCenter(1.0);
           if not FForceAbort then begin
             if FSaveType = stMeshAsObj then
-              TObjFileWriter.SaveToFile(MakeMeshSequenceFilename( FilenameREd.Text ), FacesList)
+              TObjFileWriter.SaveToFile(FilenameREd.Text, FacesList)
             else if FSaveType = stMeshAsPly then
-              TPlyFileWriter.SaveToFile(MakeMeshSequenceFilename( FilenameREd.Text ), FacesList);
+              TPlyFileWriter.SaveToFile(FilenameREd.Text, FacesList);
           end;
           FThreadVertexLists.Clear;
           OutputDebugString(PChar('TOTAL: '+IntToStr(DateUtils.MilliSecondsBetween(Now, 0)-T0)+' ms'));
@@ -1511,15 +1480,18 @@ procedure TBulbTracer2Frm.OpenGLPreviewCheckboxClick(Sender: TObject);
 var
   FacesList: TFacesList;
 begin
-  if OpenGLPreviewCheckbox.Checked then
-    StartNewPreview
-  else if MeshPreviewFrm.Visible then begin
-    FacesList := TFacesList.Create;
-    try
-      FacesList.DoCenter(1.0);
-      MeshPreviewFrm.UpdateMesh(FacesList, -1, True);
-    finally
-      FacesList.Free;
+  if bUserChange then begin
+    UpdatePreviewSizeGrp;
+    if OpenGLPreviewCheckbox.Checked then
+      StartNewPreview
+    else if MeshPreviewFrm.Visible then begin
+      FacesList := TFacesList.Create;
+      try
+        FacesList.DoCenter(1.0);
+        MeshPreviewFrm.UpdateMesh(FacesList, -1, True);
+      finally
+        FacesList.Free;
+      end;
     end;
   end;
 end;
@@ -1576,7 +1548,8 @@ procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
     YOffsetEdit.Enabled := Enabled;
     ZOffsetEdit.Enabled := Enabled;
     ScaleEdit.Enabled := Enabled;
-    RadioGroup2.Enabled := Enabled;
+    VoxelPreviewSizeGrp.Enabled := Enabled;
+    OpenGLPreviewSizeGrp.Enabled := Enabled;
     AutoCalcPreviewCbx.Enabled := Enabled;
     RefreshPreviewBtn.Enabled := Enabled;
     MeshVResolutionEdit.Enabled := Enabled;
@@ -1590,8 +1563,6 @@ procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
     OpenGLPreviewCBx.Enabled := Enabled;
     MeshPreviewBtn.Enabled := Enabled;
     MaxVerticeCountEdit.Enabled := Enabled;
-    FrameEdit.Enabled := Enabled;
-    FrameUpDown.Enabled := Enabled;
     CloseMeshCheckbox.Enabled := Enabled;
     EditModeCmb.Enabled := Enabled;
     TraceXMinEdit.Enabled := Enabled;
@@ -1600,6 +1571,13 @@ procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
     TraceYMaxEdit.Enabled := Enabled;
     TraceZMinEdit.Enabled := Enabled;
     TraceZMaxEdit.Enabled := Enabled;
+    OpenGLPreviewCheckbox.Enabled := Enabled;
+    PreviewDEAdjust.Enabled := Enabled;
+    CloseButton.Enabled := Enabled;
+    XRotateEdit.Enabled := Enabled;
+    YRotateEdit.Enabled := Enabled;
+    ZRotateEdit.Enabled := Enabled;
+    ResetOffsetAndScaleBtn.Enabled := Enabled;
   end;
 
 begin
@@ -1616,60 +1594,6 @@ begin
   CancelBtn.Enabled := FCalculating;
   CalculateBtn.Enabled := Benabled and (not FCalculating);
 end;
-
-procedure TBulbTracer2Frm.UpdateParamsRange;
-begin
-  if FParamSource = psFileSequence then begin
-    FrameUpDown.Min := FParamSequenceFrom;
-    FrameUpDown.Max := FParamSequenceTo;
-    FrameTBar.Min := FParamSequenceFrom;
-    FrameTBar.Max := FParamSequenceTo;
-    UpdateFrameDisplay( FParamSequenceCurrFrame );
-
-    FrameEdit.Enabled := True;
-    FrameUpDown.Enabled := True;
-    FrameTBar.Enabled := True;
-
-    CalculateBtn.Caption := 'Generate ' + IntToStr( FParamSequenceTo - FParamSequenceFrom + 1 )+ ' Meshes';
-    GenCurrMeshBtn.Visible := True;
-  end
-  else begin
-    FrameUpDown.Min := 1;
-    FrameUpDown.Max := 1;
-    FrameTBar.Min := 1;
-    FrameTBar.Max := 1;
-    UpdateFrameDisplay( 1 );
-
-    FrameEdit.Enabled := False;
-    FrameUpDown.Enabled := False;
-    FrameTBar.Enabled := False;
-
-    CalculateBtn.Caption := 'Generate Mesh';
-    GenCurrMeshBtn.Visible := False;
-  end;
-end;
-
-procedure TBulbTracer2Frm.UpdateFrameDisplay( const Frame: Integer );
-begin
-  FrameEdit.Text := IntToStr( Frame );
-  FrameTBar.Position := Frame;
-end;
-
-procedure TBulbTracer2Frm.ChangeFrame;
-var
-  Frame: Integer;
-begin
-  if FParamSource = psFileSequence then begin
-    Frame := Round( StrToFloatSafe(FrameEdit.Text, FParamSequenceCurrFrame) );
-    if Frame < FParamSequenceFrom then
-      Frame := FParamSequenceFrom;
-    if Frame > FParamSequenceTo then
-      Frame := FParamSequenceTo;
-    FParamSequenceCurrFrame := Frame;
-    ImportParams(True);
-  end;
-end;
-
 
 procedure TBulbTracer2Frm.CloseMeshCheckboxClick(Sender: TObject);
 begin
@@ -1716,8 +1640,12 @@ begin
     end;
     LoadBTracer2Header(BTracer2FileOpenDialog.Filename, @BTracer2Header);
     UpdateUIFromBTracer2Header;
+
+
     if ParamError then
-      MessageDlg('Failed to import fractal parameters. All other settings where imported?', mtWarning, [mbOK], 0);
+      MessageDlg('Failed to import fractal parameters. All other settings where imported?', mtWarning, [mbOK], 0)
+    else if OpenGLPreviewCheckbox.Checked and AutoCalcPreviewCbx.Checked then
+      RefreshPreviewBtnClick(nil);
   end;
 end;
 

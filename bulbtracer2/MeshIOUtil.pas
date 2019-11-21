@@ -73,8 +73,10 @@ type
     MandParamsAsString: AnsiString;
     WithOpenGlPreview: boolean;
     PreviewDEstop: double;
-    PreviewSizeIdx: Int32;
+    VoxelPreviewSizeIdx: Int32;
+    OpenGLPreviewSizeIdx: Int32;
     WithAutoPreview: boolean;
+    UseOpenGLForAutoPreview: boolean;
     OutputFilename: string;
     TraceXMin, TraceXMax: double;
     TraceYMin, TraceYMax: double;
@@ -634,7 +636,7 @@ begin
   try
     MemStream := TMemoryStream.Create;
     try
-      WriteAnsiString(MemStream, 'BTR2');
+      WriteAnsiString(MemStream, 'BTR3');
       WriteDouble(MemStream, PHeader^.XOff);
       WriteDouble(MemStream, PHeader^.YOff);
       WriteDouble(MemStream, PHeader^.ZOff);
@@ -652,7 +654,7 @@ begin
         WriteAnsiString(MemStream, PHeader^.MandParamsAsString);
       WriteInt32(MemStream, Ord(PHeader^.WithOpenGlPreview));
       WriteDouble(MemStream, PHeader^.PreviewDEstop);
-      WriteInt32(MemStream, PHeader^.PreviewSizeIdx);
+      WriteInt32(MemStream, PHeader^.VoxelPreviewSizeIdx);
       WriteInt32(MemStream, Ord(PHeader^.WithAutoPreview));
       WriteInt32(MemStream, Length(PHeader^.OutputFilename));
       if Length(PHeader^.OutputFilename) > 0 then
@@ -664,6 +666,8 @@ begin
       WriteDouble(MemStream, PHeader^.TraceZMin);
       WriteDouble(MemStream, PHeader^.TraceZMax);
       WriteInt32(MemStream, Ord(PHeader^.CloseMesh));
+      WriteInt32(MemStream, Ord(PHeader^.UseOpenGLForAutoPreview));
+      WriteInt32(MemStream, PHeader^.OpenGLPreviewSizeIdx);
       MemStream.SaveToStream(FileStream);
     finally
       MemStream.Free;
@@ -688,8 +692,8 @@ begin
       MemStream.LoadFromStream(FileStream);
       MemStream.Seek(0, soFromBeginning);
       HeaderId := ReadAnsiString4(MemStream);
-      if  ( HeaderId <> 'BTR1' ) and ( HeaderId <> 'BTR2' ) then
-        raise Exception.Create('Missing <BTR1/2>-header');
+      if  ( HeaderId <> 'BTR1' ) and ( HeaderId <> 'BTR2' ) and ( HeaderId <> 'BTR3' ) then
+        raise Exception.Create('Missing <BTR1/2/3>-header');
       PHeader^.XOff := ReadDouble(MemStream);
       PHeader^.YOff := ReadDouble(MemStream);
       PHeader^.ZOff := ReadDouble(MemStream);
@@ -706,7 +710,7 @@ begin
       PHeader^.MandParamsAsString := ReadAnsiString(MemStream, StrLen);
       PHeader^.WithOpenGlPreview := Boolean(ReadInt32(MemStream));
       PHeader^.PreviewDEstop := ReadDouble(MemStream);
-      PHeader^.PreviewSizeIdx := ReadInt32(MemStream);
+      PHeader^.VoxelPreviewSizeIdx := ReadInt32(MemStream);
       PHeader^.WithAutoPreview := Boolean(ReadInt32(MemStream));
       StrLen := ReadInt32(MemStream);
       PHeader^.OutputFilename := ReadString(MemStream, StrLen);
@@ -716,10 +720,18 @@ begin
       PHeader^.TraceYMax := ReadDouble(MemStream);
       PHeader^.TraceZMin := ReadDouble(MemStream);
       PHeader^.TraceZMax := ReadDouble(MemStream);
-      if HeaderId = 'BTR2'  then
+      if (HeaderId = 'BTR2') or (HeaderId = 'BTR3') then
         PHeader^.CloseMesh := Boolean( ReadInt32( MemStream ) )
       else
         PHeader^.CloseMesh := False;
+      if HeaderId = 'BTR3' then begin
+        PHeader^.UseOpenGLForAutoPreview := Boolean( ReadInt32( MemStream ) );
+        PHeader^.OpenGLPreviewSizeIdx := ReadInt32(MemStream);
+      end
+      else begin
+        PHeader^.UseOpenGLForAutoPreview := False;
+        PHeader^.OpenGLPreviewSizeIdx := 4;
+      end;
     finally
       MemStream.Free;
     end;

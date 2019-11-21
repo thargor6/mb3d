@@ -4,7 +4,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
   Caption = 'Bulb Tracer2'
-  ClientHeight = 729
+  ClientHeight = 710
   ClientWidth = 896
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -23,14 +23,14 @@ object BulbTracer2Frm: TBulbTracer2Frm
     Left = 0
     Top = 0
     Width = 896
-    Height = 729
+    Height = 710
     Align = alClient
     BevelOuter = bvNone
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 0
     object ImportParamsFromMainBtn: TButton
-      Left = 10
+      Left = 12
       Top = 8
       Width = 182
       Height = 40
@@ -164,14 +164,14 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Text = '0.0'
         OnExit = XOffsetEditChange
       end
-      object Button6: TButton
+      object ResetOffsetAndScaleBtn: TButton
         Left = 16
         Top = 237
         Width = 133
         Height = 40
         Caption = 'Reset offset+scale'
         TabOrder = 7
-        OnClick = Button6Click
+        OnClick = ResetOffsetAndScaleBtnClick
       end
       object ScaleEdit: TEdit
         Left = 62
@@ -349,7 +349,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Height = 21
         TabOrder = 0
         Text = '128'
-        OnExit = MeshVResolutionEditChange
+        OnChange = MeshVResolutionEditChange
       end
       object SurfaceSharpnessEdit: TEdit
         Left = 114
@@ -362,9 +362,10 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
       object SurfaceSharpnessUpDown: TUpDown
         Left = 168
-        Top = 53
+        Top = 54
         Width = 17
         Height = 21
+        Min = -32000
         Max = 32000
         TabOrder = 3
         OnClick = SurfaceSharpnessUpDownClick
@@ -453,10 +454,11 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Height = 21
         TabOrder = 10
         Text = '0'
+        OnExit = TraceZMinEditExit
       end
       object TraceZMaxEdit: TEdit
         Left = 535
-        Top = 56
+        Top = 57
         Width = 54
         Height = 21
         TabOrder = 11
@@ -480,7 +482,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
     end
     object GroupBox4: TGroupBox
-      Left = 198
+      Left = 202
       Top = 8
       Width = 683
       Height = 449
@@ -1262,7 +1264,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
           ShowHint = True
         end
         object PreviewProgressBar: TProgressBar
-          Left = 667
+          Left = 664
           Top = 48
           Width = 12
           Height = 322
@@ -1273,8 +1275,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Step = 1
           TabOrder = 0
         end
-        object RadioGroup2: TRadioGroup
-          Left = 535
+        object VoxelPreviewSizeGrp: TRadioGroup
+          Left = 536
           Top = 48
           Width = 101
           Height = 152
@@ -1287,10 +1289,10 @@ object BulbTracer2Frm: TBulbTracer2Frm
             '128 '#179
             '256 '#179)
           TabOrder = 1
-          OnClick = RadioGroup2Click
+          OnClick = VoxelPreviewSizeGrpClick
         end
         object AutoCalcPreviewCbx: TCheckBox
-          Left = 535
+          Left = 534
           Top = 259
           Width = 100
           Height = 39
@@ -1301,7 +1303,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
           WordWrap = True
         end
         object RefreshPreviewBtn: TButton
-          Left = 539
+          Left = 536
           Top = 376
           Width = 141
           Height = 40
@@ -1334,24 +1336,48 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Text = '1.5'
           OnChange = XOffsetEditChange
         end
-        object UpDown1: TUpDown
+        object PreviewDEAdjustUpDown: TUpDown
           Left = 639
           Top = 217
           Width = 17
           Height = 21
           Max = 32000
           TabOrder = 6
-          OnClick = UpDown1Click
+          OnClick = PreviewDEAdjustUpDownClick
         end
         object OpenGLPreviewCheckbox: TCheckBox
-          Left = 535
+          Left = 537
           Top = 304
           Width = 100
           Height = 39
           Caption = 'Use OpenGL >>'
+          Checked = True
+          State = cbChecked
           TabOrder = 7
           WordWrap = True
           OnClick = OpenGLPreviewCheckboxClick
+        end
+        object OpenGLPreviewSizeGrp: TRadioGroup
+          Left = 537
+          Top = 0
+          Width = 101
+          Height = 211
+          Caption = 'Preview size:'
+          ItemIndex = 4
+          Items.Strings = (
+            '24 '#179
+            '32 '#179
+            '40 '#179
+            '48 '#179
+            '56 '#179
+            '64 '#179
+            '96 '#179
+            '128 '#179
+            '160 '#179
+            '200 '#179)
+          TabOrder = 8
+          Visible = False
+          OnClick = VoxelPreviewSizeGrpClick
         end
       end
     end
@@ -1423,21 +1449,21 @@ object BulbTracer2Frm: TBulbTracer2Frm
       Left = 8
       Top = 604
       Width = 879
-      Height = 120
+      Height = 98
       Caption = 'Generate mesh'
       TabOrder = 6
       object Panel2: TPanel
         Left = 2
         Top = 15
         Width = 875
-        Height = 103
+        Height = 81
         Align = alClient
         BevelOuter = bvNone
         BorderWidth = 8
         TabOrder = 0
         object Label13: TLabel
-          Left = 79
-          Top = 69
+          Left = 78
+          Top = 46
           Width = 212
           Height = 16
           Alignment = taCenter
@@ -1450,71 +1476,16 @@ object BulbTracer2Frm: TBulbTracer2Frm
           ParentFont = False
         end
         object Label19: TLabel
-          Left = 594
-          Top = 71
+          Left = 593
+          Top = 47
           Width = 60
           Height = 13
           AutoSize = False
           Caption = 'Cancel type:'
         end
-        object Panel9: TPanel
-          Left = 8
-          Top = 8
-          Width = 859
-          Height = 24
-          Align = alTop
-          BevelOuter = bvNone
-          TabOrder = 0
-          DesignSize = (
-            859
-            24)
-          object Label24: TLabel
-            Left = 0
-            Top = 5
-            Width = 32
-            Height = 13
-            Alignment = taRightJustify
-            Caption = 'Frame:'
-          end
-          object FrameEdit: TEdit
-            Left = 46
-            Top = 0
-            Width = 54
-            Height = 21
-            TabOrder = 0
-            Text = '0'
-            OnExit = FrameEditExit
-          end
-          object FrameUpDown: TUpDown
-            Left = 100
-            Top = 0
-            Width = 17
-            Height = 21
-            Min = -32000
-            Max = 32000
-            TabOrder = 1
-            OnClick = FrameUpDownClick
-          end
-          object FrameTBar: TTrackBarEx
-            Tag = 10
-            Left = 245
-            Top = -2
-            Width = 758
-            Height = 21
-            Anchors = []
-            Ctl3D = True
-            Max = 1000
-            ParentCtl3D = False
-            TabOrder = 2
-            ThumbLength = 18
-            TickMarks = tmBoth
-            TickStyle = tsNone
-            OnMouseUp = FrameTBarMouseUp
-          end
-        end
         object ProgressBar: TProgressBar
           Left = 8
-          Top = 32
+          Top = 8
           Width = 859
           Height = 17
           Align = alTop
@@ -1522,56 +1493,47 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Smooth = True
           SmoothReverse = True
           Step = 1
-          TabOrder = 1
+          TabOrder = 0
         end
-        object Button1: TButton
-          Left = 8
-          Top = 55
+        object CloseButton: TButton
+          Left = 7
+          Top = 31
           Width = 65
           Height = 40
           Caption = 'Close'
-          TabOrder = 2
-          OnClick = Button1Click
+          TabOrder = 1
+          OnClick = CloseButtonClick
         end
         object CalculateBtn: TButton
-          Left = 297
-          Top = 55
-          Width = 200
+          Left = 296
+          Top = 31
+          Width = 291
           Height = 40
           Caption = 'Generate Mesh'
           Default = True
-          TabOrder = 3
-          OnClick = CalculateBtnClick
-        end
-        object GenCurrMeshBtn: TButton
-          Left = 496
-          Top = 55
-          Width = 87
-          Height = 40
-          Caption = 'Gen Curr Mesh'
-          TabOrder = 4
+          TabOrder = 2
           OnClick = CalculateBtnClick
         end
         object CancelTypeCmb: TComboBox
-          Left = 660
-          Top = 67
+          Left = 659
+          Top = 43
           Width = 136
           Height = 21
           Style = csDropDownList
           DropDownCount = 32
-          TabOrder = 5
+          TabOrder = 3
           OnChange = CancelTypeCmbChange
           Items.Strings = (
             'Cancel and show result'
             'Cancel immediately')
         end
         object CancelBtn: TButton
-          Left = 802
-          Top = 55
+          Left = 801
+          Top = 31
           Width = 65
           Height = 40
           Caption = 'Cancel'
-          TabOrder = 6
+          TabOrder = 4
           OnClick = CancelBtnClick
         end
       end
@@ -1587,7 +1549,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
       OnClick = LoadBTracer2FileBtnClick
     end
     object SaveBTracer2FileBtn: TButton
-      Left = 105
+      Left = 107
       Top = 100
       Width = 87
       Height = 40
@@ -1620,8 +1582,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
     Enabled = False
     Interval = 50
     OnTimer = Timer3Timer
-    Left = 401
-    Top = 336
+    Left = 402
+    Top = 338
   end
   object BTracer2FileOpenDialog: TOpenDialog
     DefaultExt = 'btrace2'
@@ -1648,5 +1610,12 @@ object BulbTracer2Frm: TBulbTracer2Frm
     OnTimer = PreviewTimerTimer
     Left = 868
     Top = 240
+  end
+  object OpenGLPreviewTimer: TTimer
+    Enabled = False
+    Interval = 50
+    OnTimer = OpenGLPreviewTimerTimer
+    Left = 373
+    Top = 252
   end
 end
