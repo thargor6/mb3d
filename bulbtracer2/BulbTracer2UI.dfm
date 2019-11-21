@@ -126,7 +126,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
         TabOrder = 0
         Text = '0.0'
-        OnChange = XOffsetEditChange
+        OnExit = XOffsetEditChange
       end
       object YOffsetEdit: TEdit
         Left = 62
@@ -144,7 +144,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
         TabOrder = 1
         Text = '0.0'
-        OnChange = XOffsetEditChange
+        OnExit = XOffsetEditChange
       end
       object ZOffsetEdit: TEdit
         Left = 61
@@ -162,7 +162,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
         TabOrder = 2
         Text = '0.0'
-        OnChange = XOffsetEditChange
+        OnExit = XOffsetEditChange
       end
       object Button6: TButton
         Left = 16
@@ -180,7 +180,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Height = 21
         TabOrder = 3
         Text = '1.0'
-        OnChange = XOffsetEditChange
+        OnExit = XOffsetEditChange
       end
       object XRotateEdit: TEdit
         Left = 61
@@ -198,7 +198,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
         TabOrder = 4
         Text = '0.0'
-        OnChange = XOffsetEditChange
+        OnExit = XOffsetEditChange
       end
       object YRotateEdit: TEdit
         Left = 61
@@ -216,7 +216,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
         TabOrder = 5
         Text = '0.0'
-        OnChange = XOffsetEditChange
+        OnExit = XOffsetEditChange
       end
       object ZRotateEdit: TEdit
         Left = 60
@@ -234,7 +234,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         ShowHint = True
         TabOrder = 6
         Text = '0.0'
-        OnChange = XOffsetEditChange
+        OnExit = XOffsetEditChange
       end
     end
     object GroupBox2: TGroupBox
@@ -348,16 +348,17 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Width = 88
         Height = 21
         TabOrder = 0
-        Text = '64'
-        OnChange = MeshVResolutionEditChange
+        Text = '128'
+        OnExit = MeshVResolutionEditChange
       end
       object SurfaceSharpnessEdit: TEdit
         Left = 114
-        Top = 53
+        Top = 55
         Width = 54
         Height = 21
         TabOrder = 2
         Text = '1.25'
+        OnExit = SurfaceSharpnessEditExit
       end
       object SurfaceSharpnessUpDown: TUpDown
         Left = 168
@@ -380,7 +381,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
       object CalculateColorsCBx: TCheckBox
         Left = 114
-        Top = 82
+        Top = 81
         Width = 106
         Height = 19
         Hint = 
@@ -411,19 +412,21 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
       object TraceXMaxEdit: TEdit
         Left = 535
-        Top = 12
+        Top = 11
         Width = 54
         Height = 21
         TabOrder = 7
         Text = '100'
+        OnExit = TraceXMaxEditExit
       end
       object TraceXMinEdit: TEdit
         Left = 475
-        Top = 12
+        Top = 11
         Width = 54
         Height = 21
         TabOrder = 6
         Text = '0'
+        OnExit = TraceXMinEditExit
       end
       object TraceYMinEdit: TEdit
         Left = 475
@@ -432,6 +435,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Height = 21
         TabOrder = 8
         Text = '0'
+        OnExit = TraceYMinEditExit
       end
       object TraceYMaxEdit: TEdit
         Left = 535
@@ -440,6 +444,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Height = 21
         TabOrder = 9
         Text = '100'
+        OnExit = TraceYMaxEditExit
       end
       object TraceZMinEdit: TEdit
         Left = 475
@@ -451,11 +456,12 @@ object BulbTracer2Frm: TBulbTracer2Frm
       end
       object TraceZMaxEdit: TEdit
         Left = 535
-        Top = 57
+        Top = 56
         Width = 54
         Height = 21
         TabOrder = 11
         Text = '100'
+        OnExit = TraceZMaxEditExit
       end
       object CloseMeshCheckbox: TCheckBox
         Left = 226
@@ -470,6 +476,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         State = cbChecked
         TabOrder = 5
         WordWrap = True
+        OnClick = CloseMeshCheckboxClick
       end
     end
     object GroupBox4: TGroupBox
@@ -1267,7 +1274,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
           TabOrder = 0
         end
         object RadioGroup2: TRadioGroup
-          Left = 536
+          Left = 535
           Top = 48
           Width = 101
           Height = 152
@@ -1282,9 +1289,9 @@ object BulbTracer2Frm: TBulbTracer2Frm
           TabOrder = 1
           OnClick = RadioGroup2Click
         end
-        object CheckBox2: TCheckBox
-          Left = 537
-          Top = 274
+        object AutoCalcPreviewCbx: TCheckBox
+          Left = 535
+          Top = 259
           Width = 100
           Height = 39
           Caption = 'Auto update preview'
@@ -1293,8 +1300,8 @@ object BulbTracer2Frm: TBulbTracer2Frm
           TabOrder = 2
           WordWrap = True
         end
-        object Button5: TButton
-          Left = 538
+        object RefreshPreviewBtn: TButton
+          Left = 539
           Top = 376
           Width = 141
           Height = 40
@@ -1302,7 +1309,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
           Enabled = False
           TabOrder = 3
           WordWrap = True
-          OnClick = Button5Click
+          OnClick = RefreshPreviewBtnClick
         end
         object EditModeCmb: TComboBox
           Left = 106
@@ -1336,6 +1343,16 @@ object BulbTracer2Frm: TBulbTracer2Frm
           TabOrder = 6
           OnClick = UpDown1Click
         end
+        object OpenGLPreviewCheckbox: TCheckBox
+          Left = 535
+          Top = 304
+          Width = 100
+          Height = 39
+          Caption = 'Use OpenGL >>'
+          TabOrder = 7
+          WordWrap = True
+          OnClick = OpenGLPreviewCheckboxClick
+        end
       end
     end
     object GroupBox5: TGroupBox
@@ -1343,7 +1360,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
       Top = 463
       Width = 264
       Height = 140
-      Caption = 'OpenGL Preview'
+      Caption = 'OpenGL preview of final mesh'
       TabOrder = 5
       object Label5: TLabel
         Left = 10
@@ -1624,5 +1641,12 @@ object BulbTracer2Frm: TBulbTracer2Frm
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Left = 227
     Top = 202
+  end
+  object PreviewTimer: TTimer
+    Enabled = False
+    Interval = 200
+    OnTimer = PreviewTimerTimer
+    Left = 868
+    Top = 240
   end
 end

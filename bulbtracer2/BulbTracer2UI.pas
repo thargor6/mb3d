@@ -98,8 +98,8 @@ type
     ScaleUpBtn: TSpeedButton;
     PreviewProgressBar: TProgressBar;
     RadioGroup2: TRadioGroup;
-    CheckBox2: TCheckBox;
-    Button5: TButton;
+    AutoCalcPreviewCbx: TCheckBox;
+    RefreshPreviewBtn: TButton;
     Label6: TLabel;
     XRotateEdit: TEdit;
     YRotateEdit: TEdit;
@@ -126,13 +126,15 @@ type
     TraceZMaxEdit: TEdit;
     Label16: TLabel;
     CloseMeshCheckbox: TCheckBox;
+    OpenGLPreviewCheckbox: TCheckBox;
+    PreviewTimer: TTimer;
     procedure Button1Click(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure XOffsetEditChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
-    procedure Button5Click(Sender: TObject);
+    procedure RefreshPreviewBtnClick(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
     procedure UpDown5Click(Sender: TObject; Button: TUDBtnType);
     procedure UpDown6Click(Sender: TObject; Button: TUDBtnType);
@@ -164,6 +166,15 @@ type
     procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
     procedure SaveBTracer2FileBtnClick(Sender: TObject);
     procedure LoadBTracer2FileBtnClick(Sender: TObject);
+    procedure OpenGLPreviewCheckboxClick(Sender: TObject);
+    procedure PreviewTimerTimer(Sender: TObject);
+    procedure SurfaceSharpnessEditExit(Sender: TObject);
+    procedure TraceXMinEditExit(Sender: TObject);
+    procedure TraceXMaxEditExit(Sender: TObject);
+    procedure TraceYMinEditExit(Sender: TObject);
+    procedure TraceYMaxEditExit(Sender: TObject);
+    procedure TraceZMaxEditExit(Sender: TObject);
+    procedure CloseMeshCheckboxClick(Sender: TObject);
   private
     { Private-Deklarationen }
   //  PreviewVoxel: array of Cardinal;   //buffer to not calc everything again if shifted position
@@ -191,19 +202,19 @@ type
     procedure StartNewPreview;
     function  CalcPreviewSize: Integer;
     procedure CalcPreviewSizes;
-    procedure UpdateSaveTypeCmb;
 
-    function StartPLYRender: LongBool;
+    function StartPLYRender(const ForPreview: boolean): LongBool;
     procedure MergeAndSaveMesh;
     procedure UpdateVertexGenConfig;
     procedure SaveMesh;
+    procedure ShowPreviewMesh;
     function  MakeMeshSequenceFilename( const BaseFilename: String ): String;
     procedure CancelPreview;
     procedure UpdateParamsRange;
     procedure UpdateFrameDisplay( const Frame: Integer );
     procedure ChangeFrame;
     procedure ShowTitle(const Caption: String);
-    procedure StartCalc;
+    procedure StartCalc(const ForPreview: boolean);
     procedure SetExportFilenameExt;
   protected
     procedure WndProc(var Message: TMessage); override;
@@ -385,8 +396,8 @@ var
   HasError: boolean;
   ErrorMessage: string;
 begin
-  Application.ProcessMessages;
   Timer1.Enabled := False;
+  Application.ProcessMessages;
   it := 0;
   Progress := 0;
   HasError := false;
@@ -423,7 +434,7 @@ begin
           UpdateFrameDisplay( FParamSequenceCurrFrame );
           ImportParams( True );
           CancelPreview;
-          StartCalc;
+          StartCalc(False);
         end;
       end;
     end;
@@ -465,7 +476,7 @@ begin
     WithOpenGlPreview := OpenGLPreviewCBx.Checked;
     PreviewDEstop := StrToFloatK(PreviewDEAdjust.Text);
     PreviewSizeIdx := RadioGroup2.ItemIndex;
-    WithAutoPreview := CheckBox2.Checked;
+    WithAutoPreview := AutoCalcPreviewCbx.Checked;
     TraceXMin := StrToFloatK(TraceXMinEdit.Text);
     TraceXMax := StrToFloatK(TraceXMaxEdit.Text);
     TraceYMin := StrToFloatK(TraceYMinEdit.Text);
@@ -511,7 +522,7 @@ begin
       OpenGLPreviewCBx.Checked := WithOpenGlPreview;
       PreviewDEAdjust.Text := FloatToStr(PreviewDEstop);
       RadioGroup2.ItemIndex := PreviewSizeIdx;
-      CheckBox2.Checked := WithAutoPreview;
+      AutoCalcPreviewCbx.Checked := WithAutoPreview;
       FilenameREd.Text := OutputFilename;
       TraceXMinEdit.Text := FloatToStr(TraceXMin);
       TraceXMaxEdit.Text := FloatToStr(TraceXMax);
@@ -559,6 +570,8 @@ var i: Integer;
 
 begin
     CancelPreview;
+
+    OpenGLPreviewCheckbox.Checked := False;
 
     VHeader.PCFAddon := @VHAddon;
     for i := 0 to 5 do VHeader.PHCustomF[i] := @HybridCustoms[i];
@@ -660,11 +673,11 @@ end;
 
 procedure TBulbTracer2Frm.XOffsetEditChange(Sender: TObject);
 begin
-    if bUserChange then begin
-      UpdateBTracer2HeaderFromUI;
-      CalcImageSize;
-      StartNewPreview;
-    end;
+  if bUserChange then begin
+    UpdateBTracer2HeaderFromUI;
+    CalcImageSize;
+    StartNewPreview;
+  end;
 end;
 
 procedure TBulbTracer2Frm.FormCreate(Sender: TObject);
@@ -741,7 +754,6 @@ end;
 procedure TBulbTracer2Frm.SelectOutputFilenameBtnClick(Sender: TObject);
 begin
   try
-    UpdateSaveTypeCmb;
     SaveDialog.DefaultExt := GetMeshFileExt(TMeshSaveType(SaveTypeCmb.ItemIndex));
     SaveDialog.Filter := GetMeshFileFilter(TMeshSaveType(SaveTypeCmb.ItemIndex));
     SaveDialog.InitialDir := ExtractFilePath(FilenameREd.Text);
@@ -753,9 +765,14 @@ begin
   end;
 end;
 
-procedure TBulbTracer2Frm.Button5Click(Sender: TObject);  //calc preview
+procedure TBulbTracer2Frm.RefreshPreviewBtnClick(Sender: TObject);  //calc preview
 begin
-    if Button5.Caption = 'Stop' then
+  if OpenGLPreviewCheckbox.Checked then begin
+    MeshPreviewFrm.Visible := True;
+    StartCalc(True);
+  end
+  else begin
+    if RefreshPreviewBtn.Caption = 'Stop' then
     begin
       MCalcStop := True;
   //    Inc(CalcVoxelPreviewIndex);
@@ -776,9 +793,10 @@ begin
       MCalcStop := False;  //because only in DisableButtons else, to late for first filenumber
       if StartSlicePreview(FileNumber) then
       begin
-        Button5.Caption := 'Stop';
+        RefreshPreviewBtn.Caption := 'Stop';
       end;
     end;
+  end;
 end;
 
 
@@ -895,6 +913,52 @@ begin
     end;
 end;
 
+procedure TBulbTracer2Frm.PreviewTimerTimer(Sender: TObject);
+var
+  y, it: Integer;
+  Progress: Integer;
+  HasError: boolean;
+  ErrorMessage: string;
+begin
+  PreviewTimer.Enabled := False;
+  Application.ProcessMessages;
+  it := 0;
+  Progress := 0;
+  HasError := false;
+  ErrorMessage := 'An error has occured';
+  with VCalcThreadStats do begin
+    for y := 1 to iTotalThreadCount do begin
+      Progress := Progress + CTrecords[y].iActualYpos;
+      if CTrecords[y].isActive <> 0 then Inc(it);
+      if ThreadErrorStatus[y].HasError then begin
+        VCalcThreadStats.pLBcalcStop^ := True;
+        HasError := true;
+        if Trim( ThreadErrorStatus[y].ErrorMessage ) <> '' then
+          ErrorMessage := Trim( ThreadErrorStatus[y].ErrorMessage );
+        it := 0;
+        break;
+      end;
+    end;
+  end;
+  if it = 0 then begin
+    try
+      if not VCalcThreadStats.pLBcalcStop^ then  begin
+        ShowPreviewMesh;
+      end;
+      Mand3DForm.EnableButtons;
+      Mand3DForm.OutMessage('Finished tracing object.');
+    finally
+      FCalculating := False;
+      EnableControls(True);
+    end;
+    if HasError then
+      raise Exception.Create(ErrorMessage);
+  end
+  else begin
+    PreviewTimer.Enabled := True;
+  end;
+end;
+
 procedure TBulbTracer2Frm.Timer2Timer(Sender: TObject);  //preview threads
 var y, it: Integer;
 begin
@@ -957,7 +1021,7 @@ end;
 
 procedure TBulbTracer2Frm.StartNewPreview;
 begin
-    if CheckBox2.Checked then
+    if AutoCalcPreviewCbx.Checked then
     begin
       MCalcStop := True;
       Timer3.Enabled := True;
@@ -974,12 +1038,37 @@ begin
     with VCalcThreadStats do
       for y := 1 to iTotalThreadCount do
         if CTrecords[y].isActive <> 0 then Inc(it);
-    if Button5.Enabled and (it = 0) and (Button5.Caption <> 'Stop') then //calc done
+    if RefreshPreviewBtn.Enabled and (it = 0) and (RefreshPreviewBtn.Caption <> 'Stop') then //calc done
     begin
      // RadioGroup2.ItemIndex := 0;
-      Button5Click(Self);
+      RefreshPreviewBtnClick(Self);
     end
     else Timer3.Enabled := True;
+end;
+
+procedure TBulbTracer2Frm.TraceXMaxEditExit(Sender: TObject);
+begin
+  XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.TraceXMinEditExit(Sender: TObject);
+begin
+  XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.TraceYMaxEditExit(Sender: TObject);
+begin
+  XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.TraceYMinEditExit(Sender: TObject);
+begin
+  XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.TraceZMaxEditExit(Sender: TObject);
+begin
+  XOffsetEditChange(nil);
 end;
 
 procedure TBulbTracer2Frm.CancelBtnClick(Sender: TObject);
@@ -1017,9 +1106,9 @@ end;
 
 procedure TBulbTracer2Frm.RadioGroup2Click(Sender: TObject);
 begin
-  if CheckBox2.Checked then begin
+  if AutoCalcPreviewCbx.Checked then begin
     CancelPreview;
-    Button5Click(nil);
+    RefreshPreviewBtnClick(nil);
   end;
 end;
 
@@ -1029,7 +1118,7 @@ begin
     begin
       UpdateBTracer2HeaderFromUI;
       CalcImageSize;
-    end;                     
+    end;
 end;
 
 procedure TBulbTracer2Frm.Button6Click(Sender: TObject);
@@ -1076,17 +1165,24 @@ begin
       CancelPreview;
     end;
 
-    StartCalc;
+    StartCalc(False);
   end;
 end;
 
-procedure TBulbTracer2Frm.StartCalc;
+procedure TBulbTracer2Frm.StartCalc(const ForPreview: boolean);
 begin
-  FForceAbort := False;
-  FCalculating := True;
-  CancelPreview;
-  EnableControls(True);
+  if not ForPreview then begin
+    FForceAbort := False;
+    FCalculating := True;
+    CancelPreview;
+    EnableControls(True);
+  end;
   UpdateBTracer2HeaderFromUI;
+  if ForPreview then begin
+    BTracer2Header.VResolution := CalcPreviewSize;
+    BTracer2Header.WithColors := False;
+    BTracer2Header.SaveTypeIndex := 3;
+  end;
   ImageScale := 1;
   SetLength(Mand3DForm.siLight5, VHeader.Width * VHeader.Height);
   Mand3DForm.mSLoffset := VHeader.Width * SizeOf(TsiLight5);
@@ -1096,10 +1192,10 @@ begin
   CalcPreview := False;
   UpdateVertexGenConfig;
   T0 := DateUtils.MilliSecondsBetween(Now, 0);
-  StartPLYRender;
+  StartPLYRender(ForPreview);
 end;
 
-function TBulbTracer2Frm.StartPLYRender: LongBool;
+function TBulbTracer2Frm.StartPLYRender(const ForPreview: boolean): LongBool;
 var
   PLYCalcThreads: array of TPLYExportCalcThread;
   x, ThreadCount: Integer;
@@ -1177,9 +1273,15 @@ begin
       for x := 0 to ThreadCount - 1 do PLYCalcThreads[x].Prepare;
       for x := 0 to ThreadCount - 1 do PLYCalcThreads[x].Start;
       Mand3DForm.DisableButtons;
-      Label13.Caption := 'Tracing object...';
-      Timer1.Interval := 200;
-      Timer1.Enabled := True;
+      if ForPreview then begin
+        PreviewTimer.Interval := 20;
+        PreviewTimer.Enabled := True;
+      end
+      else begin
+        Label13.Caption := 'Tracing object...';
+        Timer1.Interval := 200;
+        Timer1.Enabled := True;
+      end;
     except
       Result := False;
     end;
@@ -1330,7 +1432,7 @@ begin
             except
               MaxVerticeCount := -1;
             end;
-            MeshPreviewFrm.UpdateMesh(FacesList, MaxVerticeCount);
+            MeshPreviewFrm.UpdateMesh(FacesList, MaxVerticeCount, False);
           end;
         finally
           FacesList.Free;
@@ -1349,9 +1451,32 @@ begin
     MeshPreviewBtnClick(nil);
 end;
 
+procedure TBulbTracer2Frm.ShowPreviewMesh;
+var
+  FacesList: TFacesList;
+begin
+  try
+    FacesList := TFacesList.MergeFacesLists( FThreadVertexLists );
+    try
+      FacesList.DoCenter(1.0);
+      FThreadVertexLists.Clear;
+      MeshPreviewFrm.UpdateMesh(FacesList, -1, True);
+    finally
+      FacesList.Free;
+    end;
+  finally
+    FThreadVertexLists.Clear;
+  end;
+end;
+
 procedure TBulbTracer2Frm.MergeAndSaveMesh;
 begin
   SaveMesh;
+end;
+
+procedure TBulbTracer2Frm.SurfaceSharpnessEditExit(Sender: TObject);
+begin
+  XOffsetEditChange(nil);
 end;
 
 procedure TBulbTracer2Frm.SurfaceSharpnessUpDownClick(Sender: TObject;
@@ -1360,11 +1485,8 @@ var
   Value: Double;
 begin
   Value := StrToFloatSafe(SurfaceSharpnessEdit.Text, 0.0) + UpDownBtnValue(Button, 0.05);
-  if Value <= 0.1 then
-    Value := 0.1
-  else if Value > 2.0 then
-    Value := 2.0;
   SurfaceSharpnessEdit.Text := FloatToStr(Value);
+  SurfaceSharpnessEditExit(nil);
 end;
 
 procedure TBulbTracer2Frm.MeshPreviewBtnClick(Sender: TObject);
@@ -1385,6 +1507,23 @@ begin
     MeshPreviewFrm.Visible := False;
 end;
 
+procedure TBulbTracer2Frm.OpenGLPreviewCheckboxClick(Sender: TObject);
+var
+  FacesList: TFacesList;
+begin
+  if OpenGLPreviewCheckbox.Checked then
+    StartNewPreview
+  else if MeshPreviewFrm.Visible then begin
+    FacesList := TFacesList.Create;
+    try
+      FacesList.DoCenter(1.0);
+      MeshPreviewFrm.UpdateMesh(FacesList, -1, True);
+    finally
+      FacesList.Free;
+    end;
+  end;
+end;
+
 procedure TBulbTracer2Frm.WndProc(var Message: TMessage);
 begin
   if Message.Msg = WM_Move then begin
@@ -1402,22 +1541,19 @@ end;
 
 
 procedure TBulbTracer2Frm.UpdateVertexGenConfig;
-var
-  VRes: Integer;
 begin
   FVertexGenConfig.Clear;
 
   FVertexGenConfig.RemoveDuplicates := True;
 
-  FVertexGenConfig.SurfaceSharpness := StrToFloat(SurfaceSharpnessEdit.Text);
-  FVertexGenConfig.CalcColors := CalculateColorsCBx.Checked;
+  FVertexGenConfig.SurfaceSharpness := BTracer2Header.SurfaceDetail;
+  FVertexGenConfig.CalcColors := BTracer2Header.WithColors;
 
-  VRes := StrToInt( MeshVResolutionEdit.Text );
-  FVertexGenConfig.URange.StepCount := VRes;
-  FVertexGenConfig.VRange.StepCount := VRes;
+  FVertexGenConfig.URange.StepCount := BTracer2Header.VResolution;
+  FVertexGenConfig.VRange.StepCount := BTracer2Header.VResolution;
 
-  FVertexGenConfig.URange.StepCount := VRes;
-  FVertexGenConfig.VRange.StepCount := VRes;
+  FVertexGenConfig.URange.StepCount := BTracer2Header.VResolution;
+  FVertexGenConfig.VRange.StepCount := BTracer2Header.VResolution;
 
   FVertexGenConfig.TraceXMin := BTracer2Header.TraceXMin;
   FVertexGenConfig.TraceXMax := BTracer2Header.TraceXMax;
@@ -1441,8 +1577,8 @@ procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
     ZOffsetEdit.Enabled := Enabled;
     ScaleEdit.Enabled := Enabled;
     RadioGroup2.Enabled := Enabled;
-    CheckBox2.Enabled := Enabled;
-    Button5.Enabled := Enabled;
+    AutoCalcPreviewCbx.Enabled := Enabled;
+    RefreshPreviewBtn.Enabled := Enabled;
     MeshVResolutionEdit.Enabled := Enabled;
     MeshVResolutionUpDown.Enabled := Enabled;
     SurfaceSharpnessEdit.Enabled := Enabled;
@@ -1469,12 +1605,12 @@ procedure TBulbTracer2Frm.EnableControls(const Enabled: Boolean);
 begin
   if Enabled then begin
     ImportParamsFromMainBtn.Enabled := True;
-    Button5.Enabled := Benabled;
-    Button5.Caption := 'Calculate preview';
+    RefreshPreviewBtn.Enabled := Benabled;
+    RefreshPreviewBtn.Caption := 'Calculate preview';
   end
   else begin
     ImportParamsFromMainBtn.Enabled := False;
-    Button5.Enabled := False;
+    RefreshPreviewBtn.Enabled := False;
   end;
   EnableFields;
   CancelBtn.Enabled := FCalculating;
@@ -1535,6 +1671,11 @@ begin
 end;
 
 
+procedure TBulbTracer2Frm.CloseMeshCheckboxClick(Sender: TObject);
+begin
+  XOffsetEditChange(nil);
+end;
+
 procedure TBulbTracer2Frm.ShowTitle(const Caption: String);
 begin
   Self.Caption := 'Bulb Tracer 2 [ ' + Caption + ' ]';
@@ -1554,6 +1695,7 @@ begin
     if Sender = IncZOffsetBtn then d := -d;
     ZRotateEdit.Text := FloatToStrSingle( StrToFloatK(ZRotateEdit.Text) + d );
   end;
+  XOffsetEditChange(nil);
 end;
 
 procedure TBulbTracer2Frm.LoadBTracer2FileBtnClick(Sender: TObject);
@@ -1593,6 +1735,7 @@ begin
     if Sender = IncXOffsetBtn then d := -d;
     YRotateEdit.Text := FloatToStrSingle( StrToFloatK(YRotateEdit.Text) + d );
   end;
+  XOffsetEditChange(nil);
 end;
 
 procedure TBulbTracer2Frm.IncYOffsetBtnClick(Sender: TObject);
@@ -1609,6 +1752,7 @@ begin
     if Sender = DecYOffsetBtn then d := -d;
     XRotateEdit.Text := FloatToStrSingle( StrToFloatK(XRotateEdit.Text) + d );
   end;
+  XOffsetEditChange(nil);
 end;
 
 procedure TBulbTracer2Frm.SetExportFilenameExt;
@@ -1616,7 +1760,6 @@ var
   NewFileExt: String;
 begin
   if Trim( FilenameREd.Text ) <> '' then begin
-    UpdateVertexGenConfig;
     NewFileExt := GetMeshFileExt(TMeshSaveType(SaveTypeCmb.ItemIndex));
 
     if NewFileExt <> '' then
@@ -1624,12 +1767,6 @@ begin
     FilenameREd.Text := ChangeFileExt( FilenameREd.Text, NewFileExt )
   end;
 end;
-
-procedure TBulbTracer2Frm.UpdateSaveTypeCmb;
-begin
-  UpdateVertexGenConfig;
-end;
-
 
 end.
 

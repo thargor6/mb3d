@@ -258,7 +258,7 @@ end;
 
 procedure THeightMapGenFrm.UpdateMesh(const FacesList: TFacesList);
 begin
-  FOpenGLHelper.UpdateMesh(FacesList, -1);
+  FOpenGLHelper.UpdateMesh(FacesList, -1, False);
 end;
 
 procedure THeightMapGenFrm.UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList);

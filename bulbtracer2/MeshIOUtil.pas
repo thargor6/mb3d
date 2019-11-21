@@ -17,7 +17,7 @@ unit MeshIOUtil;
 
 interface
 
-uses VertexList;
+uses Classes, VertexList;
 
 type
   BytePos = (EndVal, ByteVal);
@@ -87,9 +87,6 @@ function SwapEndianInt32(Value: Int32): Int32;
 function SwapEndianInt16(Value: Int16): Int16;
 procedure SwapBytesSingle( A, B: PEndianCnvSnglRec );
 
-
-
-
 procedure InitBTraceFile(const OutputFilename: string; const PHeader: TPBTraceMainHeader);
 procedure LoadMainHeader(const Filename: string; const PHeader: TPBTraceMainHeader );
 
@@ -106,6 +103,16 @@ procedure LoadTraceData(const Filename: string; var BTraceData: TPBTraceData; co
 procedure SaveBTracer2Header(const Filename: string; const PHeader: TPBTracer2Header);
 procedure LoadBTracer2Header(const Filename: string; const PHeader: TPBTracer2Header );
 
+procedure WriteInt16(const MemStream: TMemoryStream; const Value: Int16);
+procedure WriteInt32(const MemStream: TMemoryStream; const Value: Int32);
+procedure WriteAnsiString(const MemStream: TMemoryStream; const Value: AnsiString);
+procedure WriteString(const MemStream: TMemoryStream; const Value: String);
+
+function ReadInt16(const MemStream: TStream): Int16;
+function ReadInt32(const MemStream: TStream): Int32;
+function ReadAnsiString(const MemStream: TStream; const Len: Integer): AnsiString;
+function ReadString(const MemStream: TStream;const Len: Integer): String;
+
 const
   cBTracer2CacheFileExt = 'btr2cache';
   cBTracer2FileExt = 'btrace2';
@@ -113,7 +120,7 @@ const
 implementation
 
 uses
-  Windows, Math, DateUtils, ShellApi, SysUtils, Classes;
+  Windows, Math, DateUtils, ShellApi, SysUtils;
 
 procedure SwapBytesDouble( A, B: PEndianCnvDblRec );
 var
