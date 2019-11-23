@@ -1820,9 +1820,7 @@ begin
 
 
     if ParamError then
-      MessageDlg('Failed to import fractal parameters. All other settings where imported?', mtWarning, [mbOK], 0)
-    else if OpenGLPreviewCheckbox.Checked and AutoCalcPreviewCbx.Checked then
-      RefreshPreviewBtnClick(nil);
+      MessageDlg('Failed to import fractal parameters. All other settings where imported?', mtWarning, [mbOK], 0);
   end;
 end;
 

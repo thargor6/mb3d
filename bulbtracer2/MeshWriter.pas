@@ -111,7 +111,7 @@ var
        for I := 0 to Faces.Vertices.Count - 1  do begin
          ColorIdx := ColorValueToFloat( Faces.VertexColors2.GetVertexColor(I)^.ColorIdx );
          MappedColorIdx := (ColorIdx - MinColorIdx) / DeltaColorIdx;
-         WriteLn(FOut, 'vt '+FloatToStr(MappedColorIdx, FormatSettings)+' '+FloatToStr(0.0, FormatSettings));
+         WriteLn(FOut, 'vt '+FloatToStr(MappedColorIdx, FormatSettings)+' '+FloatToStr(0.5, FormatSettings));
       end;
     end;
 
