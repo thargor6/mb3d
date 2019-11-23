@@ -52,15 +52,17 @@ type
   private
     FForm: TForm;
     FMeshAppearance: TMeshAppearance;
+    FWindowTitle: string;
     procedure SetupLighting;
     procedure DrawBackground; override;
     procedure ApplicationEventsIdle(Sender: TObject; var Done: Boolean); override;
   public
     constructor Create(const Form: TForm; const Canvas: TCanvas);
     destructor Destroy; override;
-    procedure UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges: boolean); override;
+    procedure UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges, NoAutoScale: boolean); override;
     procedure UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList); override;
     property MeshAppearance: TMeshAppearance read FMeshAppearance;
+    property WindowTitle: string read FWindowTitle write FWindowTitle;
   end;
 
 implementation
@@ -68,15 +70,13 @@ implementation
 uses
   Math, DateUtils, BulbTracer2;
 
-const
-  WindowTitle = 'Mesh Preview';
-
 { ------------------------------ TOpenGLHelper ------------------------------- }
 constructor TOpenGLHelper.Create(const Form: TForm; const Canvas: TCanvas);
 begin
   inherited Create( Canvas );
   FForm := Form;
   FMeshAppearance := TMeshAppearance.Create;
+  FWindowTitle := 'Mesh Preview';
 end;
 
 destructor TOpenGLHelper.Destroy;
@@ -354,7 +354,7 @@ begin
   ShowDebugInfo('OpenGL.TOTAL', T00);
 end;
 
-procedure TOpenGLHelper.UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges: boolean);
+procedure TOpenGLHelper.UpdateMesh(const NewFacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges, NoAutoScale: boolean);
 var
   T0, T00: Int64;
   I: Integer;
@@ -575,7 +575,10 @@ ShowDebugInfo('OpenGL.AddEdgesPh1('+IntToStr(EdgeCount)+')', T0);
       ShowDebugInfo('OpenGL.AddVertices', T0);
       T0 := DateUtils.MilliSecondsBetween(Now, 0);
 
-              FMaxObjectSize := Max(FSizeMax.X - FSizeMin.X, Max(FSizeMax.Y - FSizeMin.Y, FSizeMax.Z - FSizeMin.Z ));
+              if NoAutoScale then
+                FMaxObjectSize := 1.0
+              else
+                FMaxObjectSize := Max(FSizeMax.X - FSizeMin.X, Max(FSizeMax.Y - FSizeMin.Y, FSizeMax.Z - FSizeMin.Z ));
               GLFace := GLFaces;
               for I := 0 to FacesList.Count - 1 do
                 AddFace(I);

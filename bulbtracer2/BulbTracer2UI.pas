@@ -122,8 +122,21 @@ type
     CloseMeshCheckbox: TCheckBox;
     OpenGLPreviewCheckbox: TCheckBox;
     PreviewTimer: TTimer;
-    OpenGLPreviewTimer: TTimer;
+    OpenGLPreviewIndicatorTimer: TTimer;
     OpenGLPreviewSizeGrp: TRadioGroup;
+    XOffsetUpDown: TUpDown;
+    YOffsetUpDown: TUpDown;
+    ZOffsetUpDown: TUpDown;
+    ScaleEditUpDown: TUpDown;
+    XRotateUpDown: TUpDown;
+    YRotateUpDown: TUpDown;
+    ZRotateUpDown: TUpDown;
+    TraceXMaxUpDown: TUpDown;
+    TraceYMaxUpDown: TUpDown;
+    TraceZMaxEditUpDown: TUpDown;
+    TraceXMinEditUpDown: TUpDown;
+    TraceYMinEditUpDown: TUpDown;
+    TraceZMinUpDown: TUpDown;
     procedure CloseButtonClick(Sender: TObject);
     procedure ImportParamsFromMainBtnClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -166,8 +179,22 @@ type
     procedure TraceYMaxEditExit(Sender: TObject);
     procedure TraceZMaxEditExit(Sender: TObject);
     procedure CloseMeshCheckboxClick(Sender: TObject);
-    procedure OpenGLPreviewTimerTimer(Sender: TObject);
+    procedure OpenGLPreviewIndicatorTimerTimer(Sender: TObject);
     procedure TraceZMinEditExit(Sender: TObject);
+    procedure XOffsetUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure YOffsetUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure ZOffsetUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure ScaleEditUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure XRotateUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure YRotateUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure ZRotateUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure MeshVResolutionUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure TraceXMinEditUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure TraceXMaxUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure TraceYMinEditUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure TraceYMaxUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure TraceZMinUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure TraceZMaxEditUpDownClick(Sender: TObject; Button: TUDBtnType);
   private
     { Private-Deklarationen }
   //  PreviewVoxel: array of Cardinal;   //buffer to not calc everything again if shifted position
@@ -274,6 +301,10 @@ uses CalcVoxelSliceThread, FileHandling, Math, Math3D, Calc, DivUtils, Mand,
   MeshPreviewUI, MeshWriter, MeshReader, Ole2, Clipbrd;
 
 {$R *.dfm}
+
+const
+  OpenGLWindowTitleMesh = 'Generated Mesh';
+  OpenGLWindowTitleBTracer2Preview = 'BTracer2 Preview';
 
 procedure TBulbTracer2Frm.CloseButtonClick(Sender: TObject);
 begin
@@ -546,7 +577,6 @@ end;
 
 procedure TBulbTracer2Frm.ImportParams(const KeepScaleAndPosition: Boolean = False);
 var i: Integer;
-    CurrFilename: String;
 
     procedure LoadParamFromFile(const ParamFilename: String);
     var
@@ -639,6 +669,66 @@ begin
   end;
 end;
 
+procedure TBulbTracer2Frm.XOffsetUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(XOffsetEdit.Text, 0.0) + UpDownBtnValue(Button, 0.05);
+  XOffsetEdit.Text := FloatToStr(Value);
+  XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.XRotateUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(XRotateEdit.Text, 0.0) + UpDownBtnValue(Button, 3.0);
+  XRotateEdit.Text := FloatToStr(Value);
+  XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.YOffsetUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(YOffsetEdit.Text, 0.0) + UpDownBtnValue(Button, 0.05);
+  YOffsetEdit.Text := FloatToStr(Value);
+  XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.YRotateUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(YRotateEdit.Text, 0.0) + UpDownBtnValue(Button, 3.0);
+  YRotateEdit.Text := FloatToStr(Value);
+  XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.ZOffsetUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(ZOffsetEdit.Text, 0.0) + UpDownBtnValue(Button, 0.05);
+  ZOffsetEdit.Text := FloatToStr(Value);
+  XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.ZRotateUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(ZRotateEdit.Text, 0.0) + UpDownBtnValue(Button, 3.0);
+  ZRotateEdit.Text := FloatToStr(Value);
+  XOffsetEditChange(nil);
+end;
+
 procedure TBulbTracer2Frm.FormCreate(Sender: TObject);
 var i: Integer;
 begin
@@ -662,6 +752,7 @@ begin
   finally
     FRefreshing := False;
   end;
+  MeshVResolutionEditChange(nil);
 end;
 
 procedure TBulbTracer2Frm.FormDestroy(Sender: TObject);
@@ -729,7 +820,7 @@ begin
   Image1.Picture.Bitmap.PixelFormat := pf32bit;
 end;
 
-procedure TBulbTracer2Frm.OpenGLPreviewTimerTimer(Sender: TObject);
+procedure TBulbTracer2Frm.OpenGLPreviewIndicatorTimerTimer(Sender: TObject);
 begin
   Inc(FOpenGLPreviewIndicator);
   if (FOpenGLPreviewIndicator mod 5) =0 then begin
@@ -748,7 +839,7 @@ begin
       ClearClassicPreview;
       MeshPreviewFrm.Visible := True;
       FOpenGLPreviewIndicator := 0;
-      OpenGLPreviewTimer.Enabled := True;
+      OpenGLPreviewIndicatorTimer.Enabled := True;
       StartCalc(True);
     end;
   end
@@ -921,13 +1012,12 @@ begin
     end;
   end;
   if it = 0 then begin
-    OpenGLPreviewTimer.Enabled := False;
+    OpenGLPreviewIndicatorTimer.Enabled := False;
     try
       if not VCalcThreadStats.pLBcalcStop^ then  begin
         ShowPreviewMesh;
       end;
-      Mand3DForm.EnableButtons;
-      Mand3DForm.OutMessage('Finished tracing object.');
+    //  Mand3DForm.EnableButtons;
     finally
       FCalculatingPreview := False;
       FCalculating := False;
@@ -1004,12 +1094,15 @@ end;
 
 procedure TBulbTracer2Frm.StartNewPreview;
 begin
-    if AutoCalcPreviewCbx.Checked then
-    begin
-      MCalcStop := True;
-      Timer3.Enabled := True;
-    end
-    else Timer3.Enabled := False;
+ if AutoCalcPreviewCbx.Checked then begin
+   MCalcStop := True;
+   Timer3.Enabled := True;
+   while(FCalculatingPreview) do begin
+     Application.ProcessMessages;
+     Sleep(1);
+   end;
+ end
+ else Timer3.Enabled := False;
 end;
 
 
@@ -1034,9 +1127,29 @@ begin
   XOffsetEditChange(nil);
 end;
 
+procedure TBulbTracer2Frm.TraceXMaxUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value :=  Max( Min( StrToFloatSafe(TraceXMaxEdit.Text, 0.0) + UpDownBtnValue(Button, 1.0), 100.0), 0.0);
+  TraceXMaxEdit.Text := FloatToStr(Value);
+  TraceXMaxEditExit(nil);
+end;
+
 procedure TBulbTracer2Frm.TraceXMinEditExit(Sender: TObject);
 begin
   XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.TraceXMinEditUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value :=  Max( Min( StrToFloatSafe(TraceXMinEdit.Text, 0.0) + UpDownBtnValue(Button, 1.0), 100.0), 0.0);
+  TraceXMinEdit.Text := FloatToStr(Value);
+  TraceXMinEditExit(nil);
 end;
 
 procedure TBulbTracer2Frm.TraceYMaxEditExit(Sender: TObject);
@@ -1044,9 +1157,29 @@ begin
   XOffsetEditChange(nil);
 end;
 
+procedure TBulbTracer2Frm.TraceYMaxUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value :=  Max( Min( StrToFloatSafe(TraceYMaxEdit.Text, 0.0) + UpDownBtnValue(Button, 1.0), 100.0), 0.0);
+  TraceYMaxEdit.Text := FloatToStr(Value);
+  TraceYMaxEditExit(nil);
+end;
+
 procedure TBulbTracer2Frm.TraceYMinEditExit(Sender: TObject);
 begin
   XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.TraceYMinEditUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value :=  Max( Min( StrToFloatSafe(TraceYMinEdit.Text, 0.0) + UpDownBtnValue(Button, 1.0), 100.0), 0.0);
+  TraceYMinEdit.Text := FloatToStr(Value);
+  TraceYMinEditExit(nil);
 end;
 
 procedure TBulbTracer2Frm.TraceZMaxEditExit(Sender: TObject);
@@ -1054,9 +1187,29 @@ begin
   XOffsetEditChange(nil);
 end;
 
+procedure TBulbTracer2Frm.TraceZMaxEditUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value :=  Max( Min( StrToFloatSafe(TraceZMaxEdit.Text, 0.0) + UpDownBtnValue(Button, 1.0), 100.0), 0.0);
+  TraceZMaxEdit.Text := FloatToStr(Value);
+  TraceZMaxEditExit(nil);
+end;
+
 procedure TBulbTracer2Frm.TraceZMinEditExit(Sender: TObject);
 begin
   XOffsetEditChange(nil);
+end;
+
+procedure TBulbTracer2Frm.TraceZMinUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value :=  Max( Min( StrToFloatSafe(TraceZMinEdit.Text, 0.0) + UpDownBtnValue(Button, 1.0), 100.0), 0.0);
+  TraceZMinEdit.Text := FloatToStr(Value);
+  TraceZMinEditExit(nil);
 end;
 
 procedure TBulbTracer2Frm.CancelBtnClick(Sender: TObject);
@@ -1274,6 +1427,7 @@ begin
     FCalculating := False;
     EnableControls(True);
     Mand3DForm.OutMessage('Error starting rendering');
+    OpenGLPreviewIndicatorTimer.Enabled := False;
   end;
 end;
 //################################################################################
@@ -1368,6 +1522,16 @@ begin
     ScaleEdit.Text := FloatToStrSingle( BTracer2Header.Scale );
 end;
 
+procedure TBulbTracer2Frm.ScaleEditUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(ScaleEdit.Text, 0.0) + UpDownBtnValue(Button, 0.05);
+  ScaleEdit.Text := FloatToStr(Value);
+  XOffsetEditChange(nil);
+end;
+
 procedure TBulbTracer2Frm.SaveMesh;
 var
   FacesList: TFacesList;
@@ -1401,7 +1565,8 @@ begin
             except
               MaxVerticeCount := -1;
             end;
-            MeshPreviewFrm.UpdateMesh(FacesList, MaxVerticeCount, False);
+            MeshPreviewFrm.WindowTitle := OpenGLWindowTitleMesh;
+            MeshPreviewFrm.UpdateMesh(FacesList, MaxVerticeCount, False, True);
           end;
         finally
           FacesList.Free;
@@ -1427,9 +1592,10 @@ begin
   try
     FacesList := TFacesList.MergeFacesLists( FThreadVertexLists );
     try
-      FacesList.DoCenter(1.0);
+      FacesList.DoMoveAndScale(-50.0, -50.0, -50.0, 0.01, 0.01, 0.01);
       FThreadVertexLists.Clear;
-      MeshPreviewFrm.UpdateMesh(FacesList, -1, True);
+      MeshPreviewFrm.WindowTitle := OpenGLWindowTitleBTracer2Preview;
+      MeshPreviewFrm.UpdateMesh(FacesList, -1, True, True);
     finally
       FacesList.Free;
     end;
@@ -1470,6 +1636,16 @@ begin
     MeshVResolutionLbl.Caption := ' x '+MeshVResolutionEdit.Text + ' x '+MeshVResolutionEdit.Text;
 end;
 
+procedure TBulbTracer2Frm.MeshVResolutionUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: integer;
+begin
+  Value := StrToInt(MeshVResolutionEdit.Text) + Round( UpDownBtnValue(Button, 8) );
+  MeshVResolutionEdit.Text := IntToStr(Value);
+  MeshVResolutionEditChange(nil);
+end;
+
 procedure TBulbTracer2Frm.OpenGLPreviewCBxClick(Sender: TObject);
 begin
   if not OpenGLPreviewCBx.Checked then
@@ -1487,8 +1663,9 @@ begin
     else if MeshPreviewFrm.Visible then begin
       FacesList := TFacesList.Create;
       try
+        MeshPreviewFrm.WindowTitle := OpenGLWindowTitleBTracer2Preview;
         FacesList.DoCenter(1.0);
-        MeshPreviewFrm.UpdateMesh(FacesList, -1, True);
+        MeshPreviewFrm.UpdateMesh(FacesList, -1, True, True);
       finally
         FacesList.Free;
       end;

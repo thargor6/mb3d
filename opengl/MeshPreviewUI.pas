@@ -114,10 +114,12 @@ type
     procedure SetWindowCaption(const Msg: String);
     procedure AppearanceToUI;
     procedure UIToAppearance;
+    procedure SetWindowTitle(const WindowTitle: string);
   public
     { Public declarations }
-    procedure UpdateMesh(const FacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges: boolean); overload;
+    procedure UpdateMesh(const FacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges, NoAutoScale: boolean); overload;
     procedure UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList); overload;
+    property WindowTitle: string write SetWindowTitle;
   end;
 
 var
@@ -317,14 +319,19 @@ begin
   UIToAppearance;
 end;
 
-procedure TMeshPreviewFrm.UpdateMesh(const FacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges: boolean);
+procedure TMeshPreviewFrm.UpdateMesh(const FacesList: TFacesList; const MaxVerticeCount: integer; const NoEdges, NoAutoScale: boolean);
 begin
-  FOpenGLHelper.UpdateMesh(FacesList, MaxVerticeCount, NoEdges);
+  FOpenGLHelper.UpdateMesh(FacesList, MaxVerticeCount, NoEdges, NoAutoScale);
 end;
 
 procedure TMeshPreviewFrm.UpdateMesh(const VertexList: TPS3VectorList; const ColorList: TPSMI3VectorList);
 begin
   FOpenGLHelper.UpdateMesh(VertexList, ColorList);
+end;
+
+procedure TMeshPreviewFrm.SetWindowTitle(const WindowTitle: string);
+begin
+  FOpenGLHelper.WindowTitle := WindowTitle;
 end;
 
 procedure TMeshPreviewFrm.SetWindowCaption(const Msg: String);
