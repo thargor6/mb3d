@@ -520,7 +520,7 @@ procedure SaveFormulaBytes;
 var
   Mand3DForm: TMand3DForm;
   M3dVersion: Single = 1.99;
-  M3dSubRevision: Integer = 27;
+  M3dSubRevision: Integer = 28;
   Testing: LongBool = False;
   TBoostChanged: LongBool = False;
   MCalcStop: LongBool = False;

@@ -258,7 +258,7 @@ type
     FLogger: TAbstractLogger;
     procedure UpdatePreviewSizeGrp;
     procedure EnableControls(const Enabled: Boolean);
-    procedure ImportParams(const KeepScaleAndPosition: Boolean = False);
+    procedure ImportParams(const KeepScaleAndPosition: Boolean = True);
   end;
 
   TFVoxelExportCalcPreviewThread = class(TThread)
@@ -575,7 +575,7 @@ begin
   ImportParams;
 end;
 
-procedure TBulbTracer2Frm.ImportParams(const KeepScaleAndPosition: Boolean = False);
+procedure TBulbTracer2Frm.ImportParams(const KeepScaleAndPosition: Boolean = True);
 var i: Integer;
 
     procedure LoadParamFromFile(const ParamFilename: String);
@@ -1520,6 +1520,7 @@ begin
     if Sender <> ScaleUpBtn then d := 1 / d;
     BTracer2Header.Scale := BTracer2Header.Scale * d;
     ScaleEdit.Text := FloatToStrSingle( BTracer2Header.Scale );
+  XOffsetEditChange(nil);
 end;
 
 procedure TBulbTracer2Frm.ScaleEditUpDownClick(Sender: TObject;

@@ -331,13 +331,13 @@ var
 
     function ColorGs(const I, J, K: Integer): TPColorValue;
     begin
-      Result := ColorRsBuf;
+      Result := ColorGsBuf;
       Inc(Result, I * (FSlicesV+1)* (FSlicesV+1) + J * (FSlicesV+1) + K );
     end;
 
     function ColorBs(const I, J, K: Integer): TPColorValue;
     begin
-      Result := ColorRsBuf;
+      Result := ColorBsBuf;
       Inc(Result, I * (FSlicesV+1)* (FSlicesV+1) + J * (FSlicesV+1) + K );
     end;
 

@@ -522,7 +522,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Left = 453
         Top = 58
         Width = 54
-        Height = 20
+        Height = 21
         TabOrder = 10
         Text = '0'
         OnExit = TraceZMinEditExit
@@ -615,8 +615,6 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitLeft = 1
-        ExplicitTop = 17
         object Image1: TImage
           Left = 106
           Top = 48
