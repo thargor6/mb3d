@@ -23,6 +23,7 @@ procedure doAA(StartSLfullBMP, StartSLhalfBMP, OffsetFullBMP, OffsetHalfBMP,
 function CalcAmbShadowT(Header: TPMandHeader10; PsiLight: TPsiLight5; aSLoffset: Integer;
                         PCTS: TPCalcThreadStats; PATlevel: TPATlevel; cRect: TRect): Boolean;
 procedure MakeZbufBMP(var BMP: TBitmap);
+procedure MakeZbufPGM(const BMP: TBitmap;var PGMBuffer: PWord; const ZOffset, ZScale: double);
 procedure CalcLightStrokes(Seed: Integer);
 procedure NormalsOnZbuf(Header: TPMandHeader10; PLight: TPsiLight5);
 function GetLightMapPixel(const x, y: Single; LM: TPLightMap; bSqr: LongBool; WrapAround: Integer): TSVec;
@@ -875,6 +876,118 @@ begin
         end;
       end
     end;
+end;
+
+procedure MakeZbufPGM(const BMP: TBitmap;var PGMBuffer: PWord; const ZOffset, ZScale: double);
+var x, y, xx, yy, wid, i, scale, add, add2, ww, ystart, xstart: Integer;
+    PB: PByte;
+    PW, PW2, PW3: PWord;
+    TileRect: TRect;
+    Crop: Integer;
+    CurrPGMBuffer: PWord;
+
+    iZ0, GrayValue: Integer;
+    ZZ: Double;
+
+    MCTp: TMCTparameter;
+
+
+    function GetZPosFromSI(const iZ: Integer): Double;
+    begin
+      with MCTp do begin
+        Result := (Sqr((8388351.5 - iZ) / ZcMul + 1) - 1) / Zcorr;
+      end;
+    end;
+
+    function GetGrayValueFromZZ(const ZZ: double): Integer;
+    var
+      dZ: double;
+    begin
+      dZ := Mand3DForm.MHeader.dZend - Mand3DForm.MHeader.dZstart;
+      Result :=  Round((ZZ * ZScale / dZ + ZOffset) * 65535);
+    end;
+
+    function MapGrayValue(const GrayValue:Integer):Word;
+    begin
+      Result := 65535 - Max( Min( GrayValue , 65535), 0);
+    end;
+
+begin
+  MCTp := GetMCTparasFromHeader(Mand3DForm.MHeader, True);
+
+
+  GetMem( PGMBuffer, BMP.Width * BMP.Height * SizeOf( Word ) );
+  try
+    CurrPGMBuffer := PGMBuffer;
+
+    scale := Max(2, Min(10, ImageScale));
+    add := 16 * Sqr(scale);
+    if Mand3DForm.MHeader.TilingOptions <> 0 then
+    begin
+      GetTilingInfosFromHeader(@Mand3DForm.MHeader, TileRect, Crop);
+      ystart := Crop div ImageScale;
+      xstart := Crop;
+      add2 := (TileRect.Right - TileRect.Left + 1) * 9;
+      ww := (TileRect.Right - TileRect.Left + 1) * ImageScale; //ok?
+    end else begin
+      ystart := 0;
+      xstart := 0;
+      add2 := Mand3DForm.MHeader.Width * 9;
+      ww := Mand3DForm.MHeader.Width * ImageScale;
+    end;
+    wid := BMP.Width;
+    for y := 0 to BMP.Height - 1 do
+    begin
+      PB := BMP.ScanLine[y];
+      PW := @Mand3DForm.siLight5[(y + ystart) * ww + xstart];
+
+      Inc(PW, 4); //Zpos word
+      if ImageScale = 1 then
+      begin
+        for x := 1 to wid do begin
+          if PW^ > 32767 then CurrPGMBuffer^ := 0
+          else begin
+            iZ0 := PInteger(Longint(PW)-Longint(2))^ shr 8;
+            ZZ := GetZPosFromSI(iZ0);
+            GrayValue := GetGrayValueFromZZ( ZZ );
+            CurrPGMBuffer^ := MapGrayValue(GrayValue);
+            if (y > 100) and (y<150) and (x>100) and (x<150) then
+              OutputDebugString(PChar(FloatToStr(ZZ)+', '+FloatToStr(MCTp.Zend)+' -> '+IntToStr(GrayValue)+'->'+IntToStr(CurrPGMBuffer^)));
+          end;
+          Inc(CurrPGMBuffer);
+          Inc(PW, 9);
+        end;
+      end else
+      begin
+        for x := 1 to wid do
+        begin
+          PW2 := PW;
+          i := 0;
+          for yy := 1 to scale do
+          begin
+            PW3 := PW2;
+            for xx := 1 to scale do
+            begin
+              if PW3^ < 32768 then begin
+                iZ0 := PInteger(Longint(PW3)-Longint(2))^ shr 8;
+                ZZ := GetZPosFromSI(iZ0);
+                GrayValue := GetGrayValueFromZZ( ZZ );
+                i := i + MapGrayValue(GrayValue);
+              end;
+              Inc(PW3, 9);
+            end;
+            Inc(PW2, add2);
+          end;
+          Inc(PW, 9 * scale);
+          CurrPGMBuffer^ := i div Sqr(scale);
+          Inc(CurrPGMBuffer);
+        end;
+      end
+    end;
+  except
+    FreeMem( PGMBuffer );
+    raise;
+  end;
 end;
 
 function SetImageSize: LongBool;

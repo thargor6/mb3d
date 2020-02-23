@@ -37,7 +37,7 @@ function GetFileModDate(filename: string): TDatetime;
 function LoadBackgroundPicT(Light: TPLightingParas9): Boolean;
 procedure UpdateLightParasAbove3(var Light: TLightingParas9);
 procedure StoreFavouriteStatus(formulaname: String; Status: Integer);
-procedure SaveZBuf(FileName: String; stype: Integer); //stype: 0=png, 1=bmp
+procedure SaveZBuf(FileName: String; stype: Integer; const ZOffset, ZScale: double); //stype: 0=png, 1=bmp
 procedure SdoAA;
 function GetDirectory(IniDir: String; AOwner: TWinControl): String;
 procedure Save1bitPNG(FileName: String; bmp: TBitmap);
@@ -91,7 +91,7 @@ implementation
 
 uses Mand, ImageProcess, Clipbrd, DivUtils, Math, CustomFormulas, HeaderTrafos,
      Animation, FormulaGUI, Navigator, AniPreviewWindow, Interpolation, Tiling,
-     Math3D, Forms, Maps, Undo, Vcl.Themes;
+     Math3D, Forms, Maps, Undo, Vcl.Themes, PNMWriter;
 
 function FileIsBigger1(Fname: String): LongBool;
 var F: TSearchRec;
@@ -1328,11 +1328,53 @@ begin
     end;
 end;
 
-procedure SaveZBuf(FileName: String; stype: Integer);
+procedure SaveZBufPNG16(const FileName: string; const ZOffset, ZScale: double);
+var
+  tbmp: TBitmap;
+  TileRect: TRect;
+  Crop: Integer;
+  PGMBuffer: PWord;
+begin
+  tbmp := TBitmap.Create;
+  try
+    tbmp.PixelFormat := pf8Bit;
+    if Mand3DForm.MHeader.TilingOptions <> 0 then
+    begin
+      GetTilingInfosFromHeader(@Mand3DForm.MHeader, TileRect, Crop);
+      tbmp.SetSize((TileRect.Right - TileRect.Left + 1 - Crop * 2) div ImageScale,
+        (TileRect.Bottom - TileRect.Top + 1 - Crop * 2) div ImageScale);
+      tbmp.Canvas.CopyRect(Rect(0, 0, tbmp.Width, tbmp.Height), Mand3DForm.Image1.Picture.Bitmap.Canvas,
+           Rect(Crop div ImageScale, Crop div ImageScale,
+                Crop div ImageScale + tbmp.Width, Crop div ImageScale + tbmp.Height));
+    end
+    else tbmp.SetSize(Mand3DForm.Image1.Picture.Width, Mand3DForm.Image1.Picture.Height);
+    Make8bitGreyscalePalette(tbmp);
+    MakeZbufBMP(tbmp);
+
+    MakeZbufPGM(tbmp, PGMBuffer, ZOffset, ZScale);
+    try
+      with TPGM16Writer.Create do try
+        SaveToFile( PGMBuffer, tbmp.Width, tbmp.Height, ChangeFileExtSave(Filename, '.pgm') );
+      finally
+        Free;
+      end;
+    finally
+      FreeMem(PGMBuffer);
+    end;
+
+  finally
+    tbmp.Free;
+  end;
+end;
+
+procedure SaveZBuf(FileName: String; stype: Integer;  const ZOffset, ZScale: double);
 var tbmp: TBitmap;
     TileRect: TRect;
     Crop: Integer;
 begin
+  if stype = 3 then
+    SaveZBufPNG16(Filename, ZOffset, ZScale)
+  else begin
     tbmp := TBitmap.Create;
     try
       tbmp.PixelFormat := pf8Bit;
@@ -1347,7 +1389,7 @@ begin
       end
       else tbmp.SetSize(Mand3DForm.Image1.Picture.Width, Mand3DForm.Image1.Picture.Height);
       Make8bitGreyscalePalette(tbmp);
-      MakeZbufBMP(tbmp); 
+      MakeZbufBMP(tbmp);
       if stype = 1 then
         SaveBMP(ChangeFileExtSave(Filename, '.bmp'), tbmp, pf8bit)
       else
@@ -1355,6 +1397,7 @@ begin
     finally
       tbmp.Free;
     end;
+  end;
 end;
 
 procedure ConvertFromOldLightParas(var Light8: TLightingParas8; fSize: Integer);
