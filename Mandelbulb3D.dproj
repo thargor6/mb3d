@@ -93,8 +93,8 @@
         <DCC_DebugInformation>true</DCC_DebugInformation>
         <DCC_MinStackSize>1048576</DCC_MinStackSize>
         <BRCC_OutputDir>D:\DEV\Delphi_Workspace\Mandel3D\</BRCC_OutputDir>
-        <VerInfo_Build>27</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=3d fractal rendering;FileVersion=1.9.9.27;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.9.9.27;Comments=</VerInfo_Keys>
+        <VerInfo_Build>28</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=3d fractal rendering;FileVersion=1.9.9.28;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.9.9.28;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_RunTimeTypeInfo>true</DCC_RunTimeTypeInfo>
@@ -262,6 +262,10 @@
         <DCCReference Include="formula\FormulaCompiler.pas"/>
         <DCCReference Include="bulbtracer2\VertexList.pas"/>
         <DCCReference Include="bulbtracer2\MeshWriter.pas"/>
+        <DCCReference Include="zbuf16bit\ZBuf16BitGenUI.pas">
+            <Form>ZBuf16BitGenFrm</Form>
+        </DCCReference>
+        <DCCReference Include="zbuf16bit\ZBuf16BitGen.pas"/>
         <None Include="CHANGES.txt"/>
         <None Include=".gitignore"/>
         <BuildConfiguration Include="Debug">

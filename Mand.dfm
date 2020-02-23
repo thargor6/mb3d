@@ -458,10 +458,6 @@ object Mand3DForm: TMand3DForm
         Caption = 'Calculation'
         Highlighted = True
         ImageIndex = 1
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label16: TLabel
           Left = 4
           Top = 125
@@ -713,10 +709,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet4: TTabSheet
         Caption = 'Internal'
         ImageIndex = 3
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label15: TLabel
           Left = 12
           Top = 11
@@ -851,10 +843,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet5: TTabSheet
         Caption = 'Infos'
         ImageIndex = 4
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label29: TLabel
           Left = 9
           Top = 67
@@ -1018,10 +1006,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet8: TTabSheet
         Caption = 'Cutting'
         ImageIndex = 7
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label37: TLabel
           Left = 9
           Top = 66
@@ -1161,10 +1145,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet9: TTabSheet
         Caption = 'Julia Off'
         ImageIndex = 8
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label43: TLabel
           Left = 9
           Top = 80
@@ -1323,10 +1303,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet1: TTabSheet
         Caption = 'Camera'
         ImageIndex = 5
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label21: TLabel
           Left = 24
           Top = 10
@@ -1372,10 +1348,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet3: TTabSheet
         Caption = 'Coloring'
         ImageIndex = 6
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label2: TLabel
           Left = 5
           Top = 132
@@ -1505,10 +1477,6 @@ object Mand3DForm: TMand3DForm
       object TabSheet6: TTabSheet
         Caption = 'Stereo'
         ImageIndex = 7
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object Label28: TLabel
           Left = 25
           Top = 62
@@ -2662,17 +2630,16 @@ object Mand3DForm: TMand3DForm
         Spacing = 0
         OnClick = MutaGenBtnClick
       end
-      object ScriptBtn: TSpeedButton
+      object ZBufferGenBtn: TSpeedButton
         Left = 108
         Top = 38
         Width = 52
         Height = 30
-        Hint = 'Script Editor'
-        Caption = 'Scripts'
-        Enabled = False
+        Hint = 'Advanced ZBuffer generator'
+        Caption = 'ZBuffer'
         ParentShowHint = False
         ShowHint = True
-        OnClick = ScriptBtnClick
+        OnClick = ZBufferGenBtnClick
       end
       object HeightMapGenBtn: TSpeedButton
         Left = 108
@@ -2845,14 +2812,10 @@ object Mand3DForm: TMand3DForm
         Top = 4
         Width = 268
         Height = 64
-        ActivePage = TabSheet11
+        ActivePage = TabSheet12
         TabOrder = 1
         object TabSheet7: TTabSheet
           Caption = 'Open'
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Button9: TSpeedButton
             Left = 2
             Top = 3
@@ -2893,10 +2856,6 @@ object Mand3DForm: TMand3DForm
         object TabSheet10: TTabSheet
           Caption = 'Save'
           ImageIndex = 1
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Button8: TSpeedButton
             Left = 2
             Top = 3
@@ -2962,10 +2921,6 @@ object Mand3DForm: TMand3DForm
         object TabSheet12: TTabSheet
           Caption = 'Save pic'
           ImageIndex = 2
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object Button3: TSpeedButton
             Left = 2
             Top = 4
@@ -2990,7 +2945,7 @@ object Mand3DForm: TMand3DForm
           end
           object SpeedButton26: TSpeedButton
             Left = 86
-            Top = 3
+            Top = 4
             Width = 40
             Height = 30
             Hint = 
@@ -3069,10 +3024,6 @@ object Mand3DForm: TMand3DForm
         object TabSheet11: TTabSheet
           Caption = 'Tools'
           ImageIndex = 3
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object SpeedButton25: TSpeedButton
             Left = 2
             Top = 4
@@ -3122,10 +3073,6 @@ object Mand3DForm: TMand3DForm
         object TabSheet13: TTabSheet
           Caption = 'Prefs'
           ImageIndex = 4
-          ExplicitLeft = 0
-          ExplicitTop = 0
-          ExplicitWidth = 0
-          ExplicitHeight = 0
           object IniDirsBtn: TSpeedButton
             Left = 2
             Top = 3
@@ -3256,11 +3203,13 @@ object Mand3DForm: TMand3DForm
   end
   object SaveDialog6: TSaveDialog
     DefaultExt = 'bmp'
-    Filter = 'Windows Bitmap|*.bmp|Portable Network Graphic|*.png'
+    Filter = 
+      'Windows Bitmap|*.bmp|Portable Network Graphic 8bit|*.png|Portabl' +
+      'e Network Graphic 16bit|*.png'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     OnTypeChange = SaveDialog6TypeChange
-    Left = 264
-    Top = 72
+    Left = 239
+    Top = 278
   end
   object PopupMenu1: TPopupMenu
     Left = 496
@@ -3321,8 +3270,8 @@ object Mand3DForm: TMand3DForm
     Filter = 'JPEG|*.jpg|Portable Network Graphic|*.png'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     OnTypeChange = SaveDialog1TypeChange
-    Left = 264
-    Top = 104
+    Left = 156
+    Top = 263
   end
   object PopupMenu2: TPopupMenu
     Left = 576

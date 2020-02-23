@@ -91,7 +91,9 @@ uses
   CompilerUtil in 'script\CompilerUtil.pas',
   FormulaCompiler in 'formula\FormulaCompiler.pas',
   VertexList in 'bulbtracer2\VertexList.pas',
-  MeshWriter in 'bulbtracer2\MeshWriter.pas';
+  MeshWriter in 'bulbtracer2\MeshWriter.pas',
+  ZBuf16BitGenUI in 'zbuf16bit\ZBuf16BitGenUI.pas' {ZBuf16BitGenFrm},
+  ZBuf16BitGen in 'zbuf16bit\ZBuf16BitGen.pas';
 
 {$R *.res}
 
@@ -129,6 +131,7 @@ begin
   Application.CreateForm(TMeshPreviewFrm, MeshPreviewFrm);
   Application.CreateForm(THeightMapGenFrm, HeightMapGenFrm);
   Application.CreateForm(TPostProForm, PostProForm);
+  Application.CreateForm(TZBuf16BitGenFrm, ZBuf16BitGenFrm);
   //SuppressMessageBoxes := True;
   Application.Run;
 end.

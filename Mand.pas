@@ -274,7 +274,7 @@ type
     Label46: TLabel;
     FrameEdit: TEdit;
     FrameUpDown: TUpDown;
-    ScriptBtn: TSpeedButton;
+    ZBufferGenBtn: TSpeedButton;
     HeightMapGenBtn: TSpeedButton;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -395,7 +395,7 @@ type
     procedure FrameUpDownClick(Sender: TObject; Button: TUDBtnType);
     procedure FrameEditExit(Sender: TObject);
     procedure MeshExportBtnClick(Sender: TObject);
-    procedure ScriptBtnClick(Sender: TObject);
+    procedure ZBufferGenBtnClick(Sender: TObject);
     procedure HeightMapGenBtnClick(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
@@ -520,7 +520,7 @@ procedure SaveFormulaBytes;
 var
   Mand3DForm: TMand3DForm;
   M3dVersion: Single = 1.99;
-  M3dSubRevision: Integer = 28;
+  M3dSubRevision: Integer = 29;
   Testing: LongBool = False;
   TBoostChanged: LongBool = False;
   MCalcStop: LongBool = False;
@@ -548,7 +548,8 @@ uses Math, DivUtils, ImageProcess, ClipBrd, ShellAPI, FileCtrl, formulas,
      DOF, CalcHardShadow, AmbHiQ, BatchForm, Undo, CommDlg, VoxelExport,
      calcBlocky, CalcSR, Tiling, MonteCarloForm, TextBox, pngimage, ColorPick,
      uMapCalcWindow, FormulaCompiler, MutaGenGUI, VisualThemesGUI, Vcl.Themes,
-     MapSequencesGUI, MapSequences, BulbTracer2UI, ScriptUI, HeightMapGenUI;
+     MapSequencesGUI, MapSequences, BulbTracer2UI, ScriptUI, HeightMapGenUI,
+     ZBuf16BitGenUI;
 
 {$R *.dfm}
 
@@ -700,10 +701,10 @@ begin
     end;
 end;
 
-procedure TMand3DForm.ScriptBtnClick(Sender: TObject);
+procedure TMand3DForm.ZBufferGenBtnClick(Sender: TObject);
 begin
-  ScriptEditorForm.Visible := True;
-  BringToFront2(ScriptEditorForm.Handle);
+  ZBuf16BitGenFrm.Visible := True;
+  BringToFront2(ZBuf16BitGenFrm.Handle);
 end;
 
 procedure TMand3DForm.ParasChanged;
@@ -2054,7 +2055,7 @@ begin
     if AnimationForm.CheckBox7.Checked then
     begin
       s := AnimationForm.AniOutputFolder + 'ZBuf ' + sa + si;
-      SaveZBuf(s, 0);
+      SaveZBuf(s, 0, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text));
     end;
     AnimationForm.NextSubFrame;
 end;
@@ -2081,7 +2082,7 @@ begin
       if BigRenderData.brSaveZBuf then
       begin
         s := SaveDirectory + 'ZBuf ' + ProjectName + MakeFilePointIndizes(brActTile, 2, BigRenderData);
-        SaveZBuf(s, 0);
+        SaveZBuf(s, 0, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text));
       end;
       NextTile;
     end;
@@ -3698,7 +3699,7 @@ end;
 
 procedure TMand3DForm.SpeedButton26Click(Sender: TObject);  //Save Zbuf
 begin
-    if SaveDialog6.Execute then SaveZBuf(SaveDialog6.Filename, SaveDialog6.FilterIndex);
+    if SaveDialog6.Execute then SaveZBuf(SaveDialog6.Filename, SaveDialog6.FilterIndex, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text));
 end;
 
 procedure TMand3DForm.SaveDialog6TypeChange(Sender: TObject);
@@ -3706,14 +3707,16 @@ var S: String;
 begin
     case SaveDialog6.FilterIndex of
       1:  SaveDialog6.DefaultExt := 'bmp';
-      2:  SaveDialog6.DefaultExt := 'png';
+      2:  SaveDialog6.DefaultExt := 'png'; // 8bit
+      3:  SaveDialog6.DefaultExt := 'png'; // 16bit
     end;
     S := SaveDialog6.Filename;
     if SysUtils.DirectoryExists(S) then S := '';
     if S <> '' then
       case SaveDialog6.FilterIndex of
         1:  S := ChangeFileExt(S, '.bmp');
-        2:  S := ChangeFileExt(S, '.png');
+        2:  S := ChangeFileExt(S, '.png'); // 8bit
+        3:  S := ChangeFileExt(S, '.png'); // 16bit
       else
         S := '';
       end;
