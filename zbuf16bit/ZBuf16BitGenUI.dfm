@@ -2,9 +2,9 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
   Left = 0
   Top = 0
   BorderStyle = bsSizeToolWin
-  Caption = 'HeightMap Generator'
-  ClientHeight = 570
-  ClientWidth = 794
+  Caption = '16Bit ZBuffer Generator'
+  ClientHeight = 445
+  ClientWidth = 670
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -16,124 +16,51 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
   PixelsPerInch = 96
   TextHeight = 13
   object NavigatePnl: TPanel
-    Left = 181
+    Left = 503
     Top = 0
-    Width = 613
-    Height = 570
+    Width = 167
+    Height = 445
     Align = alRight
     TabOrder = 0
-    ExplicitLeft = 182
-    ExplicitTop = -1
-    object Label19: TLabel
-      Left = 11
-      Top = 166
-      Width = 60
-      Height = 13
-      AutoSize = False
-      Caption = 'Map Type:'
-    end
-    object Label1: TLabel
-      Left = 11
-      Top = 237
-      Width = 60
-      Height = 13
-      AutoSize = False
-      Caption = 'Map Number:'
-    end
+    ExplicitLeft = 502
     object Label2: TLabel
-      Left = 167
-      Top = 92
+      Left = 8
+      Top = 86
       Width = 42
       Height = 13
       Alignment = taRightJustify
       Caption = 'Z offset:'
     end
     object Label3: TLabel
-      Left = 172
-      Top = 119
+      Left = 13
+      Top = 114
       Width = 37
       Height = 13
       Alignment = taRightJustify
-      Caption = 'X scale:'
+      Caption = 'Z scale:'
     end
-    object LoadMeshBtn: TButton
-      Left = 11
-      Top = 13
-      Width = 134
-      Height = 25
-      Caption = 'Load mesh'
+    object RefreshPreviewBtn: TButton
+      Left = 6
+      Top = 10
+      Width = 156
+      Height = 47
+      Caption = 'Refresh'
       TabOrder = 0
+      OnClick = RefreshPreviewBtnClick
     end
-    object SaveMapBtn: TButton
-      Left = 11
-      Top = 261
-      Width = 134
+    object SaveImgBtn: TButton
+      Left = 6
+      Top = 192
+      Width = 156
       Height = 25
-      Hint = 'Save as heightmap inside the MB3D-maps-folder'
-      Caption = 'Save As HeightMap'
+      Caption = 'Save As Image'
       ParentShowHint = False
       ShowHint = True
       TabOrder = 1
     end
-    object MapNumberUpDown: TUpDown
-      Left = 126
-      Top = 234
-      Width = 16
-      Height = 21
-      Associate = MapNumberEdit
-      Min = 1
-      Max = 32000
-      Position = 1
-      TabOrder = 2
-      Thousands = False
-    end
-    object MapNumberEdit: TEdit
-      Left = 89
-      Top = 234
-      Width = 37
-      Height = 21
-      Hint = 'Map number'
-      MaxLength = 5
-      NumbersOnly = True
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 3
-      Text = '1'
-    end
-    object MapTypeCmb: TComboBox
-      Left = 11
-      Top = 185
-      Width = 134
-      Height = 21
-      Style = csDropDownList
-      DropDownCount = 32
-      TabOrder = 4
-      Items.Strings = (
-        'Cancel and show result'
-        'Cancel immediately')
-    end
-    object SaveImgBtn: TButton
-      Left = 11
-      Top = 341
-      Width = 134
-      Height = 25
-      Hint = 'Save as image at the location you specify'
-      Caption = 'Save As Image'
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 5
-    end
-    object ResetBtn: TButton
-      Left = 12
-      Top = 477
-      Width = 134
-      Height = 25
-      Caption = 'Reset position'
-      TabOrder = 6
-    end
     object ZOffsetEdit: TEdit
-      Left = 215
-      Top = 89
+      Left = 56
+      Top = 83
       Width = 88
       Height = 21
       Font.Charset = DEFAULT_CHARSET
@@ -144,21 +71,23 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
       ParentFont = False
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 7
+      TabOrder = 2
       Text = '0.0'
+      OnChange = ZOffsetEditChange
     end
-    object XOffsetUpDown: TUpDown
-      Left = 304
-      Top = 89
+    object ZOffsetEditUpDown: TUpDown
+      Left = 145
+      Top = 83
       Width = 17
       Height = 21
       Min = -32000
       Max = 32000
-      TabOrder = 8
+      TabOrder = 3
+      OnClick = ZOffsetEditUpDownClick
     end
     object ZScaleEdit: TEdit
-      Left = 215
-      Top = 116
+      Left = 56
+      Top = 110
       Width = 88
       Height = 21
       Font.Charset = DEFAULT_CHARSET
@@ -169,29 +98,86 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
       ParentFont = False
       ParentShowHint = False
       ShowHint = True
-      TabOrder = 9
-      Text = '0.05'
+      TabOrder = 4
+      Text = '1.0'
+      OnChange = ZScaleEditChange
     end
-    object UpDown1: TUpDown
-      Left = 304
-      Top = 116
+    object ZScaleEditUpDown: TUpDown
+      Left = 145
+      Top = 110
       Width = 17
       Height = 21
       Min = -32000
       Max = 32000
-      TabOrder = 10
-      OnClick = UpDown1Click
+      TabOrder = 5
+      OnClick = ZScaleEditUpDownClick
+    end
+    object InfoMemo: TMemo
+      Left = 1
+      Top = 223
+      Width = 165
+      Height = 221
+      Hint = 'Shows messages'
+      Align = alBottom
+      BorderStyle = bsNone
+      Color = clSilver
+      Ctl3D = False
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clTeal
+      Font.Height = -12
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentCtl3D = False
+      ParentFont = False
+      ParentShowHint = False
+      ReadOnly = True
+      ShowHint = True
+      TabOrder = 6
+      ExplicitTop = 348
+      ExplicitWidth = 163
+    end
+    object InvertZBufferCBx: TCheckBox
+      Left = 56
+      Top = 137
+      Width = 105
+      Height = 19
+      Caption = 'Invert ZBuffer'
+      Checked = True
+      State = cbChecked
+      TabOrder = 7
+      WordWrap = True
+      OnClick = InvertZBufferCBxClick
+    end
+  end
+  object ScrollBox1: TScrollBox
+    Left = 0
+    Top = 0
+    Width = 503
+    Height = 445
+    HorzScrollBar.Tracking = True
+    VertScrollBar.Tracking = True
+    Align = alClient
+    BevelOuter = bvNone
+    BorderStyle = bsNone
+    TabOrder = 1
+    ExplicitLeft = 2
+    ExplicitWidth = 629
+    ExplicitHeight = 570
+    object MainPreviewImg: TImage
+      Left = 0
+      Top = 0
+      Width = 480
+      Height = 400
+      AutoSize = True
     end
   end
   object SaveImgDialog: TSaveDialog
+    DefaultExt = 'pgm'
+    Filter = 
+      'Portable Graymap|*.pgm|Portable Network Graphic 8bit|*.png|Porta' +
+      'ble Network Graphic 16bit|*.png'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    Left = 688
-    Top = 400
-  end
-  object OpenDialog1: TOpenDialog
-    DefaultExt = 'obj'
-    Filter = 'Wavefront OBJ (*.obj)|*.obj'
-    Left = 656
-    Top = 80
+    Left = 521
+    Top = 135
   end
 end

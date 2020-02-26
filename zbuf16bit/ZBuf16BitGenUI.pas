@@ -22,34 +22,36 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, VertexList, Vcl.ExtCtrls,
   Vcl.Buttons, Vcl.StdCtrls, VectorMath, Vcl.ComCtrls, JvExExtCtrls,
   JvExtComponent, JvOfficeColorButton, JvExControls, JvColorBox, JvColorButton,
-  SpeedButtonEx;
+  SpeedButtonEx, ZBuf16BitGen;
 
 type
 
   TZBuf16BitGenFrm = class(TForm)
     NavigatePnl: TPanel;
-    LoadMeshBtn: TButton;
-    SaveMapBtn: TButton;
-    MapNumberUpDown: TUpDown;
-    MapNumberEdit: TEdit;
-    Label19: TLabel;
-    MapTypeCmb: TComboBox;
-    Label1: TLabel;
+    RefreshPreviewBtn: TButton;
     SaveImgBtn: TButton;
     SaveImgDialog: TSaveDialog;
-    OpenDialog1: TOpenDialog;
-    ResetBtn: TButton;
     ZOffsetEdit: TEdit;
-    XOffsetUpDown: TUpDown;
+    ZOffsetEditUpDown: TUpDown;
     Label2: TLabel;
     ZScaleEdit: TEdit;
-    UpDown1: TUpDown;
+    ZScaleEditUpDown: TUpDown;
     Label3: TLabel;
+    ScrollBox1: TScrollBox;
+    MainPreviewImg: TImage;
+    InfoMemo: TMemo;
+    InvertZBufferCBx: TCheckBox;
     procedure FormCreate(Sender: TObject);
-    procedure UpDown1Click(Sender: TObject; Button: TUDBtnType);
+    procedure ZScaleEditUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure RefreshPreviewBtnClick(Sender: TObject);
+    procedure ZOffsetEditUpDownClick(Sender: TObject; Button: TUDBtnType);
+    procedure ZOffsetEditChange(Sender: TObject);
+    procedure ZScaleEditChange(Sender: TObject);
+    procedure InvertZBufferCBxClick(Sender: TObject);
   private
     { Private declarations }
     procedure EnableControls;
+    procedure ShowInfo(const PInfo: TPZBufInfo);
   public
     { Public declarations }
   end;
@@ -60,7 +62,7 @@ var
 implementation
 
 uses
-  ZBuf16BitGen;
+  DivUtils, BulbTracerUITools;
 
 {$R *.dfm}
 
@@ -70,14 +72,67 @@ begin
   EnableControls;
 end;
 
+procedure TZBuf16BitGenFrm.InvertZBufferCBxClick(Sender: TObject);
+begin
+  RefreshPreviewBtnClick(Sender);
+end;
 
-procedure TZBuf16BitGenFrm.UpDown1Click(Sender: TObject; Button: TUDBtnType);
+procedure TZBuf16BitGenFrm.ShowInfo(const PInfo: TPZBufInfo);
+begin
+  InfoMemo.Text := 'Raw Values:' + #13#10 +
+                       '  ' + FloatToStr(PInfo^.MinRawZValue) + '..' + #13#10 +
+                       '  ' + FloatToStr(PInfo^.MaxRawZValue ) + #13#10 +
+                   'Mapped Values:' + #13#10 +
+                       '  ' + IntToStr(PInfo^.MinZValue) + '..' + #13#10 +
+                       '  ' + IntToStr(PInfo^.MaxZValue ) + #13#10 +
+                   'Clamped Values:' + #13#10 +
+                       '  ' + IntToStr(PInfo^.MinClampedZValue) + '..' + #13#10 +
+                       '  ' + IntToStr(PInfo^.MaxClampedZValue ) + #13#10;
+
+end;
+
+
+procedure TZBuf16BitGenFrm.RefreshPreviewBtnClick(Sender: TObject);
+var
+  Bmp: TBitmap;
+  Info: TZBufInfo;
+begin
+  Bmp := CreateZBuf16BitPreview( StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text), InvertZBufferCBx.Checked, @Info);
+  try
+    ShowInfo(@Info);
+    MainPreviewImg.Picture.Assign(Bmp);
+  finally
+    Bmp.Free;
+  end;
+end;
+
+procedure TZBuf16BitGenFrm.ZScaleEditChange(Sender: TObject);
+begin
+  RefreshPreviewBtnClick(Sender);
+end;
+
+procedure TZBuf16BitGenFrm.ZScaleEditUpDownClick(Sender: TObject; Button: TUDBtnType);
 var
   Value: Double;
 begin
-//  Value := StrToFloatSafe(XOffsetEdit.Text, 0.0) + UpDownBtnValue(Button, 0.05);
-//  XOffsetEdit.Text := FloatToStr(Value);
-//  XOffsetEditChange(nil);
+  Value := StrToFloatSafe(ZScaleEdit.Text, 0.0) + UpDownBtnValue(Button, 0.01);
+  ZScaleEdit.Text := FloatToStr(Value);
+  ZScaleEditChange(nil);
+end;
+
+procedure TZBuf16BitGenFrm.ZOffsetEditChange(Sender: TObject);
+begin
+  RefreshPreviewBtnClick(Sender);
+end;
+
+procedure TZBuf16BitGenFrm.ZOffsetEditUpDownClick(Sender: TObject;
+  Button: TUDBtnType);
+var
+  Value: Double;
+begin
+  Value := StrToFloatSafe(ZOffsetEdit.Text, 0.0) + UpDownBtnValue(Button, 0.01);
+  ZOffsetEdit.Text := FloatToStr(Value);
+  ZOffsetEditChange(nil);
 end;
 
 procedure TZBuf16BitGenFrm.EnableControls;

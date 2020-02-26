@@ -520,7 +520,7 @@ procedure SaveFormulaBytes;
 var
   Mand3DForm: TMand3DForm;
   M3dVersion: Single = 1.99;
-  M3dSubRevision: Integer = 29;
+  M3dSubRevision: Integer = 30;
   Testing: LongBool = False;
   TBoostChanged: LongBool = False;
   MCalcStop: LongBool = False;
@@ -2055,7 +2055,7 @@ begin
     if AnimationForm.CheckBox7.Checked then
     begin
       s := AnimationForm.AniOutputFolder + 'ZBuf ' + sa + si;
-      SaveZBuf(s, 0, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text));
+      SaveZBuf(s, 0, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text), ZBuf16BitGenFrm.InvertZBufferCBx.Checked);
     end;
     AnimationForm.NextSubFrame;
 end;
@@ -2082,7 +2082,7 @@ begin
       if BigRenderData.brSaveZBuf then
       begin
         s := SaveDirectory + 'ZBuf ' + ProjectName + MakeFilePointIndizes(brActTile, 2, BigRenderData);
-        SaveZBuf(s, 0, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text));
+        SaveZBuf(s, 0, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text), ZBuf16BitGenFrm.InvertZBufferCBx.Checked);
       end;
       NextTile;
     end;
@@ -3699,7 +3699,7 @@ end;
 
 procedure TMand3DForm.SpeedButton26Click(Sender: TObject);  //Save Zbuf
 begin
-    if SaveDialog6.Execute then SaveZBuf(SaveDialog6.Filename, SaveDialog6.FilterIndex, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text));
+    if SaveDialog6.Execute then SaveZBuf(SaveDialog6.Filename, SaveDialog6.FilterIndex, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text), ZBuf16BitGenFrm.InvertZBufferCBx.Checked);
 end;
 
 procedure TMand3DForm.SaveDialog6TypeChange(Sender: TObject);

@@ -2636,7 +2636,7 @@ object Mand3DForm: TMand3DForm
         Width = 52
         Height = 30
         Hint = 'Advanced ZBuffer generator'
-        Caption = 'ZBuffer'
+        Caption = 'ZBuf16Bit'
         ParentShowHint = False
         ShowHint = True
         OnClick = ZBufferGenBtnClick
@@ -3184,8 +3184,8 @@ object Mand3DForm: TMand3DForm
     DefaultExt = 'm3i'
     Filter = 'M3D Image + Parameter (*.m3i)|*.m3i'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    Left = 200
-    Top = 72
+    Left = 232
+    Top = 111
   end
   object Timer8: TTimer
     Enabled = False
@@ -3198,8 +3198,8 @@ object Mand3DForm: TMand3DForm
     DefaultExt = 'jpg'
     Filter = 'JPEG Image|*.jpg'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    Left = 232
-    Top = 72
+    Left = 172
+    Top = 76
   end
   object SaveDialog6: TSaveDialog
     DefaultExt = 'bmp'
