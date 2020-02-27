@@ -57,6 +57,7 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
       ParentShowHint = False
       ShowHint = True
       TabOrder = 1
+      OnClick = SaveImgBtnClick
     end
     object ZOffsetEdit: TEdit
       Left = 56
@@ -173,9 +174,7 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
   end
   object SaveImgDialog: TSaveDialog
     DefaultExt = 'pgm'
-    Filter = 
-      'Portable Graymap|*.pgm|Portable Network Graphic 8bit|*.png|Porta' +
-      'ble Network Graphic 16bit|*.png'
+    Filter = 'Portable Graymap|*.pgm|Portable Network Graphic 16bit|*.png'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     Left = 521
     Top = 135

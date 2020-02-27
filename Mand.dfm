@@ -2945,7 +2945,7 @@ object Mand3DForm: TMand3DForm
           end
           object SpeedButton26: TSpeedButton
             Left = 86
-            Top = 4
+            Top = 3
             Width = 40
             Height = 30
             Hint = 

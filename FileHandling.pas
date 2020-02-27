@@ -102,7 +102,7 @@ end;
 
 function ChangeFileExtSave(FileName, Ext: String): String;
 var se: String;
-const cExtToCh: String = '.BMP.PNG.JPG.JPE.TXT.JPEG.TIF.TIFF.BIG.M3A.M3P.M3I.M3L.M3V.M3C';
+const cExtToCh: String = '.BMP.PNG.JPG.JPE.TXT.JPEG.TIF.TIFF.BIG.M3A.M3P.M3I.M3L.M3V.M3C.PGM';
 begin
     se := UpperCase(ExtractFileExt(FileName));
     if Pos(se, cExtToCh) > 0 then Result := ChangeFileExt(FileName, Ext) else

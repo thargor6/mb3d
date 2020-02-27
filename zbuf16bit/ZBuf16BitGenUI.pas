@@ -48,6 +48,7 @@ type
     procedure ZOffsetEditChange(Sender: TObject);
     procedure ZScaleEditChange(Sender: TObject);
     procedure InvertZBufferCBxClick(Sender: TObject);
+    procedure SaveImgBtnClick(Sender: TObject);
   private
     { Private declarations }
     procedure EnableControls;
@@ -62,19 +63,26 @@ var
 implementation
 
 uses
-  DivUtils, BulbTracerUITools;
+  DivUtils, BulbTracerUITools, Mand;
 
 {$R *.dfm}
 
 procedure TZBuf16BitGenFrm.FormCreate(Sender: TObject);
 begin
-
+  SaveImgDialog.InitialDir := Mand3DForm.SaveDialog6.InitialDir;
   EnableControls;
 end;
 
 procedure TZBuf16BitGenFrm.InvertZBufferCBxClick(Sender: TObject);
 begin
   RefreshPreviewBtnClick(Sender);
+end;
+
+procedure TZBuf16BitGenFrm.SaveImgBtnClick(Sender: TObject);
+begin
+  if SaveImgDialog.Execute then begin
+    SaveZBufPNG16(SaveImgDialog.Filename, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text), ZBuf16BitGenFrm.InvertZBufferCBx.Checked);
+  end;
 end;
 
 procedure TZBuf16BitGenFrm.ShowInfo(const PInfo: TPZBufInfo);
