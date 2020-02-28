@@ -18,6 +18,7 @@ procedure SaveZBufPNG16(const FileName: string; const ZOffset, ZScale: double; c
 function CreateZBuf8Bit(const ZOffset, ZScale: double): TBitmap;
 function CreateZBuf16BitPreview(const ZOffset, ZScale: double; const InvertZBuffer:boolean; const PInfo: TPZBufInfo): TBitmap;
 procedure ConvertPGMToPNG(const Filename: string);
+procedure GuessParamsFromInfo(const PInfo: TPZBufInfo; var ZScale, ZOffset: double);
 
 implementation
 
@@ -91,6 +92,24 @@ begin
   end;
 end;
 
+function GetGrayValueFromZZ(const ZZ, ZScale, ZOffset: double): Integer;
+begin
+  Result :=  Round((ZZ * ZScale / 1000.0 + ZOffset) * 65535);
+end;
+
+procedure GuessParamsFromInfo(const PInfo: TPZBufInfo; var ZScale, ZOffset: double);
+var
+  MinRawZValue, MaxRawZValue: double;
+  MinZValue, MaxZValue: Integer;
+begin
+  MinRawZValue := PInfo^.MinRawZValue;
+  MaxRawZValue := PInfo^.MaxRawZValue;
+  MinZValue := 1000;
+  MaxZValue := 65535 - 1000;
+  ZOffset := (MaxRawZValue * MinZValue - MaxZValue * MinRawZValue) / (MaxRawZValue - MinRawZValue) / 0.65535e5;
+  ZScale := 0.200e3 / 0.13107e5 * (MaxZValue - MinZValue) / (MaxRawZValue - MinRawZValue);
+end;
+
 procedure MakeZbufPGM(const BMP: TBitmap;var PGMBuffer: PWord; const ZOffset, ZScale: double; const InvertZBuffer:boolean; const PInfo: TPZBufInfo);
 var x, y, xx, yy, wid, i, scale, add, add2, ww, ystart, xstart: Integer;
     PB: PByte;
@@ -110,11 +129,6 @@ var x, y, xx, yy, wid, i, scale, add, add2, ww, ystart, xstart: Integer;
       with MCTp do begin
         Result := (Sqr((8388351.5 - iZ) / ZcMul + 1) - 1) / Zcorr;
       end;
-    end;
-
-    function GetGrayValueFromZZ(const ZZ: double): Integer;
-    begin
-      Result :=  Round((ZZ * ZScale / 1000.0 + ZOffset) * 65535);
     end;
 
     function ClampGrayValue(const GrayValue:Integer):Word;
@@ -189,7 +203,7 @@ begin
           else begin
             iZ0 := PInteger(Longint(PW)-Longint(2))^ shr 8;
             ZZ := GetZPosFromSI(iZ0);
-            GrayValue := GetGrayValueFromZZ( ZZ );
+            GrayValue := GetGrayValueFromZZ( ZZ, ZScale, ZOffset );
             ClampedGrayValue := ClampGrayValue(GrayValue);
             UpdateInfo;
             CurrPGMBuffer^ := ClampedGrayValue;
@@ -213,7 +227,7 @@ begin
               if PW3^ < 32768 then begin
                 iZ0 := PInteger(Longint(PW3)-Longint(2))^ shr 8;
                 ZZ := GetZPosFromSI(iZ0);
-                GrayValue := GetGrayValueFromZZ( ZZ );
+                GrayValue := GetGrayValueFromZZ( ZZ, ZScale, ZOffset );
                 ClampedGrayValue := ClampGrayValue(GrayValue);
                 UpdateInfo;
                 i := i + ClampedGrayValue;

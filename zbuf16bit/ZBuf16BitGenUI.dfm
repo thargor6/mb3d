@@ -22,7 +22,7 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
     Height = 445
     Align = alRight
     TabOrder = 0
-    ExplicitLeft = 502
+    ExplicitLeft = 509
     object Label2: TLabel
       Left = 8
       Top = 86
@@ -50,7 +50,7 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
     end
     object SaveImgBtn: TButton
       Left = 6
-      Top = 192
+      Top = 210
       Width = 156
       Height = 25
       Caption = 'Save As Image'
@@ -115,9 +115,9 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
     end
     object InfoMemo: TMemo
       Left = 1
-      Top = 223
+      Top = 241
       Width = 165
-      Height = 221
+      Height = 203
       Hint = 'Shows messages'
       Align = alBottom
       BorderStyle = bsNone
@@ -134,12 +134,10 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
       ReadOnly = True
       ShowHint = True
       TabOrder = 6
-      ExplicitTop = 348
-      ExplicitWidth = 163
     end
     object InvertZBufferCBx: TCheckBox
       Left = 56
-      Top = 137
+      Top = 185
       Width = 105
       Height = 19
       Caption = 'Invert ZBuffer'
@@ -148,6 +146,15 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
       TabOrder = 7
       WordWrap = True
       OnClick = InvertZBufferCBxClick
+    end
+    object GuessBtn: TButton
+      Left = 56
+      Top = 133
+      Width = 107
+      Height = 27
+      Caption = 'Guess params'
+      TabOrder = 8
+      OnClick = GuessBtnClick
     end
   end
   object ScrollBox1: TScrollBox
@@ -161,9 +168,6 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
     BevelOuter = bvNone
     BorderStyle = bsNone
     TabOrder = 1
-    ExplicitLeft = 2
-    ExplicitWidth = 629
-    ExplicitHeight = 570
     object MainPreviewImg: TImage
       Left = 0
       Top = 0
@@ -173,10 +177,11 @@ object ZBuf16BitGenFrm: TZBuf16BitGenFrm
     end
   end
   object SaveImgDialog: TSaveDialog
-    DefaultExt = 'pgm'
+    DefaultExt = 'png'
     Filter = 'Portable Graymap|*.pgm|Portable Network Graphic 16bit|*.png'
+    FilterIndex = 2
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
-    Left = 521
+    Left = 522
     Top = 135
   end
 end

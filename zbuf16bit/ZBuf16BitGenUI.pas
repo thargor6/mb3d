@@ -41,6 +41,7 @@ type
     MainPreviewImg: TImage;
     InfoMemo: TMemo;
     InvertZBufferCBx: TCheckBox;
+    GuessBtn: TButton;
     procedure FormCreate(Sender: TObject);
     procedure ZScaleEditUpDownClick(Sender: TObject; Button: TUDBtnType);
     procedure RefreshPreviewBtnClick(Sender: TObject);
@@ -49,6 +50,7 @@ type
     procedure ZScaleEditChange(Sender: TObject);
     procedure InvertZBufferCBxClick(Sender: TObject);
     procedure SaveImgBtnClick(Sender: TObject);
+    procedure GuessBtnClick(Sender: TObject);
   private
     { Private declarations }
     procedure EnableControls;
@@ -71,6 +73,18 @@ procedure TZBuf16BitGenFrm.FormCreate(Sender: TObject);
 begin
   SaveImgDialog.InitialDir := Mand3DForm.SaveDialog6.InitialDir;
   EnableControls;
+end;
+
+procedure TZBuf16BitGenFrm.GuessBtnClick(Sender: TObject);
+var
+  Bmp: TBitmap;
+  Info: TZBufInfo;
+  ZScale, ZOffset: double;
+begin
+  CreateZBuf16BitPreview( StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text), InvertZBufferCBx.Checked, @Info).Free;
+  GuessParamsFromInfo(@Info, ZScale, ZOffset);
+  ZOffsetEdit.Text := FloatToStr(ZOffset);
+  ZScaleEdit.Text := FloatToStr(ZScale);
 end;
 
 procedure TZBuf16BitGenFrm.InvertZBufferCBxClick(Sender: TObject);
