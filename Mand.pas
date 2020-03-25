@@ -2319,7 +2319,9 @@ begin
             if BatchForm1.CheckBox2.Checked then s := IncludeTrailingPathDelimiter(IniDirs[0]) +
               ExtractFileName(BatchForm1.ListView1.Items[BatchForm1.CurrentListIndex].Caption)
             else s := BatchForm1.ListView1.Items[BatchForm1.CurrentListIndex].Caption;
+            RepaintMand3DnoThread;
             SaveM3I(s, True);
+            RepaintMand3D(True);
             BatchForm1.NextFile;
           end
           else if TilingForm.SaveThisTile and (MHeader.TilingOptions <> 0) then  //with TilingForm
