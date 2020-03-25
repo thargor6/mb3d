@@ -54,6 +54,11 @@ uses Mand, TypeDefinitions, FileHandling, CustomFormulas;
 
 {$R *.dfm}
 
+const
+  Caption_Start_Rendering = 'Start batch rendering';
+  Caption_Stop_Rendering = 'Stop batch rendering';
+
+
 function TBatchForm1.CanLoadParas(M3Pfile: String): Boolean;
 var x: Integer;
     HybridCustoms: array[0..5] of TCustomFormula;
@@ -129,6 +134,7 @@ end;
 
 procedure TBatchForm1.FormCreate(Sender: TObject);
 begin
+    Button1.Caption := Caption_Start_Rendering;
     DragAcceptFiles(Self.Handle, True);
     BatchFormCreated := True;
 end;
@@ -171,24 +177,25 @@ begin
       BatchStatus := 0;
       Mand3DForm.EnableButtons;
       Button1.Enabled := True;
-      Button1.Caption := 'Start batch rendering';
+      Button1.Caption := Caption_Start_Rendering;
       ListView1.PopupMenu := PopupMenu1;
     end;
 end;
 
 procedure TBatchForm1.Button1Click(Sender: TObject);  //start batch
 begin
-    if Button1.Caption = 'Stop batch rendering' then
-    begin
+    if Button1.Caption = Caption_Stop_Rendering then begin
       MCalcStop := True;
       Button1.Caption := 'Stopping batch...';
       Button1.Enabled := False;
       BatchStatus := -1;
-    end else begin
+      Mand3DForm.CancelRendering;
+      Button1.Caption := Caption_Start_Rendering;
+    end
+    else begin
       //proof free disc space:  must be calc all needed space of files and add for each disc the amount of space needed
-   //   DiscFreeMB(disc: String; var FreeMB: Integer): LongBool;
-
-      Button1.Caption := 'Stop batch rendering';
+     //   DiscFreeMB(disc: String; var FreeMB: Integer): LongBool;
+      Button1.Caption := Caption_Stop_Rendering;
       BatchStatus := 1;
       CurrentListIndex := -1;
       ListView1.PopupMenu := nil;

@@ -511,7 +511,7 @@ type
     function IsCalculating: Boolean;
     procedure PropagateCurrFrameNumber;
     property NoSetFocus: Boolean read FNoSetFocus write FNoSetFocus;
-
+    procedure CancelRendering;
   end;
 procedure TriggerRepaint;
 function AniFileAlreadyExists(var s: String): LongBool;
@@ -520,7 +520,7 @@ procedure SaveFormulaBytes;
 var
   Mand3DForm: TMand3DForm;
   M3dVersion: Single = 1.99;
-  M3dSubRevision: Integer = 32;
+  M3dSubRevision: Integer = 33;
   Testing: LongBool = False;
   TBoostChanged: LongBool = False;
   MCalcStop: LongBool = False;
@@ -4118,6 +4118,29 @@ end;
 procedure TMand3DForm.PropagateCurrFrameNumber;
 begin
   TMapSequenceFrameNumberHolder.SetCurrFrameNumber( StrToInt('0'+Mand3DForm.FrameEdit.Text) );
+end;
+
+procedure TMand3DForm.CancelRendering;
+var
+  y: integer;
+  isDone: boolean;
+begin
+  MCalcStop := True;
+  while(True) do with MCalcThreadStats do begin
+    isDone := True;
+    for y := 1 to iTotalThreadCount do with CTrecords[y] do begin
+      if isActive > 0 then begin
+        isDone := False;
+        break;
+      end;
+    end;
+    if not isDone then begin
+      Application.ProcessMessages;
+      Sleep(1);
+    end
+    else
+      break;
+  end;
 end;
 
 Initialization
