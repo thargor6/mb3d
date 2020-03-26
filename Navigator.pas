@@ -82,7 +82,7 @@ type
     SpeedButton21: TSpeedButton;
     SpeedButton22: TSpeedButton;
     Label18: TLabel;
-    CheckBox6: TCheckBox;
+    ShowCoordsCBx: TCheckBox;
     Label34: TLabel;
     Label35: TLabel;
     Label36: TLabel;
@@ -173,6 +173,9 @@ type
     Button3: TSpeedButton;
     Button4: TSpeedButton;
     Button5: TSpeedButton;
+    Image7: TImage;
+    ShowGuidesCBx: TCheckBox;
+    UpDown4: TUpDown;
     procedure SpeedButton1Click(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -225,7 +228,7 @@ type
     procedure FormMouseMove(Sender: TObject; Shift: TShiftState; X,
       Y: Integer);
     procedure ScrollBar1Change(Sender: TObject);
-    procedure CheckBox6Click(Sender: TObject);
+    procedure ShowCoordsCBxClick(Sender: TObject);
     procedure Button4Click(Sender: TObject);
     procedure SpeedButton29Click(Sender: TObject);
     procedure SpeedButton30Click(Sender: TObject);
@@ -243,6 +246,8 @@ type
     procedure NaviSizeCmbChange(Sender: TObject);
     procedure DecreaseNaviSizeBtnClick(Sender: TObject);
     procedure IncreaseNaviSizeBtnClick(Sender: TObject);
+    procedure ShowGuidesCBxClick(Sender: TObject);
+    procedure UpDown4Click(Sender: TObject; Button: TUDBtnType);
   private
     { Private-Deklarationen }
     FirstStart: LongBool;
@@ -261,6 +266,7 @@ type
     DynFogAmountChanged: LongBool;
     DFogChanged: LongBool;
     DEstopChanged: LongBool;
+    FQualityLevel: Integer;
  //   ColOnItsChanged: LongBool;
     CalcThreadStatusID: Integer;
     MCTparas: Array [0..64] of TMCTparameter;
@@ -294,6 +300,7 @@ type
     function CopyFormulaNameFromMain(Findex: Integer): AnsiString;
     procedure CheckFocus;
     procedure PaintCoord;
+    procedure PaintGuides;
     procedure SetHeaderSize;
     procedure CheckFormulaImageVis;
     procedure EnableButtons;
@@ -320,6 +327,7 @@ type
     function isCalculating: LongBool;
     procedure SetSB18text(Disabled: Boolean);
     procedure ChangeNaviMode;
+    procedure RefreshQualityLabel;
  //   procedure WndProc(var Message: TMessage); override;
   end;
 
@@ -735,13 +743,20 @@ begin
     begin
       if iActiveThreads > 0 then WaitForCalcToStop(2000);
       Image1.Picture.Bitmap.SetSize(NaviHeader.Width, NaviHeader.Height);
-      if( NaviHeader.Width > 640) then
-        Image1.SetBounds(0,0, NaviHeader.Width, NaviHeader.Height)
-      else
-        Image1.SetBounds((640 - NaviHeader.Width) div 2, (Panel1.Top - NaviHeader.Height) div 2,
-                         NaviHeader.Width, NaviHeader.Height);
+      Image7.Picture.Bitmap.SetSize(NaviHeader.Width, NaviHeader.Height);
+      if( NaviHeader.Width > 640) then begin
+        Image1.SetBounds(0,0, NaviHeader.Width, NaviHeader.Height);
+        Image7.SetBounds(0,0, NaviHeader.Width, NaviHeader.Height);
+      end
+      else begin
+        Image1.SetBounds((640 - NaviHeader.Width) div 2, (Panel1.Top - NaviHeader.Height) div 2, NaviHeader.Width, NaviHeader.Height);
+        Image7.SetBounds((640 - NaviHeader.Width) div 2, (Panel1.Top - NaviHeader.Height) div 2, NaviHeader.Width, NaviHeader.Height);
+      end;
     end
-    else Image1.Top := (Panel1.Top - NaviHeader.Height) div 2;
+    else begin
+      Image1.Top := (Panel1.Top - NaviHeader.Height) div 2;
+      Image7.Top := (Panel1.Top - NaviHeader.Height) div 2;
+    end;
     Image6.Top := Image1.Top + NaviHeader.Height div 2 - 60;  //onclick disabled when visible!
     Image6.Left := Image1.Left + NaviHeader.Width div 2 - 60;
 end;
@@ -750,6 +765,13 @@ procedure TFNavigator.Calc(Nstep: Integer);
 var I, x, nThreadCount: Integer;
     bAllOK: LongBool;
     CalcThread: array of TNaviCalcThread;
+
+    function CalcRayStepMultiplier: double;
+    begin
+      // Result := 0.7 - 0.35 * (Byte(CheckBox4.Checked) and 1);
+      Result := 0.7 - ( FQualityLevel + 6 ) * 0.05 * (Byte(CheckBox4.Checked) and 1);
+    end;
+
 begin
   Mand3DForm.bHideMessages := True;
   bAllOK := False;
@@ -765,7 +787,7 @@ begin
         NDEmultiplier := NDEmultiplier * MinMaxCD(0.5, NminDEcorrection *
       (NaviHeader.dZoom * NaviHeader.Width) / (LengthOfSize(@NaviHeader) * 2), 1); //  LengthOfSize(@NaviHeader) * 2 / (dZoom * Width) :=  AbsDE;
       NminDEcorrection      := 1000;
-      NaviHeader.mZstepDiv  := 0.7 - 0.35 * (Byte(CheckBox4.Checked) and 1);
+      NaviHeader.mZstepDiv  := CalcRayStepMultiplier;
       NaviHeader.sRaystepLimiter := MaxCS(NaviHeader.sRaystepLimiter, NaviHeader.mZstepDiv * 0.5);
       NaviHeader.bCalc3D    := 1;
       NaviHeader.dFOVy      := StrToFloatK(Edit3.Text);
@@ -949,6 +971,7 @@ begin
       end;
       PaintZeroVec;
       PaintCoord;
+      PaintGuides;
       NewCalc;
     end;
 end;
@@ -1123,6 +1146,7 @@ begin
     end;
 end;  }
 
+
 procedure TFNavigator.PaintCoord;  //direct to bmp
 var m: TMatrix3;
     sx, sy, sx2, sy2, tipsize: Single;
@@ -1130,7 +1154,7 @@ var m: TMatrix3;
     sorta: array[0..2] of Integer;
 const ca: array[0..2] of Cardinal = ($50FF,$40F030,$FFB000);
 begin
-    if not CheckBox6.Checked then Image6.Visible := False else
+    if not ShowCoordsCBx.Checked then Image6.Visible := False else
     with Image6.Picture.Bitmap.Canvas do
     begin
       Image6.Transparent := False;
@@ -1173,6 +1197,62 @@ begin
     end;
 end;
 
+procedure TFNavigator.PaintGuides;  //direct to bmp
+const
+  CenterPointColor: Cardinal = $A0A0A0;
+  RuleOfThirdsColor: Cardinal = $0000DD;
+  GoldenRatioColor: Cardinal = $00DDFF;
+var
+  ImgWidth, ImgHeight, Position: Integer;
+begin
+    ImgWidth := NaviHeader.Width;
+    ImgHeight := NaviHeader.Height;
+    if (not ShowGuidesCBx.Checked) or (ImgWidth <=0 ) or (ImgHeight <=0)  then
+      Image7.Visible := False
+    else with Image7.Picture.Bitmap.Canvas do begin
+      Image7.Transparent := False;
+      Font.Style := [fsBold];
+      Brush.Color := clBlack;
+      FillRect(ClipRect);
+      SetBkMode(Handle, TRANSPARENT);
+      Pen.Width := 1;
+      // center point
+      Pen.Color := CenterPointColor;
+      Position := Round(ImgHeight / 2.0);
+      MoveTo(0, Position);
+      LineTo(ImgWidth - 1, Position);
+      Position := Round(ImgWidth / 2.0);
+      MoveTo(Position, 0);
+      LineTo(Position, ImgHeight - 1);
+      // rule of thirds
+      Pen.Color := RuleOfThirdsColor;
+      Position := Round(ImgHeight / 3.0 );
+      MoveTo(0, Position);
+      LineTo(ImgWidth - 1, Position);
+      MoveTo(0, ImgHeight - Position - 1);
+      LineTo(ImgWidth - 1, ImgHeight - Position - 1);
+      Position := Round(ImgWidth / 3.0);
+      Moveto(Position, 0);
+      LineTo(Position, ImgHeight - 1);
+      Moveto(ImgWidth - Position - 1, 0);
+      LineTo(ImgWidth - Position - 1, ImgHeight);
+      // golden ratio
+      Pen.Color := GoldenRatioColor;
+      Position := Round(ImgHeight * 0.61803399);
+      MoveTo(0, Position);
+      LineTo(ImgWidth, Position);
+      MoveTo(0, ImgHeight - Position - 1);
+      LineTo(ImgWidth - 1, ImgHeight - Position - 1);
+      Position := Round(ImgWidth * 0.61803399);
+      Moveto(Position, 0);
+      LineTo(Position, ImgHeight - 1);
+      MoveTo(ImgWidth - Position - 1, 0);
+      LineTo(ImgWidth - position - 1, ImgHeight);
+      Image7.Transparent := True;
+      if not Image7.Visible then Image7.Visible := True;
+    end;
+end;
+
 procedure TFNavigator.FormShow(Sender: TObject);
 begin
     with NaviHeader do
@@ -1212,6 +1292,8 @@ end;
 procedure TFNavigator.FormCreate(Sender: TObject);
 var i: Integer;
 begin
+    FQualityLevel := 1;
+    RefreshQualityLabel;
     Image1.Parent.ControlStyle := [csOpaque];
     FirstStart := True;
     bUserChange := False;
@@ -1247,6 +1329,7 @@ begin
     SpeedButton26Click(Sender); //update adjust panel
     PaintZeroVec;
     PaintCoord;
+    PaintGuides;
     AdjustPanel3positions;
     DynFogAmountChanged := False;
     DEstopChanged := False;
@@ -1688,6 +1771,7 @@ begin
         NewCalc;
         PaintZeroVec;
         PaintCoord;  //test
+        PaintGuides;
       end;
     end;
 end;
@@ -2232,9 +2316,14 @@ begin  //mov FSubIndexTop
     end;
 end;
 
-procedure TFNavigator.CheckBox6Click(Sender: TObject);
+procedure TFNavigator.ShowCoordsCBxClick(Sender: TObject);
 begin
     PaintCoord;
+end;
+
+procedure TFNavigator.ShowGuidesCBxClick(Sender: TObject);
+begin
+  PaintGuides;
 end;
 
 procedure TFNavigator.Button4Click(Sender: TObject);
@@ -2381,6 +2470,29 @@ procedure TFNavigator.UpDown3Click(Sender: TObject; Button: TUDBtnType);
 begin
     if Button = btPrev then SpinButton1Down else
     if Button = btNext then SpinButton1Up;
+end;
+
+procedure TFNavigator.RefreshQualityLabel;
+begin
+  CheckBox4.Caption := Format('HiQual %d', [FQualityLevel]);
+end;
+
+procedure TFNavigator.UpDown4Click(Sender: TObject; Button: TUDBtnType);
+begin
+  if Button = btPrev then begin
+    if FQualityLevel > 1 then begin
+      Dec(FQualityLevel);
+      RefreshQualityLabel;
+      NewCalc;
+    end;
+  end
+  else if Button = btNext then begin
+    if FQualityLevel < 6 then begin
+      Inc(FQualityLevel);
+      RefreshQualityLabel;
+      NewCalc;
+    end;
+  end;
 end;
 
 procedure TFNavigator.SpinEdit2Click(Sender: TObject; Button: TUDBtnType);

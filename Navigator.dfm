@@ -27,7 +27,7 @@ object FNavigator: TFNavigator
   TextHeight = 13
   object Image1: TImage
     Left = 0
-    Top = 0
+    Top = -2
     Width = 640
     Height = 400
     Hint = 
@@ -69,8 +69,20 @@ object FNavigator: TFNavigator
     Visible = False
   end
   object Image6: TImage
-    Left = 260
-    Top = 168
+    Left = 258
+    Top = 166
+    Width = 120
+    Height = 120
+    Transparent = True
+    Visible = False
+    OnClick = Image1Click
+    OnDblClick = Image1DblClick
+    OnMouseDown = Image1MouseDown
+    OnMouseMove = Image1MouseMove
+  end
+  object Image7: TImage
+    Left = 266
+    Top = 174
     Width = 120
     Height = 120
     Transparent = True
@@ -1181,7 +1193,7 @@ object FNavigator: TFNavigator
     end
   end
   object Panel1: TPanel
-    Left = 0
+    Left = -1
     Top = 400
     Width = 640
     Height = 114
@@ -1930,7 +1942,7 @@ object FNavigator: TFNavigator
     object CheckBox4: TCheckBox
       Left = 507
       Top = 4
-      Width = 55
+      Width = 63
       Height = 15
       Hint = 
         'Reduces the raystep multiplier to avoid overstepping.'#13#10'Makes the' +
@@ -1941,7 +1953,7 @@ object FNavigator: TFNavigator
       TabOrder = 1
       OnClick = CheckBox3Click
     end
-    object CheckBox6: TCheckBox
+    object ShowCoordsCBx: TCheckBox
       Left = 353
       Top = 2
       Width = 80
@@ -1949,18 +1961,41 @@ object FNavigator: TFNavigator
       Alignment = taLeftJustify
       Caption = 'Show coords'
       TabOrder = 2
-      OnClick = CheckBox6Click
+      OnClick = ShowCoordsCBxClick
     end
     object UpDown3: TUpDown
       Left = 74
       Top = 2
-      Width = 20
+      Width = 21
       Height = 18
       Min = -30000
       Max = 30000
       TabOrder = 3
       Visible = False
       OnClick = UpDown3Click
+    end
+    object ShowGuidesCBx: TCheckBox
+      Left = 259
+      Top = 2
+      Width = 80
+      Height = 17
+      Alignment = taLeftJustify
+      Caption = 'Show guides'
+      TabOrder = 4
+      OnClick = ShowGuidesCBxClick
+    end
+    object UpDown4: TUpDown
+      Left = 484
+      Top = 3
+      Width = 21
+      Height = 18
+      Hint = 'Increase/Decrease quality level (Raystep multiplier)'
+      Min = 1
+      Max = 6
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 5
+      OnClick = UpDown4Click
     end
   end
   object Panel2: TPanel
@@ -2212,7 +2247,7 @@ object FNavigator: TFNavigator
     Left = 48
     Top = 32
     Bitmap = {
-      494C01010400090030000C000B00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010400090044000C000B00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000001600000001002000000000008010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
