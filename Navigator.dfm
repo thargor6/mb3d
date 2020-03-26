@@ -1991,7 +1991,7 @@ object FNavigator: TFNavigator
       Height = 18
       Hint = 'Increase/Decrease quality level (Raystep multiplier)'
       Min = 1
-      Max = 6
+      Max = 7
       ParentShowHint = False
       ShowHint = True
       TabOrder = 5

@@ -759,6 +759,7 @@ begin
     end;
     Image6.Top := Image1.Top + NaviHeader.Height div 2 - 60;  //onclick disabled when visible!
     Image6.Left := Image1.Left + NaviHeader.Width div 2 - 60;
+    PaintGuides;
 end;
 
 procedure TFNavigator.Calc(Nstep: Integer);
@@ -1215,7 +1216,7 @@ begin
       Brush.Color := clBlack;
       FillRect(ClipRect);
       SetBkMode(Handle, TRANSPARENT);
-      Pen.Width := 1;
+      Pen.Width := 2;
       // center point
       Pen.Color := CenterPointColor;
       Position := Round(ImgHeight / 2.0);
@@ -1225,6 +1226,7 @@ begin
       MoveTo(Position, 0);
       LineTo(Position, ImgHeight - 1);
       // rule of thirds
+      Pen.Width := 1;
       Pen.Color := RuleOfThirdsColor;
       Position := Round(ImgHeight / 3.0 );
       MoveTo(0, Position);
@@ -1237,6 +1239,7 @@ begin
       Moveto(ImgWidth - Position - 1, 0);
       LineTo(ImgWidth - Position - 1, ImgHeight);
       // golden ratio
+      Pen.Width := 1;
       Pen.Color := GoldenRatioColor;
       Position := Round(ImgHeight * 0.61803399);
       MoveTo(0, Position);
@@ -2487,7 +2490,7 @@ begin
     end;
   end
   else if Button = btNext then begin
-    if FQualityLevel < 6 then begin
+    if FQualityLevel < 7 then begin
       Inc(FQualityLevel);
       RefreshQualityLabel;
       NewCalc;

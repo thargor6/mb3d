@@ -1,7 +1,145 @@
+V1.99.33:
+  -  Navigator-window:
+     - new option to draw guides (center point, rule of thirds and the golden ratio)
+     - new option to increase Quality in "HiQual"-Mode (by decreasing RayStep multiplier in steps of 0.05)
+  - Batch renderer
+     - fixed a bug when trying to cancel the Batch renderer
+     - fixed the bug, that Post-processing is not always applied, when rendering in Batch mode
+
+V1.99.32:
+ - ZBuffer-generator is feature-complete now
+ - added a "Guess params"-button
+ - added some example images to the distribution and added the README-files from previous releases
+
+V1.99.31:
+  - added support for saving and on-the-fly PGMtoPNG-conversion of heightmaps (invoking the Java-based converter)
+
+V1.99.31:
+  - added java-based PNG-to-PNG16Bit-converter to circumvent the problems with the Delphi-PNG-Components
+
+V1.99.30:
+  - finished the UI of the ZBuffer-generator (which is now a new module)
+
+V1.99.29:
+  - basic implementation for generating 16bit zbuffers, unfortunately it is not possible to save them as 
+    PNG using the official PNG-components because they have too many bugs
+  - started to create new module to generate ZBuffers of high-quality
+
+V1.99.28:
+  - BTracer2: 
+      - fixed a bug causing vertex colors to be gray (red, green, blue the same)
+      - fixed a bug in BTracer2-UI: the Zoom in/out-buttons now also cause a refresh
+  - BTracer2x64: 
+      - mesh-reduction now supports both vertex-colors and uv-coordinates and is enabled by default
+      - updated the documentation
+
+V1.99.27
+ - BTracer2:
+    - many small improvements in the UI
+    - removed auto-resize from OpenGL preview (too confusing in BTracer2-preview-mode)
+    - auto-centre of OpenGL only when previewing the mesh
+
+V1.99.26 (unreleased)
+  - BTracer2:
+      new optional and experimental OpenGL-preview (as replacement for the "voxel-style"-preview),
+      but you can switch between both options at any time
+
+V1.99.25
+  - BTracer2:
+     - option to create closed meshes (along the trace-range-boarders)
+     - an official documentation for all BTracer2-related topics: BTracer2.pdf
+
+V1.99.24
+  - BTracer2:
+     - added x- and y-ranges for tracing as well
+     - finalized (again ;-)) the *.btr2cache-format
+     - first working version of the 64bit app
+
+V1.99.23 (unreleased)
+  - BTracer2:
+     - renamed the btracer2-cache-files into *.btr2cache
+     - added the possibilities to load/save all settings as/from *.btrace2-file
+
+V1.99.22 (unreleased)
+  - BTracer2:
+     - optimized and finalized BTracer2-Cache-format
+     - new DE-option for the preview
+     - a lot of internal refactoring in the UI
+
+V1.99.21 (unreleased)
+  - BTracer2:
+     - support for cache-files with or without color-information
+     - few optimizations
+     - finalized btracer2-format
+     - decided to make the 64bit-app a commercial app
+
+V1.99.20 (unreleased)
+   - options to rotate the mesh in the BTracer2-window
+   - many minor changes to the BTracer2x64 app
+   - first successful test with a huge mesh (resolution 2000x2000x2000)
+
+V1.99.19 (unreleased)
+   - added z-tracing-range in BTracer2
+   - basic working UI for the BTracer2x64 app
+      - "lossless" mesh reduction, currently not supporting vertex colors
+   - many minor changes in the MB3D-app
+
+V1.99.18 (unreleased)
+   - many optimizations to the BTracer2x64 app
+   - support for mesh simplification in the BTracer2x64 app
+   - successfully created the first "serious mesh" (1500x1500x1500)
+   - many minor changes in the MB3D-app
+
+V1.99.17 (unreleased)
+   - basic BTracer2x64 companion app (64bit) to generate meshes from btracer2-files
+   - many minor changes in the MB3D-app
+
+V1.99.16 (unreleased)
+   - multithreaded streaming of btracer2-files finished (currently implemented as test inside MB3D)
+   - improved error-handling for BTracer2
+
+V1.99.15 (unreleased)
+   - reworked most of the file-handling regarding *.btracer2-files
+         - allows efficient, robust and multi-threaded reading and writing
+   - increased default vertex-maximum for mesh-preview
+
+V1.99.14 (unreleased)
+     - revisited the btracer2-file format, updated loader and saver
+     - some optimizations
+
+V1.99.13 (unreleased)
+     - skipped as well ;-)
+
+V1.99.12
+     - adaptive cache-size allowing to create meshes with larger size in the 32bit version
+     - some final testing for the next release
+
+V1.99.11 (unreleased)
+     - added *.ply-export-format with vertex colors
+     - *.ply-export is now the default format
+     - adaptive cache-size allowing to create meshes with larger size in the 32bit version
+
+V1.99.10 (unreleased)
+     - added internal support for creating vertex-colors (i. e. actual rgb-colors) in addition to uv-coordinates
+     - reworked most of the color-stuff
+     - internal support for loading of btracer2-file
+
+V1.99.9 (unreleased)
+ - BTracer2:
+    - added support for writing btracer-files in order to generate meshes of higher resolution (later)
+    - reworked some of the color-stuff in order to allow true vertex-colors (later)
+
+V1.99.8 (unreleased)
+ - BTracer2:
+    - improved preview (sometimes nothing showed up)
+    - added fine 256^3 preview resolution
+    - Fixed: BTracer2: mesh-generation could not be cancelled 
+    - slightly reduced the height of the BTracer2-window in order to support lower screen-resolutions
+
 V1.99.7
--BTracer2:
-  - some minor improvements and final testing
-  - updated CHANGES.txt
+ - BTracer2:
+    - some minor improvements and final testing
+    - updated CHANGES.txt
 
 V1.99.6 (unreleased)
  - BTracer2:
