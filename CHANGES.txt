@@ -1,3 +1,10 @@
+V1.99.34:
+  - new option "Store PNG-preview" in the Batch-render ("m3p->m3i") to save an additional *.PNG preview, which is default set to on
+  - FIXED: improved the stability of the Preview in BTracer2 which could be trapped inside an endless loop when it was flooed with too many refresh-events
+  - FIXED: Saving PNG16Bit to locations with spaces in the path failed, also when the path to the Mandelbulb3D.exe itself contained space characters
+  - FIXED: the file dialog used for regular images also displayed the 16bit option (which is only supported for z-buffers)
+  - showing the url of the official web site in the log file
+
 V1.99.33:
   -  Navigator-window:
      - new option to draw guides (center point, rule of thirds and the golden ratio)

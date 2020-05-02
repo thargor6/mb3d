@@ -637,7 +637,8 @@ begin
     if MeshPreviewFrm.Visible then
       BringToFront2(MeshPreviewFrm.Handle);
 
-    StartNewPreview;
+    //StartNewPreview;
+    RefreshPreviewBtnClick(nil);
 end;
 
 procedure TBulbTracer2Frm.FormShow(Sender: TObject);
@@ -665,7 +666,8 @@ begin
   if bUserChange then begin
     UpdateBTracer2HeaderFromUI;
     CalcImageSize;
-    StartNewPreview;
+    RefreshPreviewBtnClick(nil);
+//    StartNewPreview;
   end;
 end;
 

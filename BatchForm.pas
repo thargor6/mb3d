@@ -19,6 +19,7 @@ type
     PopupMenu1: TPopupMenu;
     Deleteselectedfilesfromlist1: TMenuItem;
     Clearthewholelist1: TMenuItem;
+    SavePNGPreviewCBx: TCheckBox;
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
     procedure ListView1KeyDown(Sender: TObject; var Key: Word;

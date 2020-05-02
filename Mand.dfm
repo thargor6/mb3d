@@ -2542,7 +2542,7 @@ object Mand3DForm: TMand3DForm
       TabOrder = 1
       object Image1: TImage
         Left = 0
-        Top = 0
+        Top = 1
         Width = 480
         Height = 400
         AutoSize = True
@@ -2945,7 +2945,7 @@ object Mand3DForm: TMand3DForm
           end
           object SpeedButton26: TSpeedButton
             Left = 86
-            Top = 3
+            Top = 4
             Width = 40
             Height = 30
             Hint = 
@@ -3203,13 +3203,11 @@ object Mand3DForm: TMand3DForm
   end
   object SaveDialog6: TSaveDialog
     DefaultExt = 'bmp'
-    Filter = 
-      'Windows Bitmap|*.bmp|Portable Network Graphic 8bit|*.png|Portabl' +
-      'e Network Graphic 16bit|*.png'
+    Filter = 'Windows Bitmap|*.bmp|Portable Network Graphic 8bit|*.png'
     Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
     OnTypeChange = SaveDialog6TypeChange
-    Left = 239
-    Top = 278
+    Left = 238
+    Top = 279
   end
   object PopupMenu1: TPopupMenu
     Left = 496
@@ -3330,5 +3328,15 @@ object Mand3DForm: TMand3DForm
     OnTimer = Timer6Timer
     Left = 264
     Top = 160
+  end
+  object SaveDialog5: TSaveDialog
+    DefaultExt = 'bmp'
+    Filter = 
+      'Windows Bitmap|*.bmp|Portable Network Graphic 8bit|*.png|Portabl' +
+      'e Network Graphic 16bit|*.png'
+    Options = [ofOverwritePrompt, ofHideReadOnly, ofEnableSizing]
+    OnTypeChange = SaveDialog5TypeChange
+    Left = 362
+    Top = 299
   end
 end

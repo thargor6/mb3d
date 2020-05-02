@@ -2,7 +2,7 @@ object BatchForm1: TBatchForm1
   Left = 197
   Top = 91
   Caption = 'Batch processing'
-  ClientHeight = 541
+  ClientHeight = 539
   ClientWidth = 565
   Color = clBtnFace
   Constraints.MinHeight = 200
@@ -20,7 +20,7 @@ object BatchForm1: TBatchForm1
     Left = 0
     Top = 0
     Width = 565
-    Height = 470
+    Height = 462
     Align = alClient
     Checkboxes = True
     Columns = <
@@ -45,20 +45,22 @@ object BatchForm1: TBatchForm1
     OnChange = ListView1Change
     OnInsert = ListView1Insert
     OnKeyDown = ListView1KeyDown
+    ExplicitHeight = 470
   end
   object Panel1: TPanel
     Left = 0
-    Top = 470
+    Top = 462
     Width = 565
-    Height = 71
+    Height = 77
     Align = alBottom
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
+    ExplicitTop = 468
     object Button1: TButton
-      Left = 200
-      Top = 40
-      Width = 113
+      Left = 201
+      Top = 43
+      Width = 126
       Height = 25
       Hint = 'Starts rendering all selected M3P files'
       Caption = 'Start batch rendering'
@@ -68,8 +70,8 @@ object BatchForm1: TBatchForm1
       OnClick = Button1Click
     end
     object CheckBox1: TCheckBox
-      Left = 16
-      Top = 16
+      Left = 12
+      Top = 7
       Width = 153
       Height = 17
       Hint = 
@@ -83,8 +85,8 @@ object BatchForm1: TBatchForm1
       TabOrder = 1
     end
     object Button2: TButton
-      Left = 336
-      Top = 40
+      Left = 477
+      Top = 47
       Width = 81
       Height = 25
       Caption = 'Close window'
@@ -94,18 +96,18 @@ object BatchForm1: TBatchForm1
       OnClick = Button2Click
     end
     object Button3: TButton
-      Left = 200
-      Top = 8
-      Width = 65
-      Height = 21
+      Left = 201
+      Top = 6
+      Width = 126
+      Height = 25
       Hint = 'Click to select one and more M3P files to put into the list.'
       Caption = 'Open files'
       TabOrder = 3
       OnClick = Button3Click
     end
     object CheckBox2: TCheckBox
-      Left = 16
-      Top = 40
+      Left = 12
+      Top = 29
       Width = 161
       Height = 17
       Hint = 
@@ -116,14 +118,27 @@ object BatchForm1: TBatchForm1
       TabOrder = 4
     end
     object Button4: TButton
-      Left = 272
-      Top = 8
-      Width = 81
-      Height = 21
+      Left = 344
+      Top = 6
+      Width = 126
+      Height = 25
       Hint = 'Click to open the explorer and drag&&drop M3P files on the list.'
       Caption = 'Open explorer'
       TabOrder = 5
       OnClick = Button4Click
+    end
+    object SavePNGPreviewCBx: TCheckBox
+      Left = 12
+      Top = 51
+      Width = 161
+      Height = 17
+      Hint = 
+        'Store an additional corresponding *.PNG-file for simpler preview' +
+        ' of the image'
+      Caption = 'Store PNG-preview'
+      Checked = True
+      State = cbChecked
+      TabOrder = 6
     end
   end
   object PopupMenu1: TPopupMenu

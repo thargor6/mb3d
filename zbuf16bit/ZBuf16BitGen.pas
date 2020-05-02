@@ -326,7 +326,7 @@ begin
     raise Exception.Create('Could not overwrite file <' + OutputFilename + '>');
 
   Path := IncludeTrailingBackslash( ExtractFilepath( Application.Exename) );
-  Cmd := 'java -jar ' + Path +'PNG16Util-1.0-SNAPSHOT.jar ' + InputFilename;
+  Cmd := 'java -jar ' + '"'+Path +'PNG16Util-1.0-SNAPSHOT.jar" ' + '"'+InputFilename+'"';
   CmdResult := GetDosOutput(Cmd, Path);
   OutputDebugString(PChar(CmdResult));
   Wait := 0;

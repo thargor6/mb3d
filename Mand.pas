@@ -276,6 +276,7 @@ type
     FrameUpDown: TUpDown;
     ZBufferGenBtn: TSpeedButton;
     HeightMapGenBtn: TSpeedButton;
+    SaveDialog5: TSaveDialog;
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Button2Click(Sender: TObject);
@@ -397,6 +398,7 @@ type
     procedure MeshExportBtnClick(Sender: TObject);
     procedure ZBufferGenBtnClick(Sender: TObject);
     procedure HeightMapGenBtnClick(Sender: TObject);
+    procedure SaveDialog5TypeChange(Sender: TObject);
  //   procedure OpenPictureDialog1SelectionChange(Sender: TObject);
 //    procedure PageControl1DrawTab(Control: TCustomTabControl; TabIndex: Integer;
   //    const Rect: TRect; Active: Boolean);
@@ -520,7 +522,7 @@ procedure SaveFormulaBytes;
 var
   Mand3DForm: TMand3DForm;
   M3dVersion: Single = 1.99;
-  M3dSubRevision: Integer = 33;
+  M3dSubRevision: Integer = 34;
   Testing: LongBool = False;
   TBoostChanged: LongBool = False;
   MCalcStop: LongBool = False;
@@ -1701,12 +1703,17 @@ end;
 procedure TMand3DForm.FormCreate(Sender: TObject);
 var i: Integer;
 begin
+    OutMessage('Welcome to Mandelbulb 3D!');
+    OutMessage('Visit the official web site for news and updates: https://mb3d.overwhale.com');
+    OutMessage('');
+
     LoadIni;
     if IniVal[35] <> '' then TStyleManager.TrySetStyle(IniVal[35]);
 
     OPD := TOpenPictureDialogM3D.Create(Self);
     OPD.Filter := 'M3D Image + Parameter (*.m3i)|*.m3i';
     OPD.DefaultExt := 'm3i';
+
     Randomize;
     FormatSettings.DecimalSeparator  := '.';
     notAllButtonsUp   := True;
@@ -2321,6 +2328,9 @@ begin
             else s := BatchForm1.ListView1.Items[BatchForm1.CurrentListIndex].Caption;
             RepaintMand3DnoThread;
             SaveM3I(s, True);
+            if BatchForm1.SavePNGPreviewCBx.Checked then begin
+              SaveImageO(0 (* PNG *), s);
+            end;
             RepaintMand3D(True);
             BatchForm1.NextFile;
           end
@@ -3066,6 +3076,7 @@ begin
     SaveDialog2.InitialDir := IniDirs[1];
     SaveDialog4.InitialDir := IniDirs[2];
     SaveDialog6.InitialDir := IniDirs[2];
+    SaveDialog5.InitialDir := IniDirs[2];
     SaveDialog1.InitialDir := IniDirs[2];
 end;
 
@@ -3701,7 +3712,7 @@ end;
 
 procedure TMand3DForm.SpeedButton26Click(Sender: TObject);  //Save Zbuf
 begin
-    if SaveDialog6.Execute then SaveZBuf(SaveDialog6.Filename, SaveDialog6.FilterIndex, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text), ZBuf16BitGenFrm.InvertZBufferCBx.Checked);
+    if SaveDialog5.Execute then SaveZBuf(SaveDialog5.Filename, SaveDialog5.FilterIndex, StrToFloatK(ZBuf16BitGenFrm.ZOffsetEdit.Text), StrToFloatK(ZBuf16BitGenFrm.ZScaleEdit.Text), ZBuf16BitGenFrm.InvertZBufferCBx.Checked);
 end;
 
 procedure TMand3DForm.SaveDialog6TypeChange(Sender: TObject);
@@ -3956,6 +3967,28 @@ begin
       end;
     if S <> '' then
       SendMessage(GetParent(SaveDialog1.Handle), CDM_SETCONTROLTEXT, $480, Longint(PChar(ExtractFileName(S))));
+end;
+
+procedure TMand3DForm.SaveDialog5TypeChange(Sender: TObject);
+var S: String;
+begin
+    case SaveDialog5.FilterIndex of
+      1:  SaveDialog5.DefaultExt := 'bmp';
+      2:  SaveDialog5.DefaultExt := 'png'; // 8bit
+      3:  SaveDialog5.DefaultExt := 'png'; // 16bit
+    end;
+    S := SaveDialog5.Filename;
+    if SysUtils.DirectoryExists(S) then S := '';
+    if S <> '' then
+      case SaveDialog5.FilterIndex of
+        1:  S := ChangeFileExt(S, '.bmp');
+        2:  S := ChangeFileExt(S, '.png'); // 8bit
+        3:  S := ChangeFileExt(S, '.png'); // 16bit
+      else
+        S := '';
+      end;
+    if S <> '' then
+      SendMessage(GetParent(SaveDialog5.Handle), CDM_SETCONTROLTEXT, $480, Longint(PChar(ExtractFileName(S))));
 end;
 
 procedure TMand3DForm.SpeedButton29Click(Sender: TObject); //save paras+image
