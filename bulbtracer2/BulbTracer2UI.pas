@@ -623,7 +623,7 @@ begin
       Xoff := 0;
       Yoff := 0;
       Zoff := 0;
-      Scale := 1;
+      Scale := 0.5;
       XAngle := 0;
       YAngle := 0;
       ZAngle := 0;
@@ -1270,7 +1270,7 @@ begin
     XOffsetEdit.Text := '0';
     YOffsetEdit.Text := '0';
     ZOffsetEdit.Text := '0';
-    ScaleEdit.Text := '1';
+    ScaleEdit.Text := '0.5';
     XRotateEdit.Text := '0';
     YRotateEdit.Text := '0';
     ZRotateEdit.Text := '0';

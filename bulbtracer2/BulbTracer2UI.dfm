@@ -179,7 +179,7 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Width = 87
         Height = 21
         TabOrder = 3
-        Text = '1.0'
+        Text = '0.5'
         OnExit = XOffsetEditChange
       end
       object XRotateEdit: TEdit
@@ -336,8 +336,9 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Width = 68
         Height = 13
         Hint = 
-          'Measure of the sharpness/smoothness of the object'#39's surface. The' +
-          ' higher the value, the more details'
+          'Measure of the sharpness/smoothness of the object'#39's surface. Try' +
+          ' values  in the range of 0.15 .. 1.5, in rare cases small negati' +
+          've numbers like -0.1 also produce interesting results'
         Alignment = taRightJustify
         Caption = 'Surface detail:'
         ParentShowHint = False
@@ -426,8 +427,10 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Top = 53
         Width = 54
         Height = 21
+        ParentShowHint = False
+        ShowHint = False
         TabOrder = 2
-        Text = '1.25'
+        Text = '0.5'
         OnExit = SurfaceSharpnessEditExit
       end
       object SurfaceSharpnessUpDown: TUpDown
@@ -435,8 +438,14 @@ object BulbTracer2Frm: TBulbTracer2Frm
         Top = 53
         Width = 17
         Height = 21
+        Hint = 
+          'Measure of the sharpness/smoothness of the object'#39's surface. Try' +
+          ' values  in the range of 0.15 .. 1.5, in rare cases small negati' +
+          've numbers like -0.1 also produce interesting results'
         Min = -32000
         Max = 32000
+        ParentShowHint = False
+        ShowHint = True
         TabOrder = 3
         OnClick = SurfaceSharpnessUpDownClick
       end

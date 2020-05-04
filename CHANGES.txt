@@ -1,9 +1,11 @@
 V1.99.34:
   - new option "Store PNG-preview" in the Batch-render ("m3p->m3i") to save an additional *.PNG preview, which is default set to on
+  - changed some initial settings in BTracer2 to produce better results in most cases (but causing worse results for the "standard bulb")
   - FIXED: improved the stability of the Preview in BTracer2 which could be trapped inside an endless loop when it was flooed with too many refresh-events
   - FIXED: Saving PNG16Bit to locations with spaces in the path failed, also when the path to the Mandelbulb3D.exe itself contained space characters
   - FIXED: the file dialog used for regular images also displayed the 16bit option (which is only supported for z-buffers)
   - showing the url of the official web site in the log file
+  - added HISTORY-entries from the original program to the CHANGES.txt (this file), at the bottom
 
 V1.99.33:
   -  Navigator-window:
@@ -367,6 +369,833 @@ V1.90 RELEASE
   please use the bug-reporting-tool to report bugs if possible!
 
 
+#######################################################################################################
+HISTORY
+
+	 1  Fractal Software / Mandelbulb 3d / Re: Custom formulas & transforms - Release (Summary)
+	on: August 02, 2016, 02:32:35 AM
+	Started by DarkBeam, Message by 0Encrypted0
+	Relevance: 60.7%
+	DarkBeam's three original posts describing formulas he released
+	Custom formulas & transforms (old post)
+	« on: February 07, 2011, 05:38:22 AM »
+
+	IMPORTANT. HOW TO USE TRANSFORMS AS PRE-TRANSFORMS
+	Jesse revealed me this trick that I didn't know. It is really really useful if you like to use transformations as pre-transformations.
+	It is fundamental. Why?
+	For example, the inversion of an inversion returns tre undeformed pixel ... So you will never want to do inversions more than once.
+	Apply the same Mobius transform twice will give another Mobius transform, but it is unwanted! This will cause a slowdown of the computation for nothing. (Note that I said "the same". Mobius conditional transforms are a completely different thing)
+	The same applies for every possible coordinate transform (except for coord - scaling- inverse coord sequence that can give interesting effects, a "particular case").
+	In this mode you can do (for example) a Mobius transformation only once. This will reduce a lot the DE disturbing effect, keeping the deformation effect at 100% of its strength.
+	It is easy as drink water. Put the transform, or all the sequence of wanted transforms, at FIRST. Then put every formula that you like, after all the transforms.
+	Now, go to the first formula (for example it's in tab named "Fo.2"). Check "Repeat from here".
+	This allows you to calculate every IFS or Julia fractal in transformed coordinate mode.
+	To do the same with Mset fractals, you need a complete coordinate inversion. For now only "SphereInvC" is a complete coordinate inversion. Expect more soon.
+
+	Example of a Julia set deformed by a loxodromic Mobius transform
+
+	Mandelbulb3Dv16{
+	M.....S....O/...w....2....kh.mHjS7KxzarR6dqU6N1EBs.wGK6qNzvdV3MZ2r3szidJ63iGubyD
+	................................2akZSXdnxz1........A./..................y.2.....
+	................/ME//....6.e3...91....E2.....2qXM9bwBCqD/..........c./...w1/BnAH
+	y.EnAnYD..../2UaNaNaNaNmzAnAnAnAnAyD..................................sD...../..
+	.wHnAnYDw38Bl7TXXx13sfny1v64vuO4f.nr2.djiDF.DthDuq9TVGHQmrsMzkU2Hvmr2.djXNloiwB/
+	EunZHg0ATH.YyQtgEyawBCqD......Yv......................sD.2kz0...................
+	.............................UJRR4.wppN.6OLb/.mRR4.irpN.EVLb/UCSR4..............
+	...........................U..6.P....M4...EB....W....61....F....8/...I1....UJl12
+	...U.iVFwxDE./ozPM2Tzz7lz16.mc..zXCc.El18XGQeGyDjvIRhrVAkz1............28.kFrA0.
+	FWb96aAIVzvh1se7Umvxz0........../6U0.wzzz1................................E.0c..
+	zzzz.................................2U.8.kzzzD.................................
+	/6U0.wzzz1...................................2CcN/UvNP6.eeWCNq0.yRii.EJJUk1f..XR
+	S1.mx3CcN/UvNP6.QsLsUa3.ibhV..bTV1OK.sSq40.ly3CcN/UvNP6.MwLsUa3.ibhV.kqTV1OK.sSq
+	40.kz3CcN/UvNP6...EsUa3.eeWCNq0.IJ36wk8.wyLsUa3.................................
+	E....6....E.....I....k....kLBxaMdJrQI/5S.IaQ....................................
+	...................yz..............................sz.........yD................
+	...sz0........yD...................sz...........................................
+	.....................2..........0....YYPoJqNZ756ExqRZ75.........................
+	8.....U/4MU/4..................E........kz1........wz.........zD..........2.....
+	................................................................................
+	................................}
+
+	The archive contains those release (final) formulas;
+
+	AbsX, AbsY, AbsZ, LogX, LogY, LogZ, Gnarl2D, Gnarl3D
+
+	They will not be changed in the future (I really hope so! - at 99%) so you can use it in your important renders safely.
+
+	The other topic contains "untested" formulas - wips and unoptimized formulas. Use them BUT at your risk
+
+	--------------------------------------------------------------------
+
+	Revision 2.
+	AbsX, AbsY, AbsZ, LogX, LogY, LogZ, Gnarl2D, Gnarl3D are left unchenged (fixed a typo in description of AbsY, thanks Jesse!). New transforms;
+
+	tocylindrical, invcylindrical, sphereinv, helispiral
+
+	--------------------------------------------------------------------
+
+	Revision 2.1
+	Too bad sphereinv had an error in coding, so that instead of computing z/rho it computed rho/z... But I love the "wrong" effect that looks very promising, so now we have sphereXinv, sphereYinv, sphereZinv. sphereZinv is the old (wrong) sphereinv. I am terribly sorry for the inconvenient!
+
+	--------------------------------------------------------------------
+
+	Revision 3
+	Added hyc3Dinv (hypercomplex 3D inversion).
+	Based on tricomplex number theory. Info on tricomplex numbers here; http://en.wikipedia.org/wiki/Tricomplex_number - very interesting stuff!
+
+	--------------------------------------------------------------------
+
+	Revision 4
+	Added poincare (Poincarè metric, base code is almost identical to sphere inversion but final look is quite different ).
+	Fixed typos in some inversions; you may need to adjust "scale" to get the same result again.I don't honestly think that it can harm, nobody is using inversions for now I think
+
+	--------------------------------------------------------------------
+
+	Revision 4.5
+	Fixed coding errors in Poincarè - now is no more fuzzy and seems to work OK
+
+	--------------------------------------------------------------------
+
+	Revision 5
+	Added _tospherical and _invspherical (with correct code, works faster than the "test" version) plus a new tool for coordinate manipulation _Scalingplus
+
+	--------------------------------------------------------------------
+
+	Revision 5.5
+	Fixed _invspherical bad coding, to avoid x-y flipping and make it work correctly with non-ifs formulas.
+
+	--------------------------------------------------------------------
+
+	Revision 6
+	Added several toric geometry transforms. Have fun but they are not accurate...
+
+	6.5
+	New torus inversion added (the third) - Inaccurate too but absolutely funny
+
+	--------------------------------------------------------------------
+	7.0
+	Two completely new formulas featured in the collection; box tiling and Barnsley 4D. As I know, nobody ever tried to extend Barnsley in 4 dimensional space.
+
+	7.5
+	Added Barnsley 4D (non commutative). Uses standard Hamilton product and looks less strange than the commutative counterpart
+
+	7.6
+	Added Barnsley2_4D in comm and non-comm versions, it is a simple tweak of the conditions.
+
+	7.7
+	Added Lambda4D in comm and non-comm versions, it is another simple tweak.   FIXED error in a sign of commutative rule;
+
+	( ... , Az Bx + Aw By + Ax ... ) is wrong and ( ... , Az Bx - Aw By + Ax ... ) is the correct term
+
+	So Barnsleyc, Barnsley2c are corrected with the correct commutative rule as said in http://home.comcast.net/~cmdaven/hyprcplx.htm .
+
+	8.0
+	Added several attractor transforms. They can be used alone to generate attractor-like fractals of strange kinds.
+	dynamic, cosmartin are from Mark Townsend. They use cos/sin functions and are a bit slow.
+	Lorenz, Rabinovich-Fabrikant, Rossler systems are much faster because they are purely polynomial.
+
+	8.5
+	Van der Pol added. Many parameters.
+	8.55
+	Van der Pol 2 added. Many parameters.
+	8.6
+	Hopalong added, with two modified versions.
+	8.7
+	KAM torus (with cutoff version) added.
+	8.8
+	_HopSqrt for each 3D dimension added.
+	8.9
+	_NeoSqr for each 3D dimension added.
+	9.0
+	_Log4D and _Exp4D added.
+	10
+	QuatPow added.
+	10.5
+	Sin4Dplus added.
+	10.6
+	Updated ("bug"fix)
+	10.7
+	Found in; http://bugman123.com/Hypercomplex/index.html new (but "old" ) formulas; added BristorBrot and MandyCousin. They look cool!
+	10.8
+	Another pearl from Bugman's site; Quadratic 3D Mandelbrot
+	10.9
+	Another interesting transform is here. A Mobius 3D function, that uses White/Nylander theory; MobiusTpx (tpx = triplex)
+	11.0
+	CubicQuat added. (Well, an approximation of it, but you can still get very nice results).
+	11.1
+	Ikenagabulb added. (see the notes for more info).
+	11.2
+	All possible conj formulas released.
+	11.3
+	MengerKoch formula released.
+	11.4
+	MengerKoch V2 formula released.In my opinion it's far better, more accurate and faithful to original Koch curve. But I keep also the old one, it's good for experiments.
+	11.5
+	SierpHilbert formula released.Very easy: I applied the same transforms to Sierpinski3, to get a nice variation. Countless variations can be obtained.
+	11.6
+	Added Tanh4D. Comes with this disclaimer (for now, it's an useless function)...
+	*WARNING* - Too bad, this function is actually almost useless, even if the 2D slices
+	look pretty. (Also, AFAIK, use it as a pre-transform is not a good idea.) Why?
+	This is due to the "nature" of the function itself, because the function is numerically
+	accurate (compared with UltraFractal's tanh, gives the same results for z=w=0 and default settings).
+	tanh is convergent for "big" values of the argument, and convergent functions
+	are NOT supported by Mandelbulb3D for now. (DE works for "divergent" fractals only).
+	The only way to avoid this is setting low pre-muls and a high final mul.
+	But this destroys the effect of the function itself - and leads to noisy images. Useless again!
+	The only way to use it seems to be: use low bailouts. Same issues of the previous.
+	I release it for experimental purposes or for future use only.
+	11.7
+	The formula _Sin4D plus (as I suspected) was wrong and needed fix.
+	http://www.fractalforums.com/mandelbulb-3d/commutative-sign-error-plus-new-release/ <- here you will find the old version if you like.
+	From now on, the database will contain the "real" sine in 4D following Hamilton theory.
+	11.6
+	Added Atan4D. Shares some troubles with Tanh, but less evident (surely it's due to the convergency: Atan converge asintotically to 1/x + ... while Tanh is e^(-x) + ... - really different).
+	12.
+	Added MagVsXYZabs in 3 variations.Formula from M.Benesi tweaked...
+	12.1
+	Added MagVsXYZ. But I am not very satisfied, since it is still different from Chaos Pro version (but it is more stable) - probably due to differences in DE? Or an invisible bug in formula?
+	12.2
+	It seems that it is only a problem of viewpoint and destop, the formula is identical. Now added the magswitch variation
+	If you really can't live without the ChaosPro viewpoint, try to use the parameter; http://www.fractalforums.com/theory/an-old-formula-revised/msg29695/#msg29695
+	Then use Axiom2 = Axiom1^(3-Power)
+	I think that with those tools you should get the same results as CP, if not the same at 90% similar.
+	12.3
+	Added RuckerBrot1. This formula has the weird property that z is power 1 and x,y are power 2, but has a nice look so I included it
+	12.3
+	Added RuckerBulb.
+	12.4
+	Bugfixed and vastly improved RuckerBulb.
+	12.45
+	Now RuckerBulb is turned to the left, like every other fractal. This allows you to create meaningful hybrids and not crappy ones!
+	I had to change some signs to force this, but it was necessary...
+	12.5
+	Added IQ-Bulb. I copied exactly the formula, but the result is odd. Maybe the formula he actually used is not the one he says.
+	13
+	Added _CelticMode. This trasformation is extremely interesting and opens an immense field of exploration!
+	Also, I added the new SphereInv with new "noise-free" mode enabled. The trasform is shown in 3D folder but it's not a trouble since it is really a 3D transformation! (Spheres are 3D objects ...)
+	13.1
+	Removed wrong de-option in MobiusTpx too. Works really better now. Added PolyFolding
+	13.2
+	Fixed PolyFolding, and added "Skew" parameter
+	13.3
+	Omg!!! Added the crazy wild Escher cubic 3D tessellation handle with care eheheh
+	13.4
+	Another tessellation, Pytagora's tree
+	13.5
+	Was in my todo list from a long time. Finally done _updateC
+	And added _flipC-xyz (if you are insane, use it at every iteration)
+	13.6
+	Looked again IQ-bulb. Changing some codes, I managed to remove discontinuities, now it looks better for even and odd powers. Don't know still if there are other mistakes in the code, but now it looks more good.
+	13.7
+	Removed other mistakes in IQ bulb, now it looks very very different, correct I hope!
+	ps. Similar mistakes must be hidden in Ruckerbulb too, so it needs fixing too! Later
+	13.8
+	Added JuliBrot mode and Mandel 4D BiComplex.Mainly for historical reasons, they are not so good compared with actual formulas ...But they were the first "3D formula" attempts ever
+	13.9
+	Added Dragon curve tessellation and fixed Pytagoras tree.They work well in navi too (thanks Jesse)
+	14.0
+	More fixes and added variations to dragon tessellation.
+	15.0
+	Merged Dragon and Pytagoras to IFS tessellation they are too much similar!
+	15.1
+	Added _setw option for 4D fractals
+	15.2
+	Added Magnet triplex fractal. Not so useful, but can give interesting plots
+	15.3
+	Modified Magnet triplex: added some options, and fixed the annoying "z=0 bug". I left optional the bugfix, because the "wrong" formula gives beautiful results too, with some parameter twaeking
+	15.4
+	Modified all Barnsley 4D. Fixed bad coding of conditional jump, and added angle options for Barnsley 1. This fix is very important because the formula seems to work REALLY better now, and the noise is 90% reduced!
+	15.5
+	Added PG-bulb, from a formula from Pseudogenius http://www.fractalforums.com/3d-fractal-generation/a-different-3d-mandelbrot/
+	I improved it slightly, so it allows you to choose an arbitrary power (in a reasonable range however)
+	15.6
+	Added _quadist - quadratic type distorsion in 3D
+	15.6
+	Added a Talis  3D formula (not so awesome but good enough)
+	15.7
+	Fixed a strange error ... SphereInv was missing the radius option (?) added again
+	15.8
+	Under the "pressure" of a forum newbie, added his quat formula djd-quat
+	15.9
+	REMOVED Djd quat since Jesse made a fairly better version.
+	16.0
+	Updated Barnsley  4D formulas - now you can get also Tent maps. Both commutative and not are updated
+	http://en.wikipedia.org/wiki/Tent_map - It is not exactly like Wiki defines it - but I taken the formula from UF database.
+	16.5
+	Added a new complex transform, that I called coordvspow - be sure to try it
+	16.6
+	Added triplex exp() function to my new transform that can give a lot of particular bulbs (if wisely used!)
+	16.7
+	updated the transform as Jesse suggested (I tried)
+	16.8
+	HexaTransform from Aexion added!
+	16.9
+	Update C updated for Spider fractals (added two multipliers) and corrected flip c-xyz (now it flips, and not simply moves. Sorry for the inconvenience and thanks Jesse for pointing out!)
+	17
+	Koch Cube added, after a painful search (see the thread http://www.fractalforums.com/3d-fractal-generation/3d-koch-snowflake-convert-to-escape-time/15/ )
+	No rotations implemented for now
+	17.1
+	Koch Cube : more parameters added (still no rot available)
+	17.2
+	Koch Cube : more fixing, and rotations added
+	17.3
+	Koch Cube : when used with "addC", some cuts appeared, due to a minor error in signs - now no longer.Still problems when stretch is used, too bad!
+	17.4 (after a "long" time)
+	_mulC3D - see the description. May be useful? Maybe!
+	17.5
+	_mulC3D - was wrong (the y component), so I fixed and added many more options, now it can give so many new effects... You really need to try it I can't describe them, they are a completely new set of effects absolutely unobtainable before!
+	17.6
+	_mulC3D - Added rotate options and the z multiplier. Now it's complete...
+	17.7
+	_sphereinv - Added option "Folding mode" - fantastic for customized sphere inversion fractals!!!
+	17.8
+	_sphereinv - Had a critical error that leaded to access violations, now fixed. Added another folding mode.
+	17.85
+	_sphereinv - Cleanup & optimized version, considerably faster now!
+	17.9
+	_helispiral - Added option "reference rotation". Old params should be manually modified but this variation is much more interesting than before
+	17.95
+	_helispiral - Added option "Refer to C". Even more variations possible now
+	17.975
+	_helispiral - Added more options
+	18.0
+	_sphereinv - Added IRadius (for a non conformal spherical folding)
+	18.5
+	_sphereinv - Should be the last modification. Added the correct inversion "undo" and left the non conformal one (4 modes in total)
+	18.6
+	As some modes are almost pointless I removed them completely, leaving only the most stable ones.
+	18.7
+	_tetra3dfold that is useful for kifs experimenting- C version should come soon!
+	_RotateXYonIts - Added my new functionality "reference rotation", so it's possible to rotate on its every possible plane (not only XY)
+	18.8
+	_tetra3dfold renamed to _FoldingTetra3d (according to Jesse's naming convention), also added _FoldingCTetra3d now! Many effects are possible with existing formulas.
+	18.9
+	Riemann2 added, with many many user params.
+	19.0
+	ABoxVS_icen added; allows to get new ABox variations, as you vary the inversion center; C-Swap mode is completely new, though! (idea inspired form Mandelbulber)
+	19.1
+	ABoxVS_icen1, ABoxVS_icen2 - Added another mode (the existing is tagged as "2")
+	19.2
+	ABoxMod1 released (from Kali's formula but a bit modified)
+	19.3
+	ABoxMod1 updated
+	19.35
+	FoldingInfy added - thanks dwsel for the ideas!
+	19.4
+	ABoxMod1 - fixed negative values for folding modifications
+	19.5
+	Several modifications & some new formulas released. Most important, Amazing tetrahedral fractal
+	19.51
+	ATetraVS - fixed a dumb dumb coding error. Now formula is ok as I intended originally!
+	19.52
+	ATetraVS - Modified the default parameters, because I think that those new ones are much more promising!
+	19.6
+	TetraFolding Pow2 added
+	19.7
+	Added two new transforms, one for a double julia seed and one for a ripple effect
+	19.8
+	Added a smooth ABox, like Buddhi's one but with a much simpler formula. Looks cool, I'm curious to see some renders anyway
+	19.9
+	Now the smooth abox has a smooth r folding too. The formula is quite complicated I must say but it works like a charm!
+	20.0
+	Added functionality to last fmla...
+	20.1
+	Fixed bug when minr tends to 1. Cleanup for speed
+	20.2
+	More accurate smoothing selection for ballfold. A new formula, with arbitrary double rpow selection, very slow
+	20.3
+	Added a "radial" version of Partly Julia (by Jesse of course)
+	Added a second multiplier for TetraFoldPow2 too. (I did this long ago, but forgot to update)
+	20.4
+	Error in PartlyJulia. xCenter modified z coordinate instead (and zC -> x), now fixed!
+	Added a recenter option (not perfectly working though)
+	20.5
+	Fixed the recenter option (had to rewrite a big section of the code but it was needed)...
+	20.6
+	Added a control box to choose different cutting shapes (!!!)
+	20.7
+	Even more cutting shapes added!
+	20.8
+	Added a new ABox from Aexion! Try it, looks so stylish!
+	20.9
+	I had an idea for two new pretransforms in torical coords sitting in the folder. Finally done, totorical2 and invtorical2, yayz
+	21.0
+	Added ABoxVSShapes, that for now supports Torus, Cylinder and Cone as "base shapes". More soon hopefully
+	21.1
+	Added ConeB, that is same as old cone. So in your params replace shapemod 4 with 5 to render correctly! ConeA is a new formula
+	21.2
+	Added lots of shapes (final version?)
+	21.3
+	Added new version of cone + paraboloid
+	21.4
+	Added more shapes (now they are 16)
+	21.5
+	IMPORTANT notice. Corrected PG-Bulb as it was wrong and potentially dangerous. Now if you choose wrong not in range int-powers it autofixes avoiding lockups. For Jesse; don't include the old formula in the new database please!
+	Also added a "new" quat-like thing
+	21.6
+	Added hyperMenger
+	21.7
+	bugfix for hyperMenger now accurate DE and formula!!!
+	21.8
+	bugfix for hyperMenger - xinv and yinv had to be swapped to get the same effect of sphereinv then menger
+	21.9
+	NEW OPTIONS for hyperMenger +2
+	21.95
+	hyperMenger chaged the default parameter for an example image with "kissing" spheres
+	22.0
+	_DonutTransform a yummy idea from Aexion
+	22.1
+	Added a shape to ABoxVsShapes (n° 17)
+	22.2
+	_RotateXYonItsP
+	22.3
+	Faehrten (imported from Gestaltlupe)
+	22.4
+	_skew added
+	22.5
+	MengerIFSplus added(modifies the rotation center)
+	Sierpinski3alt added(modifies the rotation center)
+	22.4
+	Sierpinski4 addedand big thanks to Syntopia who invented it!
+	22.5
+	Menger4 added- again thanks to Syntopia, because the formula shares a lot with Sierpinski4. Clarified the "3d vs 4d" bug and signaled in formula notes (thanks Jesse).
+	22.6
+	Octahedron4 added(modified version of Sierpinski, a quick hack)
+	22.7
+	MixPinski4 added(modified version of Sierpinski mixed with Menger)
+	22.8
+	HalfOct4a and HalfOct4b added(modified version of Sierpinski octahedron, with different symmetry planes)
+	22.9
+	ATetraVS2 added . This works great unlike the overly complicated cousin
+	23.0
+	Corrected MengerIFS plus
 
 
+	Custom formulas & transforms - Release
+	« on: February 07, 2011, 06:03:02 AM »
+
+	Older posts here; http://www.fractalforums.com/index.php?topic=5656.msg27691#msg27691
+
+	I continue here my releases, to not overwhelm the 1st post
+
+	24.0
+	Added an alternate commutative Barnsley. (nobody will use it but who cares?Merry xmas)
+	24.1
+	Corrected a mistake in coding IQ-bulb, so it looks much more consistent with the "original",kept the old one but renamed
+	24.2
+	General; generalization and unification of all (or almost all) the possible bulb funcs in just one formula. Phew! This was NOT not easy but wow, a bunch of crazy things are possible now!!!
+	24.25
+	General; Adjusted, because 'recipe 2' did not take into account 'zmul'
+	24.28
+	Added to my collection _QuadrayTransform2.m3f - Jesse forgot to include it in latest release and it just disappeared from the whole internet so here it is now!Thanks to Lenord for giving it back! ( I lost it too!   )
+	24.3
+	_QuadrayTransform2 + added Scale for negative Quadray coords
+	24.4
+	MandelView (Thanks David Makin)
+	24.5
+	_GenCWarp (Thanks Aexion, Jesse and ... basically everybody)
+	24.6
+	_GenCWarp Added two controls to adjust the strength of the effect and/or mix C with xyz.
+	24.7
+	Quintic a wiki-fractaland a half-octahedron, hacky KIFS formula
+	24.8
+	Makin3D collection (1 to 4) now you can explore even more Makin stuff with your fave renderer
+	24.85
+	Makin-NSR-tri added (by the master's request)
+	24.9
+	BulboxP-2 added. This formula has a strange behavior, but in some condition can be so fun! Too bad needs a very low raystep/stepwidth to work good.
+	25.0
+	GenCWarp fixed a bug: now value 0 for Theta-Args is correctly handled. (No more glitches. You will still see glitches if you try to choose a value out of range, and it will not be fixed btw )
+	_DEComb_ISph_Plane added
+	25.1
+	OctKoch added (uncertain about something. but it's flexible so I added btw)
+	25.2
+	DodecahedronIFS (one of the basic Sierpinski solids, it was missing for some reason) added
+	Changed default scale to 2.63 - some details look way better
+	25.3
+	Faster version by Blob added (hack from Jesse's Icosa)
+	25.4
+	ManowarBulb added- requires SSE2 but it only uses the register for storing, it's a bit slow because it does a float exponentiation btw
+	25.5
+	GnarlyIFS added - requires SSE2 too because it's derived from waveIFS...
+	25.6
+	DucksIFS added - requires SSE2 too because it's derived from waveIFS... And it's very slow, because it needs many iterations and a complicated magnitude evaluation to show up a good detail level.
+	25.7
+	Some useless stuff added... Sorry...Another Beth thingy and a variant of quat
+	25.8
+	Amazing Surf added. (by Kali) implemented by me of course
+	25.9
+	Torus and Knots added. (Both for dIFS)Hard enough to do those!
+	26.0 (Both for dIFS)
+	Torus updated with aspect ratio.
+	More funny shapes; TorusEllip + Pyram
+	26.1 (Both for dIFS)
+	PolyPyra added (flexible shape, can be used for many solids)
+	26.2 (Both for dIFS)
+	PolyPyra - added Star slider! Perfect for Christmas scenes
+	26.3 (for dIFS)
+	PolyFoldIFS added!
+	26.4 (for dIFS)
+	PolyFoldExIFS added! (Has a 3D z-fold included - it's slower but more powerful)
+	26.5 (for dIFS)
+	AmazingIFS added! (be careful, use few iters or your computer will melt)
+	26.6
+	Knots2 added. Ported from Knighty's formula! Many more figures are possible
+	26.7
+	KleinBotT added. Another Klein bottle too added...
+	26.8
+	Added misc surfaces, some so funny...
+	DecoCube,QCyl,Umbrella,Quadrics
+	26.9
+	Added misc surfaces, some so funny...
+	Scarab, Piriform, RiemSqrt plus patched/improved existing ones
+	27.0
+	Added a new transform foldingoctIFS
+	27.1
+	Added a new transform cayley2IFS
+	27.2
+	Added new transforms, and FoldingInfy (continuous eqv. of tiling) plus the most irritating shape ever; Pen-Ngon
+	27.3
+	Comma shape + added an useful option to Quadrics
+	27.4
+	foldcut shapes added, based on amazing Knighty scriptsplus some sphere playaround
+	Fixed Comma because it did not worked well... Don't know why. But ok :
+	27.5
+	Added a test version of Apollo 3D
+	27.6
+	Added sliceIFS
+	27.7
+	Improved sliceIFS + added sliceExIFS + loxodromeIFS
+	27.8
+	Latest version of all my formulas + extras... see the file
+	27.9
+	Added more misc isosurfaces. Citrus, Mitre, Cayley surface, Pseudosphere, Dini. The last two are my favourite, too bad Dini is very slow btw
+	28.0
+	Removed Citrus for now (it is very buggy... I will replace it with a similar thingy) but added Devil (devil =   )and bugfixed Mitre (produced some unwanted "spaghetti" on high itersnow they are a lot thinner so they will not disturb)
+	28.1
+	Added some surfaces. But they cause bugs on high iters; Limpet
+	DecoCube fixed, plus some bonus wavesp, weirdcube, toupie (it seems to work on higher iters)
+	28.2
+	Fixed some DEs and added again that Citrus
+	28.3
+	Added boardIFS (for chess estimators   ) and SchwartzIFS surfaces
+	28.4
+	Added YinYangIFS + Loxodrome2IFS
+	28.5
+	Updated with some stuff ...
+	28.6
+	Added trans-qIFS
+	28.7
+	Made ex versions of 4D ifs like Menger, Sierpinski and MixPinski
+	28.8
+	Made _Translate + _Rotate "random" transforms
+	28.9 ... until 29.0
+	_Rotate "random" transform "fixed" - now works really as expected also with ABox. Increased max range to +-2
+	29.1
+	Tried to add a MinR thingy to AmazingIFS, don't know if it's the real thing forgive me
+	29.2
+	Fixed - now works as expected
+	29.3
+	_asdamTrans added
+	29.4
+	_CondLyapunov added
+	29.5
+	A full set of itercount modifiers added. They are of two kinds.
+	Lyapunov type;
+	The itercount of the formulas is modified following a binary string rule. The itercount will be set 0 / 1 in simple Lyapunov switch or to two different values in the general Lyapunov.
+	Generic switch;
+	More advanced.
+	The itercount will be set to three different values according to a critical iteration value. This can give very unique fractal shapes. It is not easy to explain here... But believe me
+	3 formulas added
+	29.6
+	Fixed _sphereinv for the n-th time again to avoid navi issues
+	30.0
+	Extra formula; ABoxMod2!
+	29.7
+	Fixed _sphereinv for the n-th time again... Sick and tired. But this was a minor issue btw.
+	29.8
+	ducksIFS added angle option, very reccomended to play with that setting
+	Added also missing COLOR option
+	29.9
+	Added a new HeightMap and updated other stuff
+	30.0
+	GnarlyIFS added color option, and 2 more gnarlyIFS!!!
+	30.1
+	GnarlyIFS minor bugfixes, + added more formulas like a standalone dodeca-folding. That Jesse never did for some reason?
+	30.2
+	SierpinskiFull ; full tetrahedral symmetry Sierpinski. Jesse's was not fully symmetrical.In fact this works more like normal KIFS like Menger3 and Icosahedron.
+	30.3
+	SierpinskiFull added SierpHilbert style edges; disabled by default.
+	30.4
+	Reciprocal x,y,z 3 added - continuous functions so they work a lot better without DE trouble
+	30.5
+	BUGFIX ATTEMPT on RotateRnd, TranslateRnd!
+	Now they seem to work
+	30.6
+	Added GearIfs
+	30.7
+	ABoxMod1 DEfix!
+	30.8
+	room DIFS good for color fooling
+	30.9
+	Added Gear2Ifs inspired from Incendia
+	31.0
+	Added DiscoBallIfs - faceted empty sphere!
+	31.1
+	Added SphCageIfs "sphere made of rings"
+	31.2
+	Update & optimization for SphCageIfs
+	31.3 and .4
+	Added cubetubeIfs + UPDATED
+	31.5
+	Added tube versions of all platonic solids; Cube, Tetrahedron, Icosahedron.
+	31.6
+	Replaced Icosa default param to plot a dodecahedron not a truncated solid
+	31.7
+	Added columnsIFS
+	31.8
+	Added options for style in columnsIFS
+	31.81
+	More fix in columnsIFS (to allow more styles)
+	31.9
+	Homemade optimization, applied to all gnarly and to ducks IFS to get a 5x speedup!
+	32.0
+	Added a component to optimization to get a perfect result.
+	32.1
+	HeightMap2 now gets a "perfect" DE.
+	32.2
+	RoomDoorsIFS added after 3 days of work
+	32.3
+	ABoxPlatinum added. Loads of features.
+	32.4
+	ABoxPlatinum - a little 'bug' in rotatable folds was fixed, but left also the old version.
+	33.0 After a long pause!
+	Reciprocal x,y,z 3b added - more customizable recips
+	33.1
+	Cantor, Octafull added
+	33.2
+	koch_oct added
+	33.3
+	Menger1-IFS added (Menger transform just for DIFS!)
+	33.4
+	JCube3 - approximation made by Knighty. It is an APPROXIMATION so take it as is.Just don't pretend flawless details
+	Added also _YplusSinZ2
+	33.5
+	_invcylindrical optimized - speedup
+	33.6
+	I spotted a fantastic hex-grid formula and added it
+	http://k3dsurf.s4.bizhat.com/k3dsurf-ftopic133-0-asc-30.html
+	hextgridIFS
+	33.6
+	hextgrid2IFS - more classic tubey work.formula by abdelhamid...
+	33.7
+	JCube3 added Gscale (test parameter)
+	33.8
+	totoricalIFS added ... Interesting to wrap difs on torus or something.
+	33.9
+	tritgridIFS - lame but coolish modding of hextgtid (more to come!)
+	34.0
+	New year 2013 special! A fistful of variations of tri&hextgrid added!
+	34.1
+	More hexagonal madness!
+	34.2
+	Improved a lot hextgrid3IFS & hexgridIFS following Knighty's concepts and scripts, now they have a lot of added functionality and possibilities for new shapes
+
+	Custom formulas & transforms - Release
+	« on: September 11, 2013, 12:00:14 PM »
+
+	Older posts here; http://www.fractalforums.com/index.php?topic=5656.msg27691#msg27691
+	http://www.fractalforums.com/index.php?topic=9810.0
+
+	sep 11: A new formula by Aexion added.
+	sep 13: Fixed, added a variation coeff.
+	sep 15: Added logspIFS.
+	sep 16: Added several options to logspIFS.
+	sep 17: Final revision (incompatible with prev ones! ...) of logspIFS (except for trapcolor... too bad)
+	sep 18: Hopf4D added
+	sep 26: RandCubesIFS added (a little experimental. expect variations soonish or ?)
+	sep 27: RandCubesIFS- added support for orbit trap colors + cylinder/cone mode (still todo: polar/inverse mode)
+	sep 29: RandCubesIFS- added more shapes
+	oct 2: RandCubesIFS- Added shape type "arc solid" - try shapetype=4
+	oct 4: RandCubesIFS- Added shape type "arc tubey" - try shapetype=5
+	oct 6: RandCubesIFS- Added shape type "rounded" - try shapetype=6
+	oct 7: transLogSpIFS added! And double shape type + zflight in RandCubes!
+	oct 8: MandyCousin3 added (from T.Gintz)
+	oct 9: NewMenger added (look in DIFS tab)
+	oct 11: NewMenger2 added (look in DIFS tab)
+	oct 16: TransKoch + sample parameter added
+	oct 25: Log+Sinh pretransforms corrected/added.
+	oct 27: _ngon added.and corrected other flaws in some formulas
+	oct 29: _ngon "fixed" for continuity, added an option and released _ngon2
+	oct 1: added koch_surf!!! from knighty
+	oct 2: koch_surf!!! variation can range 0-3 with different effects
+	-------------------------------------------------------------------------------------
+
+	After a very long hiatus...
+
+	24 jan: AmazingSurf2 released (new type of fold). Please note this is subject to change (it's unoptimized)
+	25 jan: QuickDudley (Kerry Mitchell and "correct" versions)
+	As timemit pointed out AS2 did not take into account vary scale (that is not particularly interesting either!!!) so I dropped it but added a rotation (done just before adding C constants )
+	28 jan: Further improvement of ASurf2. Now a lot more flexible with an additional slider.
+	31 jan: heartKluchIFS.
+	02 feb; added Mandalex (BAD DE - non solvable issue!)
+	03 feb; added fiddler for Mandalex; use 3 to get old (wrong) effect
+	05 feb; added helistairsIFS. Nastier to code than it seemed in my ideas.
+	09 feb; added _updateC2
+	11 feb; added six new Makin formulas and added a "switch" to helistairsIFS (squarry stairs)
+	12 feb; added another "switch" to helistairsIFS (hanging steps )
+	14 feb; added Aexion's donut
+	17 feb; added the amazing fantastic Tglad tetrahedral pow2 (and my lame but pretty variant)
+	19 feb; huge optimization for Tglad's formulas, by the way the resulting julias will come out different.
+	To fix this issue SWAP X & Y in the SEED and you will get the same julias again.This won't be an issue I hope in front of a 3x speed gain?
+	19 feb (part2) Added aswell dihedral versions.
+	25 feb; added sliders to "power" in Tglad's formulas, more flexibility but high powers disturb DE.
+	26 feb; added Amazing Surface, smooth fold variation + AsurfMod1
+	1 march;  added Quadratic3D variant with my fail-buffalo
+	6 march;  corrected Quadratic3D variant
+	9 march;  Added Mandalay-KIFS
+	11 march; speedup for Mandalay-KIFS(removed some superfluous instructions)
+	13 march; improved foldingOctIfs, more controllable/customizable effect
+	15 march; added two "void hmaps" for MarkJayBee & all others
+	16 march; Added cone slider to CHM but unfortunately no room left for other sliders.
+	18 march; Added a sort of a Torus heightmap ... lol
+	19 march; Fixed TorusHMap, removed one extra-instruction by Jesse that was no longer needed in this formula.
+	Added Cubify slider to SphereHMVoid.
+	24 march; Added a FoldCut toy, weird but fun. I hope
+	25 march; Added gnarl2d 2
+	04 april; Happy easter to everybodyI started to create "faster versions" of gnarlies and other less used formulas,
+	not always a lot faster but they save you some minutes in higher res renders indeed!
+	First ones, gnarl2d and gnarl2d_2...
+	06 april; Modified, added gnarl3d optimization
+	11 april; Modified, added dynamic.
+	2 october; added Seashell
+	10 october; added BenesiPine1!thankssss
+	15 october; added BenesiPine2!(EXPERIMENTAL)
+	16 october; added scaleC. Fixed after years (I am so sorry!!!!!!) _flipxyzC...
+	26 october; added MengerSmt (smooth!)
+	27 october; Added a slider and improved a lot MengerSmt (two different smoothings avail!)
+	5 november; Added two transforms contributed by Benesi; spheric/unspheric (very cool!!!) - more transforms/stuff is under analysis and will be added soon (I hope)
+	Edit; Added his three transforms too.(renamed & DE option is correct now!)
+
+
+
+
+
+
+	sep 11: A new formula by Aexion added. grin
+	sep 13: Fixed, added a variation coeff.
+	sep 15: Added logspIFS.
+	sep 16: Added several options to logspIFS. grin
+	sep 17: Final revision (incompatible with prev ones! ...) of logspIFS (except for trapcolor... too bad)
+	sep 18: Hopf4D added
+	sep 26: RandCubesIFS added (a little experimental. expect variations soonish or ?)
+	sep 27: RandCubesIFS- added support for orbit trap colors + cylinder/cone mode (still todo: polar/inverse mode)
+	sep 29: RandCubesIFS- added more shapes
+	oct 2: RandCubesIFS- Added shape type "arc solid" - try shapetype=4
+	oct 4: RandCubesIFS- Added shape type "arc tubey" - try shapetype=5
+	oct 6: RandCubesIFS- Added shape type "rounded" - try shapetype=6
+	oct 7: transLogSpIFS added! And double shape type + zflight in RandCubes!
+	oct 8: MandyCousin3 added (from T.Gintz)
+	oct 9: NewMenger added (look in DIFS tab)
+	oct 11: NewMenger2 added (look in DIFS tab) cheesy
+	oct 16: TransKoch + sample parameter added cheesy
+	oct 25: Log+Sinh pretransforms corrected/added. cheesy
+	oct 27: _ngon added. cheesy and corrected other flaws in some formulas
+	oct 29: _ngon "fixed" for continuity, added an option and released _ngon2 wink
+	oct 1: added koch_surf!!! from knighty A Beer Cup
+	oct 2: koch_surf!!! variation can range 0-3 with different effects A Beer Cup
+	-------------------------------------------------------------------------------------
+
+	After a very long hiatus...
+
+	24 jan: AmazingSurf2 released (new type of fold). Please note this is subject to change (it's unoptimized)
+	25 jan: QuickDudley (Kerry Mitchell and "correct" versions) wink
+	As timemit pointed out AS2 did not take into account vary scale (that is not particularly interesting either!!!) so I dropped it but added a rotation (done just before adding C constants ) grin
+	28 jan: Further improvement of ASurf2. Now a lot more flexible with an additional slider.
+	31 jan: heartKluchIFS.
+	02 feb; added Mandalex (BAD DE - non solvable issue!)
+	03 feb; added fiddler for Mandalex; use 3 to get old (wrong) effect
+	05 feb; added helistairsIFS. Nastier to code than it seemed in my ideas.
+	09 feb; added _updateC2 cheesy
+	11 feb; added six new Makin formulas and added a "switch" to helistairsIFS (squarry stairs)
+	12 feb; added another "switch" to helistairsIFS (hanging steps grin)
+	14 feb; added Aexion's donut A Beer Cup
+	17 feb; added the amazing fantastic Tglad tetrahedral pow2 (and my lame but pretty variant)
+	19 feb; huge optimization for Tglad's formulas, by the way the resulting julias will come out different.
+	To fix this issue SWAP X & Y in the SEED and you will get the same julias again. cheesy This won't be an issue I hope in front of a 3x speed gain? wink
+	19 feb (part2) Added aswell dihedral versions.
+	25 feb; added sliders to "power" in Tglad's formulas, more flexibility but high powers disturb DE.
+	26 feb; added Amazing Surface, smooth fold variation + AsurfMod1
+	1 march;  added Quadratic3D variant with my fail-buffalo wink
+	6 march;  corrected Quadratic3D variant :-
+	9 march;  Added Mandalay-KIFS cheesy
+	11 march; speedup for Mandalay-KIFS cheesy (removed some superfluous instructions)
+	13 march; improved foldingOctIfs, more controllable/customizable effect
+	15 march; added two "void hmaps" for MarkJayBee & all others smiley
+	16 march; Added cone slider to CHM but unfortunately no room left for other sliders.
+	18 march; Added a sort of a Torus heightmap ... lol wink
+	19 march; Fixed TorusHMap, removed one extra-instruction by Jesse that was no longer needed in this formula. wink
+	Added Cubify slider to SphereHMVoid.
+	24 march; Added a FoldCut toy, weird but fun. I hope angel
+	25 march; Added gnarl2d 2 wink
+	04 april; Happy easter to everybody kiss I started to create "faster versions" of gnarlies and other less used formulas,
+	not always a lot faster but they save you some minutes in higher res renders indeed!
+	First ones, gnarl2d and gnarl2d_2...
+	06 april; Modified, added gnarl3d optimization
+	11 april; Modified, added dynamic.
+	2 october; added Seashell
+	10 october; added BenesiPine1! A Beer Cup thankssss
+	15 october; added BenesiPine2! A Beer Cup (EXPERIMENTAL)
+	16 october; added scaleC. Fixed after years (I am so sorry!!!!!! embarrass ) _flipxyzC...
+	26 october; added MengerSmt (smooth!) cheesy
+	27 october; Added a slider and improved a lot MengerSmt (two different smoothings avail!)
+	5 november; Added two transforms contributed by Benesi; spheric/unspheric (very cool!!!) - more transforms/stuff is under analysis and will be added soon (I hope) grin
+	Edit; Added his three transforms too. wink (renamed & DE option is correct now!)
+	07/09/2016; Added after a looooooooong hiatus CrossMenger yay
+	2 october; Added LoResIFS.
+	3 october; Modified LoResIFS; now generates symmetric shapes with a lot better appearance. Added radius too
+	5 october; Modified LoResIFS; BUGFIX plus added LoResT, generates torus shapes + otrapcolor plus added LoResC (cone cylinder etc)
+	9 october; Added LoHexIFS; using Aexion hexa-pixels. Also added cone and torus.
+	17 oct.; added loresmode & loresmodeIFS!!! Also added Inv.Cylindrical mode for dIFS.
+	19 oct.; added two new shapes to the existing formula Randcubes; at indexes 7 & 8.
+	20 oct.; added two new shapes to the existing formula Randcubes; at indexes 9 & 10.
+	21 oct.; added two new shapes to the existing formula Randcubes; at indexes 11 & 12.
+	22 oct.: More variations of water solid added.
+	26 oct.: Sphere&Cube with "legs" added.
+	28 oct.: Pyramid variations added.
+	2 nov.: Added ApolloTetraIFS.
+	3 nov.: Updated ApolloTetraIFS + added a sample parameter!!!
+	13 nov.: Added teapot! lolz
+	21,22 nov.: Added ScherkIFS + k-tower
+	24 nov.; Added EiffieQ  grin
+	25 nov.; Added Buddhi's etc...  grin
+	27 nov.; Added a extended version of Buddhi's
+	And MandelCup! cheesy
+	8 december; After lots of patient work, added _Simplex3DShift cheesy
+	xmas 2016;
+	Added murl and the fast variant tx Zueuk!
+	January 03, 2017; added JosKn-KleinIFS kiss tx Jos & Knighty
+	January 06; updated JosKn-KleinIFS - Aexion J + OtColor customizable and less erratic
+	January 08; updated JosKn-KleinIFS - Aexion J fixing, it works a lot better now!
+	January 11; updated JosKn-KleinIFS - added hexagon mode!
+	January 14; updated JosKn-KleinIFS - fixed & improved hexagon mode, now with real hexagons cheesy
+	January 18; updated JosKn-KleinIFS - see note
+	fix 18 january: now every tile is exactly hexagonal when Box values
+	are equal, the results are completely different than before though,
+	and some possible bugs that caused noise to appear were removed,
+	forcing the formula to bailout - a lot - earlier
+	January 19; updated JosKn-KleinIFS - old params should render normally now.
+	January 30; Added JosKn-ModIFS!!! cheesy
+	Feb 01; fixed the bug that prevented other DIFS to render after JosKn!
+	Feb 05; More bugfix for Josknmod, added a formula by Yannis but modified.
+	Feb 07; Added eiffie's car. wink
+	Feb 08; Added surfbox!!! wink
+	Feb 12; Added formula from Quasihedron
+	Feb 21; Added diamond, thanks Nrx at Shadertoy!
+	Feb 26; Added cosine power 7 (after eight years I saw the non-trig expansions for cosine bulbgrin )
+	Feb 27; Added four two stages mixed bulbs.
+	01 March; Added a lot of new formulas, experiments with unused bugman formulas combined in various ways  afro
+	03 March; Added heightmapLim!!! Great to create new heightmap effects. (and faster in some situations)
+	04 March; Autocenter feature for heightmapLim. Tiles will alwaus show at the center of the square now.
+	12 March; Added an experimental bulb explorer "SinePowSum" wink
 
