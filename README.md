@@ -18,9 +18,9 @@ Many thanks to the people on FractalForums.com, especially to David Makin for he
 
 2. [Installation](#Installation)
 
-3. [Zooming and Navigating](#Zooming and Navigating)
+3. [Zooming and Navigating](#ZoomingandNavigating)
 
-4. [3D Navigator](#3D Navigator)
+4. [3D Navigator](#Navigator)
 
 5. [Formulas](#Formulas)
 
@@ -36,7 +36,7 @@ Many thanks to the people on FractalForums.com, especially to David Makin for he
 
 9. [Cutting](#Cutting)
 
-10. [Julia on,off](#JULIA MODE)
+10. [Julia on,off](#JULIA)
 
 11. [Infos](#Infos)
 
@@ -48,37 +48,37 @@ Many thanks to the people on FractalForums.com, especially to David Makin for he
 
     [**POSTPROCESSING:**](#POSTPROCESSING)
 
-14. [Recalculate a Selection](#Recalculate a Selection)
+14. [Recalculate a Selection](#RecalculateaSelection)
 
-15. [Normals on Z-Buffer](#Normals on Z-Buffer)
+15. [Normals on Z-Buffer](#NormalsonZBuffer)
 
-16. [Hard Shadows](#Hard Shadows)
+16. [Hard Shadows](#HardShadows)
 
-17. [Ambient Shadows](#Ambient Shadows)
+17. [Ambient Shadows](#AmbientShadows)
 
-18. [Reflections and transparency](#Reflections and transparency)
+18. [Reflections and transparency](#Reflectionsandtransparency)
 
-19. [Depth of Field](#Depth of Field)
+19. [Depth of Field](#DepthofField)
 
 20. [Lighting](#Lighting)
 
-21. [Drawing on the image](#Drawing on the image)
+21. [Drawing on the image](#Drawingontheimage)
 
-22. [Saving and loading](#Saving and loading)
+22. [Saving and loading](#Savingandloading)
 
-23. [Animation maker](#Animation maker)
+23. [Animation maker](#Animationmaker)
 
     
 
     [**UTILITIES:**](#UTILITIES)
 
-24. [Big renders](#Big renders)
+24. [Big renders](#Bigrenders)
 
-25. [M.C. renderer](#M.C. renderer)
+25. [M.C. renderer](#MCrenderer)
 
     
 
-26. [Warning and changelog](#Warning and changelog)
+26. [Warning and changelog](#Warningandchangelog)
 
 
 
@@ -90,7 +90,7 @@ An installation is not necessary, extract the whole archive to a folder of your 
 
 
 
-<a name='Zooming and Navigating'></a>
+<a name='ZoomingandNavigating'></a>
 
 ## ZOOMING AND NAVIGATING
 
@@ -124,6 +124,8 @@ For huge renderings the new 'Big renders' tool is available in the 'Utilities' t
 
 [**⬆ Back to menu**](#index)
 
+<a name='Navigator'></a>
+
 ## 3D NAVIGATOR
 
 This feature is useful for an intuitive navigation through the fractal, like in first person games. First started, it uses the actual settings from the main program, later on you can use the 'Parameter' button to insert all main settings or 'Formula' to insert only the actual formula settings. You can also change only the light by choosing one of the user defined lightings '1' to '3' or press 'Light' to insert the current light settings. Anyways, the navigator uses a simpler lighting, so the actual light in the navigator image differs from the main programs image.
@@ -152,7 +154,7 @@ Use the **show coords** checkbox to get the orientation of the current coordinat
 
 [**⬆ Back to menu**](#index)
 
-## FORMULA
+## FORMULAS
 
 Here you can specify the formulas you want to calculate, in case only a few are available, you have to set the formula directory in the **Ini** tab of the main window.
 
@@ -245,6 +247,8 @@ Enable clipping planes for 3D calculation by clicking on the right option boxes.
 
 [**⬆ Back to menu**](#index)
 
+<a name='JULIA'></a>
+
 ## JULIA MODE
 
 In this mode, the vector (C) that is added to x,y,z (and w in 4d formulas), is kept the same and only the start parameters are changed. Formulas like IFS are not affected by C, and won't differ in julia mode. The shapes at the position from where the julia values are taken, will be found in the julia version as common shape.
@@ -284,6 +288,8 @@ The 'left eye image' and the 'right eye image' calculations will make a more bal
 
 Clicking on the 'Postprocess' button brings up this options formular.
 
+<a name='RecalculateaSelection'></a>
+
 ## RECALCULATE A SELECTION
 
 If you enable this function and make a selection with the mouse in the image, you can recalculate this selection with different parameters or the same for some reasons: reduce overstepping artifacts in some parts of the image, or to preview some settings before you start rendering. In case of reducing artifacts afterwards, there are several options to choose from. If you are using a lot of dynamic fog in the image, the only good choice is to keep all parameters, just enable the 'First step random' option in the calculation tab plus the 'Keep only nearer parts' and recalculate until the result looks ok. If the dynamic fog is not that important, use a 'Raystep divisor' value of 2 or higher to reduce overstepping a lot.
@@ -294,6 +300,8 @@ Note: Enable the automatic processing of the hard and ambient shadows so that th
 
 [**⬆ Back to menu**](#index)
 
+<a name='NormalsonZBuffer'></a>
+
 ## NORMALS ON Z-BUFFER
 
 You can try this function if the surface normals of the object seems to be wrong (noisy or very flat look). Warning: Save the rendering first as m3i file, because you have to rerender all to make this function undo!
@@ -301,6 +309,8 @@ You can try this function if the surface normals of the object seems to be wrong
 
 
 [**⬆ Back to menu**](#index)
+
+<a name='HardShadows'></a>
 
 ## HARD SHADOWS
 
@@ -310,6 +320,8 @@ Calculate the shadows from the light sources on the object. Choose only the ligh
 
 [**⬆ Back to menu**](#index)
 
+<a name='AmbientShadows'></a>
+
 ## AMBIENT SHADOWS
 
 This an automatically (by default) calculated shadow, and the result is obviously. The Z/R threshold limits the influence of strong depth changes, as in disconnected fore and background parts. The option 'Threshold to 0' lets the threshold decrease the shadow down to 0, so far parts are not affected by nearby parts. But this option can lead to stripes on parts inbetween. Use the 24 bit functions if banding or blocking artifacts are visible. The 'r' function reduces blockings further more by randomizing the sample positions. Some noise can be visible, this is not solved in the current version yet. The DEAO method does not relay on the Z Buffer and is therefore also very good for video animations. The dithering options must be chosen for the correct output scale of the image, else you get dithering artifacts. This function reduces spotty artifacts by varying the ray angles. The FSR (first step random) option reduces them too, but can introduce some random noise. Less noise On higher raycounts and downscales.
@@ -317,6 +329,8 @@ This an automatically (by default) calculated shadow, and the result is obviousl
 
 
 [**⬆ Back to menu**](#index)
+
+<a name='Reflectionsandtransparency'></a>
 
 ## REFLECTIONS + TRANSPARENCY
 
@@ -333,6 +347,8 @@ Because for every 'Depth' of calculation, the ray is split into reflective part 
 
 
 [**⬆ Back to menu**](#index)
+
+<a name='DepthofField'></a>
 
 ## DEPTH OF FIELD
 
@@ -372,6 +388,8 @@ And as always: Look also at popups for short explanations on Edit-fields, button
 
 [**⬆ Back to menu**](#index)
 
+<a name='Drawingontheimage'></a>
+
 ## DRAWING ON THE IMAGE
 
 
@@ -383,6 +401,8 @@ The drawings don't show up in reflections and not at all in the M.C. renderer.
 
 
 [**⬆ Back to menu**](#index)
+
+<a name='Savingandloading'></a>
 
 ## SAVING AND LOADING
 
@@ -412,6 +432,8 @@ A 'History' folder is also made in the programs directory, parameters will be au
 
 [**⬆ Back to menu**](#index)
 
+<a name='Animationmaker'></a>
+
 ## ANIMATION MAKER
 
 I hope that most functions are self explaining, some hints are popping up when the cursor is over a button or an edit field.
@@ -431,6 +453,8 @@ Hint: The length of the Output Folder name should not exceed 255 characters, any
 
 # UTILITIES
 
+<a name='Bigrenders'></a>
+
 ## BIG RENDERS
 
 Create a huge rendering by calculating tiles. The tiles are saved as images in an automatically created subfolder of the saved project file. You have to stick all tiles together with a seperate program of your choice, M3D does not have this function yet included! The functions should be mostly selfexplaining, please look at the bubble popups for more helps.
@@ -438,6 +462,8 @@ Create a huge rendering by calculating tiles. The tiles are saved as images in a
 
 
 [**⬆ Back to menu**](#index)
+
+<a name='MCrenderer'></a>
 
 ## M.C. RENDERER
 
@@ -454,7 +480,7 @@ WARNING: This renderer shares maps with the main renderer, if you are using maps
 
 [**⬆ Back to menu**](#index)
 
-<a name='Warning and changelog'></a>
+<a name='Warningandchangelog'></a>
 
 ## C A U T I O N ! !
 
