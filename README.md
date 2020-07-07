@@ -495,7 +495,7 @@ Because of newer functions there might always be changes in the displaying and c
 
 ## CHANGE LOG
 
-See https://github.com/Zeyu-Li/mb3d/blob/master/CHANGELOG.txt
+See https://github.com/thargor6/mb3d/blob/master/CHANGELOG.txt
 
 
 
