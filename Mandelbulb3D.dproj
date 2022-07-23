@@ -93,8 +93,8 @@
         <DCC_DebugInformation>true</DCC_DebugInformation>
         <DCC_MinStackSize>1048576</DCC_MinStackSize>
         <BRCC_OutputDir>D:\DEV\Delphi_Workspace\Mandel3D\</BRCC_OutputDir>
-        <VerInfo_Build>28</VerInfo_Build>
-        <VerInfo_Keys>CompanyName=;FileDescription=3d fractal rendering;FileVersion=1.9.9.28;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.9.9.28;Comments=</VerInfo_Keys>
+        <VerInfo_Build>35</VerInfo_Build>
+        <VerInfo_Keys>CompanyName=;FileDescription=3d fractal rendering;FileVersion=1.9.9.35;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=;ProductVersion=1.9.9.28;Comments=</VerInfo_Keys>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_RunTimeTypeInfo>true</DCC_RunTimeTypeInfo>
