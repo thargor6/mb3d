@@ -522,12 +522,12 @@ begin
     end;
     Timer1.Enabled := False;
 
-    if FInsideBatch and (FBatchCurrRayCount > FBatchMaxRayCount) then begin
+    if FInsideBatch and (FBatchCurrRayCount >= FBatchMaxRayCount) then begin
       StopRendering;
       Timer2.Enabled := False;
       Timer3.Enabled := False;
       SaveCurrentBatchImage;
-      // Sleep(250);
+      BatchProgressBar.StepIt;
       ProcessNextBatchEntry;
       Exit;
     end;
@@ -1466,7 +1466,6 @@ begin
     Button3Click(nil);
     BringToFront2(Self.Handle);
     FT0 := DateUtils.MilliSecondsBetween(Now, 0);
-    BatchProgressBar.StepIt;
     RefreshBatchGrid;
     Button2Click(nil);
   end
