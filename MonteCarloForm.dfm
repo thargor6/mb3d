@@ -27,7 +27,6 @@ object MCForm: TMCForm
     Height = 45
     Align = alTop
     TabOrder = 0
-    ExplicitTop = -4
     object Button9: TSpeedButton
       Left = 15
       Top = 9
@@ -178,12 +177,12 @@ object MCForm: TMCForm
       OnClick = SpeedButton1Click
     end
     object ToggleBatchPnlBtn: TSpeedButton
-      Left = 676
+      Left = 641
       Top = 8
-      Width = 77
+      Width = 154
       Height = 31
       Hint = 'open/close batch panel'
-      Caption = 'Batch'
+      Caption = 'M.C. batch render'
       Glyph.Data = {
         46020000424D460200000000000036000000280000000C0000000B0000000100
         200000000000100200000000000000000000000000000000000084C4C30084C4
@@ -209,7 +208,7 @@ object MCForm: TMCForm
       OnClick = ToggleBatchPnlBtnClick
     end
     object Button3: TButton
-      Left = 240
+      Left = 244
       Top = 12
       Width = 105
       Height = 25
@@ -284,7 +283,7 @@ object MCForm: TMCForm
       OnClick = Button1Click
     end
     object Button2: TButton
-      Left = 15
+      Left = 16
       Top = 8
       Width = 144
       Height = 25
@@ -333,7 +332,6 @@ object MCForm: TMCForm
       Height = 325
       Align = alClient
       TabOrder = 0
-      ExplicitLeft = -6
       object Label33: TLabel
         Left = 8
         Top = 233
@@ -996,7 +994,6 @@ object MCForm: TMCForm
     DoubleBuffered = True
     ParentDoubleBuffered = False
     TabOrder = 3
-    ExplicitTop = 47
     object Image1: TImage
       Left = 0
       Top = 0
@@ -1013,8 +1010,6 @@ object MCForm: TMCForm
     Align = alRight
     TabOrder = 4
     Visible = False
-    ExplicitLeft = 545
-    ExplicitTop = 47
     object Label16: TLabel
       Left = 120
       Top = 367
@@ -1035,7 +1030,7 @@ object MCForm: TMCForm
       Width = 178
       Height = 25
       Hint = 'Import the main programs parameter for mc rendering'
-      Caption = 'Open *m3p-sequence'
+      Caption = 'Open *.m3p-sequence'
       ParentShowHint = False
       ShowHint = True
       TabOrder = 0
@@ -1060,7 +1055,7 @@ object MCForm: TMCForm
       OnClick = BatchRenderBtnClick
     end
     object BatchMaxRayCountEdit: TEdit
-      Left = 211
+      Left = 209
       Top = 366
       Width = 30
       Height = 21
@@ -1069,7 +1064,7 @@ object MCForm: TMCForm
       ReadOnly = True
       ShowHint = True
       TabOrder = 3
-      Text = '20'
+      Text = '10'
     end
     object BatchMaxRayCountUpDown: TUpDown
       Left = 241
@@ -1079,7 +1074,7 @@ object MCForm: TMCForm
       Associate = BatchMaxRayCountEdit
       Min = 1
       Max = 30
-      Position = 20
+      Position = 10
       TabOrder = 4
     end
     object BatchEntriesGrid: TStringGrid
@@ -1158,7 +1153,7 @@ object MCForm: TMCForm
     Left = 457
     Top = 56
     Bitmap = {
-      494C010108000E00200020001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010108000E002C0020001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000003000000001002000000000000060
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1971,7 +1966,7 @@ object MCForm: TMCForm
     Left = 661
     Top = 286
     Bitmap = {
-      494C0101040009004C000C000B00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010400090058000C000B00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000001600000001002000000000008010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000

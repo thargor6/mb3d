@@ -166,6 +166,8 @@ type
     procedure StartRendering;
     procedure StopRendering;
     procedure SaveCurrentBatchImage;
+    procedure ProcessNextBatchEntry;
+    procedure EnableControls;
   protected
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
   public
@@ -181,8 +183,10 @@ type
     OPDmc: TOpenPictureDialogM3D;
     Authors: AuthorStrings;
     FBatchEntries: TObjectList;
+    FCurrBatchWorkList: TList;
     FInsideBatch: boolean;
-    FBatchMaxRayCount, FBatchCurrRayCount, FCurrBatchEntryIdx: Integer;
+    FBatchMaxRayCount, FBatchCurrRayCount: Integer;
+    FT0: Int64;
   end;
 
   TBatchEntry = class
@@ -191,6 +195,7 @@ type
     OutputImageFilename: string;
     ElapsedTimeInSeconds: Double;
     Finished: Boolean;
+    ImageExists: Boolean;
   end;
 
 var
@@ -201,7 +206,7 @@ implementation
 
 uses Mand, Math3D, PaintThread, ImageProcess, HeaderTrafos, Tiling, CommDlg,
   PostProcessForm, DivUtils, CalcMonteCarlo, CustomFormulas, FileHandling,
-  LightAdjust, Maps, Math, ColorOptionForm;
+  LightAdjust, Maps, Math, ColorOptionForm, DateUtils;
 
 {$R *.dfm}
 
@@ -282,6 +287,8 @@ end;
 
 procedure TMCForm.MCRepaint;
 begin
+OutputDebugString('Repaint');
+
     if SizeOK then
     begin
       Inc(MCRepaintCounter);
@@ -417,6 +424,8 @@ procedure TMCForm.FormCreate(Sender: TObject);
 var i: Integer;
 begin
     FBatchEntries := TObjectList.Create;
+    // holds a reference to objects of FBatchEntries, hence no TObjectList which automatically frees list items on Clear
+    FCurrBatchWorkList := TList.Create;
     BatchPnl.Width := BatchPnlWidth;
     BatchPnl.Visible := False;
     OPDmc := TOpenPictureDialogM3D.Create(Self);
@@ -449,6 +458,7 @@ procedure TMCForm.FormDestroy(Sender: TObject);
 begin
     OPDmc.Free;
     FBatchEntries.Free;
+    FCurrBatchWorkList.Free;
 end;
 
 procedure TMCForm.FormHide(Sender: TObject);
@@ -511,12 +521,18 @@ begin
       Exit;
     end;
     Timer1.Enabled := False;
-    MCTriggerRepaint;
 
     if FInsideBatch and (FBatchCurrRayCount > FBatchMaxRayCount) then begin
       StopRendering;
+      Timer2.Enabled := False;
+      Timer3.Enabled := False;
       SaveCurrentBatchImage;
+      // Sleep(250);
+      ProcessNextBatchEntry;
+      Exit;
     end;
+
+    MCTriggerRepaint;
 
     if Button2.Caption = 'Stop rendering' then
     begin
@@ -758,6 +774,10 @@ end;
 procedure TMCForm.SetFormSize;
 begin
     ClientWidth := Panel3.Width + MCparas.Width;
+    if(BatchPnl.Visible) then
+      ClientWidth := Panel3.Width + MCparas.Width + BatchPnl.Width
+    else
+      ClientWidth := Panel3.Width + MCparas.Width;
     ClientHeight := ToolbarPnl.Height + BottomPnl.Height + MCparas.Height;
 end;
 
@@ -1102,6 +1122,7 @@ begin
     Label7avrgrays.Caption := FloatToStrSingle(AvrgRCount);
     Label12.Caption := FloatToStrSingle(maxNoise);
     Label13.Caption := FloatToStrSingle(maxRCount);
+    FBatchCurrRayCount := maxRCount;
 end;
 
 procedure TMCForm.SetCPanelImages(C: TCategoryPanel; Checked: LongBool);
@@ -1248,6 +1269,7 @@ procedure TMCForm.Button2Click(Sender: TObject);  //start/stop rendering
 begin
     if Button2.Caption = 'Stop rendering' then    //todo: save lastY if noZeroCounts to start nexttime
     begin
+      FInsideBatch := False;
       StopRendering;
     end
     else
@@ -1290,8 +1312,9 @@ begin
       if not HasFile then begin
         BatchEntry := TBatchEntry.Create;
         BatchEntry.M3PFilename := OpenDialog1.Files[I];
-        BatchEntry.OutputImageFilename := ChangeFileExtSave(BatchEntry.M3PFilename, BatchOutputImageFileExt);
+        BatchEntry.OutputImageFilename := ChangeFileExtSave(BatchEntry.M3PFilename, '.'+BatchOutputImageFileExt);
         BatchEntry.Finished := FileExists(BatchEntry.OutputImageFilename);
+        BatchEntry.ImageExists := BatchEntry.Finished;
         FBatchEntries.Add(BatchEntry);
         Inc(AddedCount);
       end;
@@ -1314,7 +1337,7 @@ begin
   BatchEntriesGrid.Cells[1, 0] := 'Elapsed';
   BatchEntriesGrid.ColWidths[1] := 50;
   BatchEntriesGrid.Cells[2, 0] := 'Status';
-  BatchEntriesGrid.ColWidths[2] := 40;
+  BatchEntriesGrid.ColWidths[2] := 100;
   for I := 0 to FBatchEntries.Count - 1 do begin
     BatchEntry := TBatchEntry(FBatchEntries[I]);
     BatchEntriesGrid.Cells[0, I + 1] := ExtractFileName(BatchEntry.M3PFilename);
@@ -1323,7 +1346,10 @@ begin
         BatchEntriesGrid.Cells[1, I + 1] := FloatToStr(BatchEntry.ElapsedTimeInSeconds)+'s'
       else
         BatchEntriesGrid.Cells[1, I + 1] := '';
-      BatchEntriesGrid.Cells[2, I + 1] := 'Done';
+      if BatchEntry.ImageExists then
+        BatchEntriesGrid.Cells[2, I + 1] :=  'Image exists'
+      else
+        BatchEntriesGrid.Cells[2, I + 1] :=  'Done';
     end
     else begin
       BatchEntriesGrid.Cells[1, I + 1] := '';  BatchEntriesGrid.Cells[2, I + 1] := '';
@@ -1368,6 +1394,7 @@ begin
   ClearBatchLstBtn.Enabled := FBatchEntries.Count > 0;
   RemoveBatchLstEntryBtn.Enabled := FBatchEntries.Count > 0;
   BatchRenderBtn.Enabled := CountNonRenderedItems > 0;
+  BatchRenderBtn.Enabled := not FInsideBatch;
 end;
 
 function TMCForm.GetFileExt(const Filename: String): String;
@@ -1388,8 +1415,8 @@ var
   BatchEntry: TBatchEntry;
   FileExt: String;
 begin
-  if (FCurrBatchEntryIdx >=0) and (FCurrBatchEntryIdx < FBatchEntries.Count) then begin
-    BatchEntry := TBatchEntry(FBatchEntries[FCurrBatchEntryIdx]);
+  if (FCurrBatchWorkList.Count > 0) then begin
+    BatchEntry := TBatchEntry(FCurrBatchWorkList[0]);
     FileExt := GetFileExt(BatchEntry.OutputImageFilename);
     if (FileExt='jpg') or (FileExt='jpeg') then
       SaveJPEGfromBMP(BatchEntry.OutputImageFilename, Image1.Picture.Bitmap, 95)
@@ -1397,16 +1424,58 @@ begin
       SaveBMP(BatchEntry.OutputImageFilename, Image1.Picture.Bitmap, pf24bit)
     else // png
       SavePNG(BatchEntry.OutputImageFilename, Image1.Picture.Bitmap, False);
+    BatchEntry.ElapsedTimeInSeconds := (DateUtils.MilliSecondsBetween(Now, 0)-FT0) / 1000.0;
     BatchEntry.Finished := True;
+    FCurrBatchWorkList.Delete(0);
   end;
 end;
 
 procedure TMCForm.BatchRenderBtnClick(Sender: TObject);
+var
+  I: Integer;
+  BatchEntry: TBatchEntry;
 begin
   FBatchMaxRayCount := StrToIntTry(BatchMaxRayCountEdit.Text, 20);
+  FCurrBatchWorkList.Clear;
+  for I := 0 to FBatchEntries.Count - 1  do begin
+    BatchEntry := TBatchEntry(FBatchEntries[I]);
+    if not BatchEntry.Finished then
+      FCurrBatchWorkList.Add(BatchEntry);
+  end;
+  BatchProgressBar.Max := FCurrBatchWorkList.Count;
+  BatchProgressBar.Position := 0;
   FInsideBatch := True;
+  EnableBatchControls;
+  EnableControls;
+  ProcessNextBatchEntry;
 end;
 
+procedure TMCForm.EnableControls;
+begin
 
+end;
+
+procedure TMCForm.ProcessNextBatchEntry;
+var
+  BatchEntry: TBatchEntry;
+begin
+  if FCurrBatchWorkList.Count > 0 then begin
+    BatchEntry := TBatchEntry(FCurrBatchWorkList[0]);
+    FBatchCurrRayCount := 0;
+    LoadParameter(Mand3DForm.MHeader, BatchEntry.M3PFilename, True);
+    Button3Click(nil);
+    BringToFront2(Self.Handle);
+    FT0 := DateUtils.MilliSecondsBetween(Now, 0);
+    BatchProgressBar.StepIt;
+    RefreshBatchGrid;
+    Button2Click(nil);
+  end
+  else begin
+    FInsideBatch := False;
+    RefreshBatchGrid;
+    EnableBatchControls;
+    EnableControls;
+  end;
+end;
 
 end.
