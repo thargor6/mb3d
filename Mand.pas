@@ -445,7 +445,7 @@ type
     procedure SetShape2Size(NewSize: Integer);
     procedure TriggerRepaintDraw(R: TRect);
     procedure SetEdit16Text;
-    procedure SaveCurrParamAsM3P( const Filename: String );
+    procedure SaveCurrParamAsM3P( const Filename: String; const DoMakeHeader: boolean = True);
   protected
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
   public
@@ -1566,7 +1566,7 @@ begin
       except
         // hide this error
       end;
-      SaveCurrParamAsM3P( stmp );
+      SaveCurrParamAsM3P( stmp, False );
       AnimationForm.NextSubFrame;
       Exit;
     end;
@@ -2409,7 +2409,7 @@ begin
 end;
 
 // http://docs.embarcadero.com/products/rad_studio/delphiAndcpp2009/HelpUpdate2/EN/html/devcommon/delphiioerrors_xml.html
-procedure TMand3DForm.SaveCurrParamAsM3P( const Filename: String );
+procedure TMand3DForm.SaveCurrParamAsM3P( const Filename: String; const DoMakeHeader: boolean = True);
 var f: file;
   procedure CheckIOError(const Part: Integer);
   var
@@ -2420,7 +2420,8 @@ var f: file;
       raise Exception.Create('IOError<' + IntToStr(Part)+'>: '+IntToStr(ErrCode));
   end;
 begin
-  MakeHeader;
+  if DoMakeHeader then
+    MakeHeader;
   AssignFile(f, ChangeFileExtSave(Filename, '.m3p'));
   CheckIOError(1);
   Rewrite(f, 1);
