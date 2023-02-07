@@ -101,6 +101,7 @@ type
     BatchEntriesGrid: TStringGrid;
     ClearBatchLstBtn: TButton;
     RemoveBatchLstEntryBtn: TButton;
+    NetworkRenderCBx: TCheckBox;
     procedure TrackBar18KeyPress(Sender: TObject; var Key: Char);
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -168,6 +169,7 @@ type
     procedure SaveCurrentBatchImage;
     procedure ProcessNextBatchEntry;
     procedure EnableControls;
+    function FetchNextWorkEntry:TBatchEntry;
   protected
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
   public
@@ -1297,6 +1299,18 @@ var
   I, J, AddedCount, OldSize: Integer;
   HasFile: Boolean;
   BatchEntry: TBatchEntry;
+
+
+  function FileSize(const AFilename:String): Int64;
+  var
+    Info: TWin32FileAttributeData;
+  begin
+    Result := -1;
+    if not GetFileAttributesEx(PChar(AFileName), GetFileExInfoStandard, @Info) then
+      exit;
+    Result := Int64(Info.nFileSizeLow) or Int64(Info.nFileSizeHigh shl 32);
+  end;
+
 begin
   if (not FInsideBatch) and OpenDialog1.Execute then begin
     AddedCount := 0;
@@ -1313,7 +1327,7 @@ begin
         BatchEntry := TBatchEntry.Create;
         BatchEntry.M3PFilename := OpenDialog1.Files[I];
         BatchEntry.OutputImageFilename := ChangeFileExtSave(BatchEntry.M3PFilename, '.'+BatchOutputImageFileExt);
-        BatchEntry.Finished := FileExists(BatchEntry.OutputImageFilename);
+        BatchEntry.Finished := FileExists(BatchEntry.OutputImageFilename) and ( FileSize(BatchEntry.OutputImageFilename) > 0 );
         BatchEntry.ImageExists := BatchEntry.Finished;
         FBatchEntries.Add(BatchEntry);
         Inc(AddedCount);
@@ -1426,6 +1440,7 @@ begin
       SavePNG(BatchEntry.OutputImageFilename, Image1.Picture.Bitmap, False);
     BatchEntry.ElapsedTimeInSeconds := (DateUtils.MilliSecondsBetween(Now, 0)-FT0) / 1000.0;
     BatchEntry.Finished := True;
+
     FCurrBatchWorkList.Delete(0);
   end;
 end;
@@ -1455,26 +1470,57 @@ begin
 
 end;
 
+function TMCForm.FetchNextWorkEntry:TBatchEntry;
+begin
+  Result := nil;
+  while FCurrBatchWorkList.Count > 0 do begin
+    Result := TBatchEntry(FCurrBatchWorkList[0]);
+    if NetworkRenderCBx.Checked then begin
+      if FileExists(Result.OutputImageFilename) then begin
+        FCurrBatchWorkList.Delete(0);
+      end
+      else begin
+        with TStringList.Create do try
+          SaveToFile(Result.OutputImageFilename);
+        finally
+          Free;
+        end;
+        break;
+      end;
+    end
+    else
+      break;
+  end;
+end;
+
 procedure TMCForm.ProcessNextBatchEntry;
 var
   BatchEntry: TBatchEntry;
-begin
-  if FCurrBatchWorkList.Count > 0 then begin
-    BatchEntry := TBatchEntry(FCurrBatchWorkList[0]);
-    FBatchCurrRayCount := 0;
-    LoadParameter(Mand3DForm.MHeader, BatchEntry.M3PFilename, True);
-    Button3Click(nil);
-    BringToFront2(Self.Handle);
-    FT0 := DateUtils.MilliSecondsBetween(Now, 0);
-    RefreshBatchGrid;
-    Button2Click(nil);
-  end
-  else begin
+
+  procedure FinishBatch;
+  begin
     FInsideBatch := False;
     RefreshBatchGrid;
     EnableBatchControls;
     EnableControls;
   end;
+begin
+  if FCurrBatchWorkList.Count > 0 then begin
+    BatchEntry := FetchNextWorkEntry;
+    if BatchEntry <> nil then begin
+      FBatchCurrRayCount := 0;
+      LoadParameter(Mand3DForm.MHeader, BatchEntry.M3PFilename, True);
+      Button3Click(nil);
+      BringToFront2(Self.Handle);
+      FT0 := DateUtils.MilliSecondsBetween(Now, 0);
+      RefreshBatchGrid;
+      Button2Click(nil);
+    end
+    else
+      FinishBatch;
+  end
+  else
+    FinishBatch;
 end;
 
 end.

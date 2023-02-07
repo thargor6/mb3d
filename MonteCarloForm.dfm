@@ -728,6 +728,7 @@ object MCForm: TMCForm
           TabOrder = 3
           OnCollapse = CategoryPanel2Collapse
           OnExpand = CategoryPanel2Expand
+          ExplicitWidth = 185
           object Label9: TLabel
             Left = 35
             Top = 10
@@ -1010,9 +1011,10 @@ object MCForm: TMCForm
     Align = alRight
     TabOrder = 4
     Visible = False
+    ExplicitLeft = 545
     object Label16: TLabel
       Left = 120
-      Top = 367
+      Top = 362
       Width = 85
       Height = 16
       Alignment = taRightJustify
@@ -1046,7 +1048,7 @@ object MCForm: TMCForm
       TabOrder = 1
     end
     object BatchRenderBtn: TButton
-      Left = 45
+      Left = 46
       Top = 426
       Width = 178
       Height = 25
@@ -1057,8 +1059,8 @@ object MCForm: TMCForm
       OnClick = BatchRenderBtnClick
     end
     object BatchMaxRayCountEdit: TEdit
-      Left = 209
-      Top = 366
+      Left = 211
+      Top = 362
       Width = 30
       Height = 21
       Hint = 'Determines when to stop rendering in batch-mode'
@@ -1070,7 +1072,7 @@ object MCForm: TMCForm
     end
     object BatchMaxRayCountUpDown: TUpDown
       Left = 239
-      Top = 366
+      Top = 362
       Width = 16
       Height = 21
       Associate = BatchMaxRayCountEdit
@@ -1117,6 +1119,29 @@ object MCForm: TMCForm
       TabOrder = 7
       OnClick = RemoveBatchLstEntryBtnClick
     end
+    object NetworkRenderCBx: TCheckBox
+      Left = 55
+      Top = 384
+      Width = 198
+      Height = 17
+      Hint = 
+        'Track rendering status across the file system so that multiple i' +
+        'nstances can render the same sequence of files without overwriti' +
+        'ng the work of the other nodes'
+      Alignment = taLeftJustify
+      Caption = 'Support network rendering'
+      Checked = True
+      Font.Charset = DEFAULT_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'MS Sans Serif'
+      Font.Style = []
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+      State = cbChecked
+      TabOrder = 8
+    end
   end
   object Timer2: TTimer
     Enabled = False
@@ -1155,7 +1180,7 @@ object MCForm: TMCForm
     Left = 457
     Top = 56
     Bitmap = {
-      494C010108000E00300020001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010108000E003C0020001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000003000000001002000000000000060
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1968,7 +1993,7 @@ object MCForm: TMCForm
     Left = 661
     Top = 286
     Bitmap = {
-      494C0101040009005C000C000B00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010400090068000C000B00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000001600000001002000000000008010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
