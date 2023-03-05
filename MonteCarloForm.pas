@@ -102,6 +102,7 @@ type
     ClearBatchLstBtn: TButton;
     RemoveBatchLstEntryBtn: TButton;
     NetworkRenderCBx: TCheckBox;
+    WithZBufferCbx: TCheckBox;
     procedure TrackBar18KeyPress(Sender: TObject; var Key: Char);
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -131,6 +132,7 @@ type
     procedure ClearBatchLstBtnClick(Sender: TObject);
     procedure RemoveBatchLstEntryBtnClick(Sender: TObject);
     procedure BatchRenderBtnClick(Sender: TObject);
+    procedure WithZBufferCbxClick(Sender: TObject);
   private
     { Private-Deklarationen }
     MCActiveCalcThreads: Integer;
@@ -170,11 +172,15 @@ type
     procedure ProcessNextBatchEntry;
     procedure EnableControls;
     function FetchNextWorkEntry:TBatchEntry;
+    function MakeZBufFilename(const Filename: string): String;
   protected
     procedure WmThreadReady(var Msg: TMessage); message WM_ThreadReady;
   public
     { Public-Deklarationen }
+    withZBuffer: boolean;
+    paintZBuffer: boolean;
     siLightMC: array of TMCrecord;
+    siLightMCExt: array of TMCrecordExt;
     bUserChange: LongBool;
     MCparas: TMandHeader10;
     MCCalcStop: LongBool;
@@ -273,28 +279,37 @@ begin
     if c = 0 then SaveDialog6.FilterIndex := i + 1;
     SaveDialog6.InitialDir := IniDirs[2];
     SetDialogName(SaveDialog6, FName);
-    if SaveDialog6.Execute then
-    case SaveDialog6.FilterIndex of
-      1: SaveBMP(SaveDialog6.FileName, Image1.Picture.Bitmap, pf24bit);
-      2: SavePNG(SaveDialog6.FileName, Image1.Picture.Bitmap, False);
-      3: begin
-           s := '95';
-           if InputQuery('JPEG quality or size', 'Type in the quality (0..100) or the maximal output filesize in KB (>100):', s) then
-             SaveJPEGfromBMP(SaveDialog6.FileName, Image1.Picture.Bitmap, StrToIntTrim(s));
-  //         c := StrToIntTrim(InputBox('JPEG quality or size', 'Type in the quality (0..100) or the maximal output filesize in KB (>100):', '95'));
-    //       SaveJPEGfromBMP(SaveDialog6.FileName, Image1.Picture.Bitmap, c);
-         end;
+    if SaveDialog6.Execute then begin
+      case SaveDialog6.FilterIndex of
+        1: SaveBMP(SaveDialog6.FileName, Image1.Picture.Bitmap, pf24bit);
+        2: SavePNG(SaveDialog6.FileName, Image1.Picture.Bitmap, False);
+        3: begin
+             s := '95';
+             if InputQuery('JPEG quality or size', 'Type in the quality (0..100) or the maximal output filesize in KB (>100):', s) then
+               SaveJPEGfromBMP(SaveDialog6.FileName, Image1.Picture.Bitmap, StrToIntTrim(s));
+    //         c := StrToIntTrim(InputBox('JPEG quality or size', 'Type in the quality (0..100) or the maximal output filesize in KB (>100):', '95'));
+      //       SaveJPEGfromBMP(SaveDialog6.FileName, Image1.Picture.Bitmap, c);
+           end;
+      end;
+      if WithZBuffer then begin
+        paintZBuffer := True;
+        try
+          PaintMC(@MCparas, True);
+          SavePNG(MakeZBufFilename(SaveDialog6.FileName), Image1.Picture.Bitmap, False);
+        finally
+          paintZBuffer := False;
+          PaintMC(@MCparas, True);
+        end;
+      end;
     end;
 end;
 
 procedure TMCForm.MCRepaint;
 begin
-OutputDebugString('Repaint');
-
     if SizeOK then
     begin
       Inc(MCRepaintCounter);
-      PaintMC(@MCparas);
+      PaintMC(@MCparas, False);
     end;
 end;
 
@@ -454,6 +469,7 @@ begin
     ComboBox1.Hint := 'Box: sharp, good AA' + #13#10 +
                       'Gauss: bit blurry, very good AA';
     RefreshBatchGrid;
+    paintZBuffer := False;
 end;
 
 procedure TMCForm.FormDestroy(Sender: TObject);
@@ -474,6 +490,7 @@ procedure TMCForm.FormShow(Sender: TObject);
 begin
     PreComputeHaltonSequence;
     EnableBatchControls;
+    EnableControls;
 end;
 
 procedure TMCForm.TrackBar1Change(Sender: TObject);  //contrast
@@ -810,6 +827,7 @@ begin
     if Copy(FName, 1, 13) = 'Mandelbulb 3D' then FName := 'main params';
     Caption := FName;
     SetLength(siLightMC, 0);
+    SetLength(siLightMCExt, 0);
     FitImageSize;
     Image1.Picture.Bitmap.Canvas.FillRect(Image1.Picture.Bitmap.Canvas.ClipRect);
     Image1.Picture.Bitmap.Canvas.Font.Color := $C000;
@@ -1002,6 +1020,8 @@ begin
         SetLength(siLightMC, MCparas.Width * MCparas.Height);
         BlockRead(f, siLightMC[0], SizeOf(TMCrecord) * Length(siLightMC));
         CloseFile(f);
+        withZBuffer := False;
+        WithZBufferCbx.Checked := False;
       finally
         Screen.Cursor := crDefault;
         Authors := ExtractAuthorsFromPara(@MCparas);
@@ -1165,6 +1185,10 @@ end;
 
 procedure TMCForm.StartCalc;
 begin
+    if withZBuffer and (Length(siLightMCExt) <> MCparas.Width * MCparas.Height) then begin
+      SetLength(siLightMCExt, MCparas.Width * MCparas.Height);
+      FillChar(siLightMCExt[0], Length(siLightMCExt) * SizeOf(TMCrecordExt), 0);
+    end;
     if Length(siLightMC) <> MCparas.Width * MCparas.Height then
     begin
       SetLength(siLightMC, MCparas.Width * MCparas.Height);
@@ -1200,7 +1224,7 @@ begin
     MCctstats.pMessageHwnd := Self.Handle;
     Button2.Caption := 'Stop rendering';
     if CalcMCT(@MCparas, @MCHeaderLightVals, @siLightMC[0], @MCctstats,
-               AvrgSqrNoise, AvrgRCount, bGotZeroCounts) then
+               AvrgSqrNoise, AvrgRCount, bGotZeroCounts, @siLightMCExt[0], withZBuffer) then
     begin
       MCActiveCalcThreads := MCctstats.iTotalThreadCount;
       Button3.Enabled := False;
@@ -1424,6 +1448,11 @@ begin
   Result := '';
 end;
 
+function TMCForm.MakeZBufFilename(const Filename: string): String;
+begin
+  Result := IncludeTrailingPathDelimiter( ExtractFilePath( Filename )) + 'ZBuf ' + ChangeFileExt( ExtractFileName( Filename ), '.png');
+end;
+
 procedure TMCForm.SaveCurrentBatchImage;
 var
   BatchEntry: TBatchEntry;
@@ -1438,6 +1467,18 @@ begin
       SaveBMP(BatchEntry.OutputImageFilename, Image1.Picture.Bitmap, pf24bit)
     else // png
       SavePNG(BatchEntry.OutputImageFilename, Image1.Picture.Bitmap, False);
+
+    if WithZBuffer then begin
+      paintZBuffer := True;
+      try
+        PaintMC(@MCparas, True);
+        SavePNG(MakeZBufFilename(BatchEntry.OutputImageFilename), Image1.Picture.Bitmap, False);
+      finally
+        paintZBuffer := False;
+        PaintMC(@MCparas, True);
+      end;
+    end;
+
     BatchEntry.ElapsedTimeInSeconds := (DateUtils.MilliSecondsBetween(Now, 0)-FT0) / 1000.0;
     BatchEntry.Finished := True;
 
@@ -1463,11 +1504,6 @@ begin
   EnableBatchControls;
   EnableControls;
   ProcessNextBatchEntry;
-end;
-
-procedure TMCForm.EnableControls;
-begin
-
 end;
 
 function TMCForm.FetchNextWorkEntry:TBatchEntry;
@@ -1522,5 +1558,19 @@ begin
   else
     FinishBatch;
 end;
+
+procedure TMCForm.WithZBufferCbxClick(Sender: TObject);
+begin
+  withZBuffer := WithZBufferCbx.Checked;
+  if not withZBuffer then
+    SetLength(siLightMCExt, 0);
+  EnableControls;
+end;
+
+procedure TMCForm.EnableControls;
+begin
+
+end;
+
 
 end.

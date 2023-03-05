@@ -45,6 +45,7 @@ type
     HaltonShiftX, HaltonShiftY: Single;
     pStartPos: TPVec3D;
     PMCrecord: TPMCrecord;
+    CurrPMCrecordExt: TPMCrecordExt;
     TotalLight: TSVec;
 //    BGMapFuncDirect: TGetLightMapPixel;
   //  BGMapFuncSphere: TGetLightMapPixelSphere;
@@ -92,7 +93,8 @@ function CalcBokeh(const xx, yy: Single; BokehNr: Integer): Single;
 function CalcMCT(Header: TPMandHeader10; PLightVals: TPLightVals;
                  PsiLight5: TPsiLight5; PCTS: TPCalcThreadStats;
                  AvrgSqrNoise: Double; sAvrgRCount: Single;
-                 bSkipNonZeroCounts: LongBool): Boolean;
+                 bSkipNonZeroCounts: LongBool;
+                 MCrecordExt: TPMCrecordExt; withZBuffer: Boolean): Boolean;
 procedure PreComputeHaltonSequence;
 var
   HaltonSequence: array[0..65535] of HaltonRec;
@@ -103,7 +105,7 @@ var
 implementation
 
 uses Mand, Math, DivUtils, formulas, CustomFormulas, LightAdjust, Calc,
-  HeaderTrafos, PaintThread, Maps, MonteCarloForm;
+  HeaderTrafos, PaintThread, Maps, MonteCarloForm, SysUtils;
 
 procedure PreComputeSinCos;
 var i: Integer;
@@ -148,7 +150,8 @@ end;
 function CalcMCT(Header: TPMandHeader10; PLightVals: TPLightVals;
                  PsiLight5: TPsiLight5; PCTS: TPCalcThreadStats;
                  AvrgSqrNoise: Double; sAvrgRCount: Single;
-                 bSkipNonZeroCounts: LongBool): Boolean;
+                 bSkipNonZeroCounts: LongBool;
+                 MCrecordExt: TPMCrecordExt; withZBuffer: Boolean): Boolean;
 var x, ThreadCount: Integer;
     sRI, sAMBmaxL: Single;
     CalcReflects, bDiffReflectsBigEnough: LongBool;
@@ -170,6 +173,8 @@ begin
       PLightVals.SRLightAmount := Min0MaxCS(Header.SRamount, 100);
       CalcHSVecsFromLights(PLightVals, @MCTparas);
       MCTparas.pSiLight := PsiLight5;
+      MCTparas.MCrecordExt := MCrecordExt;
+      MCTparas.withZBuffer := withZBuffer;
       MCTparas.CalcRect.Top := Header.MClastY;
       MCTparas.PLVals := PLightVals;
       MCTparas.PCalcThreadStats := PCTS;
@@ -1490,6 +1495,7 @@ var itmp: Integer;
     tmpVec, CC, tVec2, NVec: TVec3D;
     Vpos, SVec, SVec2: TSVec;
     LightSD, ObjColor: TLightSD;
+    CurrZPos: Cardinal;
 label skip1, skip2;
 begin
     with MCTparas do
@@ -1599,7 +1605,7 @@ begin
 
       if bInsideRendering and (DFogOnIt < 65535) then sDynFog := sDynFog * 200 * DEstop / iMandWidth;
 
-      if not OpenAir then   
+      if not OpenAir then
       begin
         PMCrecord.Zbyte := PMCrecord.Zbyte or 128;  //not background, object hit..
         if DElimited then   // secant mode
@@ -1668,6 +1674,50 @@ begin
         RMdoColor(@MCTparas);
         mPsiLight := TPsiLight5(itmp);
         CalcZposAndRough(crPsiLight, @MCTparas, ZZ2);
+
+               // TODO
+       if withZBuffer then begin
+          CurrZPos := Round(8388352 - ZcMul * (Sqrt(mZZ * Zcorr + 1) - 1));
+          if CurrZPos < 0 then CurrZPos := 0
+          else if CurrZPos > 8388352 then CurrZPos := 8388352;
+          if CurrZPos > CurrPMCrecordExt.ZPosition then
+            CurrPMCrecordExt.ZPosition := CurrZPos;
+
+
+(*
+
+    function GetZPosFromSI(const iZ: Integer): Double;
+    begin
+      with MCTp do begin
+        Result := (Sqr((8388351.5 - iZ) / ZcMul + 1) - 1) / Zcorr;
+      end;
+    end;
+
+function GetGrayValueFromZZ(const ZZ, ZScale, ZOffset: double): Integer;
+begin
+  Result :=  Round((ZZ * ZScale / 1000.0 + ZOffset) * 65535);
+end;
+
+
+
+     iZ0 := PInteger(Longint(PW)-Longint(2))^ shr 8;
+            ZZ := GetZPosFromSI(iZ0);
+            GrayValue := GetGrayValueFromZZ( ZZ, ZScale, ZOffset );
+            ClampedGrayValue := ClampGrayValue(GrayValue);
+
+
+              MinRawZValue := PInfo^.MinRawZValue;
+  MaxRawZValue := PInfo^.MaxRawZValue;
+  MinZValue := 1000;
+  MaxZValue := 65535 - 1000;
+  ZOffset := (MaxRawZValue * MinZValue - MaxZValue * MinRawZValue) / (MaxRawZValue - MinRawZValue) / 0.65535e5;
+  ZScale := 0.200e3 / 0.13107e5 * (MaxZValue - MinZValue) / (MaxRawZValue - MinRawZValue);
+
+*)
+
+      end;
+
+
         ObjColor := CalcColor(crPsiLight, mZZ * StepWidth + sZZstmitDif);   //dif+spec holds colors  zPos for ColZmultiplier, must be ZZ
         LVals.ZposDynFog := ZZ2 * StepWidth + sZZstmitDif;
         SVec := CalcVisLights(VPos, @VgradsFOVit, crPsiLight, BGdec, d1);
@@ -1916,13 +1966,20 @@ begin
       begin
         PCalcThreadStats.CTrecords[iThreadId].iActualYpos := y;
         PMCrecord := TPMCrecord(Integer(pSiLight) + y * SLoffset);
-        for x := 1 to iMandWidth do
-        begin
+        if withZBuffer then begin
+          CurrPMCrecordExt := TPMCrecordExt(Integer(MCrecordExt) + y * SLoffsetExt);
+        end
+        else
+          CurrPMCrecordExt := nil;
+
+        for x := 1 to iMandWidth do begin
           PCalcThreadStats.CTrecords[iThreadId].iActualXpos := x - 1;
           if PMCrecord.RayCount = 0 then TotalItCount := 4 else
-          if bSkipNonZeroC then
-          begin
+          if bSkipNonZeroC then begin
             Inc(PMCrecord);
+            if withZBuffer then begin
+              Inc(CurrPMCrecordExt);
+            end;
             Continue;
           end
           else TotalItCount := CalcN(x, y + 1, PMCrecord);
@@ -1943,6 +2000,7 @@ ll0:   //   TotalItCount := 100; //dof rand test
             mPsiLight := @SiLight;
             bInsideRendering := bInsideTmp;
             bCalcInside := bInsideTmp;
+
             PCardinal(@mPsiLight.Zpos)^ := 32768;
             mPsiLight.SIgradient := 0;
             if PMCrecord.RayCount = 0 then
@@ -2017,10 +2075,8 @@ ll0:   //   TotalItCount := 100; //dof rand test
               else mPsiLight.SIgradient := 32768 + Round(32767 * Clamp01S(Iteration3Dext.Rout / dRStop));
               LightSD := CalcColor(mPsiLight, ZZ);
               CalcZposAndRough(mPsiLight, @MCTparas, ZZ);
-
               TotalLight := CalcVisLights(DVecToSVec(SubtractVectors(pStartPos^, @Xmit)),
                                           @mVgradsFOV, mPsiLight, xx, yy);
-
               tmpV := SubtractVectors(@mVgradsFOV, ScaleVector(Normals, 2 * DotOfVectors(@Normals, @mVgradsFOV)));
               LightSD2 := CalcPhongLightNoHS(mPsiLight, @tmpV);
               xx := xx * yy;
@@ -2067,7 +2123,6 @@ ll2:        sv := MinMaxSVecMC(TotalLight);
             DoubleToMCRGBv((dTmp * itmp + LightSum) * xx, @PMCrecord.Ysum);
             DoubleToMCRGBv((ZZ * itmp + sqrLightSum) * xx, @PMCrecord.Ysqr);
             PMCrecord.RayCount := itmp + itcount;
-
             if (itmp <> 0) and (PMCrecord.RayCount < MaxNewCounts) and (Sqr(LightSum / itcount - dTmp) > yy) then
             begin
               TotalItCount := Round(Sqrt(Sqr(LightSum / itcount - dTmp) / yy) * Max(4, Min(itmp, itcount)));
@@ -2076,6 +2131,8 @@ ll2:        sv := MinMaxSVecMC(TotalLight);
             end;                  // and do TotalItCount := max.. (Ysum - YsumNB) / Max(0.1, YsumNB) * RayCount
           end;
           Inc(PMCrecord);
+          if withZBuffer then
+            Inc(CurrPMCrecordExt);
         end;
         if PCalcThreadStats.pLBcalcStop^ then Break;
         Inc(y, iThreadCount);

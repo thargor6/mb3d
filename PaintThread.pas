@@ -10,8 +10,11 @@ type
   TPaintThreadMC = class(TThread)
   private
     { Private-Deklarationen }
+    procedure PaintColorBuffer;
+    procedure PaintZBuffer;
   public
     { Public-Deklarationen }
+    MCparas: TPMandHeader10;
     PaintParameter: TMCPaintParameter;
   protected
     procedure Execute; override;
@@ -60,7 +63,7 @@ procedure CalcPixelColor2(SL: PCardinal; PsiLight: TPsiLight5; PLVals: Pointer; 
 procedure CalcPixelColorSqr(SL: PCardinal; PsiLight: TPsiLight5; PLVals: Pointer; PLV: TPPaintLightVals);
 function CalcPixelColorSvec(SVcol: TPSVec; var InSD: TLightSD; PsiLight: TPsiLight5; PLVals: Pointer; PLV: TPPaintLightVals): TSVec;
 function CalcPixelColorSvecTrans(SVcol: TPSVec; var InSD: TLightSD; PsiLight: TPsiLight5; PLVals: Pointer; PLV: TPPaintLightVals): TSVec;  //get back the diffuse color
-procedure PaintMC(MCparas: TPMandHeader10);
+procedure PaintMC(MCparas: TPMandHeader10; const DoSync: boolean);
 procedure CalcPosLightShape(var flux, transp: Single; LightNr: Integer; PLVals: TPLightVals);
 procedure CalcColors(iDif, iSpe: TPSVec; PsiLight: TPsiLight5; PLVals: TPLightVals);
 procedure CalcColorsInside(iDif, iSpe: TPSVec; PsiLight: TPsiLight5; PLVals: TPLightVals);
@@ -255,6 +258,7 @@ asm
   fstp [edx + 4]
   fstp [edx]
 end;
+
                               // dtmp3 idif[0]
 procedure CalcPosLightShape(var flux, transp: Single; LightNr: Integer; PLVals: TPLightVals);
 var PosLight: LongBool;
@@ -1838,12 +1842,13 @@ begin
   end;
 end;
 
-procedure PaintMC(MCparas: TPMandHeader10);
+procedure PaintMC(MCparas: TPMandHeader10; const DoSync: boolean);
 var MCPaintThread: TPaintThreadMC;
 begin
   //  MCForm.Label14.Caption := IntToStr(Round(MCPTtime));  //test
     if MCThreadActive <> 0 then Exit;
     MCPaintThread := TPaintThreadMC.Create(True);
+    MCPaintThread.MCparas := MCparas;
     with MCPaintThread.PaintParameter do
     begin
       pMessageHwnd := MCForm.Handle;
@@ -1854,11 +1859,15 @@ begin
       pWidth := MCparas.Width;
       pHeight := MCparas.Height;
       pPLoffset := pWidth * SizeOf(TMCrecord);
+      pPLoffsetExt := pWidth * SizeOf(TMCrecordExt);
       pSContrast := Sqr(MCparas.MCcontrast * d1d256 + s05); //0.25..2.24
       defCol := ColorToRGB(MCForm.Image1.Canvas.Brush.Color);
       pSoftClip := (MCparas.MCoptions and 1) <> 0;  //softclip
       pSaturation := (MCparas.bMCSaturation and $7F) / 32;
       pIgamma := (MCparas.Light.TBoptions shr 21) and $FC;
+      withZBuffer := MCForm.withZBuffer;
+      paintZBuffer := MCForm.paintZBuffer;
+      MCrecordExt := @MCForm.siLightMCExt[0];
       if pSoftClip then
       begin
         pIgamma := Max(0, pIgamma - 20);
@@ -1879,7 +1888,10 @@ begin
     end;
     MCPaintThread.FreeOnTerminate := True;
     MCThreadActive := 1;
-    MCPaintThread.Start;
+    if DoSync then
+      MCPaintThread.Execute
+    else
+      MCPaintThread.Start;
 end;
 
 { TPaintRowsThread }
@@ -2349,6 +2361,14 @@ begin
 end;
 
 procedure TPaintThreadMC.Execute;
+begin
+  if PaintParameter.withZBuffer and PaintParameter.paintZBuffer then
+    PaintZBuffer
+  else
+    PaintColorBuffer;
+end;
+
+procedure TPaintThreadMC.PaintColorBuffer;
 var x, y: Integer;
     scol, s, s2: Single;
   //  d: Double;
@@ -2415,6 +2435,51 @@ begin
     end;
 end;
 
+procedure TPaintThreadMC.PaintZBuffer;
+var x, y: Integer;
+    scol, s, s2: Single;
+    PsiLight: TPMCrecord;
+    PsiLightExt: TPMCrecordExt;
+    PSL: PCardinal;
+    sv1, sv2: TSVec;
+    GrayLevel: Integer;
+begin
+    with PaintParameter do
+    try
+      if (not withZBuffer) or (not Assigned(MCrecordExt)) then
+        raise Exception.Create('TPaintThreadMC.PaintZBuffer: Illegal state');
+
+      for y := 0 to pHeight - 1 do begin
+        if MCRepaintCounter <> pLocalCounter then
+          Break;
+        PsiLight := TPMCrecord(Integer(pPsiLight) + y * pPLoffset);
+        PsiLightExt := TPMCrecordExt(Integer(MCrecordExt) + y * pPLoffsetExt);
+        PSL := PCardinal(Integer(pSLstart) + y * PSLoffset);
+        x := 0;
+        while x < pWidth do begin
+          if PsiLight.RayCount <> 0 then begin
+            if PsiLightExt.ZPosition > 0 then begin
+              GrayLevel := Round(PsiLightExt.ZPosition / 8388352.0 * s255);
+              PSL^ := (GrayLevel shl 16) or (GrayLevel shl 8) or GrayLevel;
+            end
+            else
+              PSL^ := $000000;
+          end
+          else
+            PSL^ := $000000;
+          Inc(PSL);
+          Inc(PsiLight);
+          Inc(PsiLightExt);
+          Inc(x);
+          if MCRepaintCounter <> pLocalCounter then
+            Break;
+        end;
+      end;
+      MCForm.Image1.Picture.Bitmap.Modified := True;
+    finally
+      MCThreadActive := 0;
+    end;
+end;
 
 Initialization
 

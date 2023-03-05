@@ -542,6 +542,7 @@ begin                                //calcHybridFormulas -> usage of own calcfo
         GetTilingInfosFromHeader(@Header, Result.CalcRect, Crop)
       else Result.CalcRect := Rect(0, 0, Width - 1, Height - 1);
       Result.SLoffset := GetTileSize(@Header).X * SizeOf(TsiLight5);
+      Result.SLoffsetExt := GetTileSize(@Header).X * SizeOf(TMCrecordExt);
       StereoChange(@Header, bStereoMode, TPVec3D(@Result.Xmit)^, @hVgrads);
       Result.bInsideRendering := (PCFA.bOptions2 and 6) <> 0;
       Result.bInAndOutside := (PCFA.bOptions2 and 4) <> 0;

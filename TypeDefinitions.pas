@@ -331,6 +331,10 @@ type
     wStats: Word;             //18 bytes
   end;
   TPMCrecordNew = ^TMCrecordNew;
+  TMCrecordExt = packed record
+    ZPosition: Cardinal;
+  end;
+  TPMCrecordExt = ^TMCrecordExt;
   TsiLight5 = packed record  //18 Byte
     NormalX:    SmallInt; // 3 normals
     NormalY:    SmallInt;
@@ -568,6 +572,10 @@ type
     pPLoffset:     Integer;
     pSoftClip:     LongBool;
     defCol:        Cardinal;
+    withZBuffer:   boolean;
+    paintZBuffer:  boolean;
+    MCrecordExt:   TPMCrecordExt;
+    pPLoffsetExt:  Integer;
   end;
   TBufDEcomb = packed record
     bufIt3DItResultI: Integer;
@@ -703,6 +711,10 @@ type
     pInitialization:  array[0..5] of TFormulaInitialization;
   //  DEoption2:        Integer;
  //   dWadd4dstep:      Double;
+
+    withZBuffer:      boolean;
+    MCrecordExt:      TPMCrecordExt;
+    SLoffsetExt:      Integer;
   end;
   PMCTparameter = ^TMCTparameter;
 

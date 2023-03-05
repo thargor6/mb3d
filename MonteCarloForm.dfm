@@ -149,11 +149,13 @@ object MCForm: TMCForm
       OnClick = Button8Click
     end
     object SpeedButton1: TSpeedButton
-      Left = 102
-      Top = 8
+      Left = 105
+      Top = 10
       Width = 33
       Height = 30
-      Hint = 'Save the image as BMP or PNG file.'
+      Hint = 
+        'Save the image as BMP or PNG file. When the option '#39'With ZBuffer' +
+        #39' is enabled then the z-buffer is saved as well.'
       Enabled = False
       Glyph.Data = {
         F6010000424DF601000000000000760000002800000019000000180000000100
@@ -244,6 +246,24 @@ object MCForm: TMCForm
       TabOrder = 2
       Visible = False
       OnClick = Button6Click
+    end
+    object WithZBufferCbx: TCheckBox
+      Left = 539
+      Top = 15
+      Width = 88
+      Height = 17
+      Hint = 
+        'Enable generating z-buffer. This mode requires additional data w' +
+        'hich makes it incompatible with previous versions, so MC-files w' +
+        'ith this setting can not be saved/restored. To save the z-buffer' +
+        ' just save the normal image, the z-buffer is then automatically ' +
+        'saved as well.'
+      Alignment = taLeftJustify
+      Caption = 'With ZBuffer'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 3
+      OnClick = WithZBufferCbxClick
     end
   end
   object BottomPnl: TPanel
@@ -1011,7 +1031,6 @@ object MCForm: TMCForm
     Align = alRight
     TabOrder = 4
     Visible = False
-    ExplicitLeft = 545
     object Label16: TLabel
       Left = 120
       Top = 362
@@ -1071,7 +1090,7 @@ object MCForm: TMCForm
       Text = '4'
     end
     object BatchMaxRayCountUpDown: TUpDown
-      Left = 239
+      Left = 241
       Top = 362
       Width = 16
       Height = 21
@@ -1180,7 +1199,7 @@ object MCForm: TMCForm
     Left = 457
     Top = 56
     Bitmap = {
-      494C010108000E003C0020001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C010108000E00540020001000FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000800000003000000001002000000000000060
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
@@ -1993,7 +2012,7 @@ object MCForm: TMCForm
     Left = 661
     Top = 286
     Bitmap = {
-      494C01010400090068000C000B00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
+      494C01010400090080000C000B00FFFFFFFFFF10FFFFFFFFFFFFFFFF424D3600
       0000000000003600000028000000300000001600000001002000000000008010
       0000000000000000000000000000000000000000000000000000000000000000
       0000000000000000000000000000000000000000000000000000000000000000
